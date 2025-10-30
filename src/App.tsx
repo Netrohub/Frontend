@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotificationListener } from "@/components/NotificationListener";
+import { NotificationBanner } from "@/components/NotificationBanner";
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import ProductDetails from "./pages/ProductDetails";
@@ -38,6 +39,7 @@ const App = () => (
       <Sonner />
       <NotificationListener />
       <BrowserRouter>
+        <NotificationBanner />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/marketplace" element={<Marketplace />} />
