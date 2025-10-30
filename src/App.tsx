@@ -8,6 +8,13 @@ import Design1Arctic from "./pages/Design1Arctic";
 import Design2Gaming from "./pages/Design2Gaming";
 import Design3Trust from "./pages/Design3Trust";
 import Design4Survival from "./pages/Design4Survival";
+import Marketplace from "./pages/Marketplace";
+import ProductDetails from "./pages/ProductDetails";
+import Checkout from "./pages/Checkout";
+import Order from "./pages/Order";
+import Members from "./pages/Members";
+import Leaderboard from "./pages/Leaderboard";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +31,13 @@ const App = () => (
           <Route path="/design2" element={<Design2Gaming />} />
           <Route path="/design3" element={<Design3Trust />} />
           <Route path="/design4" element={<Design4Survival />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order/:id" element={<Order />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
