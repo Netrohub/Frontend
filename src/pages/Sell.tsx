@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Snowflake, Upload, Plus, X, ShieldAlert, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -272,13 +273,17 @@ const Sell = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">البريد الإلكتروني الأساسي</Label>
-                  <Input 
-                    type="email"
-                    placeholder="مثال: primary@example.com"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    required
-                  />
+                  <Label className="text-white mb-3 block">مع البريد الإلكتروني الأساسي؟</Label>
+                  <RadioGroup defaultValue="no" className="flex gap-6">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="yes" id="email-yes" className="border-white/30" />
+                      <Label htmlFor="email-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="no" id="email-no" className="border-white/30" />
+                      <Label htmlFor="email-no" className="text-white cursor-pointer font-normal">لا</Label>
+                    </div>
+                  </RadioGroup>
                 </div>
               </div>
             </div>
