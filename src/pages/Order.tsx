@@ -69,18 +69,18 @@ const Order = () => {
         </div>
 
         {/* Timer Card */}
-        <Card className="p-6 mb-6 bg-gradient-to-br from-[hsl(40,90%,55%,0.2)] to-[hsl(40,90%,55%,0.05)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-[hsl(40,90%,55%,0.2)]">
+        <Card className="p-6 mb-6 bg-gradient-to-br from-[hsl(40,90%,15%)] to-[hsl(40,80%,10%)] border-[hsl(40,90%,55%,0.5)] backdrop-blur-sm shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+          <div className="flex flex-col md:flex-row items-center gap-4">
+            <div className="p-3 rounded-full bg-[hsl(40,90%,55%,0.3)] border border-[hsl(40,90%,55%,0.5)]">
               <Clock className="h-8 w-8 text-[hsl(40,90%,55%)]" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 text-center md:text-right">
               <h3 className="font-bold text-white text-lg mb-1">فترة الضمان النشطة</h3>
               <p className="text-white/80 text-sm">الوقت المتبقي لفحص الحساب وتأكيد الاستلام</p>
             </div>
-            <div className="text-left">
-              <div className="text-3xl font-black text-[hsl(40,90%,55%)]">{timeLeft}</div>
-              <div className="text-xs text-white/60">ساعة:دقيقة:ثانية</div>
+            <div className="text-center md:text-left">
+              <div className="text-4xl md:text-3xl font-black text-[hsl(40,90%,55%)]">{timeLeft}</div>
+              <div className="text-xs text-white/70 mt-1">ساعة:دقيقة:ثانية</div>
             </div>
           </div>
         </Card>
