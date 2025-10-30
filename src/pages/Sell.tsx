@@ -1,0 +1,201 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Snowflake, Upload, Plus, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+
+const Sell = () => {
+  const [images, setImages] = useState<string[]>([]);
+
+  return (
+    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+      
+      {/* Snow particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `-${Math.random() * 20}%`,
+              animationDuration: `${10 + Math.random() * 20}s`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
+          <span className="text-xl md:text-2xl font-black text-white">
+            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
+          </span>
+        </Link>
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
+          <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
+          <Link to="/my-listings" className="hover:text-[hsl(195,80%,70%)] transition-colors">قائمتي</Link>
+          <Link to="/sell" className="text-[hsl(195,80%,70%)]">إضافة حساب</Link>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">إضافة حساب للبيع</h1>
+          <p className="text-white/60">أضف تفاصيل الحساب وابدأ البيع</p>
+        </div>
+
+        <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+          <form className="space-y-6">
+            {/* Basic Info */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold text-white">المعلومات الأساسية</h2>
+              
+              <div>
+                <Label className="text-white mb-2 block">عنوان الإعلان</Label>
+                <Input 
+                  placeholder="مثال: حساب قوي - المستوى 45"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-white mb-2 block">السيرفر</Label>
+                  <Select>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectValue placeholder="اختر السيرفر" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="101-200">101-200</SelectItem>
+                      <SelectItem value="201-300">201-300</SelectItem>
+                      <SelectItem value="301-400">301-400</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">المستوى</Label>
+                  <Input 
+                    type="number"
+                    placeholder="45"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-white mb-2 block">السعر (ريال)</Label>
+                <Input 
+                  type="number"
+                  placeholder="1250"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                />
+              </div>
+
+              <div>
+                <Label className="text-white mb-2 block">الوصف</Label>
+                <Textarea 
+                  placeholder="اكتب وصف تفصيلي للحساب..."
+                  rows={5}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                />
+              </div>
+            </div>
+
+            {/* Images */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold text-white">صور الحساب</h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {images.map((img, i) => (
+                  <div key={i} className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group">
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                    <button 
+                      className="absolute top-2 right-2 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => setImages(images.filter((_, idx) => idx !== i))}
+                    >
+                      <X className="h-4 w-4 text-white" />
+                    </button>
+                  </div>
+                ))}
+                
+                <button
+                  type="button"
+                  className="aspect-square bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex flex-col items-center justify-center gap-2"
+                >
+                  <Upload className="h-8 w-8 text-white/40" />
+                  <span className="text-sm text-white/60">رفع صورة</span>
+                </button>
+              </div>
+              
+              <p className="text-sm text-white/60">يمكنك رفع حتى 8 صور</p>
+            </div>
+
+            {/* Account Details */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-white mb-2 block">البريد الإلكتروني</Label>
+                  <Input 
+                    type="email"
+                    placeholder="account@example.com"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">كلمة المرور</Label>
+                  <Input 
+                    type="password"
+                    placeholder="••••••••"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  />
+                </div>
+              </div>
+
+              <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
+                <p className="text-sm text-white/80">
+                  ⚠️ معلومات الحساب ستكون محمية ومشفرة. سيتم عرضها للمشتري فقط بعد إتمام عملية الدفع.
+                </p>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="flex gap-4 pt-4">
+              <Button 
+                type="submit"
+                className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
+              >
+                <Plus className="h-5 w-5" />
+                نشر الإعلان
+              </Button>
+              
+              <Button 
+                type="button"
+                variant="outline"
+                className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
+                asChild
+              >
+                <Link to="/my-listings">إلغاء</Link>
+              </Button>
+            </div>
+          </form>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default Sell;
