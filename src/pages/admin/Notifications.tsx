@@ -136,15 +136,18 @@ const AdminNotifications = () => {
     setShowDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setShowDialog(false);
-    setEditingNotification(null);
-    setFormData({
-      title: "",
-      message: "",
-      type: "system",
-      targetAudience: "all",
-    });
+  const handleDialogChange = (open: boolean) => {
+    setShowDialog(open);
+    if (!open) {
+      // Reset form when closing
+      setEditingNotification(null);
+      setFormData({
+        title: "",
+        message: "",
+        type: "system",
+        targetAudience: "all",
+      });
+    }
   };
 
   const getTypeLabel = (type: string) => {
@@ -180,7 +183,7 @@ const AdminNotifications = () => {
             </div>
           </div>
 
-          <Dialog open={showDialog} onOpenChange={handleCloseDialog}>
+          <Dialog open={showDialog} onOpenChange={handleDialogChange}>
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
@@ -266,7 +269,7 @@ const AdminNotifications = () => {
                 <Button onClick={editingNotification ? handleUpdate : handleCreate} className="flex-1">
                   {editingNotification ? "تحديث" : "إنشاء"}
                 </Button>
-                <Button variant="outline" onClick={handleCloseDialog}>
+                <Button variant="outline" onClick={() => handleDialogChange(false)}>
                   إلغاء
                 </Button>
               </div>
