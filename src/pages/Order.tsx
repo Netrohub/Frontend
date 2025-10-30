@@ -3,11 +3,27 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Snowflake, Shield, Clock, CheckCircle2, AlertTriangle, Copy, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Order = () => {
   const [showCredentials, setShowCredentials] = useState(false);
   const [timeLeft, setTimeLeft] = useState("11:45:23");
+  const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleConfirmOrder = () => {
+    setOrderConfirmed(true);
+    toast({
+      title: "تم تأكيد الطلب بنجاح",
+      description: "شكراً لك! تم تأكيد استلام الحساب بنجاح.",
+    });
+  };
+
+  const handleOpenDispute = () => {
+    navigate("/disputes");
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -137,16 +153,20 @@ const Order = () => {
         <div className="grid md:grid-cols-2 gap-4 mb-6">
           <Button 
             size="lg"
-            className="gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
+            onClick={handleConfirmOrder}
+            disabled={orderConfirmed}
+            className="gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCircle2 className="h-5 w-5" />
-            تأكيد - الحساب يعمل بشكل صحيح
+            {orderConfirmed ? "تم التأكيد" : "تأكيد - الحساب يعمل بشكل صحيح"}
           </Button>
 
           <Button 
             size="lg"
             variant="outline"
-            className="gap-2 text-lg py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold"
+            onClick={handleOpenDispute}
+            disabled={orderConfirmed}
+            className="gap-2 text-lg py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <AlertTriangle className="h-5 w-5" />
             فتح نزاع - هناك مشكلة
