@@ -16,6 +16,7 @@ import MyListings from "./pages/MyListings";
 import Disputes from "./pages/Disputes";
 import KYC from "./pages/KYC";
 import Admin from "./pages/Admin";
+import AdminUsers from "./pages/admin/Users";
 import About from "./pages/About";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
@@ -41,7 +42,9 @@ const App = () => (
           <Route path="/my-listings" element={<MyListings />} />
           <Route path="/disputes" element={<Disputes />} />
           <Route path="/kyc" element={<KYC />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<Admin />}>
+            <Route path="users" element={<AdminUsers />} />
+          </Route>
           <Route path="/about" element={<About />} />
           <Route path="/help" element={<Help />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
