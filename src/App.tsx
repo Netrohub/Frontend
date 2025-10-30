@@ -3,7 +3,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { NotificationListener } from "@/components/NotificationListener";
 import { NotificationBanner } from "@/components/NotificationBanner";
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
@@ -37,7 +36,6 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <NotificationListener />
       <BrowserRouter>
         <NotificationBanner />
         <Routes>

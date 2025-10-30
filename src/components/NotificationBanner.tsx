@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { X, Bell } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { X, AlertCircle, Package, MessageSquare, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Notification {
@@ -12,33 +12,35 @@ interface Notification {
 
 export function NotificationBanner() {
   const [notification, setNotification] = useState<Notification | null>(null);
-  const [dismissed, setDismissed] = useState<string[]>([]);
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const loadNotifications = () => {
-      const stored = localStorage.getItem("admin_notifications");
-      const dismissedIds = localStorage.getItem("dismissed_notifications");
+    // Load dismissed IDs once on mount
+    const dismissedStr = localStorage.getItem("dismissed_notifications");
+    if (dismissedStr) {
+      setDismissedIds(new Set(JSON.parse(dismissedStr)));
+    }
+  }, []);
+
+  const loadNotifications = useCallback(() => {
+    const stored = localStorage.getItem("admin_notifications");
+    if (stored) {
+      const notifications: Notification[] = JSON.parse(stored);
+      const published = notifications
+        .filter(n => n.status === "published")
+        .sort((a, b) => b.id.localeCompare(a.id))[0];
       
-      if (dismissedIds) {
-        setDismissed(JSON.parse(dismissedIds));
+      if (published && !dismissedIds.has(published.id)) {
+        setNotification(published);
+      } else {
+        setNotification(null);
       }
+    }
+  }, [dismissedIds]);
 
-      if (stored) {
-        const notifications: Notification[] = JSON.parse(stored);
-        // Get the latest published notification
-        const published = notifications
-          .filter(n => n.status === "published")
-          .sort((a, b) => b.id.localeCompare(a.id))[0];
-        
-        if (published && !dismissed.includes(published.id)) {
-          setNotification(published);
-        }
-      }
-    };
-
+  useEffect(() => {
     loadNotifications();
 
-    // Listen for new notifications
     const handleNotificationUpdate = () => {
       loadNotifications();
     };
@@ -50,44 +52,74 @@ export function NotificationBanner() {
       window.removeEventListener("notificationsUpdated", handleNotificationUpdate);
       window.removeEventListener("storage", handleNotificationUpdate);
     };
-  }, [dismissed]);
+  }, [loadNotifications]);
 
   const handleDismiss = () => {
     if (notification) {
-      const newDismissed = [...dismissed, notification.id];
-      setDismissed(newDismissed);
-      localStorage.setItem("dismissed_notifications", JSON.stringify(newDismissed));
+      const newDismissed = new Set(dismissedIds);
+      newDismissed.add(notification.id);
+      setDismissedIds(newDismissed);
+      localStorage.setItem("dismissed_notifications", JSON.stringify(Array.from(newDismissed)));
       setNotification(null);
     }
   };
 
   if (!notification) return null;
 
-  const getTypeColor = (type: string) => {
-    const colors = {
-      order: "bg-blue-600 border-blue-700",
-      dispute: "bg-red-600 border-red-700",
-      message: "bg-green-600 border-green-700",
-      system: "bg-primary border-primary",
+  const getTypeConfig = (type: string) => {
+    const configs = {
+      order: {
+        color: "bg-blue-600 border-blue-700",
+        icon: Package,
+        emoji: "📦"
+      },
+      dispute: {
+        color: "bg-red-600 border-red-700",
+        icon: AlertCircle,
+        emoji: "⚠️"
+      },
+      message: {
+        color: "bg-green-600 border-green-700",
+        icon: MessageSquare,
+        emoji: "💬"
+      },
+      system: {
+        color: "bg-amber-600 border-amber-700",
+        icon: Megaphone,
+        emoji: "📢"
+      },
     };
-    return colors[type as keyof typeof colors] || colors.system;
+    return configs[type as keyof typeof configs] || configs.system;
   };
+
+  const config = getTypeConfig(notification.type);
+  const IconComponent = config.icon;
 
   return (
     <div 
-      className={`w-full border-b ${getTypeColor(notification.type)} backdrop-blur-sm`}
+      className={`w-full border-b-2 ${config.color} shadow-lg`}
       dir="rtl"
     >
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/20 flex-shrink-0">
-            <Bell className="h-5 w-5 text-primary" />
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className="text-2xl" role="img" aria-label="notification-icon">
+              {config.emoji}
+            </span>
+            <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
+              <IconComponent className="h-5 w-5 text-white" />
+            </div>
           </div>
           <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-sm text-white mb-0.5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-bold text-white/90 uppercase tracking-wider">
+                إعلان رسمي من المنصة
+              </span>
+            </div>
+            <h4 className="font-bold text-base text-white mb-1">
               {notification.title}
             </h4>
-            <p className="text-sm text-white/70">
+            <p className="text-sm text-white/90 leading-relaxed">
               {notification.message}
             </p>
           </div>
@@ -95,9 +127,9 @@ export function NotificationBanner() {
             variant="ghost"
             size="sm"
             onClick={handleDismiss}
-            className="flex-shrink-0 h-8 w-8 p-0"
+            className="flex-shrink-0 h-9 w-9 p-0 hover:bg-white/20 text-white"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </Button>
         </div>
       </div>
