@@ -92,11 +92,15 @@ const AdminNotifications = () => {
     const notification = notifications.find(n => n.id === id);
     if (!notification) return;
     
+    console.log("Publishing notification:", notification);
+    
     updateNotification(id, { status: "published" });
     
     // Trigger the notification popup
+    const publishedNotification = { ...notification, status: "published" as const };
+    console.log("Dispatching event with:", publishedNotification);
     window.dispatchEvent(new CustomEvent("notificationPublished", { 
-      detail: { ...notification, status: "published" }
+      detail: publishedNotification
     }));
     
     toast({
