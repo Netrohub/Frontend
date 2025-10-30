@@ -2,15 +2,25 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Search, Eye, Ban, CheckCircle, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 const AdminListings = () => {
+  const [selectedListing, setSelectedListing] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const listings = [
-    { id: 1, title: "حساب فورتنايت مستوى عالي", seller: "محمد أحمد", price: 500, status: "active", views: 245, created: "2025-01-20" },
-    { id: 2, title: "حساب كول أوف ديوتي", seller: "سارة علي", price: 350, status: "active", views: 189, created: "2025-01-19" },
-    { id: 3, title: "حساب روبلوكس مميز", seller: "خالد العتيبي", price: 280, status: "pending", views: 92, created: "2025-01-18" },
-    { id: 4, title: "حساب ماين كرافت", seller: "نورة السعيد", price: 420, status: "suspended", views: 156, created: "2025-01-17" },
+    { id: 1, title: "حساب فورتنايت مستوى عالي", seller: "محمد أحمد", sellerEmail: "mohammed@example.com", price: 500, status: "active", views: 245, created: "2025-01-20", category: "فورتنايت", description: "حساب مستوى عالي مع جميع الأسلحة والإضافات" },
+    { id: 2, title: "حساب كول أوف ديوتي", seller: "سارة علي", sellerEmail: "sara@example.com", price: 350, status: "active", views: 189, created: "2025-01-19", category: "كول أوف ديوتي", description: "حساب احترافي مع رتب متقدمة" },
+    { id: 3, title: "حساب روبلوكس مميز", seller: "خالد العتيبي", sellerEmail: "khalid@example.com", price: 280, status: "pending", views: 92, created: "2025-01-18", category: "روبلوكس", description: "حساب مميز مع عملات وإضافات حصرية" },
+    { id: 4, title: "حساب ماين كرافت", seller: "نورة السعيد", sellerEmail: "noura@example.com", price: 420, status: "suspended", views: 156, created: "2025-01-17", category: "ماين كرافت", description: "حساب مع جميع التحديثات" },
   ];
+
+  const handleViewDetails = (listing: any) => {
+    setSelectedListing(listing);
+    setIsDialogOpen(true);
+  };
 
   return (
     <div>
@@ -67,7 +77,7 @@ const AdminListings = () => {
             </div>
 
             <div className="flex gap-2 pt-3 border-t border-white/10">
-              <Button size="sm" variant="outline" className="flex-1 gap-2 bg-white/5 hover:bg-white/10 text-white border-white/20">
+              <Button size="sm" variant="outline" className="flex-1 gap-2 bg-white/5 hover:bg-white/10 text-white border-white/20" onClick={() => handleViewDetails(listing)}>
                 <Eye className="h-4 w-4" />
                 عرض التفاصيل
               </Button>
@@ -90,6 +100,81 @@ const AdminListings = () => {
           </Card>
         ))}
       </div>
+
+      {/* Details Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="bg-[hsl(217,33%,17%)] border-white/10 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">تفاصيل الإعلان</DialogTitle>
+          </DialogHeader>
+          {selectedListing && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-bold mb-2">{selectedListing.title}</h3>
+                <Badge className={
+                  selectedListing.status === "active" 
+                    ? "bg-green-500/20 text-green-400 border-green-500/30"
+                    : selectedListing.status === "pending"
+                    ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                    : "bg-red-500/20 text-red-400 border-red-500/30"
+                }>
+                  {selectedListing.status === "active" ? "نشط" : selectedListing.status === "pending" ? "قيد المراجعة" : "موقوف"}
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-white/60">البائع:</span>
+                  <p className="text-white font-medium">{selectedListing.seller}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">البريد الإلكتروني:</span>
+                  <p className="text-white font-medium">{selectedListing.sellerEmail}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">السعر:</span>
+                  <p className="text-white font-medium">{selectedListing.price} ريال</p>
+                </div>
+                <div>
+                  <span className="text-white/60">الفئة:</span>
+                  <p className="text-white font-medium">{selectedListing.category}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">المشاهدات:</span>
+                  <p className="text-white font-medium">{selectedListing.views}</p>
+                </div>
+                <div>
+                  <span className="text-white/60">تاريخ النشر:</span>
+                  <p className="text-white font-medium">{selectedListing.created}</p>
+                </div>
+              </div>
+
+              <div>
+                <span className="text-white/60 text-sm">الوصف:</span>
+                <p className="text-white mt-1">{selectedListing.description}</p>
+              </div>
+
+              <div className="flex gap-2 pt-4 border-t border-white/10">
+                {selectedListing.status !== "suspended" ? (
+                  <Button className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
+                    <Ban className="h-4 w-4" />
+                    إيقاف الإعلان
+                  </Button>
+                ) : (
+                  <Button className="flex-1 gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30">
+                    <CheckCircle className="h-4 w-4" />
+                    تفعيل الإعلان
+                  </Button>
+                )}
+                <Button className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
+                  <Trash2 className="h-4 w-4" />
+                  حذف الإعلان
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
