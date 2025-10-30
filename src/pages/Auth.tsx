@@ -144,7 +144,9 @@ const Auth = () => {
 
               <p className="text-center text-sm text-white/60">
                 بإنشاء حساب، أنت توافق على{" "}
-                <a href="#" className="text-[hsl(195,80%,70%)] hover:underline">الشروط والأحكام</a>
+                <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">الشروط والأحكام</Link>
+                {" "}و{" "}
+                <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">سياسة الخصوصية</Link>
               </p>
             </TabsContent>
           </Tabs>

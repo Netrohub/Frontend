@@ -183,10 +183,23 @@ const Home = () => {
 
       {/* Footer */}
       <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-white/50">
-            © 2025 منصة تداول حسابات الألعاب. جميع الحقوق محفوظة.
-          </p>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-white/50 text-sm md:text-base">
+              © 2025 NXOLand. جميع الحقوق محفوظة.
+            </p>
+            <div className="flex items-center gap-6 text-sm">
+              <Link to="/terms" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                الشروط والأحكام
+              </Link>
+              <Link to="/privacy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                سياسة الخصوصية
+              </Link>
+              <Link to="/help" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                الدعم
+              </Link>
+            </div>
+          </div>
         </div>
       </footer>
 
