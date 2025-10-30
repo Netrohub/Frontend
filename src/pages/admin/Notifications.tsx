@@ -91,18 +91,27 @@ const AdminNotifications = () => {
 
   const handlePublish = (id: string) => {
     const notification = notifications.find(n => n.id === id);
-    if (!notification) return;
+    if (!notification) {
+      console.error("❌ Notification not found:", id);
+      return;
+    }
     
-    console.log("Publishing notification:", notification);
+    console.log("📤 Publishing notification:", notification);
     
     updateNotification(id, { status: "published" });
     
     // Trigger the notification popup
     const publishedNotification = { ...notification, status: "published" as const };
-    console.log("Dispatching event with:", publishedNotification);
-    window.dispatchEvent(new CustomEvent("notificationPublished", { 
-      detail: publishedNotification
-    }));
+    console.log("🚀 Dispatching notificationPublished event:", publishedNotification);
+    
+    const event = new CustomEvent("notificationPublished", { 
+      detail: publishedNotification,
+      bubbles: true,
+      cancelable: true,
+    });
+    
+    const dispatched = window.dispatchEvent(event);
+    console.log("✅ Event dispatched:", dispatched);
     
     toast({
       title: "تم النشر",
