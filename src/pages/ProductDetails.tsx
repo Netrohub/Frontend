@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Shield, Star, MapPin, ArrowRight, CheckCircle2, Users } from "lucide-react";
+import { Snowflake, Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 const ProductDetails = () => {
@@ -173,6 +173,13 @@ const ProductDetails = () => {
                 <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
                   <div className="text-xs text-[hsl(280,70%,70%)] mb-1">Pet Power</div>
                   <div className="font-bold text-white">3,000,000</div>
+                </div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)] col-span-2">
+                  <div className="text-xs text-[hsl(120,60%,70%)] mb-1">مع البريد الإلكتروني الأساسي</div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="font-bold text-[hsl(120,70%,50%)] text-lg">نعم</span>
+                  </div>
                 </div>
               </div>
             </Card>
