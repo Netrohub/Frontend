@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Snowflake, AlertTriangle, Upload, MessageSquare, Clock, Package, ChevronDown } from "lucide-react";
+import { Snowflake, AlertTriangle, Upload, MessageSquare, Clock, Package, ChevronDown, ShieldAlert, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -19,17 +19,41 @@ const Disputes = () => {
 
   // النزاعات المفتوحة
   const disputes = [
-    { id: 1, orderId: "#12458", title: "الحساب لا يعمل", description: "تم تسليم معلومات دخول خاطئة", status: "open", date: "منذ 3 ساعات" },
-    { id: 2, orderId: "#12340", title: "معلومات خاطئة", description: "الحساب مختلف عن الوصف", status: "review", date: "منذ يوم واحد" },
+    { 
+      id: 1, 
+      orderId: "#12458", 
+      title: "الحساب لا يعمل", 
+      description: "تم تسليم معلومات دخول خاطئة", 
+      status: "open", 
+      date: "منذ 3 ساعات",
+      sellerName: "أحمد السعيد",
+      messages: 2,
+      escalated: false
+    },
+    { 
+      id: 2, 
+      orderId: "#12340", 
+      title: "معلومات خاطئة", 
+      description: "الحساب مختلف عن الوصف", 
+      status: "escalated", 
+      date: "منذ يوم واحد",
+      sellerName: "خالد المطيري",
+      messages: 5,
+      escalated: true
+    },
   ];
 
   const getStatusBadge = (status: string) => {
     const styles = {
-      open: "bg-red-500/20 text-red-400 border-red-500/30",
-      review: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+      open: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+      escalated: "bg-red-500/20 text-red-400 border-red-500/30",
       resolved: "bg-green-500/20 text-green-400 border-green-500/30",
     };
-    const labels = { open: "مفتوح", review: "قيد المراجعة", resolved: "تم الحل" };
+    const labels = { 
+      open: "محادثة مع البائع", 
+      escalated: "تم التصعيد للإدارة", 
+      resolved: "تم الحل" 
+    };
     return <Badge className={styles[status as keyof typeof styles]}>{labels[status as keyof typeof labels]}</Badge>;
   };
 
@@ -79,9 +103,9 @@ const Disputes = () => {
               {disputes.map((dispute) => (
                 <Card 
                   key={dispute.id}
-                  className="p-5 bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all"
+                  className="p-5 bg-white/5 border-white/10 backdrop-blur-sm"
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <AlertTriangle className="h-5 w-5 text-red-400" />
@@ -89,19 +113,60 @@ const Disputes = () => {
                         {getStatusBadge(dispute.status)}
                       </div>
                       <h3 className="text-lg font-bold text-white mb-2">{dispute.title}</h3>
-                      <p className="text-sm text-white/60 mb-2">{dispute.description}</p>
-                      <div className="flex items-center gap-2 text-sm text-white/60">
-                        <Clock className="h-4 w-4" />
-                        <span>{dispute.date}</span>
+                      <p className="text-sm text-white/60 mb-3">{dispute.description}</p>
+                      
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-2 text-white/60">
+                          <User className="h-4 w-4" />
+                          <span>البائع: {dispute.sellerName}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-white/60">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>{dispute.messages} رسائل</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-white/60">
+                          <Clock className="h-4 w-4" />
+                          <span>{dispute.date}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Conversation Preview */}
+                  <div className="mb-4 p-3 bg-white/5 rounded-lg border border-white/10">
+                    <div className="text-xs text-white/60 mb-2">آخر رسالة:</div>
+                    <div className="text-sm text-white/80">
+                      {dispute.status === "open" 
+                        ? "البائع: سأقوم بالتحقق من المشكلة وحلها خلال 24 ساعة"
+                        : "الإدارة: تم استلام النزاع وجاري المراجعة"}
+                    </div>
+                  </div>
                   
-                  {dispute.status === "open" && (
-                    <Button size="sm" className="w-full mt-3 gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1 gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
                       <MessageSquare className="h-4 w-4" />
-                      عرض التفاصيل والرد
+                      عرض المحادثة والرد
                     </Button>
+                    
+                    {dispute.status === "open" && !dispute.escalated && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                      >
+                        <ShieldAlert className="h-4 w-4" />
+                        تصعيد للإدارة
+                      </Button>
+                    )}
+                  </div>
+
+                  {dispute.status === "escalated" && (
+                    <div className="mt-3 p-3 bg-red-500/10 rounded-lg border border-red-500/30">
+                      <div className="flex items-center gap-2 text-sm text-red-400">
+                        <ShieldAlert className="h-4 w-4" />
+                        <span>تم تصعيد هذا النزاع للإدارة - ستتم المراجعة خلال 24 ساعة</span>
+                      </div>
+                    </div>
                   )}
                 </Card>
               ))}
@@ -191,9 +256,11 @@ const Disputes = () => {
                             تأكيد فتح النزاع
                           </Button>
 
-                          <p className="text-xs text-white/60 text-center">
-                            ⚠️ سيتم مراجعة النزاع خلال 24 ساعة من قبل الإدارة
-                          </p>
+                          <div className="p-3 bg-[hsl(195,80%,50%,0.1)] rounded-lg border border-[hsl(195,80%,70%,0.3)]">
+                            <p className="text-xs text-white/80">
+                              ℹ️ سيتم فتح محادثة بينك وبين البائع لحل المشكلة. إذا لم يتم الحل، يمكنك تصعيد النزاع للإدارة.
+                            </p>
+                          </div>
                         </div>
                       )}
                     </>
