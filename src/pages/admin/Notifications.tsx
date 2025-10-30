@@ -243,7 +243,7 @@ const AdminNotifications = () => {
                       setFormData({ ...formData, type: value as Notification["type"] })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -266,7 +266,7 @@ const AdminNotifications = () => {
                       })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="audience">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
