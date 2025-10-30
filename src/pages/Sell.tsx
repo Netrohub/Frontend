@@ -123,18 +123,41 @@ const Sell = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">Helious</Label>
-                  <Select>
-                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                      <SelectValue placeholder="اختر Helious" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="infantry">المشاة</SelectItem>
-                      <SelectItem value="archers">الرماه</SelectItem>
-                      <SelectItem value="spear">الرمح</SelectItem>
-                      <SelectItem value="none">ولا شي</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-white mb-2 block">هيليوس (يمكن اختيار أكثر من واحد)</Label>
+                  <div className="space-y-3 p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        id="infantry"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
+                      />
+                      <label htmlFor="infantry" className="text-white text-sm cursor-pointer">المشاة</label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        id="archers"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
+                      />
+                      <label htmlFor="archers" className="text-white text-sm cursor-pointer">الرماه</label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        id="spear"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
+                      />
+                      <label htmlFor="spear" className="text-white text-sm cursor-pointer">الرمح</label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        id="none"
+                        className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
+                      />
+                      <label htmlFor="none" className="text-white text-sm cursor-pointer">ولا شي</label>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
