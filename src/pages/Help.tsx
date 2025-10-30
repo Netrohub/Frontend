@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Snowflake, MessageCircle, Mail, Phone } from "lucide-react";
+import { Snowflake, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Help = () => {
@@ -91,26 +91,26 @@ const Help = () => {
         {/* Contact */}
         <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">تواصل معنا</h2>
-          <p className="text-center text-white/70 mb-6">لم تجد إجابة؟ تواصل مع فريق الدعم</p>
+          <p className="text-center text-white/70 mb-6">لم تجد إجابة؟ تواصل مع فريق الدعم عبر Discord</p>
           
-          <div className="grid md:grid-cols-3 gap-4">
-            <Button className="flex-col h-auto py-6 bg-white/5 hover:bg-white/10 border border-white/20 text-white">
-              <MessageCircle className="h-8 w-8 mb-2 text-[hsl(195,80%,70%)]" />
-              <span className="font-bold">الدردشة المباشرة</span>
-              <span className="text-sm text-white/60">متاح 24/7</span>
+          <div className="flex justify-center">
+            <Button 
+              asChild
+              size="lg"
+              className="flex-col h-auto py-8 px-12 bg-[#5865F2] hover:bg-[#4752C4] border-0 text-white gap-3 min-h-[120px]"
+            >
+              <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer">
+                <MessageCircle className="h-12 w-12 mb-2" />
+                <span className="font-bold text-xl">انضم إلى Discord</span>
+                <span className="text-sm text-white/90">قناة الدعم الرسمية - متاح 24/7</span>
+              </a>
             </Button>
-
-            <Button className="flex-col h-auto py-6 bg-white/5 hover:bg-white/10 border border-white/20 text-white">
-              <Mail className="h-8 w-8 mb-2 text-[hsl(195,80%,70%)]" />
-              <span className="font-bold">البريد الإلكتروني</span>
-              <span className="text-sm text-white/60">support@nxoland.com</span>
-            </Button>
-
-            <Button className="flex-col h-auto py-6 bg-white/5 hover:bg-white/10 border border-white/20 text-white">
-              <Phone className="h-8 w-8 mb-2 text-[hsl(195,80%,70%)]" />
-              <span className="font-bold">الهاتف</span>
-              <span className="text-sm text-white/60">+966 XX XXX XXXX</span>
-            </Button>
+          </div>
+          
+          <div className="mt-6 p-4 bg-[#5865F2]/10 rounded-lg border border-[#5865F2]/30">
+            <p className="text-sm text-white/80 text-center">
+              💬 جميع استفساراتك وطلبات الدعم يتم التعامل معها عبر سيرفر Discord الرسمي
+            </p>
           </div>
         </Card>
       </div>
