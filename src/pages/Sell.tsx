@@ -341,6 +341,49 @@ const Sell = () => {
                 </div>
               </div>
 
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white mt-4">صور الفواتير (إلزامية)</h3>
+                
+                <div>
+                  <Label className="text-white mb-2 block">صورة أول فاتورة شراء</Label>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
+                    >
+                      <Upload className="h-5 w-5 text-white/40" />
+                      <span className="text-sm text-white/60">اختر صورة</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">صورة ثلاث فواتير مختلفة التوقيت</Label>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
+                    >
+                      <Upload className="h-5 w-5 text-white/40" />
+                      <span className="text-sm text-white/60">اختر صورة</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">صورة آخر فاتورة شراء</Label>
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
+                    >
+                      <Upload className="h-5 w-5 text-white/40" />
+                      <span className="text-sm text-white/60">اختر صورة</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
                 <p className="text-sm text-white/80">
                   ⚠️ معلومات الحساب ستكون محمية ومشفرة. سيتم عرضها للمشتري فقط بعد إتمام عملية الدفع.
