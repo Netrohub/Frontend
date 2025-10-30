@@ -38,12 +38,12 @@ const Marketplace = () => {
 
       {/* Navigation */}
       <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
           <span className="text-xl md:text-2xl font-black text-white">
             NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
           </span>
-        </div>
+        </Link>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
           <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
           <Link to="/marketplace" className="text-[hsl(195,80%,70%)]">السوق</Link>

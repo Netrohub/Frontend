@@ -32,12 +32,12 @@ const Auth = () => {
       <div className="relative z-10 w-full max-w-md px-4">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
+          <Link to="/" className="inline-flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
             <Snowflake className="h-12 w-12 text-[hsl(195,80%,70%)]" />
             <span className="text-3xl font-black text-white">
               NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
             </span>
-          </div>
+          </Link>
           <p className="text-white/60">تداول آمن وموثوق للحسابات</p>
         </div>
 
