@@ -76,20 +76,15 @@ const Sell = () => {
                       <SelectValue placeholder="اختر السيرفر" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="101-200">101-200</SelectItem>
+                      <SelectItem value="0-99">0-99</SelectItem>
+                      <SelectItem value="100-200">100-200</SelectItem>
                       <SelectItem value="201-300">201-300</SelectItem>
                       <SelectItem value="301-400">301-400</SelectItem>
+                      <SelectItem value="401-500">401-500</SelectItem>
+                      <SelectItem value="up-to-1000">حتى 1000</SelectItem>
+                      <SelectItem value="other">آخر</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div>
-                  <Label className="text-white mb-2 block">المستوى</Label>
-                  <Input 
-                    type="number"
-                    placeholder="45"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  />
                 </div>
               </div>
 
@@ -102,13 +97,121 @@ const Sell = () => {
                 />
               </div>
 
-              <div>
-                <Label className="text-white mb-2 block">الوصف</Label>
-                <Textarea 
-                  placeholder="اكتب وصف تفصيلي للحساب..."
-                  rows={5}
-                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                />
+              <div className="space-y-4">
+                <h3 className="text-lg font-bold text-white">تفاصيل الحساب (إلزامية)</h3>
+                
+                <div>
+                  <Label className="text-white mb-2 block">حجرة الاحتراق</Label>
+                  <Select>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectValue placeholder="اختر حجرة الاحتراق" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="FC1">FC1</SelectItem>
+                      <SelectItem value="FC2">FC2</SelectItem>
+                      <SelectItem value="FC3">FC3</SelectItem>
+                      <SelectItem value="FC4">FC4</SelectItem>
+                      <SelectItem value="FC5">FC5</SelectItem>
+                      <SelectItem value="FC6">FC6</SelectItem>
+                      <SelectItem value="FC7">FC7</SelectItem>
+                      <SelectItem value="FC8">FC8</SelectItem>
+                      <SelectItem value="FC9">FC9</SelectItem>
+                      <SelectItem value="FC10">FC10</SelectItem>
+                      <SelectItem value="other">آخر</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">Helious</Label>
+                  <Select>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                      <SelectValue placeholder="اختر Helious" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="infantry">المشاة</SelectItem>
+                      <SelectItem value="archers">الرماه</SelectItem>
+                      <SelectItem value="spear">الرمح</SelectItem>
+                      <SelectItem value="none">ولا شي</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white mb-2 block">عدد الجنود</Label>
+                    <Input 
+                      type="text"
+                      placeholder="مثال: 1,500,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-white mb-2 block">Total Power</Label>
+                    <Input 
+                      type="text"
+                      placeholder="مثال: 50,000,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white mb-2 block">Hero Power</Label>
+                    <Input 
+                      type="text"
+                      placeholder="مثال: 10,000,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-white mb-2 block">Island</Label>
+                    <Input 
+                      type="text"
+                      placeholder="مثال: 7"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white mb-2 block">Expert Power</Label>
+                    <Input 
+                      type="text"
+                      placeholder="مثال: 5,000,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-white mb-2 block">Hero's total Power</Label>
+                    <Input 
+                      type="text"
+                      placeholder="مثال: 15,000,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">Pet Power</Label>
+                  <Input 
+                    type="text"
+                    placeholder="مثال: 3,000,000"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
