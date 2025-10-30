@@ -104,7 +104,10 @@ const ProductDetails = () => {
                   <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-bold text-white">محمد العتيبي</div>
+                  <div className="font-bold text-white flex items-center gap-2">
+                    محمد العتيبي
+                    <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
+                  </div>
                   <div className="text-sm text-white/60">بائع موثوق</div>
                 </div>
               </div>

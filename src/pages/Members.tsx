@@ -3,17 +3,17 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Search, Star, Users, TrendingUp } from "lucide-react";
+import { Snowflake, Search, Star, Users, TrendingUp, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Members = () => {
   const members = [
-    { id: 1, name: "محمد العتيبي", role: "بائع", sales: 142, revenue: "45,200", rating: 4.9, online: true },
-    { id: 2, name: "أحمد السعيد", role: "بائع", sales: 98, revenue: "32,100", rating: 4.8, online: false },
-    { id: 3, name: "فاطمة النور", role: "بائع", sales: 156, revenue: "52,800", rating: 5.0, online: true },
-    { id: 4, name: "سارة المطيري", role: "بائع", sales: 87, revenue: "28,400", rating: 4.7, online: true },
-    { id: 5, name: "خالد الدوسري", role: "بائع", sales: 124, revenue: "41,600", rating: 4.9, online: false },
-    { id: 6, name: "نورة الغامدي", role: "بائع", sales: 76, revenue: "25,300", rating: 4.6, online: true },
+    { id: 1, name: "محمد العتيبي", role: "بائع", sales: 142, revenue: "45,200", rating: 4.9, online: true, isVerified: true },
+    { id: 2, name: "أحمد السعيد", role: "بائع", sales: 98, revenue: "32,100", rating: 4.8, online: false, isVerified: true },
+    { id: 3, name: "فاطمة النور", role: "بائع", sales: 156, revenue: "52,800", rating: 5.0, online: true, isVerified: true },
+    { id: 4, name: "سارة المطيري", role: "بائع", sales: 87, revenue: "28,400", rating: 4.7, online: true, isVerified: false },
+    { id: 5, name: "خالد الدوسري", role: "بائع", sales: 124, revenue: "41,600", rating: 4.9, online: false, isVerified: true },
+    { id: 6, name: "نورة الغامدي", role: "بائع", sales: 76, revenue: "25,300", rating: 4.6, online: true, isVerified: false },
   ];
 
   return (
@@ -119,7 +119,12 @@ const Members = () => {
                     )}
                   </div>
                   <div>
-                    <h3 className="font-bold text-white text-lg">{member.name}</h3>
+                    <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                      {member.name}
+                      {member.isVerified && (
+                        <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
+                      )}
+                    </h3>
                     <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] text-xs">
                       {member.role}
                     </Badge>

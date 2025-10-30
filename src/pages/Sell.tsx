@@ -4,12 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Snowflake, Upload, Plus, X } from "lucide-react";
+import { Snowflake, Upload, Plus, X, ShieldAlert, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 const Sell = () => {
   const [images, setImages] = useState<string[]>([]);
+  // TODO: Replace with actual user verification status from backend
+  const isVerified = false; // Change to true to test verified state
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -54,7 +56,36 @@ const Sell = () => {
           <p className="text-white/60">أضف تفاصيل الحساب وابدأ البيع</p>
         </div>
 
-        <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+        {/* KYC Required Warning */}
+        {!isVerified && (
+          <Card className="p-6 bg-red-500/10 border-2 border-red-500/30 backdrop-blur-sm mb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <div className="flex gap-4 flex-1">
+                <ShieldAlert className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-2">التحقق من الهوية (KYC) مطلوب</h3>
+                  <p className="text-white/80 text-sm mb-1">
+                    يجب إكمال عملية التحقق من الهوية قبل أن تتمكن من عرض حسابات للبيع على المنصة.
+                  </p>
+                  <p className="text-white/80 text-sm">
+                    هذا الإجراء إلزامي لضمان أمان وموثوقية جميع البائعين على المنصة.
+                  </p>
+                </div>
+              </div>
+              <Button 
+                asChild
+                className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 whitespace-nowrap"
+              >
+                <Link to="/kyc">
+                  ابدأ التحقق الآن
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
           <form className="space-y-6">
             {/* Basic Info */}
             <div className="space-y-4">
