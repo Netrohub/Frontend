@@ -14,6 +14,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -195,6 +196,9 @@ const AdminNotifications = () => {
                 <DialogTitle>
                   {editingNotification ? "تعديل الإشعار" : "إشعار جديد"}
                 </DialogTitle>
+                <DialogDescription>
+                  {editingNotification ? "قم بتحديث بيانات الإشعار" : "أنشئ إشعاراً جديداً للمستخدمين"}
+                </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
