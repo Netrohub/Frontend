@@ -343,6 +343,7 @@ const Sell = () => {
 
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mt-4">صور الفواتير (إلزامية)</h3>
+                <p className="text-sm text-white/60">سيتم عرض هذه الصور للمشتري بعد إتمام عملية الدفع</p>
                 
                 <div>
                   <Label className="text-white mb-2 block">صورة أول فاتورة شراء</Label>

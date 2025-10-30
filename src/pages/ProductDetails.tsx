@@ -184,6 +184,42 @@ const ProductDetails = () => {
               </div>
             </Card>
 
+            {/* Invoice Images Status */}
+            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
+              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
+                صور الفواتير
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-white/80 text-sm">أول فاتورة شراء</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-white/80 text-sm">ثلاث فواتير مختلفة</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-white/80 text-sm">آخر فاتورة شراء</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-[hsl(195,80%,50%,0.1)] rounded-lg border border-[hsl(195,80%,50%,0.3)]">
+                <p className="text-xs text-white/70">
+                  ℹ️ ستتمكن من مشاهدة صور الفواتير بعد إتمام عملية الشراء
+                </p>
+              </div>
+            </Card>
+
             {/* CTA */}
             <div className="space-y-3">
               <Button 
