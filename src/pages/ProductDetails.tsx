@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X } from "lucide-react";
+import { Snowflake, Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords } from "lucide-react";
+import stoveLv8 from "@/assets/stove_lv_8.png";
 import { Link, useParams } from "react-router-dom";
 
 const ProductDetails = () => {
@@ -140,38 +141,62 @@ const ProductDetails = () => {
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
                   <div className="text-xs text-[hsl(280,70%,70%)] mb-1">حجرة الاحتراق</div>
-                  <div className="font-bold text-white text-lg">FC8</div>
+                  <div className="flex items-center gap-2">
+                    <img src={stoveLv8} alt="FC8" className="w-8 h-8" />
+                    <span className="font-bold text-white text-lg">FC8</span>
+                  </div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
                   <div className="text-xs text-[hsl(40,90%,70%)] mb-1">هيليوس</div>
                   <div className="font-bold text-white">المشاة، الرماه</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(160,60%,50%,0.15)] to-[hsl(160,60%,30%,0.1)] rounded-lg border border-[hsl(160,60%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(160,60%,70%)] mb-1">عدد الجنود</div>
+                  <div className="text-xs text-[hsl(160,60%,70%)] mb-1 flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    عدد الجنود
+                  </div>
                   <div className="font-bold text-white">1,500,000</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.2)] to-[hsl(195,80%,30%,0.15)] rounded-lg border-2 border-[hsl(195,80%,70%,0.4)] shadow-[0_0_20px_rgba(56,189,248,0.2)]">
-                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold">Total Power</div>
+                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold flex items-center gap-1">
+                    <Zap className="h-3 w-3" />
+                    القوة الشخصية
+                  </div>
                   <div className="font-black text-[hsl(195,80%,70%)] text-xl">50,000,000</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(340,70%,50%,0.15)] to-[hsl(340,70%,30%,0.1)] rounded-lg border border-[hsl(340,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(340,70%,70%)] mb-1">Hero Power</div>
+                  <div className="text-xs text-[hsl(340,70%,70%)] mb-1 flex items-center gap-1">
+                    <Swords className="h-3 w-3" />
+                    قوة البطل
+                  </div>
                   <div className="font-bold text-white">10,000,000</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(220,70%,50%,0.15)] to-[hsl(220,70%,30%,0.1)] rounded-lg border border-[hsl(220,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(220,70%,70%)] mb-1">Island</div>
+                  <div className="text-xs text-[hsl(220,70%,70%)] mb-1 flex items-center gap-1">
+                    <MapPin className="h-3 w-3" />
+                    الجزيرة
+                  </div>
                   <div className="font-bold text-white text-lg">7</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(120,60%,70%)] mb-1">Expert Power</div>
+                  <div className="text-xs text-[hsl(120,60%,70%)] mb-1 flex items-center gap-1">
+                    <GraduationCap className="h-3 w-3" />
+                    قوة الخبير
+                  </div>
                   <div className="font-bold text-white">5,000,000</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(40,90%,70%)] mb-1">Hero's total Power</div>
+                  <div className="text-xs text-[hsl(40,90%,70%)] mb-1 flex items-center gap-1">
+                    <Crown className="h-3 w-3" />
+                    قوة البطل الإجمالية
+                  </div>
                   <div className="font-bold text-white">15,000,000</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(280,70%,70%)] mb-1">Pet Power</div>
+                  <div className="text-xs text-[hsl(280,70%,70%)] mb-1 flex items-center gap-1">
+                    <PawPrint className="h-3 w-3" />
+                    قوة الحيوانات
+                  </div>
                   <div className="font-bold text-white">3,000,000</div>
                 </div>
                 <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)] col-span-2">

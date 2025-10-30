@@ -5,7 +5,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Snowflake, Upload, Plus, X, ShieldAlert, ArrowRight } from "lucide-react";
+import { Snowflake, Upload, Plus, X, ShieldAlert, ArrowRight, Users, Zap, MapPin, GraduationCap, PawPrint, Crown, Swords } from "lucide-react";
+import stoveLv1 from "@/assets/stove_lv_1.png";
+import stoveLv2 from "@/assets/stove_lv_2.png";
+import stoveLv3 from "@/assets/stove_lv_3.png";
+import stoveLv4 from "@/assets/stove_lv_4.png";
+import stoveLv5 from "@/assets/stove_lv_5.png";
+import stoveLv6 from "@/assets/stove_lv_6.png";
+import stoveLv7 from "@/assets/stove_lv_7.png";
+import stoveLv8 from "@/assets/stove_lv_8.png";
+import stoveLv9 from "@/assets/stove_lv_9.png";
+import stoveLv10 from "@/assets/stove_lv_10.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -143,17 +153,66 @@ const Sell = () => {
                       <SelectValue placeholder="اختر حجرة الاحتراق" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="FC1">FC1</SelectItem>
-                      <SelectItem value="FC2">FC2</SelectItem>
-                      <SelectItem value="FC3">FC3</SelectItem>
-                      <SelectItem value="FC4">FC4</SelectItem>
-                      <SelectItem value="FC5">FC5</SelectItem>
-                      <SelectItem value="FC6">FC6</SelectItem>
-                      <SelectItem value="FC7">FC7</SelectItem>
-                      <SelectItem value="FC8">FC8</SelectItem>
-                      <SelectItem value="FC9">FC9</SelectItem>
-                      <SelectItem value="FC10">FC10</SelectItem>
-                      <SelectItem value="other">آخر</SelectItem>
+                      <SelectItem value="FC1">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv1} alt="FC1" className="w-8 h-8" />
+                          <span>FC1</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC2">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv2} alt="FC2" className="w-8 h-8" />
+                          <span>FC2</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC3">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv3} alt="FC3" className="w-8 h-8" />
+                          <span>FC3</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC4">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv4} alt="FC4" className="w-8 h-8" />
+                          <span>FC4</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC5">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv5} alt="FC5" className="w-8 h-8" />
+                          <span>FC5</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC6">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv6} alt="FC6" className="w-8 h-8" />
+                          <span>FC6</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC7">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv7} alt="FC7" className="w-8 h-8" />
+                          <span>FC7</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC8">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv8} alt="FC8" className="w-8 h-8" />
+                          <span>FC8</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC9">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv9} alt="FC9" className="w-8 h-8" />
+                          <span>FC9</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="FC10">
+                        <div className="flex items-center gap-2">
+                          <img src={stoveLv10} alt="FC10" className="w-8 h-8" />
+                          <span>FC10</span>
+                        </div>
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -198,7 +257,10 @@ const Sell = () => {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-white mb-2 block">عدد الجنود</Label>
+                    <Label className="text-white mb-2 block flex items-center gap-2">
+                      <Users className="h-4 w-4 text-[hsl(195,80%,70%)]" />
+                      عدد الجنود
+                    </Label>
                     <Input 
                       type="text"
                       placeholder="مثال: 1,500,000"
@@ -208,7 +270,10 @@ const Sell = () => {
                   </div>
 
                   <div>
-                    <Label className="text-white mb-2 block">Total Power</Label>
+                    <Label className="text-white mb-2 block flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-[hsl(40,90%,55%)]" />
+                      القوة الشخصية (Total Power)
+                    </Label>
                     <Input 
                       type="text"
                       placeholder="مثال: 50,000,000"
@@ -220,7 +285,10 @@ const Sell = () => {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-white mb-2 block">Hero Power</Label>
+                    <Label className="text-white mb-2 block flex items-center gap-2">
+                      <Swords className="h-4 w-4 text-[hsl(340,70%,70%)]" />
+                      قوة البطل (Hero Power)
+                    </Label>
                     <Input 
                       type="text"
                       placeholder="مثال: 10,000,000"
@@ -230,7 +298,10 @@ const Sell = () => {
                   </div>
 
                   <div>
-                    <Label className="text-white mb-2 block">Island</Label>
+                    <Label className="text-white mb-2 block flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-[hsl(220,70%,70%)]" />
+                      الجزيرة (Island)
+                    </Label>
                     <Input 
                       type="text"
                       placeholder="مثال: 7"
@@ -242,7 +313,10 @@ const Sell = () => {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-white mb-2 block">Expert Power</Label>
+                    <Label className="text-white mb-2 block flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4 text-[hsl(120,60%,70%)]" />
+                      قوة الخبير (Expert Power)
+                    </Label>
                     <Input 
                       type="text"
                       placeholder="مثال: 5,000,000"
@@ -252,7 +326,10 @@ const Sell = () => {
                   </div>
 
                   <div>
-                    <Label className="text-white mb-2 block">Hero's total Power</Label>
+                    <Label className="text-white mb-2 block flex items-center gap-2">
+                      <Crown className="h-4 w-4 text-[hsl(40,90%,55%)]" />
+                      قوة البطل الإجمالية (Hero's total Power)
+                    </Label>
                     <Input 
                       type="text"
                       placeholder="مثال: 15,000,000"
@@ -263,7 +340,10 @@ const Sell = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">Pet Power</Label>
+                  <Label className="text-white mb-2 block flex items-center gap-2">
+                    <PawPrint className="h-4 w-4 text-[hsl(280,70%,70%)]" />
+                    قوة الحيوانات (Pet Power)
+                  </Label>
                   <Input 
                     type="text"
                     placeholder="مثال: 3,000,000"
