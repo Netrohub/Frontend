@@ -1,0 +1,391 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { Bell, Plus, Trash2, Edit, Eye, EyeOff } from "lucide-react";
+import { AdminNavbar } from "@/components/AdminNavbar";
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: "order" | "dispute" | "message" | "system";
+  status: "draft" | "published";
+  createdAt: string;
+  targetAudience: "all" | "buyers" | "sellers";
+}
+
+const mockNotifications: Notification[] = [
+  {
+    id: "1",
+    title: "تحديث النظام",
+    message: "سيتم إجراء صيانة على النظام يوم الجمعة من الساعة 2-4 صباحاً",
+    type: "system",
+    status: "published",
+    createdAt: "2025-01-15",
+    targetAudience: "all",
+  },
+  {
+    id: "2",
+    title: "عرض خاص للبائعين",
+    message: "خصم 20% على رسوم البيع لمدة أسبوع",
+    type: "system",
+    status: "published",
+    createdAt: "2025-01-14",
+    targetAudience: "sellers",
+  },
+  {
+    id: "3",
+    title: "تحذير أمني",
+    message: "تم اكتشاف محاولات احتيال - يرجى التحقق من الحسابات قبل الشراء",
+    type: "system",
+    status: "draft",
+    createdAt: "2025-01-13",
+    targetAudience: "buyers",
+  },
+];
+
+const AdminNotifications = () => {
+  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [showDialog, setShowDialog] = useState(false);
+  const [editingNotification, setEditingNotification] = useState<Notification | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    message: "",
+    type: "system" as Notification["type"],
+    targetAudience: "all" as Notification["targetAudience"],
+  });
+
+  const handleCreate = () => {
+    if (!formData.title || !formData.message) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newNotification: Notification = {
+      id: Date.now().toString(),
+      ...formData,
+      status: "draft",
+      createdAt: new Date().toISOString().split("T")[0],
+    };
+
+    setNotifications([newNotification, ...notifications]);
+    setFormData({
+      title: "",
+      message: "",
+      type: "system",
+      targetAudience: "all",
+    });
+    setShowDialog(false);
+    toast({
+      title: "تم الإنشاء",
+      description: "تم إنشاء الإشعار بنجاح",
+    });
+  };
+
+  const handleUpdate = () => {
+    if (!editingNotification || !formData.title || !formData.message) {
+      toast({
+        title: "خطأ",
+        description: "يرجى ملء جميع الحقول المطلوبة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setNotifications(
+      notifications.map((n) =>
+        n.id === editingNotification.id ? { ...n, ...formData } : n
+      )
+    );
+    setEditingNotification(null);
+    setFormData({
+      title: "",
+      message: "",
+      type: "system",
+      targetAudience: "all",
+    });
+    setShowDialog(false);
+    toast({
+      title: "تم التحديث",
+      description: "تم تحديث الإشعار بنجاح",
+    });
+  };
+
+  const handlePublish = (id: string) => {
+    setNotifications(
+      notifications.map((n) =>
+        n.id === id ? { ...n, status: "published" as const } : n
+      )
+    );
+    toast({
+      title: "تم النشر",
+      description: "تم نشر الإشعار للمستخدمين",
+    });
+  };
+
+  const handleUnpublish = (id: string) => {
+    setNotifications(
+      notifications.map((n) =>
+        n.id === id ? { ...n, status: "draft" as const } : n
+      )
+    );
+    toast({
+      title: "تم الإلغاء",
+      description: "تم إلغاء نشر الإشعار",
+    });
+  };
+
+  const handleDelete = (id: string) => {
+    setNotifications(notifications.filter((n) => n.id !== id));
+    toast({
+      title: "تم الحذف",
+      description: "تم حذف الإشعار بنجاح",
+    });
+  };
+
+  const handleEdit = (notification: Notification) => {
+    setEditingNotification(notification);
+    setFormData({
+      title: notification.title,
+      message: notification.message,
+      type: notification.type,
+      targetAudience: notification.targetAudience,
+    });
+    setShowDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+    setEditingNotification(null);
+    setFormData({
+      title: "",
+      message: "",
+      type: "system",
+      targetAudience: "all",
+    });
+  };
+
+  const getTypeLabel = (type: string) => {
+    const labels = {
+      order: "طلب",
+      dispute: "نزاع",
+      message: "رسالة",
+      system: "نظام",
+    };
+    return labels[type as keyof typeof labels];
+  };
+
+  const getAudienceLabel = (audience: string) => {
+    const labels = {
+      all: "الجميع",
+      buyers: "المشترين",
+      sellers: "البائعين",
+    };
+    return labels[audience as keyof typeof labels];
+  };
+
+  return (
+    <div className="min-h-screen bg-background" dir="rtl">
+      <AdminNavbar />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Bell className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold">إدارة الإشعارات</h1>
+              <p className="text-muted-foreground">إنشاء ونشر إشعارات للمستخدمين</p>
+            </div>
+          </div>
+
+          <Dialog open={showDialog} onOpenChange={handleCloseDialog}>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" />
+                إشعار جديد
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingNotification ? "تعديل الإشعار" : "إشعار جديد"}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">العنوان</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                    placeholder="عنوان الإشعار"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="message">الرسالة</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) =>
+                      setFormData({ ...formData, message: e.target.value })
+                    }
+                    placeholder="محتوى الإشعار"
+                    rows={4}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="type">النوع</Label>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, type: value as Notification["type"] })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="system">نظام</SelectItem>
+                      <SelectItem value="order">طلب</SelectItem>
+                      <SelectItem value="dispute">نزاع</SelectItem>
+                      <SelectItem value="message">رسالة</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="audience">الجمهور المستهدف</Label>
+                  <Select
+                    value={formData.targetAudience}
+                    onValueChange={(value) =>
+                      setFormData({
+                        ...formData,
+                        targetAudience: value as Notification["targetAudience"],
+                      })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">الجميع</SelectItem>
+                      <SelectItem value="buyers">المشترين فقط</SelectItem>
+                      <SelectItem value="sellers">البائعين فقط</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button onClick={editingNotification ? handleUpdate : handleCreate} className="flex-1">
+                  {editingNotification ? "تحديث" : "إنشاء"}
+                </Button>
+                <Button variant="outline" onClick={handleCloseDialog}>
+                  إلغاء
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="grid gap-4">
+          {notifications.map((notification) => (
+            <Card key={notification.id}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-xl">{notification.title}</CardTitle>
+                      <Badge variant={notification.status === "published" ? "default" : "secondary"}>
+                        {notification.status === "published" ? "منشور" : "مسودة"}
+                      </Badge>
+                      <Badge variant="outline">{getTypeLabel(notification.type)}</Badge>
+                      <Badge variant="outline">{getAudienceLabel(notification.targetAudience)}</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      تاريخ الإنشاء: {notification.createdAt}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground mb-4">{notification.message}</p>
+                <div className="flex gap-2">
+                  {notification.status === "draft" ? (
+                    <Button
+                      size="sm"
+                      onClick={() => handlePublish(notification.id)}
+                      className="gap-2"
+                    >
+                      <Eye className="h-4 w-4" />
+                      نشر
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleUnpublish(notification.id)}
+                      className="gap-2"
+                    >
+                      <EyeOff className="h-4 w-4" />
+                      إلغاء النشر
+                    </Button>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleEdit(notification)}
+                    className="gap-2"
+                  >
+                    <Edit className="h-4 w-4" />
+                    تعديل
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDelete(notification.id)}
+                    className="gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    حذف
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminNotifications;
