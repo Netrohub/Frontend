@@ -17,6 +17,10 @@ import Disputes from "./pages/Disputes";
 import KYC from "./pages/KYC";
 import Admin from "./pages/Admin";
 import AdminUsers from "./pages/admin/Users";
+import AdminListings from "./pages/admin/Listings";
+import AdminOrders from "./pages/admin/Orders";
+import AdminDisputes from "./pages/admin/Disputes";
+import AdminSettings from "./pages/admin/Settings";
 import About from "./pages/About";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
@@ -44,6 +48,10 @@ const App = () => (
           <Route path="/kyc" element={<KYC />} />
           <Route path="/admin" element={<Admin />}>
             <Route path="users" element={<AdminUsers />} />
+            <Route path="listings" element={<AdminListings />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="disputes" element={<AdminDisputes />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
           <Route path="/about" element={<About />} />
           <Route path="/help" element={<Help />} />
