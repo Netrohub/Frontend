@@ -65,10 +65,10 @@ export function NotificationBanner() {
 
   const getTypeColor = (type: string) => {
     const colors = {
-      order: "bg-blue-500/10 border-blue-500/30",
-      dispute: "bg-red-500/10 border-red-500/30",
-      message: "bg-green-500/10 border-green-500/30",
-      system: "bg-primary/10 border-primary/30",
+      order: "bg-blue-600 border-blue-700",
+      dispute: "bg-red-600 border-red-700",
+      message: "bg-green-600 border-green-700",
+      system: "bg-primary border-primary",
     };
     return colors[type as keyof typeof colors] || colors.system;
   };
