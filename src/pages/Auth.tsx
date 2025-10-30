@@ -3,8 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Snowflake, Mail, Lock, User, ArrowRight } from "lucide-react";
+import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Navbar } from "@/components/Navbar";
 
 const Auth = () => {
   return (
@@ -99,7 +100,7 @@ const Auth = () => {
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-white">الاسم الكامل</Label>
                 <div className="relative">
-                  <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                  <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
                   <Input 
                     id="name"
                     type="text"

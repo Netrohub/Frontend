@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Snowflake, Search, Star, Users, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Search, Star, Users, TrendingUp, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Navbar } from "@/components/Navbar";
 
 const Members = () => {
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -48,20 +49,7 @@ const Members = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-          <span className="text-xl md:text-2xl font-black text-white">
-            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-          </span>
-        </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-          <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
-          <Link to="/marketplace" className="hover:text-[hsl(195,80%,70%)] transition-colors">السوق</Link>
-          <Link to="/members" className="text-[hsl(195,80%,70%)]">الأعضاء</Link>
-          <Link to="/leaderboard" className="hover:text-[hsl(195,80%,70%)] transition-colors">لوحة الصدارة</Link>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">

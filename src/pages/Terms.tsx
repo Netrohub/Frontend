@@ -1,6 +1,6 @@
-import { Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { Navbar } from "@/components/Navbar";
 
 const Terms = () => {
   return (
@@ -9,14 +9,7 @@ const Terms = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-          <span className="text-xl md:text-2xl font-black text-white">
-            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-          </span>
-        </Link>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl">

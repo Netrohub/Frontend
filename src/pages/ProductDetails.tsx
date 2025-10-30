@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords } from "lucide-react";
+import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords } from "lucide-react";
 import stoveLv8 from "@/assets/stove_lv_8.png";
 import { Link, useParams } from "react-router-dom";
-import { MobileNav } from "@/components/MobileNav";
+import { Navbar } from "@/components/Navbar";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -31,15 +31,7 @@ const ProductDetails = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-          <span className="text-xl md:text-2xl font-black text-white">
-            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-          </span>
-        </Link>
-        <MobileNav />
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">

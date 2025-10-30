@@ -3,10 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Snowflake, AlertTriangle, Upload, MessageSquare, Clock, Package, ChevronDown, ShieldAlert, User, Send } from "lucide-react";
+import { AlertTriangle, Upload, MessageSquare, Clock, Package, ChevronDown, ShieldAlert, User, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Navbar } from "@/components/Navbar";
 import { MobileNav } from "@/components/MobileNav";
 
 const Disputes = () => {
@@ -108,15 +109,7 @@ const Disputes = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-          <span className="text-xl md:text-2xl font-black text-white">
-            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-          </span>
-        </Link>
-        <MobileNav />
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-5xl">
