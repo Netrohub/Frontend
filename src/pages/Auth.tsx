@@ -35,7 +35,7 @@ const Auth = () => {
           <div className="inline-flex items-center gap-2 mb-4">
             <Snowflake className="h-12 w-12 text-[hsl(195,80%,70%)]" />
             <span className="text-3xl font-black text-white">
-              منصة<span className="text-[hsl(40,90%,55%)]">التداول</span>
+              NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
             </span>
           </div>
           <p className="text-white/60">تداول آمن وموثوق للحسابات</p>
