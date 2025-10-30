@@ -42,6 +42,7 @@ const Home = () => {
             <Link to="/" className="text-[hsl(195,80%,70%)]">الرئيسية</Link>
             <a href="#features" className="hover:text-[hsl(195,80%,70%)] transition-colors">المميزات</a>
             <Link to="/marketplace" className="hover:text-[hsl(195,80%,70%)] transition-colors">السوق</Link>
+            <Link to="/wallet" className="hover:text-[hsl(195,80%,70%)] transition-colors">المحفظة</Link>
             <Link to="/auth" className="hover:text-[hsl(195,80%,70%)] transition-colors">تسجيل الدخول</Link>
           </div>
           <div className="flex items-center gap-2">

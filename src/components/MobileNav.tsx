@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, ShoppingBag, Plus, Users, Trophy, Bell, User, HelpCircle } from "lucide-react";
+import { Menu, X, Home, ShoppingBag, Plus, Users, Trophy, Bell, User, HelpCircle, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
@@ -14,6 +14,7 @@ export const MobileNav = () => {
   const navItems = [
     { path: "/", label: "الرئيسية", icon: Home },
     { path: "/marketplace", label: "السوق", icon: ShoppingBag },
+    { path: "/wallet", label: "المحفظة", icon: Wallet },
     { path: "/sell", label: "إضافة حساب", icon: Plus },
     { path: "/members", label: "الأعضاء", icon: Users },
     { path: "/leaderboard", label: "المتصدرين", icon: Trophy },
