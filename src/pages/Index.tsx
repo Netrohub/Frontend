@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Sparkles, Shield, Trophy } from "lucide-react";
+import { Sparkles, Shield, Trophy, Swords } from "lucide-react";
 
 const Index = () => {
   const designs = [
@@ -37,6 +37,17 @@ const Index = () => {
       color: "bg-trust-blue",
       route: "/design3",
       preview: "تصميم يبعث الطمأنينة والمصداقية"
+    },
+    {
+      id: 4,
+      name: "تصميم Whiteout Survival",
+      nameEn: "Tactical Survival",
+      description: "تصميم مستوحى من اللعبة مع أجواء تكتيكية داكنة",
+      descriptionEn: "Game-inspired with dark tactical theme",
+      icon: Swords,
+      color: "bg-[#1a2332]",
+      route: "/design4",
+      preview: "تصميم عسكري مع بطاقات تفاعلية ومؤثرات اللعبة"
     }
   ];
 
@@ -57,7 +68,7 @@ const Index = () => {
       {/* Design Options */}
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {designs.map((design) => (
               <Card 
                 key={design.id} 
