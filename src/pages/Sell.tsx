@@ -100,23 +100,27 @@ const Sell = () => {
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white mb-2 block">السيرفر</Label>
-                  <Select>
-                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                      <SelectValue placeholder="اختر السيرفر" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0-99">0-99</SelectItem>
-                      <SelectItem value="100-200">100-200</SelectItem>
-                      <SelectItem value="201-300">201-300</SelectItem>
-                      <SelectItem value="301-400">301-400</SelectItem>
-                      <SelectItem value="401-500">401-500</SelectItem>
-                      <SelectItem value="up-to-1000">حتى 1000</SelectItem>
-                      <SelectItem value="other">آخر</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                  <div>
+                    <Label className="text-white mb-2 block">السيرفر</Label>
+                    <Select>
+                      <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                        <SelectValue placeholder="اختر السيرفر" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="0-99">0-99</SelectItem>
+                        <SelectItem value="100-200">100-200</SelectItem>
+                        <SelectItem value="201-300">201-300</SelectItem>
+                        <SelectItem value="301-400">301-400</SelectItem>
+                        <SelectItem value="401-500">401-500</SelectItem>
+                        <SelectItem value="501-600">501-600</SelectItem>
+                        <SelectItem value="601-700">601-700</SelectItem>
+                        <SelectItem value="701-800">701-800</SelectItem>
+                        <SelectItem value="801-900">801-900</SelectItem>
+                        <SelectItem value="901-1000">901-1000</SelectItem>
+                        <SelectItem value="other">آخر</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
               </div>
 
               <div>
