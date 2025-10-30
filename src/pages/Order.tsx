@@ -150,15 +150,20 @@ const Order = () => {
         </Card>
 
         {/* Action Buttons */}
-        <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <Button 
             size="lg"
             onClick={handleConfirmOrder}
             disabled={orderConfirmed}
-            className="gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] touch-manipulation active:scale-95 transition-transform"
+            className="gap-2 text-sm md:text-base py-4 md:py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px] touch-manipulation active:scale-95 transition-transform"
           >
-            <CheckCircle2 className="h-5 w-5" />
-            {orderConfirmed ? "تم التأكيد" : "تأكيد - الحساب يعمل بشكل صحيح"}
+            <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+            <span className="hidden md:inline">
+              {orderConfirmed ? "تم التأكيد" : "تأكيد - الحساب يعمل بشكل صحيح"}
+            </span>
+            <span className="md:hidden">
+              {orderConfirmed ? "تم التأكيد" : "تأكيد الاستلام"}
+            </span>
           </Button>
 
           <Button 
@@ -166,10 +171,11 @@ const Order = () => {
             variant="outline"
             onClick={handleOpenDispute}
             disabled={orderConfirmed}
-            className="gap-2 text-lg py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] touch-manipulation active:scale-95 transition-transform"
+            className="gap-2 text-sm md:text-base py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px] touch-manipulation active:scale-95 transition-transform"
           >
-            <AlertTriangle className="h-5 w-5" />
-            فتح نزاع - هناك مشكلة
+            <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+            <span className="hidden md:inline">فتح نزاع - هناك مشكلة</span>
+            <span className="md:hidden">فتح نزاع</span>
           </Button>
         </div>
 

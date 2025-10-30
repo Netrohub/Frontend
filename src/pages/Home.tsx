@@ -81,20 +81,22 @@ const Home = () => {
             <Button 
               asChild
               size="lg" 
-              className="gap-2 text-base px-8 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+              className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0 min-h-[56px]"
             >
               <Link to="/marketplace">
-                <Shield className="h-5 w-5" />
-                تصفح الحسابات
+                <Shield className="h-5 w-5 flex-shrink-0" />
+                <span className="hidden sm:inline">تصفح الحسابات</span>
+                <span className="sm:hidden">السوق</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button 
               size="lg" 
-              className="gap-2 text-base px-8 py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20"
+              className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
               onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              كيف تعمل المنصة
+              <span className="hidden sm:inline">كيف تعمل المنصة</span>
+              <span className="sm:hidden">كيف يعمل؟</span>
             </Button>
           </div>
           

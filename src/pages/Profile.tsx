@@ -118,7 +118,7 @@ const Profile = () => {
                 </div>
                 <Shield className="h-8 w-8 text-yellow-400" />
               </div>
-              <Button asChild className="w-full gap-2 bg-yellow-500 hover:bg-yellow-600 text-white border-0">
+              <Button asChild className="w-full gap-2 bg-yellow-500 hover:bg-yellow-600 text-white border-0 min-h-[48px] text-sm md:text-base">
                 <Link to="/kyc">
                   بدء التوثيق
                 </Link>
@@ -134,7 +134,7 @@ const Profile = () => {
               </div>
               <Package className="h-8 w-8 text-[hsl(195,80%,70%)]" />
             </div>
-            <Button asChild className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+            <Button asChild className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px] text-sm md:text-base">
               <Link to="/my-listings">
                 عرض قوائمي
               </Link>
@@ -149,31 +149,31 @@ const Profile = () => {
             <Button 
               asChild
               variant="outline" 
-              className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20"
+              className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] text-sm md:text-base"
             >
               <Link to="/edit-profile">
-                <User className="h-5 w-5" />
-                تعديل الملف الشخصي
+                <User className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">تعديل الملف الشخصي</span>
               </Link>
             </Button>
             <Button 
               asChild
               variant="outline" 
-              className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20"
+              className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] text-sm md:text-base"
             >
               <Link to="/security">
-                <Shield className="h-5 w-5" />
-                الأمان والخصوصية
+                <Shield className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">الأمان والخصوصية</span>
               </Link>
             </Button>
             <Button 
               asChild
               variant="outline" 
-              className="w-full justify-start gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+              className="w-full justify-start gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30 min-h-[48px] text-sm md:text-base"
             >
               <Link to="/">
-                <LogOut className="h-5 w-5" />
-                تسجيل الخروج
+                <LogOut className="h-5 w-5 flex-shrink-0" />
+                <span className="truncate">تسجيل الخروج</span>
               </Link>
             </Button>
           </div>
