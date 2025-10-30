@@ -48,10 +48,10 @@ const Admin = () => {
         </nav>
 
         {/* Main Layout with Sidebar */}
-        <div className="flex min-h-screen w-full relative z-10">
+        <div className="flex w-full relative z-10">
           <AdminSidebar />
           
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto min-h-screen">
             {isRootAdmin ? (
               <div className="container mx-auto px-4 md:px-6 py-8">
                 <div className="mb-8">

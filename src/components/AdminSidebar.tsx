@@ -26,11 +26,11 @@ export function AdminSidebar() {
   const { open } = useSidebar();
 
   return (
-    <Sidebar className={open ? "w-64" : "w-16"} collapsible="icon">
+    <Sidebar collapsible="icon">
       <SidebarContent className="bg-white/5 border-r border-white/10">
         <SidebarGroup>
           <SidebarGroupLabel className="text-white/80 px-3 py-2">
-            {open && "القائمة"}
+            القائمة
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -48,7 +48,7 @@ export function AdminSidebar() {
                       }
                     >
                       <item.icon className="h-5 w-5" />
-                      {open && <span>{item.title}</span>}
+                      <span>{item.title}</span>
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
