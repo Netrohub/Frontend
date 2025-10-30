@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Snowflake, Shield, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NotificationBell } from "@/components/NotificationBell";
+import { MobileNav } from "@/components/MobileNav";
 
 const Home = () => {
   return (
@@ -43,7 +44,10 @@ const Home = () => {
             <Link to="/marketplace" className="hover:text-[hsl(195,80%,70%)] transition-colors">السوق</Link>
             <Link to="/auth" className="hover:text-[hsl(195,80%,70%)] transition-colors">تسجيل الدخول</Link>
           </div>
-          <NotificationBell />
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <MobileNav />
+          </div>
         </div>
       </nav>
 

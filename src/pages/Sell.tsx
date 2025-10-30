@@ -18,6 +18,7 @@ import stoveLv9 from "@/assets/stove_lv_9.png";
 import stoveLv10 from "@/assets/stove_lv_10.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { MobileNav } from "@/components/MobileNav";
 
 const Sell = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -53,10 +54,13 @@ const Sell = () => {
             NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
           </span>
         </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-          <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
-          <Link to="/my-listings" className="hover:text-[hsl(195,80%,70%)] transition-colors">قائمتي</Link>
-          <Link to="/sell" className="text-[hsl(195,80%,70%)]">إضافة حساب</Link>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
+            <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
+            <Link to="/my-listings" className="hover:text-[hsl(195,80%,70%)] transition-colors">قائمتي</Link>
+            <Link to="/sell" className="text-[hsl(195,80%,70%)]">إضافة حساب</Link>
+          </div>
+          <MobileNav />
         </div>
       </nav>
 

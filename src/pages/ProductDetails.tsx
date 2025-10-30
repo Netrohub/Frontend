@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Snowflake, Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords } from "lucide-react";
 import stoveLv8 from "@/assets/stove_lv_8.png";
 import { Link, useParams } from "react-router-dom";
+import { MobileNav } from "@/components/MobileNav";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -37,6 +38,7 @@ const ProductDetails = () => {
             NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
           </span>
         </Link>
+        <MobileNav />
       </nav>
 
       {/* Main Content */}

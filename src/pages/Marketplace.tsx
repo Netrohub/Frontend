@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Snowflake, Search, Filter, MapPin, Star, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
+import { MobileNav } from "@/components/MobileNav";
 
 const Marketplace = () => {
   const accounts = [
@@ -31,10 +32,13 @@ const Marketplace = () => {
             NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
           </span>
         </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-          <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
-          <Link to="/marketplace" className="text-[hsl(195,80%,70%)]">السوق</Link>
-          <Link to="/members" className="hover:text-[hsl(195,80%,70%)] transition-colors">الأعضاء</Link>
+        <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
+            <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
+            <Link to="/marketplace" className="text-[hsl(195,80%,70%)]">السوق</Link>
+            <Link to="/members" className="hover:text-[hsl(195,80%,70%)] transition-colors">الأعضاء</Link>
+          </div>
+          <MobileNav />
         </div>
       </nav>
 

@@ -7,6 +7,7 @@ import { Snowflake, AlertTriangle, Upload, MessageSquare, Clock, Package, Chevro
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { MobileNav } from "@/components/MobileNav";
 
 const Disputes = () => {
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
@@ -114,6 +115,7 @@ const Disputes = () => {
             NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
           </span>
         </Link>
+        <MobileNav />
       </nav>
 
       {/* Main Content */}

@@ -123,11 +123,14 @@ const Checkout = () => {
               </div>
 
               <Button 
+                asChild
                 size="lg" 
-                className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+                className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0 min-h-[48px] touch-manipulation"
               >
-                <Shield className="h-5 w-5" />
-                تأكيد الدفع
+                <Link to="/order/1">
+                  <Shield className="h-5 w-5" />
+                  تأكيد الدفع
+                </Link>
               </Button>
 
               <div className="mt-4 space-y-2">
