@@ -140,25 +140,34 @@ const Profile = () => {
           <h3 className="text-lg font-bold text-white mb-4">إجراءات الحساب</h3>
           <div className="space-y-3">
             <Button 
+              asChild
               variant="outline" 
               className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20"
             >
-              <User className="h-5 w-5" />
-              تعديل الملف الشخصي
+              <Link to="/edit-profile">
+                <User className="h-5 w-5" />
+                تعديل الملف الشخصي
+              </Link>
             </Button>
             <Button 
+              asChild
               variant="outline" 
               className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20"
             >
-              <Shield className="h-5 w-5" />
-              الأمان والخصوصية
+              <Link to="/security">
+                <Shield className="h-5 w-5" />
+                الأمان والخصوصية
+              </Link>
             </Button>
             <Button 
+              asChild
               variant="outline" 
               className="w-full justify-start gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
             >
-              <LogOut className="h-5 w-5" />
-              تسجيل الخروج
+              <Link to="/">
+                <LogOut className="h-5 w-5" />
+                تسجيل الخروج
+              </Link>
             </Button>
           </div>
         </Card>
