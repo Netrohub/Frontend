@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Snowflake, Shield, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Design1Arctic = () => {
+const Home = () => {
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Icy background with gradient */}
@@ -36,9 +36,10 @@ const Design1Arctic = () => {
           </span>
         </div>
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-          <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
+          <Link to="/" className="text-[hsl(195,80%,70%)]">الرئيسية</Link>
           <a href="#features" className="hover:text-[hsl(195,80%,70%)] transition-colors">المميزات</a>
-          <a href="#about" className="hover:text-[hsl(195,80%,70%)] transition-colors">من نحن</a>
+          <Link to="/marketplace" className="hover:text-[hsl(195,80%,70%)] transition-colors">السوق</Link>
+          <Link to="/auth" className="hover:text-[hsl(195,80%,70%)] transition-colors">تسجيل الدخول</Link>
         </div>
       </nav>
 
@@ -68,16 +69,20 @@ const Design1Arctic = () => {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
             <Button 
+              asChild
               size="lg" 
               className="gap-2 text-base px-8 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
             >
-              <Shield className="h-5 w-5" />
-              تصفح الحسابات
-              <ArrowRight className="h-4 w-4" />
+              <Link to="/marketplace">
+                <Shield className="h-5 w-5" />
+                تصفح الحسابات
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
             <Button 
               size="lg" 
               className="gap-2 text-base px-8 py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20"
+              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
             >
               كيف تعمل المنصة
             </Button>
@@ -164,11 +169,14 @@ const Design1Arctic = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-white">ابدأ التداول الآن</h2>
           <p className="text-xl text-white/70">انضم لآلاف المستخدمين الذين يثقون بمنصتنا لتداول الحسابات بأمان</p>
           <Button 
+            asChild
             size="lg" 
             className="gap-2 text-lg px-12 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
           >
-            إنشاء حساب مجاني
-            <ArrowRight className="h-5 w-5" />
+            <Link to="/auth">
+              إنشاء حساب مجاني
+              <ArrowRight className="h-5 w-5" />
+            </Link>
           </Button>
         </div>
       </section>
@@ -189,4 +197,4 @@ const Design1Arctic = () => {
   );
 };
 
-export default Design1Arctic;
+export default Home;
