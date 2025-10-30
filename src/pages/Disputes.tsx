@@ -2,23 +2,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Snowflake, AlertTriangle, Upload, MessageSquare, Clock, Package, ChevronDown, ShieldAlert, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Snowflake, AlertTriangle, Upload, MessageSquare, Clock, Package, ChevronDown, ShieldAlert, User, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Disputes = () => {
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [showNewDispute, setShowNewDispute] = useState(false);
-  
-  // طلبات المستخدم
-  const myOrders = [
-    { id: "#12458", title: "حساب مميز - السيرفر 201-300", price: "1,250 ريال", date: "2024-01-15", status: "completed" },
-    { id: "#12340", title: "حساب قوي - السيرفر 100-200", price: "850 ريال", date: "2024-01-10", status: "completed" },
-    { id: "#12289", title: "حساب مبتدئ - السيرفر 0-99", price: "450 ريال", date: "2024-01-05", status: "completed" },
-  ];
-
-  // النزاعات المفتوحة
-  const disputes = [
+  const [showConversation, setShowConversation] = useState(false);
+  const [selectedDispute, setSelectedDispute] = useState<any>(null);
+  const [newMessage, setNewMessage] = useState("");
+  const [disputesList, setDisputesList] = useState([
     { 
       id: 1, 
       orderId: "#12458", 
@@ -28,7 +24,11 @@ const Disputes = () => {
       date: "منذ 3 ساعات",
       sellerName: "أحمد السعيد",
       messages: 2,
-      escalated: false
+      escalated: false,
+      conversation: [
+        { sender: "me", text: "الحساب لا يعمل، المعلومات خاطئة", time: "منذ 3 ساعات" },
+        { sender: "seller", text: "سأقوم بالتحقق من المشكلة وحلها خلال 24 ساعة", time: "منذ ساعتين" }
+      ]
     },
     { 
       id: 2, 
@@ -39,9 +39,53 @@ const Disputes = () => {
       date: "منذ يوم واحد",
       sellerName: "خالد المطيري",
       messages: 5,
-      escalated: true
+      escalated: true,
+      conversation: [
+        { sender: "me", text: "الحساب مختلف تماماً عن الوصف", time: "منذ يوم" },
+        { sender: "seller", text: "المعلومات صحيحة، يرجى التحقق مرة أخرى", time: "منذ 20 ساعة" },
+        { sender: "me", text: "لا، الحساب ليس كما وصفته", time: "منذ 18 ساعة" },
+        { sender: "admin", text: "الإدارة: تم استلام النزاع وجاري المراجعة", time: "منذ 5 ساعات" }
+      ]
     },
+  ]);
+  const { toast } = useToast();
+  
+  // طلبات المستخدم
+  const myOrders = [
+    { id: "#12458", title: "حساب مميز - السيرفر 201-300", price: "1,250 ريال", date: "2024-01-15", status: "completed" },
+    { id: "#12340", title: "حساب قوي - السيرفر 100-200", price: "850 ريال", date: "2024-01-10", status: "completed" },
+    { id: "#12289", title: "حساب مبتدئ - السيرفر 0-99", price: "450 ريال", date: "2024-01-05", status: "completed" },
   ];
+
+  const handleOpenConversation = (dispute: any) => {
+    setSelectedDispute(dispute);
+    setShowConversation(true);
+  };
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) return;
+    
+    toast({
+      title: "تم إرسال الرسالة",
+      description: "تم إرسال رسالتك بنجاح",
+    });
+    setNewMessage("");
+  };
+
+  const handleEscalate = (disputeId: number) => {
+    setDisputesList(prevDisputes => 
+      prevDisputes.map(d => 
+        d.id === disputeId 
+          ? { ...d, status: "escalated", escalated: true }
+          : d
+      )
+    );
+    
+    toast({
+      title: "تم التصعيد للإدارة",
+      description: "سيتم مراجعة النزاع من قبل الإدارة خلال 24 ساعة",
+    });
+  };
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -96,11 +140,11 @@ const Disputes = () => {
         </div>
 
         {/* Active Disputes */}
-        {disputes.length > 0 && (
+        {disputesList.length > 0 && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-white mb-4">النزاعات النشطة</h2>
             <div className="grid gap-4">
-              {disputes.map((dispute) => (
+              {disputesList.map((dispute) => (
                 <Card 
                   key={dispute.id}
                   className="p-5 bg-white/5 border-white/10 backdrop-blur-sm"
@@ -143,7 +187,11 @@ const Disputes = () => {
                   </div>
                   
                   <div className="flex gap-2">
-                    <Button size="sm" className="flex-1 gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleOpenConversation(dispute)}
+                      className="flex-1 gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+                    >
                       <MessageSquare className="h-4 w-4" />
                       عرض المحادثة والرد
                     </Button>
@@ -152,6 +200,7 @@ const Disputes = () => {
                       <Button 
                         size="sm" 
                         variant="outline"
+                        onClick={() => handleEscalate(dispute.id)}
                         className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
                       >
                         <ShieldAlert className="h-4 w-4" />
@@ -179,7 +228,7 @@ const Disputes = () => {
           <h2 className="text-2xl font-bold text-white mb-4">طلباتي - فتح نزاع</h2>
           <div className="grid gap-4">
             {myOrders.map((order) => {
-              const hasDispute = disputes.some(d => d.orderId === order.id);
+              const hasDispute = disputesList.some(d => d.orderId === order.id);
               
               return (
                 <Card 
@@ -276,6 +325,61 @@ const Disputes = () => {
             })}
           </div>
         </div>
+
+        {/* Conversation Dialog */}
+        <Dialog open={showConversation} onOpenChange={setShowConversation}>
+          <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold">
+                المحادثة - {selectedDispute?.orderId}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Conversation Messages */}
+              <div className="max-h-96 overflow-y-auto space-y-3 p-4 bg-white/5 rounded-lg">
+                {selectedDispute?.conversation?.map((msg: any, idx: number) => (
+                  <div 
+                    key={idx}
+                    className={`p-3 rounded-lg ${
+                      msg.sender === "me" 
+                        ? "bg-[hsl(195,80%,50%,0.2)] ml-8" 
+                        : msg.sender === "admin"
+                        ? "bg-red-500/20 mr-8"
+                        : "bg-white/10 mr-8"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold text-white/80">
+                        {msg.sender === "me" ? "أنت" : msg.sender === "admin" ? "الإدارة" : "البائع"}
+                      </span>
+                      <span className="text-xs text-white/50">{msg.time}</span>
+                    </div>
+                    <p className="text-sm text-white/90">{msg.text}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Send Message */}
+              <div className="flex gap-2">
+                <Textarea
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="اكتب رسالتك هنا..."
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  rows={3}
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+                >
+                  <Send className="h-4 w-4" />
+                  إرسال
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
