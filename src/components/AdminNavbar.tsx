@@ -16,7 +16,7 @@ export function AdminNavbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-gradient-to-r from-slate-900 to-slate-800 border-b border-slate-700">
+    <nav className="bg-gradient-to-r from-[hsl(200,70%,20%)] to-[hsl(195,60%,25%)] border-b border-white/10 backdrop-blur-sm">
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-1 px-6 py-3">
         {items.map((item) => (
@@ -26,8 +26,8 @@ export function AdminNavbar() {
             className={({ isActive }) =>
               `flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 isActive
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/50"
-                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                  ? "bg-[hsl(195,80%,50%)] text-white shadow-lg shadow-[hsl(195,80%,50%,0.3)]"
+                  : "text-white/70 hover:bg-white/10 hover:text-white"
               }`
             }
           >
@@ -41,14 +41,14 @@ export function AdminNavbar() {
       <div className="md:hidden">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="flex items-center gap-2 w-full px-6 py-3 text-slate-300"
+          className="flex items-center gap-2 w-full px-6 py-3 text-white/80"
         >
           <Menu className="h-5 w-5" />
           <span className="text-sm font-medium">القائمة</span>
         </button>
 
         {isMobileMenuOpen && (
-          <div className="px-3 pb-3 space-y-1 bg-slate-800/50">
+          <div className="px-3 pb-3 space-y-1 bg-[hsl(200,70%,15%,0.5)]">
             {items.map((item) => (
               <NavLink
                 key={item.title}
@@ -57,8 +57,8 @@ export function AdminNavbar() {
                 className={({ isActive }) =>
                   `flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                     isActive
-                      ? "bg-blue-600 text-white"
-                      : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                      ? "bg-[hsl(195,80%,50%)] text-white"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
                   }`
                 }
               >
