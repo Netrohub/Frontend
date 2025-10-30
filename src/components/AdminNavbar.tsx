@@ -8,7 +8,6 @@ const items = [
   { title: "الإعلانات", url: "/admin/listings", icon: Package },
   { title: "الطلبات", url: "/admin/orders", icon: ShoppingCart },
   { title: "النزاعات", url: "/admin/disputes", icon: AlertTriangle },
-  { title: "طلبات KYC", url: "/admin/kyc", icon: ShieldCheck },
   { title: "الإعدادات", url: "/admin/settings", icon: Settings },
 ];
 
