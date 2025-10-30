@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Snowflake, Shield, Zap, Users, Target, Heart } from "lucide-react";
+import { Snowflake, Shield, Zap, Users, Target, Heart, ShoppingCart, Package, CheckCircle, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const About = () => {
@@ -92,6 +92,109 @@ const About = () => {
             </p>
           </div>
         </Card>
+
+        {/* How It Works */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-bold text-white mb-8 text-center">كيف تعمل المنصة</h2>
+          
+          {/* Buyer Steps */}
+          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
+            <div className="flex items-center gap-3 mb-6">
+              <ShoppingCart className="h-8 w-8 text-[hsl(195,80%,70%)]" />
+              <h3 className="text-2xl font-bold text-white">خطوات المشتري</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(195,80%,70%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(195,80%,70%)] font-bold">1</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">تصفح الحسابات</h4>
+                  <p className="text-white/70 text-sm">ابحث عن الحساب المناسب من السوق</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(195,80%,70%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(195,80%,70%)] font-bold">2</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">الطلب والدفع</h4>
+                  <p className="text-white/70 text-sm">اطلب الحساب وادفع بأمان عبر المنصة</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(195,80%,70%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(195,80%,70%)] font-bold">3</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">استلام البيانات</h4>
+                  <p className="text-white/70 text-sm">احصل على بيانات الحساب بعد موافقة البائع</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(195,80%,70%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(195,80%,70%)] font-bold">4</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">التأكيد</h4>
+                  <p className="text-white/70 text-sm">راجع الحساب وأكد استلامه لإتمام العملية</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Seller Steps */}
+          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <TrendingUp className="h-8 w-8 text-[hsl(40,90%,55%)]" />
+              <h3 className="text-2xl font-bold text-white">خطوات البائع</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(40,90%,55%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(40,90%,55%)] font-bold">1</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">إنشاء الإعلان</h4>
+                  <p className="text-white/70 text-sm">أضف تفاصيل حسابك والسعر المطلوب</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(40,90%,55%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(40,90%,55%)] font-bold">2</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">استقبال الطلبات</h4>
+                  <p className="text-white/70 text-sm">انتظر طلب المشتري وراجع التفاصيل</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(40,90%,55%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(40,90%,55%)] font-bold">3</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">تسليم الحساب</h4>
+                  <p className="text-white/70 text-sm">أرسل بيانات الحساب للمشتري عبر المنصة</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(40,90%,55%,0.2)] flex items-center justify-center">
+                  <span className="text-[hsl(40,90%,55%)] font-bold">4</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-bold mb-2">استلام المبلغ</h4>
+                  <p className="text-white/70 text-sm">احصل على أموالك بعد تأكيد المشتري</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
