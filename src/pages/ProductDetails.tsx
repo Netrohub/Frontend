@@ -126,46 +126,49 @@ const ProductDetails = () => {
 
             {/* Account Details */}
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-              <h3 className="font-bold text-white mb-4">تفاصيل الحساب</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">السيرفر</div>
-                  <div className="font-bold text-white">201-300</div>
+              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
+                تفاصيل الحساب
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.15)] to-[hsl(195,80%,30%,0.1)] rounded-lg border border-[hsl(195,80%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1">السيرفر</div>
+                  <div className="font-bold text-white text-lg">201-300</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">حجرة الاحتراق</div>
-                  <div className="font-bold text-white">FC8</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(280,70%,70%)] mb-1">حجرة الاحتراق</div>
+                  <div className="font-bold text-white text-lg">FC8</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">هيليوس</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(40,90%,70%)] mb-1">هيليوس</div>
                   <div className="font-bold text-white">المشاة، الرماه</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">عدد الجنود</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(160,60%,50%,0.15)] to-[hsl(160,60%,30%,0.1)] rounded-lg border border-[hsl(160,60%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(160,60%,70%)] mb-1">عدد الجنود</div>
                   <div className="font-bold text-white">1,500,000</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">Total Power</div>
-                  <div className="font-bold text-[hsl(195,80%,70%)]">50,000,000</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.2)] to-[hsl(195,80%,30%,0.15)] rounded-lg border-2 border-[hsl(195,80%,70%,0.4)] shadow-[0_0_20px_rgba(56,189,248,0.2)]">
+                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold">Total Power</div>
+                  <div className="font-black text-[hsl(195,80%,70%)] text-xl">50,000,000</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">Hero Power</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(340,70%,50%,0.15)] to-[hsl(340,70%,30%,0.1)] rounded-lg border border-[hsl(340,70%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(340,70%,70%)] mb-1">Hero Power</div>
                   <div className="font-bold text-white">10,000,000</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">Island</div>
-                  <div className="font-bold text-white">7</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(220,70%,50%,0.15)] to-[hsl(220,70%,30%,0.1)] rounded-lg border border-[hsl(220,70%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(220,70%,70%)] mb-1">Island</div>
+                  <div className="font-bold text-white text-lg">7</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">Expert Power</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(120,60%,70%)] mb-1">Expert Power</div>
                   <div className="font-bold text-white">5,000,000</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">Hero's total Power</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(40,90%,70%)] mb-1">Hero's total Power</div>
                   <div className="font-bold text-white">15,000,000</div>
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs text-white/60">Pet Power</div>
+                <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(280,70%,70%)] mb-1">Pet Power</div>
                   <div className="font-bold text-white">3,000,000</div>
                 </div>
               </div>
