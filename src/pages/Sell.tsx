@@ -285,6 +285,62 @@ const Sell = () => {
                     </div>
                   </RadioGroup>
                 </div>
+
+                <div>
+                  <Label className="text-white mb-3 block">هل الحساب مربوط في أبل؟</Label>
+                  <RadioGroup defaultValue="no" className="flex gap-6">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="yes" id="apple-yes" className="border-white/30" />
+                      <Label htmlFor="apple-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="no" id="apple-no" className="border-white/30" />
+                      <Label htmlFor="apple-no" className="text-white cursor-pointer font-normal">لا</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-3 block">هل الحساب مربوط في قوقل؟</Label>
+                  <RadioGroup defaultValue="no" className="flex gap-6">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="yes" id="google-yes" className="border-white/30" />
+                      <Label htmlFor="google-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="no" id="google-no" className="border-white/30" />
+                      <Label htmlFor="google-no" className="text-white cursor-pointer font-normal">لا</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-3 block">هل الحساب مربوط في فيسبوك؟</Label>
+                  <RadioGroup defaultValue="no" className="flex gap-6">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="yes" id="facebook-yes" className="border-white/30" />
+                      <Label htmlFor="facebook-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="no" id="facebook-no" className="border-white/30" />
+                      <Label htmlFor="facebook-no" className="text-white cursor-pointer font-normal">لا</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div>
+                  <Label className="text-white mb-3 block">هل الحساب مربوط في قيم سنتر؟</Label>
+                  <RadioGroup defaultValue="no" className="flex gap-6">
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="yes" id="gamecenter-yes" className="border-white/30" />
+                      <Label htmlFor="gamecenter-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                    </div>
+                    <div className="flex items-center space-x-2 space-x-reverse">
+                      <RadioGroupItem value="no" id="gamecenter-no" className="border-white/30" />
+                      <Label htmlFor="gamecenter-no" className="text-white cursor-pointer font-normal">لا</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
               </div>
             </div>
 

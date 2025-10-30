@@ -184,6 +184,44 @@ const ProductDetails = () => {
               </div>
             </Card>
 
+            {/* Account Bindings */}
+            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
+              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
+                ربط الحساب
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">أبل</div>
+                  <div className="flex items-center gap-2">
+                    <X className="h-5 w-5 text-red-400" />
+                    <span className="font-bold text-red-400">غير مربوط</span>
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">قوقل</div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">فيسبوك</div>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">قيم سنتر</div>
+                  <div className="flex items-center gap-2">
+                    <X className="h-5 w-5 text-red-400" />
+                    <span className="font-bold text-red-400">غير مربوط</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
             {/* Invoice Images Status */}
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
               <h3 className="font-bold text-white mb-4 flex items-center gap-2">
