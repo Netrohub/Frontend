@@ -233,21 +233,17 @@ const Members = () => {
                 </Card>
               </div>
 
-              {/* Contact Info */}
+              {/* Member Info */}
               <Card className="p-4 bg-white/5 border-white/10">
-                <h4 className="font-bold text-white mb-3">معلومات الاتصال</h4>
+                <h4 className="font-bold text-white mb-3">معلومات العضو</h4>
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-white/60">البريد الإلكتروني:</span>
-                    <span className="text-[hsl(195,80%,80%)]">{selectedMember.email}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-white/60">رقم الجوال:</span>
-                    <span className="text-[hsl(195,80%,80%)]">{selectedMember.phone}</span>
-                  </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">تاريخ الانضمام:</span>
                     <span className="text-[hsl(195,80%,80%)]">{selectedMember.joined}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/60">إجمالي المبيعات:</span>
+                    <span className="text-[hsl(195,80%,80%)]">{selectedMember.sales} عملية</span>
                   </div>
                 </div>
               </Card>
