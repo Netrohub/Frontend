@@ -61,6 +61,13 @@ export const useNotifications = () => {
     window.dispatchEvent(new Event("notificationsUpdated"));
   };
 
+  const publishNotification = (notification: Notification) => {
+    // Dispatch event with notification data for toast display
+    window.dispatchEvent(new CustomEvent("notificationPublished", { 
+      detail: notification 
+    }));
+  };
+
   const getPublishedNotifications = () => {
     return notifications.filter((n) => n.status === "published");
   };
@@ -105,5 +112,6 @@ export const useNotifications = () => {
     deleteNotification,
     markAsRead,
     markAllAsRead,
+    publishNotification,
   };
 };

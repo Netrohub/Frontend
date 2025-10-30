@@ -89,10 +89,19 @@ const AdminNotifications = () => {
   };
 
   const handlePublish = (id: string) => {
+    const notification = notifications.find(n => n.id === id);
+    if (!notification) return;
+    
     updateNotification(id, { status: "published" });
+    
+    // Trigger the notification popup
+    window.dispatchEvent(new CustomEvent("notificationPublished", { 
+      detail: { ...notification, status: "published" }
+    }));
+    
     toast({
       title: "تم النشر",
-      description: "تم نشر الإشعار للمستخدمين - سيظهر في جرس الإشعارات",
+      description: "تم نشر الإشعار للمستخدمين - سيظهر في جرس الإشعارات وكإشعار منبثق",
     });
   };
 
