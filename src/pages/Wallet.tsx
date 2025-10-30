@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Snowflake, Wallet as WalletIcon, ArrowDownToLine, ArrowUpFromLine, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Wallet as WalletIcon, ArrowDownToLine, ArrowUpFromLine, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-import { NotificationBell } from "@/components/NotificationBell";
-import { MobileNav } from "@/components/MobileNav";
+import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 
 const Wallet = () => {
@@ -66,26 +65,7 @@ const Wallet = () => {
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-[hsl(195,80%,50%,0.05)] to-transparent opacity-40" />
 
       {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-          <span className="text-xl md:text-2xl font-black text-white">
-            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-          </span>
-        </Link>
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-            <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
-            <Link to="/marketplace" className="hover:text-[hsl(195,80%,70%)] transition-colors">السوق</Link>
-            <Link to="/wallet" className="text-[hsl(195,80%,70%)]">المحفظة</Link>
-            <Link to="/profile" className="hover:text-[hsl(195,80%,70%)] transition-colors">الملف الشخصي</Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <NotificationBell />
-            <MobileNav />
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-12 max-w-6xl pb-24 md:pb-12">
