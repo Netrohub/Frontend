@@ -10,44 +10,44 @@ const Admin = () => {
   const isRootAdmin = location.pathname === "/admin";
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
-      
-      {/* Snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Navigation */}
-      <nav className="relative z-20 flex items-center justify-between px-6 py-4 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-        <div className="flex items-center gap-4">
-          <SidebarTrigger className="text-white" />
-          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-            <span className="text-xl md:text-2xl font-black text-white">
-              NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-            </span>
-          </Link>
+    <SidebarProvider>
+      <div className="min-h-screen relative overflow-hidden w-full" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        
+        {/* Snow particles */}
+        <div className="absolute inset-0 pointer-events-none">
+          {[...Array(30)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-${Math.random() * 20}%`,
+                animationDuration: `${10 + Math.random() * 20}s`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            />
+          ))}
         </div>
-        <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
-          لوحة الإدارة
-        </Badge>
-      </nav>
 
-      {/* Main Layout with Sidebar */}
-      <SidebarProvider>
+        {/* Navigation */}
+        <nav className="relative z-20 flex items-center justify-between px-6 py-4 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger className="text-white" />
+            <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
+              <span className="text-xl md:text-2xl font-black text-white">
+                NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
+              </span>
+            </Link>
+          </div>
+          <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+            لوحة الإدارة
+          </Badge>
+        </nav>
+
+        {/* Main Layout with Sidebar */}
         <div className="flex min-h-screen w-full relative z-10">
           <AdminSidebar />
           
@@ -163,8 +163,8 @@ const Admin = () => {
             )}
           </main>
         </div>
-      </SidebarProvider>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 };
 
