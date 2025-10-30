@@ -270,6 +270,16 @@ const Sell = () => {
                     required
                   />
                 </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">البريد الإلكتروني الأساسي</Label>
+                  <Input 
+                    type="email"
+                    placeholder="مثال: primary@example.com"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
