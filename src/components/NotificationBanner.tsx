@@ -111,11 +111,6 @@ export function NotificationBanner() {
             </div>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-white/90 uppercase tracking-wider">
-                إعلان رسمي من المنصة
-              </span>
-            </div>
             <h4 className="font-bold text-base text-white mb-1">
               {notification.title}
             </h4>
