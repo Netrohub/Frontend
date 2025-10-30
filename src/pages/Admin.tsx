@@ -43,8 +43,8 @@ const Admin = () => {
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
                 <div className="text-3xl font-black text-white mb-1">1,248</div>
-                <div className="text-sm text-white/60 mb-2">إجمالي المستخدمين</div>
-                <div className="text-xs text-green-400">+12% من الشهر الماضي</div>
+                <div className="text-sm text-[hsl(195,80%,80%)] mb-2">إجمالي المستخدمين</div>
+                <div className="text-xs text-emerald-400 font-medium">+12% من الشهر الماضي</div>
               </Card>
 
               <Card className="p-5 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.05)] border-[hsl(280,70%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(280,70%,70%,0.4)] transition-all">
@@ -53,8 +53,8 @@ const Admin = () => {
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
                 <div className="text-3xl font-black text-white mb-1">342</div>
-                <div className="text-sm text-white/60 mb-2">الإعلانات النشطة</div>
-                <div className="text-xs text-green-400">+8% من الشهر الماضي</div>
+                <div className="text-sm text-[hsl(280,70%,80%)] mb-2">الإعلانات النشطة</div>
+                <div className="text-xs text-emerald-400 font-medium">+8% من الشهر الماضي</div>
               </Card>
 
               <Card className="p-5 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.05)] border-[hsl(40,90%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(40,90%,70%,0.4)] transition-all">
@@ -63,8 +63,8 @@ const Admin = () => {
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
                 <div className="text-3xl font-black text-white mb-1">156</div>
-                <div className="text-sm text-white/60 mb-2">الطلبات هذا الشهر</div>
-                <div className="text-xs text-green-400">+23% من الشهر الماضي</div>
+                <div className="text-sm text-[hsl(40,90%,80%)] mb-2">الطلبات هذا الشهر</div>
+                <div className="text-xs text-emerald-400 font-medium">+23% من الشهر الماضي</div>
               </Card>
 
               <Card className="p-5 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.05)] border-[hsl(120,60%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(120,60%,70%,0.4)] transition-all">
@@ -73,8 +73,8 @@ const Admin = () => {
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
                 <div className="text-3xl font-black text-white mb-1">24,580</div>
-                <div className="text-sm text-white/60 mb-2">الإيرادات (ريال)</div>
-                <div className="text-xs text-green-400">+18% من الشهر الماضي</div>
+                <div className="text-sm text-[hsl(120,60%,80%)] mb-2">الإيرادات (ريال)</div>
+                <div className="text-xs text-emerald-400 font-medium">+18% من الشهر الماضي</div>
               </Card>
             </div>
 
@@ -88,7 +88,7 @@ const Admin = () => {
                     12 نزاع
                   </Badge>
                 </div>
-                <p className="text-white/60 text-sm mb-4">يوجد 12 نزاع يحتاج إلى مراجعة وحل</p>
+                <p className="text-amber-200/80 text-sm mb-4">يوجد 12 نزاع يحتاج إلى مراجعة وحل</p>
                 <Link to="/admin/disputes">
                   <button className="w-full py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg transition-colors border border-yellow-500/30">
                     عرض جميع النزاعات
@@ -104,7 +104,7 @@ const Admin = () => {
                     8 طلبات
                   </Badge>
                 </div>
-                <p className="text-white/60 text-sm mb-4">يوجد 8 طلبات KYC بانتظار المراجعة</p>
+                <p className="text-[hsl(195,80%,85%)] text-sm mb-4">يوجد 8 طلبات KYC بانتظار المراجعة</p>
                 <Link to="/admin/kyc">
                   <button className="w-full py-2 bg-[hsl(195,80%,50%,0.2)] hover:bg-[hsl(195,80%,50%,0.3)] text-[hsl(195,80%,70%)] rounded-lg transition-colors border border-[hsl(195,80%,70%,0.3)]">
                     عرض طلبات التوثيق
@@ -126,9 +126,9 @@ const Admin = () => {
                   <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
                     <div>
                       <div className={`font-medium ${item.color}`}>{item.action}</div>
-                      <div className="text-sm text-white/60">{item.user}</div>
+                      <div className="text-sm text-white/80">{item.user}</div>
                     </div>
-                    <div className="text-xs text-white/40">{item.time}</div>
+                    <div className="text-xs text-white/60">{item.time}</div>
                   </div>
                 ))}
               </div>
