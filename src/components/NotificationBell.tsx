@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,66 +8,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  time: string;
-  read: boolean;
-  type: "order" | "dispute" | "message" | "system";
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    title: "طلب جديد",
-    message: "لديك طلب جديد من المشتري أحمد",
-    time: "منذ 5 دقائق",
-    read: false,
-    type: "order",
-  },
-  {
-    id: "2",
-    title: "تحديث النزاع",
-    message: "تم الرد على نزاعك #1234",
-    time: "منذ ساعة",
-    read: false,
-    type: "dispute",
-  },
-  {
-    id: "3",
-    title: "رسالة جديدة",
-    message: "رسالة جديدة من البائع محمد",
-    time: "منذ ساعتين",
-    read: true,
-    type: "message",
-  },
-  {
-    id: "4",
-    title: "تأكيد الطلب",
-    message: "تم تأكيد طلبك #5678 بنجاح",
-    time: "منذ 3 ساعات",
-    read: true,
-    type: "system",
-  },
-];
+import { useNotifications } from "@/hooks/use-notifications";
 
 export function NotificationBell() {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const { publishedNotifications, markAsRead, markAllAsRead } = useNotifications();
+  const unreadCount = publishedNotifications.filter((n) => !n.read).length;
 
   const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    markAsRead(id);
   };
 
   const handleMarkAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    markAllAsRead();
   };
 
-  const getNotificationIcon = (type: Notification["type"]) => {
+  const getNotificationIcon = (type: string) => {
     const colors = {
       order: "bg-primary/10 text-primary",
       dispute: "bg-destructive/10 text-destructive",
@@ -108,12 +62,12 @@ export function NotificationBell() {
           )}
         </div>
         <ScrollArea className="h-[400px]">
-          {notifications.length === 0 ? (
+          {publishedNotifications.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
               لا توجد إشعارات
             </div>
           ) : (
-            notifications.map((notification) => (
+            publishedNotifications.map((notification) => (
               <DropdownMenuItem
                 key={notification.id}
                 className={`flex flex-col items-start gap-2 p-4 cursor-pointer ${

@@ -22,49 +22,10 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Bell, Plus, Trash2, Edit, Eye, EyeOff } from "lucide-react";
 import { AdminNavbar } from "@/components/AdminNavbar";
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: "order" | "dispute" | "message" | "system";
-  status: "draft" | "published";
-  createdAt: string;
-  targetAudience: "all" | "buyers" | "sellers";
-}
-
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    title: "تحديث النظام",
-    message: "سيتم إجراء صيانة على النظام يوم الجمعة من الساعة 2-4 صباحاً",
-    type: "system",
-    status: "published",
-    createdAt: "2025-01-15",
-    targetAudience: "all",
-  },
-  {
-    id: "2",
-    title: "عرض خاص للبائعين",
-    message: "خصم 20% على رسوم البيع لمدة أسبوع",
-    type: "system",
-    status: "published",
-    createdAt: "2025-01-14",
-    targetAudience: "sellers",
-  },
-  {
-    id: "3",
-    title: "تحذير أمني",
-    message: "تم اكتشاف محاولات احتيال - يرجى التحقق من الحسابات قبل الشراء",
-    type: "system",
-    status: "draft",
-    createdAt: "2025-01-13",
-    targetAudience: "buyers",
-  },
-];
+import { useNotifications, Notification } from "@/hooks/use-notifications";
 
 const AdminNotifications = () => {
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const { notifications, addNotification, updateNotification, deleteNotification } = useNotifications();
   const [showDialog, setShowDialog] = useState(false);
   const [editingNotification, setEditingNotification] = useState<Notification | null>(null);
   const [formData, setFormData] = useState({
@@ -84,14 +45,11 @@ const AdminNotifications = () => {
       return;
     }
 
-    const newNotification: Notification = {
-      id: Date.now().toString(),
+    addNotification({
       ...formData,
       status: "draft",
-      createdAt: new Date().toISOString().split("T")[0],
-    };
+    });
 
-    setNotifications([newNotification, ...notifications]);
     setFormData({
       title: "",
       message: "",
@@ -115,11 +73,8 @@ const AdminNotifications = () => {
       return;
     }
 
-    setNotifications(
-      notifications.map((n) =>
-        n.id === editingNotification.id ? { ...n, ...formData } : n
-      )
-    );
+    updateNotification(editingNotification.id, formData);
+    
     setEditingNotification(null);
     setFormData({
       title: "",
@@ -135,23 +90,15 @@ const AdminNotifications = () => {
   };
 
   const handlePublish = (id: string) => {
-    setNotifications(
-      notifications.map((n) =>
-        n.id === id ? { ...n, status: "published" as const } : n
-      )
-    );
+    updateNotification(id, { status: "published" });
     toast({
       title: "تم النشر",
-      description: "تم نشر الإشعار للمستخدمين",
+      description: "تم نشر الإشعار للمستخدمين - سيظهر في جرس الإشعارات",
     });
   };
 
   const handleUnpublish = (id: string) => {
-    setNotifications(
-      notifications.map((n) =>
-        n.id === id ? { ...n, status: "draft" as const } : n
-      )
-    );
+    updateNotification(id, { status: "draft" });
     toast({
       title: "تم الإلغاء",
       description: "تم إلغاء نشر الإشعار",
@@ -159,7 +106,7 @@ const AdminNotifications = () => {
   };
 
   const handleDelete = (id: string) => {
-    setNotifications(notifications.filter((n) => n.id !== id));
+    deleteNotification(id);
     toast({
       title: "تم الحذف",
       description: "تم حذف الإشعار بنجاح",
