@@ -77,7 +77,7 @@ const ProductDetails = () => {
                 </Badge>
               </div>
               
-              <h1 className="text-4xl font-black text-white mb-4">حساب مميز - المستوى 45</h1>
+              <h1 className="text-4xl font-black text-white mb-4">حساب مميز - السيرفر 201-300</h1>
               
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center gap-1 text-[hsl(40,90%,55%)]">
@@ -87,7 +87,7 @@ const ProductDetails = () => {
                 </div>
                 <div className="flex items-center gap-2 text-white/60">
                   <MapPin className="h-4 w-4" />
-                  <span>Server 101</span>
+                  <span>السيرفر: 201-300</span>
                 </div>
               </div>
 
@@ -124,21 +124,50 @@ const ProductDetails = () => {
               </div>
             </Card>
 
-            {/* Features */}
+            {/* Account Details */}
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-              <h3 className="font-bold text-white mb-4">مميزات الحساب</h3>
-              <div className="space-y-3">
-                {[
-                  "المستوى 45 - تقدم كبير في اللعبة",
-                  "موارد وفيرة ومخزون ضخم",
-                  "أبطال نادرون ومعدات قوية",
-                  "عضوية في تحالف نشط",
-                ].map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3 text-white/80">
-                    <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0" />
-                    <span>{feature}</span>
-                  </div>
-                ))}
+              <h3 className="font-bold text-white mb-4">تفاصيل الحساب</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">السيرفر</div>
+                  <div className="font-bold text-white">201-300</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">حجرة الاحتراق</div>
+                  <div className="font-bold text-white">FC8</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">هيليوس</div>
+                  <div className="font-bold text-white">المشاة، الرماه</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">عدد الجنود</div>
+                  <div className="font-bold text-white">1,500,000</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">Total Power</div>
+                  <div className="font-bold text-[hsl(195,80%,70%)]">50,000,000</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">Hero Power</div>
+                  <div className="font-bold text-white">10,000,000</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">Island</div>
+                  <div className="font-bold text-white">7</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">Expert Power</div>
+                  <div className="font-bold text-white">5,000,000</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">Hero's total Power</div>
+                  <div className="font-bold text-white">15,000,000</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-xs text-white/60">Pet Power</div>
+                  <div className="font-bold text-white">3,000,000</div>
+                </div>
               </div>
             </Card>
 
