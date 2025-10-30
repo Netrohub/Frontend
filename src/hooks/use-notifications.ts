@@ -38,11 +38,27 @@ export const useNotifications = () => {
 
   useEffect(() => {
     setNotifications(getStoredNotifications());
+
+    // Listen for storage changes to sync across tabs and components
+    const handleStorageChange = () => {
+      setNotifications(getStoredNotifications());
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    // Custom event for same-window updates
+    window.addEventListener("notificationsUpdated", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("notificationsUpdated", handleStorageChange);
+    };
   }, []);
 
   const saveNotifications = (newNotifications: Notification[]) => {
     localStorage.setItem("admin_notifications", JSON.stringify(newNotifications));
     setNotifications(newNotifications);
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new Event("notificationsUpdated"));
   };
 
   const getPublishedNotifications = () => {

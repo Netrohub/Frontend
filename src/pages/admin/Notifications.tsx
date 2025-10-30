@@ -21,7 +21,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Bell, Plus, Trash2, Edit, Eye, EyeOff } from "lucide-react";
-import { AdminNavbar } from "@/components/AdminNavbar";
 import { useNotifications, Notification } from "@/hooks/use-notifications";
 
 const AdminNotifications = () => {
@@ -155,9 +154,7 @@ const AdminNotifications = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background" dir="rtl">
-      <AdminNavbar />
-      
+    <div className="min-h-screen" dir="rtl">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
@@ -165,8 +162,8 @@ const AdminNotifications = () => {
               <Bell className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">إدارة الإشعارات</h1>
-              <p className="text-muted-foreground">إنشاء ونشر إشعارات للمستخدمين</p>
+              <h1 className="text-3xl font-bold text-white">إدارة الإشعارات</h1>
+              <p className="text-white/60">إنشاء ونشر إشعارات للمستخدمين</p>
             </div>
           </div>
 
@@ -266,26 +263,26 @@ const AdminNotifications = () => {
 
         <div className="grid gap-4">
           {notifications.map((notification) => (
-            <Card key={notification.id}>
+            <Card key={notification.id} className="bg-white/5 border-white/10">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2">
-                      <CardTitle className="text-xl">{notification.title}</CardTitle>
+                      <CardTitle className="text-xl text-white">{notification.title}</CardTitle>
                       <Badge variant={notification.status === "published" ? "default" : "secondary"}>
                         {notification.status === "published" ? "منشور" : "مسودة"}
                       </Badge>
                       <Badge variant="outline">{getTypeLabel(notification.type)}</Badge>
                       <Badge variant="outline">{getAudienceLabel(notification.targetAudience)}</Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-white/50">
                       تاريخ الإنشاء: {notification.createdAt}
                     </p>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4">{notification.message}</p>
+                <p className="text-white/70 mb-4">{notification.message}</p>
                 <div className="flex gap-2">
                   {notification.status === "draft" ? (
                     <Button
