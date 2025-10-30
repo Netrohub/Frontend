@@ -3,15 +3,55 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Snowflake, ShieldCheck, CheckCircle2, AlertCircle, Mail, Phone, IdCard, ArrowRight, Upload } from "lucide-react";
+import { Snowflake, ShieldCheck, CheckCircle2, AlertCircle, Mail, Phone, IdCard, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const KYC = () => {
   const [currentStep, setCurrentStep] = useState(1); // 1: email, 2: phone, 3: identity
   const [emailVerified, setEmailVerified] = useState(false);
   const [phoneVerified, setPhoneVerified] = useState(false);
   const [identityVerified, setIdentityVerified] = useState(false);
+  const [personaLoaded, setPersonaLoaded] = useState(false);
+
+  // Load Persona SDK
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.withpersona.com/dist/persona-v5.0.0.js';
+    script.async = true;
+    script.onload = () => setPersonaLoaded(true);
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const startPersonaVerification = () => {
+    if (!personaLoaded || !(window as any).Persona) {
+      alert('جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى');
+      return;
+    }
+
+    const client = new (window as any).Persona.Client({
+      // TODO: Replace with your actual Persona Template ID
+      templateId: 'YOUR_PERSONA_TEMPLATE_ID',
+      environmentId: 'YOUR_PERSONA_ENVIRONMENT_ID',
+      onReady: () => client.open(),
+      onComplete: ({ inquiryId, status }: any) => {
+        console.log('Persona verification completed:', inquiryId, status);
+        if (status === 'completed') {
+          setIdentityVerified(true);
+        }
+      },
+      onCancel: () => {
+        console.log('Persona verification cancelled');
+      },
+      onError: (error: any) => {
+        console.error('Persona error:', error);
+        alert('حدث خطأ في عملية التحقق. الرجاء المحاولة مرة أخرى');
+      },
+    });
+  };
 
   const steps = [
     { 
@@ -199,54 +239,56 @@ const KYC = () => {
             </div>
           )}
 
-          {/* Step 3: Identity Verification */}
+          {/* Step 3: Identity Verification with Persona */}
           {currentStep === 3 && (
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
                 <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                <h3 className="text-xl font-bold text-white">التحقق من الهوية</h3>
+                <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
               </div>
-              <p className="text-white/60 mb-4">ارفع صورة واضحة لهويتك الوطنية أو الإقامة</p>
+              <p className="text-white/60 mb-4">
+                سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك بشكل آمن وسريع
+              </p>
               
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white mb-2 block">الجهة الأمامية للهوية</Label>
-                  <button className="w-full aspect-video bg-white/5 border-2 border-dashed border-white/20 rounded-lg hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex flex-col items-center justify-center gap-2">
-                    <Upload className="h-8 w-8 text-white/40" />
-                    <span className="text-sm text-white/60">رفع صورة</span>
-                  </button>
+              <Card className="p-6 bg-white/5 border-white/10">
+                <div className="text-center space-y-4">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
+                    <ShieldCheck className="h-10 w-10 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
+                    <ul className="text-sm text-white/60 text-right space-y-2">
+                      <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
+                      <li>• التقط صورة سيلفي للتحقق</li>
+                      <li>• سيتم التحقق تلقائياً خلال دقائق</li>
+                    </ul>
+                  </div>
                 </div>
-
-                <div>
-                  <Label className="text-white mb-2 block">الجهة الخلفية للهوية</Label>
-                  <button className="w-full aspect-video bg-white/5 border-2 border-dashed border-white/20 rounded-lg hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex flex-col items-center justify-center gap-2">
-                    <Upload className="h-8 w-8 text-white/40" />
-                    <span className="text-sm text-white/60">رفع صورة</span>
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-white mb-2 block">صورة سيلفي (للتحقق)</Label>
-                <button className="w-full aspect-video bg-white/5 border-2 border-dashed border-white/20 rounded-lg hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex flex-col items-center justify-center gap-2">
-                  <Upload className="h-8 w-8 text-white/40" />
-                  <span className="text-sm text-white/60">التقط صورة سيلفي</span>
-                </button>
-              </div>
+              </Card>
 
               <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
-                <p className="text-sm text-white/80">
-                  ℹ️ تأكد من وضوح الصورة وظهور جميع البيانات. سيتم مراجعة طلبك خلال 24-48 ساعة.
-                </p>
+                <div className="flex gap-2">
+                  <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-white/80">
+                    <p className="font-bold mb-1">آمن ومشفر</p>
+                    <p>نظام Persona معتمد من أكبر الشركات العالمية ويضمن حماية كاملة لبياناتك</p>
+                  </div>
+                </div>
               </Card>
 
               <Button 
-                onClick={() => setIdentityVerified(true)}
-                className="w-full gap-2 bg-green-500 hover:bg-green-600 text-white border-0"
+                onClick={startPersonaVerification}
+                disabled={!personaLoaded}
+                className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6"
               >
-                <CheckCircle2 className="h-5 w-5" />
-                إرسال للمراجعة
+                <IdCard className="h-5 w-5" />
+                {personaLoaded ? 'بدء التحقق عبر Persona' : 'جاري التحميل...'}
+                <ArrowRight className="h-5 w-5" />
               </Button>
+
+              <p className="text-xs text-center text-white/60">
+                بالضغط على "بدء التحقق" ستفتح نافذة Persona للتحقق من هويتك
+              </p>
             </div>
           )}
 
