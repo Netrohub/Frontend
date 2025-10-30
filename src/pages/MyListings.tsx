@@ -5,11 +5,15 @@ import { Snowflake, Plus, Edit, Trash2, Eye, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MyListings = () => {
+  // Mock user's own listings - can be bought AND sold by same account
   const listings = [
     { id: 1, title: "حساب مميز - المستوى 45", status: "active", price: "1,250", views: 48, level: 45 },
     { id: 2, title: "حساب قوي - المستوى 38", status: "pending", price: "890", views: 23, level: 38 },
     { id: 3, title: "حساب نادر - المستوى 52", status: "sold", price: "2,100", views: 156, level: 52 },
   ];
+
+  // Empty state for when user has no listings
+  const showEmptyState = listings.length === 0;
 
   const getStatusBadge = (status: string) => {
     const styles = {
@@ -25,22 +29,6 @@ const MyListings = () => {
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
-      
-      {/* Snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
 
       {/* Navigation */}
       <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
@@ -62,7 +50,7 @@ const MyListings = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-black text-white mb-2">إعلاناتي</h1>
-            <p className="text-white/60">إدارة الحسابات المعروضة للبيع</p>
+            <p className="text-white/60">إدارة حساباتي المعروضة للبيع (يمكنك البيع والشراء بنفس الحساب)</p>
           </div>
           <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
             <Link to="/sell">
@@ -93,8 +81,27 @@ const MyListings = () => {
         </div>
 
         {/* Listings */}
-        <div className="space-y-4">
-          {listings.map((listing) => (
+        {showEmptyState ? (
+          <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-6 rounded-full bg-white/5">
+                <Shield className="h-12 w-12 text-white/40" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">لا توجد إعلانات</h3>
+                <p className="text-white/60 mb-6">ابدأ بإضافة حسابك الأول للبيع على المنصة</p>
+                <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+                  <Link to="/sell">
+                    <Plus className="h-5 w-5" />
+                    إضافة حساب جديد
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {listings.map((listing) => (
             <Card key={listing.id} className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Image */}
@@ -148,8 +155,12 @@ const MyListings = () => {
               </div>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
       </div>
+
+      {/* Glow effects */}
+      <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
     </div>
   );
 };

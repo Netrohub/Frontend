@@ -15,26 +15,13 @@ const Marketplace = () => {
     { id: 6, title: "حساب متميز - المستوى 35", server: "Server 275", price: "720 ريال", rating: 4.6, level: 35, image: "/placeholder.svg" },
   ];
 
+  // Empty state for no search results
+  const showEmptyState = accounts.length === 0;
+
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
-      
-      {/* Snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
 
       {/* Navigation */}
       <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
@@ -113,8 +100,21 @@ const Marketplace = () => {
         </div>
 
         {/* Accounts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {accounts.map((account) => (
+        {showEmptyState ? (
+          <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-6 rounded-full bg-white/5">
+                <Search className="h-12 w-12 text-white/40" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">لا توجد نتائج</h3>
+                <p className="text-white/60">جرب تغيير معايير البحث أو المرشحات</p>
+              </div>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {accounts.map((account) => (
             <Link key={account.id} to={`/product/${account.id}`}>
               <Card className="overflow-hidden bg-white/5 border-white/10 hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:-translate-y-1 group backdrop-blur-sm">
                 {/* Image */}
@@ -152,12 +152,10 @@ const Marketplace = () => {
                 </div>
               </Card>
             </Link>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Glow effects */}
-      <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
     </div>
   );
 };
