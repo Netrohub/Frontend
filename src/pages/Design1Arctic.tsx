@@ -1,179 +1,190 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Shield, Zap, Users, ArrowLeft, CheckCircle2, Clock } from "lucide-react";
-import heroArctic from "@/assets/hero-arctic.jpg";
+import { ArrowRight, Snowflake, Shield, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Design1Arctic = () => {
   return (
-    <div className="min-h-screen bg-[#0f1824]">
-      {/* Back Button */}
-      <div className="container mx-auto px-4 py-4">
-        <Link to="/">
-          <Button variant="ghost" size="sm" className="gap-2 text-gray-300 hover:text-white hover:bg-white/10">
-            <ArrowLeft className="h-4 w-4" />
-            العودة للرئيسية
-          </Button>
-        </Link>
+    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      {/* Icy background with gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+      
+      {/* Animated snow particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white/60 rounded-full animate-fall"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `-${Math.random() * 20}%`,
+              animationDuration: `${10 + Math.random() * 20}s`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
       </div>
+      
+      {/* Frost overlay effect */}
+      <div className="absolute inset-0 bg-gradient-radial from-transparent via-[hsl(195,80%,50%,0.05)] to-transparent opacity-40" />
+      
+      {/* Navigation */}
+      <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
+        <div className="flex items-center gap-2">
+          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
+          <span className="text-xl md:text-2xl font-black text-white">
+            منصة<span className="text-[hsl(40,90%,55%)]">التداول</span>
+          </span>
+        </div>
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
+          <Link to="/" className="hover:text-[hsl(195,80%,70%)] transition-colors">الرئيسية</Link>
+          <a href="#features" className="hover:text-[hsl(195,80%,70%)] transition-colors">المميزات</a>
+          <a href="#about" className="hover:text-[hsl(195,80%,70%)] transition-colors">من نحن</a>
+        </div>
+      </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <img src={heroArctic} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0f1824] via-[#0f1824]/80 to-[#0f1824]"></div>
-        <div className="relative container mx-auto px-4 py-24 md:py-32">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-block mb-6 px-6 py-2 bg-primary/20 border border-primary/30 rounded-full backdrop-blur-sm">
-              <span className="text-primary-glow font-semibold">منصة موثوقة 100%</span>
-            </div>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-arctic bg-clip-text text-transparent animate-float">
-              اشتر وبِع بأمان
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-10 leading-relaxed">
-              أول منصة عربية متخصصة في تداول حسابات Whiteout Survival بنظام ضمان متكامل
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8 py-6 bg-gradient-arctic hover:opacity-90 shadow-arctic hover:shadow-glow transition-all">
-                تصفح الحسابات
-              </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/30">
-                كيف تعمل المنصة
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-[#1a2332]/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">لماذا منصتنا؟</h2>
-            <p className="text-xl text-gray-400">حماية كاملة لحقوق المشتري والبائع</p>
+      <section className="relative z-10 container mx-auto px-4 md:px-6 py-24 md:py-32">
+        <div className="flex flex-col items-center text-center space-y-8">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[hsl(195,80%,70%,0.3)]">
+            <Snowflake className="h-4 w-4 text-[hsl(195,80%,70%)] animate-pulse" />
+            <span className="text-sm font-medium text-[hsl(195,80%,70%)]">
+              منصة موثوقة 100% لتداول الحسابات
+            </span>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="p-8 text-center bg-[#0f1824]/80 border-2 border-white/10 hover:border-primary/50 hover:shadow-card transition-all hover:-translate-y-2 duration-300 backdrop-blur-sm">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-arctic rounded-2xl flex items-center justify-center shadow-glow">
-                <Shield className="h-8 w-8 text-white" />
+          {/* Main Heading */}
+          <div className="space-y-6 max-w-4xl">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-white drop-shadow-[0_0_30px_rgba(148,209,240,0.5)]">
+              اشتر وبِع{" "}
+              <span className="text-[hsl(195,80%,70%)]">بأمان</span>{" "}
+              تام
+            </h1>
+            <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
+              أول منصة عربية متخصصة في تداول حسابات Whiteout Survival بنظام ضمان متكامل وحماية شاملة
+            </p>
+          </div>
+          
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Button 
+              size="lg" 
+              className="gap-2 text-base px-8 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+            >
+              <Shield className="h-5 w-5" />
+              تصفح الحسابات
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button 
+              size="lg" 
+              className="gap-2 text-base px-8 py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20"
+            >
+              كيف تعمل المنصة
+            </Button>
+          </div>
+          
+          {/* Feature badges */}
+          <div className="flex flex-wrap justify-center gap-6 pt-8">
+            <div className="flex items-center gap-2 text-sm text-white/70">
+              <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
+                <Shield className="h-4 w-4 text-[hsl(195,80%,70%)]" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">نظام ضمان آمن</h3>
-              <p className="text-gray-400 leading-relaxed">
-                الأموال محفوظة في حساب ضمان حتى تأكيد استلام الحساب وعمله بشكل صحيح
-              </p>
-            </Card>
-
-            <Card className="p-8 text-center bg-[#0f1824]/80 border-2 border-white/10 hover:border-primary/50 hover:shadow-card transition-all hover:-translate-y-2 duration-300 backdrop-blur-sm">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-arctic rounded-2xl flex items-center justify-center shadow-glow">
-                <Zap className="h-8 w-8 text-white" />
+              <span>حماية المعاملات</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-white/70">
+              <div className="p-2 rounded-lg bg-[hsl(40,90%,55%,0.15)] border border-[hsl(40,90%,55%,0.3)]">
+                <Flame className="h-4 w-4 text-[hsl(40,90%,55%)]" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">تحويل فوري</h3>
-              <p className="text-gray-400 leading-relaxed">
-                دفع سريع وآمن عبر تاب - استلم معلومات الحساب فوراً بعد الدفع
-              </p>
-            </Card>
-
-            <Card className="p-8 text-center bg-[#0f1824]/80 border-2 border-white/10 hover:border-primary/50 hover:shadow-card transition-all hover:-translate-y-2 duration-300 backdrop-blur-sm">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-arctic rounded-2xl flex items-center justify-center shadow-glow">
-                <Users className="h-8 w-8 text-white" />
+              <span>تسليم فوري</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-white/70">
+              <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
+                <Snowflake className="h-4 w-4 text-[hsl(195,80%,70%)]" />
               </div>
-              <h3 className="text-2xl font-bold mb-4 text-white">دعم متواصل</h3>
-              <p className="text-gray-400 leading-relaxed">
-                فريق دعم عربي متوفر للمساعدة في حل أي مشكلة أو نزاع بسرعة
-              </p>
-            </Card>
+              <span>دعم على مدار الساعة</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent"></div>
-        <div className="relative container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">كيف تعمل المنصة</h2>
-            <p className="text-xl text-gray-400">ثلاث خطوات بسيطة للشراء بأمان</p>
-          </div>
+      {/* Features Grid */}
+      <section id="features" className="relative z-10 container mx-auto px-4 md:px-6 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">لماذا منصتنا؟</h2>
+          <p className="text-xl text-white/60">حماية كاملة لحقوق المشتري والبائع</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { title: "نظام ضمان آمن", icon: Shield, desc: "الأموال محفوظة في حساب ضمان حتى تأكيد استلام الحساب" },
+            { title: "تحويل فوري", icon: Snowflake, desc: "دفع سريع وآمن عبر تاب - استلم معلومات الحساب فوراً" },
+            { title: "دعم متواصل", icon: Flame, desc: "فريق دعم عربي متوفر للمساعدة في حل أي مشكلة بسرعة" },
+          ].map((feature, i) => (
+            <div 
+              key={i}
+              className="p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:bg-white/10 group"
+            >
+              <feature.icon className="h-8 w-8 text-[hsl(195,80%,70%)] mb-4 group-hover:scale-110 transition-transform" />
+              <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
+              <p className="text-white/60">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-12">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-gradient-arctic rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-glow border-2 border-primary/30">
-                    1
-                  </div>
-                </div>
-                <Card className="flex-1 p-8 bg-[#0f1824]/80 border-2 border-white/10 backdrop-blur-sm hover:border-primary/50 transition-all">
-                  <h3 className="text-2xl font-bold mb-3 text-white">اختر واشترِ</h3>
-                  <p className="text-lg text-gray-400">
-                    تصفح الحسابات المتاحة، اختر الحساب المناسب، وادفع بأمان عبر تاب
-                  </p>
-                </Card>
+      {/* How It Works Section */}
+      <section className="relative z-10 container mx-auto px-4 md:px-6 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">كيف تعمل المنصة</h2>
+          <p className="text-xl text-white/60">ثلاث خطوات بسيطة للشراء بأمان</p>
+        </div>
+        
+        <div className="max-w-4xl mx-auto space-y-8">
+          {[
+            { step: "1", title: "اختر واشترِ", desc: "تصفح الحسابات المتاحة واختر الحساب المناسب" },
+            { step: "2", title: "فترة الضمان", desc: "استلم معلومات الحساب وتحقق منه خلال 12 ساعة" },
+            { step: "3", title: "تأكيد أو نزاع", desc: "إذا كان الحساب يعمل، أكّد الاستلام" },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-6 p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:border-[hsl(195,80%,70%,0.3)] transition-all">
+              <div className="flex-shrink-0 w-16 h-16 rounded-full bg-[hsl(195,80%,50%)] flex items-center justify-center text-2xl font-black text-white shadow-[0_0_20px_rgba(56,189,248,0.4)]">
+                {item.step}
               </div>
-
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-gradient-to-br from-accent to-accent/70 rounded-full flex items-center justify-center text-3xl font-bold text-white shadow-glow border-2 border-accent/30">
-                    2
-                  </div>
-                </div>
-                <Card className="flex-1 p-8 bg-[#0f1824]/80 border-2 border-white/10 backdrop-blur-sm hover:border-accent/50 transition-all">
-                  <h3 className="text-2xl font-bold mb-3 flex items-center gap-3 text-white">
-                    <Clock className="h-6 w-6 text-accent" />
-                    فترة الضمان (12 ساعة)
-                  </h3>
-                  <p className="text-lg text-gray-400">
-                    استلم معلومات الحساب وتحقق منه خلال 12 ساعة. الأموال محفوظة في حساب الضمان
-                  </p>
-                </Card>
-              </div>
-
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="flex-shrink-0">
-                  <div className="w-20 h-20 bg-gradient-to-br from-success to-success/70 rounded-full flex items-center justify-center shadow-glow border-2 border-success/30">
-                    <CheckCircle2 className="h-10 w-10 text-white" />
-                  </div>
-                </div>
-                <Card className="flex-1 p-8 bg-[#0f1824]/80 border-2 border-white/10 backdrop-blur-sm hover:border-success/50 transition-all">
-                  <h3 className="text-2xl font-bold mb-3 text-white">تأكيد أو نزاع</h3>
-                  <p className="text-lg text-gray-400">
-                    إذا كان الحساب يعمل، أكّد الاستلام. إذا كانت هناك مشكلة، افتح نزاعاً وسنحلها
-                  </p>
-                </Card>
+              <div>
+                <h3 className="text-2xl font-bold text-white mb-2">{item.title}</h3>
+                <p className="text-white/60">{item.desc}</p>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-arctic relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9InNub3ciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4zIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSIzMCIgcj0iMSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yIi8+PGNpcmNsZSBjeD0iMjUiIGN5PSI1MCIgcj0iMS41IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjI1Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3Nub3cpIi8+PC9zdmc+')] animate-float"></div>
-        </div>
-        <div className="relative container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            ابدأ التداول الآن
-          </h2>
-          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-            انضم لآلاف المستخدمين الذين يثقون بمنصتنا لتداول الحسابات بأمان
-          </p>
-          <Button size="lg" className="text-lg px-12 py-6 bg-white text-primary hover:bg-white/90 font-bold shadow-2xl hover:scale-105 transition-transform">
+      <section className="relative z-10 container mx-auto px-4 md:px-6 py-20 text-center">
+        <div className="max-w-3xl mx-auto space-y-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white">ابدأ التداول الآن</h2>
+          <p className="text-xl text-white/70">انضم لآلاف المستخدمين الذين يثقون بمنصتنا لتداول الحسابات بأمان</p>
+          <Button 
+            size="lg" 
+            className="gap-2 text-lg px-12 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+          >
             إنشاء حساب مجاني
+            <ArrowRight className="h-5 w-5" />
           </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0f1824] py-12 border-t border-white/10">
+      <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-500">
+          <p className="text-white/50">
             © 2025 منصة تداول حسابات الألعاب. جميع الحقوق محفوظة.
           </p>
         </div>
       </footer>
+
+      {/* Glow effects */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[hsl(200,70%,40%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
     </div>
   );
 };

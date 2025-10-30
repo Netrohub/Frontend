@@ -102,6 +102,10 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "fall": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(100vh)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -109,6 +113,7 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "glow": "glow 2s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "fall": "fall linear infinite",
       },
     },
   },
