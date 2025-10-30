@@ -6,6 +6,9 @@ import { Snowflake, User, Mail, Phone, ArrowRight, Save } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { MobileNav } from "@/components/MobileNav";
+import { BottomNav } from "@/components/BottomNav";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const EditProfile = () => {
   const { toast } = useToast();
@@ -35,10 +38,14 @@ const EditProfile = () => {
             NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
           </span>
         </Link>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <MobileNav />
+        </div>
       </nav>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-2xl">
+      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-2xl pb-24 md:pb-8">
         {/* Header */}
         <div className="mb-8">
           <Link to="/profile" className="inline-flex items-center gap-2 text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] transition-colors mb-4">
@@ -120,6 +127,9 @@ const EditProfile = () => {
 
       {/* Glow effects */}
       <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
+      
+      {/* Bottom Navigation for Mobile */}
+      <BottomNav />
     </div>
   );
 };

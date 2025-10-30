@@ -3,6 +3,7 @@ import { ArrowRight, Snowflake, Shield, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileNav } from "@/components/MobileNav";
+import { BottomNav } from "@/components/BottomNav";
 
 const Home = () => {
   return (
@@ -215,6 +216,9 @@ const Home = () => {
       {/* Glow effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[hsl(200,70%,40%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
+      
+      {/* Bottom Navigation for Mobile */}
+      <BottomNav />
     </div>
   );
 };

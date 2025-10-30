@@ -4,6 +4,7 @@ import { Snowflake, Wallet as WalletIcon, ArrowDownToLine, ArrowUpFromLine, Cloc
 import { Link } from "react-router-dom";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileNav } from "@/components/MobileNav";
+import { BottomNav } from "@/components/BottomNav";
 
 const Wallet = () => {
   // Mock data for transactions
@@ -87,7 +88,7 @@ const Wallet = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-12 max-w-6xl">
+      <div className="relative z-10 container mx-auto px-4 md:px-6 py-12 max-w-6xl pb-24 md:pb-12">
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-4xl md:text-5xl font-black text-white mb-2 flex items-center gap-3">
@@ -248,6 +249,9 @@ const Wallet = () => {
       {/* Glow effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[hsl(200,70%,40%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
+      
+      {/* Bottom Navigation for Mobile */}
+      <BottomNav />
     </div>
   );
 };
