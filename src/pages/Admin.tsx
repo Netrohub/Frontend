@@ -79,8 +79,8 @@ const Admin = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <Card className="p-5 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 border-yellow-500/20 backdrop-blur-sm hover:border-yellow-500/40 transition-all">
+            <div className="mb-8">
+              <Card className="p-5 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 border-yellow-500/20 backdrop-blur-sm hover:border-yellow-500/40 transition-all max-w-2xl">
                 <div className="flex items-center gap-3 mb-4">
                   <AlertTriangle className="h-6 w-6 text-yellow-400" />
                   <h2 className="text-xl font-bold text-white">النزاعات المفتوحة</h2>
@@ -92,22 +92,6 @@ const Admin = () => {
                 <Link to="/admin/disputes">
                   <button className="w-full py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg transition-colors border border-yellow-500/30">
                     عرض جميع النزاعات
-                  </button>
-                </Link>
-              </Card>
-
-              <Card className="p-5 bg-gradient-to-br from-[hsl(195,80%,50%,0.1)] to-[hsl(195,80%,30%,0.05)] border-[hsl(195,80%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.4)] transition-all">
-                <div className="flex items-center gap-3 mb-4">
-                  <ShieldCheck className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h2 className="text-xl font-bold text-white">طلبات التوثيق</h2>
-                  <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] mr-auto">
-                    8 طلبات
-                  </Badge>
-                </div>
-                <p className="text-[hsl(195,80%,85%)] text-sm mb-4">يوجد 8 طلبات KYC بانتظار المراجعة</p>
-                <Link to="/admin/kyc">
-                  <button className="w-full py-2 bg-[hsl(195,80%,50%,0.2)] hover:bg-[hsl(195,80%,50%,0.3)] text-[hsl(195,80%,70%)] rounded-lg transition-colors border border-[hsl(195,80%,70%,0.3)]">
-                    عرض طلبات التوثيق
                   </button>
                 </Link>
               </Card>
