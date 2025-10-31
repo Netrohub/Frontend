@@ -9,7 +9,7 @@ The NXOLand frontend has been successfully connected to the Laravel backend API.
 Create a `.env` file in the `frontend/` directory with:
 
 ```env
-VITE_API_BASE_URL=https://api.nxoland.com
+VITE_API_BASE_URL=https://backend-piz0.onrender.com
 VITE_GTM_ID=GTM-THXQ6Q9V
 ```
 
@@ -102,7 +102,7 @@ GTM has been added to `index.html` and will automatically track:
    ```
 
 2. **Ensure backend is running:**
-   - Backend should be accessible at `https://api.nxoland.com`
+   - Backend should be accessible at `https://backend-piz0.onrender.com`
    - CORS is configured for `nxoland.com`
 
 3. **Test flow:**

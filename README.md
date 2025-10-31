@@ -11,7 +11,7 @@ npm install
 
 2. Create `.env` file:
 ```env
-VITE_API_BASE_URL=https://api.nxoland.com
+VITE_API_BASE_URL=https://backend-piz0.onrender.com
 VITE_GTM_ID=GTM-THXQ6Q9V
 ```
 

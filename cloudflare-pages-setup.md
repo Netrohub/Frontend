@@ -14,7 +14,7 @@ When setting up Cloudflare Pages, use these settings:
 
 Make sure to add these in Cloudflare Pages Settings → Environment Variables:
 
-- `VITE_API_BASE_URL`: `https://api.nxoland.com`
+- `VITE_API_BASE_URL`: `https://backend-piz0.onrender.com`
 - `VITE_GTM_ID`: `GTM-THXQ6Q9V`
 
 ## Files Added

@@ -3,7 +3,7 @@
  * Connects to Laravel API backend
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.nxoland.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-piz0.onrender.com/api';
 
 interface RequestOptions extends RequestInit {
   headers?: HeadersInit;

@@ -39,7 +39,7 @@ Node version: 18
 
 ```
 Variable name: VITE_API_BASE_URL
-Value: https://api.nxoland.com
+Value: https://backend-piz0.onrender.com
 ```
 
 ```
