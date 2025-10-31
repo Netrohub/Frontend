@@ -205,6 +205,7 @@ const Auth = () => {
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                     value={registerData.phone}
                     onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
+                    autoComplete="tel"
                   />
                 </div>
 
