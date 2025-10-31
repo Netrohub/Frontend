@@ -1,13 +1,78 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords } from "lucide-react";
-import stoveLv8 from "@/assets/stove_lv_8.png";
-import { Link, useParams } from "react-router-dom";
+import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Loader2 } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { listingsApi, ordersApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const ProductDetails = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const listingId = id ? parseInt(id) : 0;
+
+  const { data: listing, isLoading, error } = useQuery({
+    queryKey: ['listing', listingId],
+    queryFn: () => listingsApi.getById(listingId),
+    enabled: !!listingId,
+  });
+
+  const handleBuy = async () => {
+    if (!user) {
+      toast.error("يجب تسجيل الدخول أولاً");
+      navigate("/auth");
+      return;
+    }
+
+    try {
+      const order = await ordersApi.create({ listing_id: listingId });
+      navigate(`/checkout?order_id=${order.id}`);
+    } catch (error: any) {
+      toast.error(error.message || "فشل إنشاء الطلب");
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ar-SA', {
+      style: 'currency',
+      currency: 'SAR',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !listing) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
+          <p className="text-red-400 mb-4">حدث خطأ في تحميل البيانات</p>
+          <Link to="/marketplace">
+            <Button>العودة للسوق</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const images = listing.images || [];
+  const isOwner = user?.id === listing.user_id;
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -45,263 +110,87 @@ const ProductDetails = () => {
           <div className="space-y-4">
             <Card className="overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
-                <Shield className="h-32 w-32 text-white/20" />
+                {images.length > 0 ? (
+                  <img src={images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                ) : (
+                  <Shield className="h-32 w-32 text-white/20" />
+                )}
               </div>
             </Card>
             
-            <div className="grid grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
-                    <Shield className="h-8 w-8 text-white/20" />
-                  </div>
-                </Card>
-              ))}
-            </div>
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {images.slice(1, 5).map((img, i) => (
+                  <Card key={i} className="aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden">
+                    <img src={img} alt={`${listing.title} ${i + 2}`} className="w-full h-full object-cover" />
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right Column - Details */}
           <div className="space-y-6">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                  متاح الآن
-                </Badge>
-                <Badge className="bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]">
-                  حساب مميز
-                </Badge>
-              </div>
-              
-              <h1 className="text-4xl font-black text-white mb-4">حساب مميز - السيرفر 201-300</h1>
-              
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex items-center gap-1 text-[hsl(40,90%,55%)]">
-                  <Star className="h-5 w-5 fill-current" />
-                  <span className="font-bold">4.9</span>
-                  <span className="text-white/60 text-sm">(127 تقييم)</span>
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h1 className="text-4xl font-black text-white mb-2">{listing.title}</h1>
+                  <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
+                    {listing.category}
+                  </Badge>
                 </div>
-                <div className="flex items-center gap-2 text-white/60">
-                  <MapPin className="h-4 w-4" />
-                  <span>السيرفر: 201-300</span>
+                <div className="text-left">
+                  <p className="text-3xl font-black text-[hsl(40,90%,55%)]">{formatPrice(listing.price)}</p>
+                  <p className="text-sm text-white/60 mt-1">{listing.views} مشاهدة</p>
                 </div>
               </div>
 
-              <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">1,250</span>
-                <span className="text-2xl text-white/60">ريال</span>
-              </div>
+              <p className="text-white/80 leading-relaxed mb-6">{listing.description}</p>
+
+              {/* Seller Info */}
+              {listing.user && (
+                <Card className="p-4 bg-white/5 border-white/10 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-[hsl(195,80%,50%,0.2)] flex items-center justify-center">
+                      <Users className="h-6 w-6 text-[hsl(195,80%,70%)]" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold">{listing.user.name}</p>
+                      <p className="text-sm text-white/60">البائع</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
             </div>
 
-            {/* Seller Info */}
-            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <div className="font-bold text-white flex items-center gap-2">
-                    محمد العتيبي
-                    <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
-                  </div>
-                  <div className="text-sm text-white/60">بائع موثوق</div>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-[hsl(195,80%,70%)]">142</div>
-                  <div className="text-xs text-white/60">عملية بيع</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-[hsl(40,90%,55%)]">4.9</div>
-                  <div className="text-xs text-white/60">التقييم</div>
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">98%</div>
-                  <div className="text-xs text-white/60">معدل النجاح</div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Account Details */}
-            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                تفاصيل الحساب
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.15)] to-[hsl(195,80%,30%,0.1)] rounded-lg border border-[hsl(195,80%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1">السيرفر</div>
-                  <div className="font-bold text-white text-lg">201-300</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(280,70%,70%)] mb-1">حجرة الاحتراق</div>
-                  <div className="flex items-center gap-2">
-                    <img src={stoveLv8} alt="FC8" className="w-8 h-8" />
-                    <span className="font-bold text-white text-lg">FC8</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(40,90%,70%)] mb-1">هيليوس</div>
-                  <div className="font-bold text-white">المشاة، الرماه</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(160,60%,50%,0.15)] to-[hsl(160,60%,30%,0.1)] rounded-lg border border-[hsl(160,60%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(160,60%,70%)] mb-1 flex items-center gap-1">
-                    <Users className="h-3 w-3" />
-                    عدد الجنود
-                  </div>
-                  <div className="font-bold text-white">1,500,000</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.2)] to-[hsl(195,80%,30%,0.15)] rounded-lg border-2 border-[hsl(195,80%,70%,0.4)] shadow-[0_0_20px_rgba(56,189,248,0.2)]">
-                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold flex items-center gap-1">
-                    <Zap className="h-3 w-3" />
-                    القوة الشخصية
-                  </div>
-                  <div className="font-black text-[hsl(195,80%,70%)] text-xl">50,000,000</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(340,70%,50%,0.15)] to-[hsl(340,70%,30%,0.1)] rounded-lg border border-[hsl(340,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(340,70%,70%)] mb-1 flex items-center gap-1">
-                    <Swords className="h-3 w-3" />
-                    قوة البطل
-                  </div>
-                  <div className="font-bold text-white">10,000,000</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(220,70%,50%,0.15)] to-[hsl(220,70%,30%,0.1)] rounded-lg border border-[hsl(220,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(220,70%,70%)] mb-1 flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    الجزيرة
-                  </div>
-                  <div className="font-bold text-white text-lg">7</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(120,60%,70%)] mb-1 flex items-center gap-1">
-                    <GraduationCap className="h-3 w-3" />
-                    قوة الخبير
-                  </div>
-                  <div className="font-bold text-white">5,000,000</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(40,90%,70%)] mb-1 flex items-center gap-1">
-                    <Crown className="h-3 w-3" />
-                    قوة البطل الإجمالية
-                  </div>
-                  <div className="font-bold text-white">15,000,000</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(280,70%,70%)] mb-1 flex items-center gap-1">
-                    <PawPrint className="h-3 w-3" />
-                    قوة الحيوانات
-                  </div>
-                  <div className="font-bold text-white">3,000,000</div>
-                </div>
-                <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)] col-span-2">
-                  <div className="text-xs text-[hsl(120,60%,70%)] mb-1">مع البريد الإلكتروني الأساسي</div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="font-bold text-[hsl(120,70%,50%)] text-lg">نعم</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Account Bindings */}
-            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                ربط الحساب
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">أبل</div>
-                  <div className="flex items-center gap-2">
-                    <X className="h-5 w-5 text-red-400" />
-                    <span className="font-bold text-red-400">غير مربوط</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">قوقل</div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">فيسبوك</div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">قيم سنتر</div>
-                  <div className="flex items-center gap-2">
-                    <X className="h-5 w-5 text-red-400" />
-                    <span className="font-bold text-red-400">غير مربوط</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            {/* Invoice Images Status */}
-            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                صور الفواتير
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <span className="text-white/80 text-sm">أول فاتورة شراء</span>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <span className="text-white/80 text-sm">ثلاث فواتير مختلفة</span>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <span className="text-white/80 text-sm">آخر فاتورة شراء</span>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 p-3 bg-[hsl(195,80%,50%,0.1)] rounded-lg border border-[hsl(195,80%,50%,0.3)]">
-                <p className="text-xs text-white/70">
-                  ℹ️ ستتمكن من مشاهدة صور الفواتير بعد إتمام عملية الشراء
-                </p>
-              </div>
-            </Card>
-
-            {/* CTA */}
-            <div className="space-y-3">
+            {/* Action Buttons */}
+            {!isOwner && listing.status === 'active' && (
               <Button 
-                asChild
-                size="lg" 
-                className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+                onClick={handleBuy}
+                className="w-full py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold text-lg"
               >
-                <Link to="/checkout">
-                  <Shield className="h-5 w-5" />
-                  شراء الآن بأمان
-                  <ArrowRight className="h-5 w-5" />
-                </Link>
+                شراء الآن
+                <ArrowRight className="mr-2 h-5 w-5" />
               </Button>
-              
-              <div className="flex items-center justify-center gap-2 text-sm text-white/60">
-                <Shield className="h-4 w-4 text-[hsl(195,80%,70%)]" />
-                <span>محمي بنظام الضمان لمدة 12 ساعة</span>
+            )}
+
+            {isOwner && (
+              <div className="space-y-2">
+                <p className="text-white/60 text-center">هذا حسابك</p>
+                <Link to={`/my-listings`}>
+                  <Button variant="outline" className="w-full">إدارة قوائمي</Button>
+                </Link>
               </div>
-            </div>
+            )}
+
+            {listing.status !== 'active' && (
+              <Badge className="w-full justify-center py-2 bg-red-500/20 text-red-400 border-red-500/30">
+                غير متاح
+              </Badge>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Glow effects */}
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
     </div>
   );
 };

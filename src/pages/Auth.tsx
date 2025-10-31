@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,8 +8,60 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const Auth = () => {
+  const navigate = useNavigate();
+  const { login, register } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [registerData, setRegisterData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    phone: "",
+  });
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login(loginData.email, loginData.password);
+      toast.success("تم تسجيل الدخول بنجاح");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message || "فشل تسجيل الدخول");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (registerData.password !== registerData.password_confirmation) {
+      toast.error("كلمات المرور غير متطابقة");
+      return;
+    }
+    setLoading(true);
+    try {
+      await register({
+        name: registerData.name,
+        email: registerData.email,
+        password: registerData.password,
+        password_confirmation: registerData.password_confirmation,
+        phone: registerData.phone || undefined,
+      });
+      toast.success("تم إنشاء الحساب بنجاح");
+      navigate("/");
+    } catch (error: any) {
+      toast.error(error.message || "فشل إنشاء الحساب");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center" dir="rtl">
       {/* Background */}
@@ -54,101 +108,153 @@ const Auth = () => {
             </TabsList>
 
             {/* Login Tab */}
-            <TabsContent value="login" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-white">البريد الإلكتروني</Label>
-                <div className="relative">
-                  <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
-                  <Input 
-                    id="email"
-                    type="email"
-                    placeholder="example@email.com"
-                    className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  />
+            <TabsContent value="login">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-white">البريد الإلكتروني</Label>
+                  <div className="relative">
+                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <Input 
+                      id="email"
+                      type="email"
+                      placeholder="example@email.com"
+                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      value={loginData.email}
+                      onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-white">كلمة المرور</Label>
-                <div className="relative">
-                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
-                  <Input 
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-white">كلمة المرور</Label>
+                  <div className="relative">
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <Input 
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      value={loginData.password}
+                      onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex justify-end">
-                <a href="#" className="text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]">
-                  نسيت كلمة المرور؟
-                </a>
-              </div>
+                <div className="flex justify-end">
+                  <a href="#" className="text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]">
+                    نسيت كلمة المرور؟
+                  </a>
+                </div>
 
-              <Button 
-                className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
-              >
-                تسجيل الدخول
-                <ArrowRight className="h-5 w-5" />
-              </Button>
+                <Button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
+                >
+                  {loading ? "جاري المعالجة..." : "تسجيل الدخول"}
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
+              </form>
             </TabsContent>
 
             {/* Register Tab */}
-            <TabsContent value="register" className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-white">الاسم الكامل</Label>
-                <div className="relative">
-                  <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+            <TabsContent value="register">
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-white">الاسم الكامل</Label>
+                  <div className="relative">
+                    <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <Input 
+                      id="name"
+                      type="text"
+                      placeholder="الاسم الكامل"
+                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      value={registerData.name}
+                      onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email-register" className="text-white">البريد الإلكتروني</Label>
+                  <div className="relative">
+                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <Input 
+                      id="email-register"
+                      type="email"
+                      placeholder="example@email.com"
+                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      value={registerData.email}
+                      onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-white">رقم الهاتف (اختياري)</Label>
                   <Input 
-                    id="name"
-                    type="text"
-                    placeholder="الاسم الكامل"
-                    className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    id="phone"
+                    type="tel"
+                    placeholder="05xxxxxxxx"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    value={registerData.phone}
+                    onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email-register" className="text-white">البريد الإلكتروني</Label>
-                <div className="relative">
-                  <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
-                  <Input 
-                    id="email-register"
-                    type="email"
-                    placeholder="example@email.com"
-                    className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="password-register" className="text-white">كلمة المرور</Label>
+                  <div className="relative">
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <Input 
+                      id="password-register"
+                      type="password"
+                      placeholder="••••••••"
+                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      value={registerData.password}
+                      onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                      required
+                      minLength={8}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password-register" className="text-white">كلمة المرور</Label>
-                <div className="relative">
-                  <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
-                  <Input 
-                    id="password-register"
-                    type="password"
-                    placeholder="••••••••"
-                    className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  />
+                <div className="space-y-2">
+                  <Label htmlFor="password-confirm" className="text-white">تأكيد كلمة المرور</Label>
+                  <div className="relative">
+                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <Input 
+                      id="password-confirm"
+                      type="password"
+                      placeholder="••••••••"
+                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      value={registerData.password_confirmation}
+                      onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })}
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <Button 
-                className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
-              >
-                إنشاء حساب
-                <ArrowRight className="h-5 w-5" />
-              </Button>
+                <Button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
+                >
+                  {loading ? "جاري المعالجة..." : "إنشاء حساب"}
+                  <ArrowRight className="h-5 w-5" />
+                </Button>
 
-              <p className="text-center text-sm text-white/60">
-                بإنشاء حساب، أنت توافق على{" "}
-                <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">الشروط والأحكام</Link>
-                {" "}و{" "}
-                <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">سياسة الخصوصية</Link>
-              </p>
+                <p className="text-center text-sm text-white/60">
+                  بإنشاء حساب، أنت توافق على{" "}
+                  <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">الشروط والأحكام</Link>
+                  {" "}و{" "}
+                  <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">سياسة الخصوصية</Link>
+                </p>
+              </form>
             </TabsContent>
           </Tabs>
         </Card>

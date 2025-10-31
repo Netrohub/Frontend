@@ -1,13 +1,98 @@
+import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Shield, CreditCard, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Shield, CreditCard, CheckCircle2, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { ordersApi, paymentsApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const Checkout = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const orderId = searchParams.get('order_id') ? parseInt(searchParams.get('order_id')!) : null;
+
+  const { data: order, isLoading } = useQuery({
+    queryKey: ['order', orderId],
+    queryFn: () => ordersApi.getById(orderId!),
+    enabled: !!orderId && !!user,
+  });
+
+  const [processing, setProcessing] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      toast.error("يجب تسجيل الدخول أولاً");
+      navigate("/auth");
+    }
+  }, [user, navigate]);
+
+  const handlePayment = async () => {
+    if (!orderId) {
+      toast.error("طلب غير صحيح");
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const payment = await paymentsApi.create({ order_id: orderId });
+      if (payment.redirect_url) {
+        // Redirect to Tap payment page
+        window.location.href = payment.redirect_url;
+      } else {
+        toast.error("فشل إنشاء رابط الدفع");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "فشل إنشاء رابط الدفع");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('ar-SA', {
+      style: 'currency',
+      currency: 'SAR',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
+
+  if (!user) {
+    return null; // Will redirect
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar showDesktopLinks={false} />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar showDesktopLinks={false} />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
+          <p className="text-red-400 mb-4">طلب غير موجود</p>
+        </div>
+      </div>
+    );
+  }
+
+  const totalAmount = order.amount;
+
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Background */}
@@ -63,16 +148,6 @@ const Checkout = () => {
                     </div>
                   </div>
                 </Card>
-
-                <div className="space-y-4 pt-4">
-                  <div>
-                    <Label className="text-white mb-2 block">رقم الهاتف</Label>
-                    <Input 
-                      placeholder="05XXXXXXXX"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    />
-                  </div>
-                </div>
               </div>
             </Card>
 
@@ -96,35 +171,45 @@ const Checkout = () => {
               <h2 className="text-xl font-bold text-white mb-6">ملخص الطلب</h2>
               
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-white/80">
-                  <span>حساب مميز - المستوى 45</span>
-                  <span className="font-medium">1,250 ريال</span>
-                </div>
-                <div className="flex justify-between text-white/80">
-                  <span>رسوم المنصة</span>
-                  <span className="font-medium">50 ريال</span>
-                </div>
-                <div className="flex justify-between text-white/60 text-sm">
-                  <span>Server 101</span>
-                </div>
+                {order.listing && (
+                  <>
+                    <div className="flex justify-between text-white/80">
+                      <span>{order.listing.title}</span>
+                      <span className="font-medium">{formatPrice(order.amount)}</span>
+                    </div>
+                    {order.listing.category && (
+                      <div className="flex justify-between text-white/60 text-sm">
+                        <span>{order.listing.category}</span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
 
               <Separator className="my-6 bg-white/10" />
 
               <div className="flex justify-between items-baseline mb-6">
                 <span className="text-lg text-white">المجموع</span>
-                <span className="text-3xl font-black text-[hsl(195,80%,70%)]">1,300 ريال</span>
+                <span className="text-3xl font-black text-[hsl(195,80%,70%)]">{formatPrice(totalAmount)}</span>
               </div>
 
               <Button 
-                asChild
+                onClick={handlePayment}
+                disabled={processing || order.status !== 'pending'}
                 size="lg" 
-                className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0 min-h-[48px] touch-manipulation"
+                className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
               >
-                <Link to="/order/1">
-                  <Shield className="h-5 w-5" />
-                  تأكيد الدفع
-                </Link>
+                {processing ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    جاري المعالجة...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="h-5 w-5" />
+                    تأكيد الدفع
+                  </>
+                )}
               </Button>
 
               <div className="mt-4 space-y-2">
