@@ -9,7 +9,9 @@ export function NotificationListener() {
       const customEvent = event as CustomEvent<Notification>;
       const notification = customEvent.detail;
       
-      console.log("🔔 Received notification event:", notification);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("🔔 Received notification event:", notification);
+      }
       
       toast(notification.title, {
         description: notification.message,
@@ -18,11 +20,15 @@ export function NotificationListener() {
       });
     };
 
-    console.log("✅ NotificationListener mounted and listening");
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("✅ NotificationListener mounted and listening");
+    }
     window.addEventListener("notificationPublished", handleNotificationPublished);
 
     return () => {
-      console.log("❌ NotificationListener unmounted");
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("❌ NotificationListener unmounted");
+      }
       window.removeEventListener("notificationPublished", handleNotificationPublished);
     };
   }, []);

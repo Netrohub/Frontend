@@ -77,7 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authApi.logout();
     } catch (error) {
       // Continue with logout even if API call fails
-      console.error('Logout error:', error);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Logout error:', error);
+      }
     } finally {
       api.setToken(null);
       setUser(null);

@@ -26,7 +26,9 @@ import type {
   AdminKycResponse,
 } from '@/types/api';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-piz0.onrender.com/api';
+// API Base URL with version prefix
+// All endpoints use /api/v1/ prefix for API versioning
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-piz0.onrender.com/api/v1';
 
 interface RequestOptions extends RequestInit {
   headers?: HeadersInit;
@@ -132,13 +134,15 @@ class ApiClient {
         (error as any).data = errorData;
         
         // Log all errors for debugging
-        console.error('API Error:', {
-          endpoint,
-          method: options.method || 'GET',
-          status: response.status,
-          message: errorMessage,
-          data: errorData,
-        });
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('API Error:', {
+            endpoint,
+            method: options.method || 'GET',
+            status: response.status,
+            message: errorMessage,
+            data: errorData,
+          });
+        }
         
         throw error;
       }
@@ -152,11 +156,13 @@ class ApiClient {
         const timeoutError = new Error('Request timeout - The server took too long to respond');
         (timeoutError as any).status = 408;
         (timeoutError as any).timeout = true;
-        console.error('API Request Timeout:', {
-          endpoint,
-          method: options.method || 'GET',
-          timeout: timeout / 1000 + 's',
-        });
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('API Request Timeout:', {
+            endpoint,
+            method: options.method || 'GET',
+            timeout: timeout / 1000 + 's',
+          });
+        }
         throw timeoutError;
       }
       
