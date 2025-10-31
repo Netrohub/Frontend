@@ -1,0 +1,7 @@
+# Cloudflare Pages configuration
+# Note: This file is optional for Cloudflare Pages
+# The main configuration is done through the Cloudflare dashboard
+
+name = "nxoland-frontend"
+compatibility_date = "2024-01-01"
+
