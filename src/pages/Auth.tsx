@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -121,6 +120,7 @@ const Auth = () => {
                       className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                      autoComplete="email"
                       required
                     />
                   </div>
@@ -137,6 +137,7 @@ const Auth = () => {
                       className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                      autoComplete="current-password"
                       required
                     />
                   </div>
@@ -189,6 +190,7 @@ const Auth = () => {
                       className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       value={registerData.email}
                       onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
+                      autoComplete="email"
                       required
                     />
                   </div>
@@ -217,6 +219,7 @@ const Auth = () => {
                       className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       value={registerData.password}
                       onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                      autoComplete="new-password"
                       required
                       minLength={8}
                     />
@@ -234,6 +237,7 @@ const Auth = () => {
                       className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       value={registerData.password_confirmation}
                       onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })}
+                      autoComplete="new-password"
                       required
                     />
                   </div>

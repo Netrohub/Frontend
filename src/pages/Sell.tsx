@@ -19,11 +19,12 @@ import stoveLv10 from "@/assets/stove_lv_10.png";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Sell = () => {
   const [images, setImages] = useState<string[]>([]);
-  // TODO: Replace with actual user verification status from backend
-  const isVerified = false; // Change to true to test verified state
+  const { user } = useAuth();
+  const isVerified = user?.is_verified || false;
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
