@@ -21,7 +21,11 @@ const KYC = () => {
 
   const { data: kyc, isLoading, error: kycError, refetch } = useQuery({
     queryKey: ['kyc'],
-    queryFn: () => kycApi.get(),
+    queryFn: async () => {
+      const response = await kycApi.get();
+      // Normalize null/undefined to null
+      return response ?? null;
+    },
     enabled: !!user,
     refetchInterval: (query) => {
       // Refetch every 30 seconds if status is pending
@@ -29,6 +33,8 @@ const KYC = () => {
       return kycData?.status === 'pending' ? 30000 : false;
     },
     retry: 1,
+    // Ensure null is treated as valid data (not an error)
+    placeholderData: null,
   });
 
   const createKycMutation = useMutation({
@@ -176,12 +182,15 @@ const KYC = () => {
     );
   }
 
-  const kycStatus = kyc?.status || null;
-  const hasKyc = !!kyc;
+  // Normalize kyc data - handle both null and undefined
+  const kycData = kyc ?? null;
+  const kycStatus = kycData?.status || null;
+  const hasKyc = kycData !== null && kycData !== undefined;
   const isVerified = kycStatus === 'verified';
   const isPending = kycStatus === 'pending';
   const isFailed = kycStatus === 'failed';
   const isExpired = kycStatus === 'expired';
+  // Show button when: no KYC exists, or status is failed/expired (not verified or pending)
   const canStartVerification = !hasKyc || isFailed || isExpired;
 
   return (
@@ -200,7 +209,7 @@ const KYC = () => {
             <p className="text-white/60">تحقق من هويتك للبدء في بيع الحسابات على المنصة</p>
           </div>
 
-          {isLoading ? (
+          {isLoading && !kycData ? (
             <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin text-white/60 mb-4" />
@@ -228,6 +237,12 @@ const KYC = () => {
             <div className="space-y-6">
               {/* Status Card */}
               <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
+                {/* Debug info - remove in production */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="mb-4 p-2 bg-black/20 text-xs text-white/60 rounded">
+                    Debug: hasKyc={String(hasKyc)}, status={kycStatus || 'null'}, canStart={String(canStartVerification)}
+                  </div>
+                )}
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[hsl(195,80%,50%,0.2)] border-2 border-[hsl(195,80%,70%,0.3)] mb-4">
                     {kycStatus ? getStatusIcon(kycStatus) : <ShieldCheck className="h-12 w-12 text-[hsl(195,80%,70%)]" />}
@@ -243,7 +258,7 @@ const KYC = () => {
                       ? "انتهت صلاحية التحقق"
                       : "التحقق من الهوية"}
                   </h2>
-                  {kyc && getStatusBadge(kyc.status)}
+                  {kycData && getStatusBadge(kycData.status)}
                 </div>
 
                 {isVerified ? (
@@ -259,7 +274,7 @@ const KYC = () => {
                       <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/30">
                         <p className="text-green-400 font-bold mb-1">تاريخ التحقق</p>
                         <p className="text-white/80 text-sm">
-                          {kyc.verified_at ? new Date(kyc.verified_at).toLocaleDateString('ar-SA', {
+                          {kycData?.verified_at ? new Date(kycData.verified_at).toLocaleDateString('ar-SA', {
                             year: 'numeric',
                             month: 'long',
                             day: 'numeric'
@@ -308,9 +323,9 @@ const KYC = () => {
                             <p className="text-white/80 text-sm leading-relaxed">
                               طلب التحقق الخاص بك قيد المراجعة من قبل فريقنا. سيتم إشعارك عبر البريد الإلكتروني عند اكتمال العملية.
                             </p>
-                            {kyc?.created_at && (
+                            {kycData?.created_at && (
                               <p className="text-white/60 text-xs mt-3">
-                                تاريخ الطلب: {new Date(kyc.created_at).toLocaleDateString('ar-SA', {
+                                تاريخ الطلب: {new Date(kycData.created_at).toLocaleDateString('ar-SA', {
                                   year: 'numeric',
                                   month: 'long',
                                   day: 'numeric',
