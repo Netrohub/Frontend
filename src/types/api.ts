@@ -40,6 +40,11 @@ export interface KycVerification {
   updated_at: string;
 }
 
+export interface KycCreateResponse {
+  kyc: KycVerification;
+  inquiry_url?: string;
+}
+
 // Auth API responses
 export interface AuthResponse {
   user: User;

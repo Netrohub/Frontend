@@ -16,6 +16,7 @@ import type {
   DisputeResponse,
   Wallet,
   KycVerification,
+  KycCreateResponse,
   PaginatedResponse,
   LeaderboardResponse,
   MemberResponse,
@@ -307,7 +308,7 @@ export const kycApi = {
     api.get<KycVerification | null>('/kyc'),
   
   create: () =>
-    api.post<KycVerification>('/kyc'),
+    api.post<KycCreateResponse>('/kyc'),
 };
 
 // Public API
