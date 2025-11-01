@@ -597,18 +597,21 @@ const KYC = () => {
               {import.meta.env.DEV && (
                 <div className="p-2 bg-black/20 text-xs text-white/60 rounded space-y-1">
                   <div className="font-bold mb-1">Debug Panel:</div>
-                  <div>personaLoaded: {String(personaLoaded)}</div>
-                  <div>hasPersona: {String(!!(window as any).Persona)}</div>
+                  <div>isLoading: {String(isLoading)}</div>
+                  <div>kyc: {kyc === null ? 'null' : kyc === undefined ? 'undefined' : `object(id:${kyc.id})`}</div>
+                  <div>hasKycRecord: {String(hasKycRecord)}</div>
                   <div>kyc status: {kyc?.status || 'null'}</div>
                   <div>isPending: {String(isPending)}</div>
                   <div>isVerified: {String(isVerified)}</div>
                   <div>isFailed: {String(isFailed)}</div>
                   <div>isExpired: {String(isExpired)}</div>
+                  <div>personaLoaded: {String(personaLoaded)}</div>
+                  <div>hasPersona: {String(!!(window as any).Persona)}</div>
                   <div className={`font-bold ${canStartVerification ? 'text-green-400' : 'text-red-400'}`}>
                     canStartVerification: {String(canStartVerification)}
-                    {!canStartVerification && kyc && (
+                    {!canStartVerification && (
                       <span className="text-xs text-yellow-400 block mt-1">
-                        Reason: {isPending ? 'KYC is pending' : isVerified ? 'KYC already verified' : 'Unknown'}
+                        Reason: {isVerified ? 'KYC already verified' : !hasKycRecord ? 'No KYC record (should be true)' : 'Unknown'}
                       </span>
                     )}
                   </div>
@@ -620,7 +623,7 @@ const KYC = () => {
                       <span className="text-xs text-yellow-400 block mt-1">
                         {createKycMutation.isPending ? 'Reason: Mutation in progress' : 
                          isRefetching ? 'Reason: Refetching data' : 
-                         !canStartVerification ? 'Reason: Cannot start verification' : ''}
+                         !canStartVerification ? `Reason: Cannot start (verified:${isVerified}, hasRecord:${hasKycRecord})` : ''}
                       </span>
                     )}
                   </div>
