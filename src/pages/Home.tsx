@@ -45,19 +45,19 @@ const Home = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[hsl(195,80%,70%,0.3)]">
             <Snowflake className="h-4 w-4 text-[hsl(195,80%,70%)] animate-pulse" />
             <span className="text-sm font-medium text-[hsl(195,80%,70%)]">
-              منصة موثوقة 100% لتداول الحسابات
+            🔒 تداول آمن ومضمون
             </span>
           </div>
           
           {/* Main Heading */}
           <div className="space-y-6 max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-white drop-shadow-[0_0_30px_rgba(148,209,240,0.5)]">
-              اشتر وبِع{" "}
-              <span className="text-[hsl(195,80%,70%)]">بأمان</span>{" "}
-              تام
+            بيع وشراء{" "}
+              <span className="text-[hsl(195,80%,70%)]">آمن</span>{" "}
+              🤝 بدون مخاطر
             </h1>
             <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-              أول منصة عربية متخصصة في تداول حسابات Whiteout Survival بنظام ضمان متكامل وحماية شاملة
+            🎮 منصة تسهّل عليك بيع وشراء حسابات الألعاب بأمان كامل
             </p>
           </div>
           
