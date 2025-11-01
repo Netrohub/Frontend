@@ -153,7 +153,9 @@ const KYC = () => {
     }
 
     const script = document.createElement('script');
-    script.src = 'https://cdn.withpersona.com/dist/persona-v5.0.0.js';
+    script.src = 'https://cdn.withpersona.com/dist/persona-v5.1.2.js';
+    script.integrity = 'sha384-nuMfOsYXMwp5L13VJicJkSs8tObai/UtHEOg3f7tQuFWU5j6LAewJbjbF5ZkfoDo';
+    script.crossOrigin = 'anonymous';
     script.async = true;
     script.onload = () => {
       // Double check Persona is available after script loads
