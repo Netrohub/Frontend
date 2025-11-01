@@ -254,6 +254,50 @@ export const listingsApi = {
     api.delete<{ message: string }>(`/listings/${id}`),
 };
 
+export const imagesApi = {
+  upload: async (files: File[]): Promise<string[]> => {
+    const formData = new FormData();
+    files.forEach((file) => {
+      formData.append('images[]', file);
+    });
+
+    const baseURL = getAPIBaseURL();
+    const token = localStorage.getItem('auth_token');
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT * 3); // Longer timeout for file uploads
+
+    try {
+      const response = await fetch(`${baseURL}/images/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : '',
+          'Accept': 'application/json',
+          // Don't set Content-Type header - browser will set it with boundary for FormData
+        },
+        credentials: 'include',
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+        throw new Error(errorData.message || 'Failed to upload images');
+      }
+
+      const data = await response.json();
+      return data.urls || [];
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timeout');
+      }
+      throw error;
+    }
+  },
+};
+
 // Orders API
 export const ordersApi = {
   getAll: (params?: { page?: number }) => {
