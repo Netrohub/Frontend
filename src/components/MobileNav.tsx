@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, ShoppingBag, Plus, Users, Trophy, Bell, User, HelpCircle, Wallet } from "lucide-react";
+import { Menu, X, Home, ShoppingBag, Plus, Users, Trophy, Bell, User, HelpCircle, Wallet, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const MobileNav = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
-    { path: "/", label: "الرئيسية", icon: Home },
-    { path: "/marketplace", label: "السوق", icon: ShoppingBag },
-    { path: "/wallet", label: "المحفظة", icon: Wallet },
-    { path: "/sell", label: "إضافة حساب", icon: Plus },
-    { path: "/members", label: "الأعضاء", icon: Users },
-    { path: "/leaderboard", label: "المتصدرين", icon: Trophy },
-    { path: "/notifications", label: "الإشعارات", icon: Bell },
-    { path: "/profile", label: "الملف الشخصي", icon: User },
-    { path: "/help", label: "المساعدة", icon: HelpCircle },
+    { path: "/", label: "الرئيسية", icon: Home, protected: false },
+    { path: "/marketplace", label: "السوق", icon: ShoppingBag, protected: false },
+    { path: "/wallet", label: "المحفظة", icon: Wallet, protected: true },
+    { path: "/sell", label: "إضافة حساب", icon: Plus, protected: true },
+    { path: "/members", label: "الأعضاء", icon: Users, protected: false },
+    { path: "/leaderboard", label: "المتصدرين", icon: Trophy, protected: false },
+    { path: "/notifications", label: "الإشعارات", icon: Bell, protected: true },
+    { path: "/profile", label: "الملف الشخصي", icon: User, protected: true },
+    { path: "/help", label: "المساعدة", icon: HelpCircle, protected: false },
   ];
 
   return (
@@ -59,25 +62,37 @@ export const MobileNav = () => {
         </div>
 
         <nav className="space-y-2" aria-label="روابط التنقل">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)] ${
-                  isActive(item.path)
-                    ? "bg-[hsl(195,80%,50%)] text-white font-bold"
-                    : "text-white/80 hover:bg-white/10 hover:text-white"
-                }`}
-                aria-current={isActive(item.path) ? "page" : undefined}
-              >
-                <Icon className="h-5 w-5" aria-hidden="true" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {!isAuthenticated && (
+            <Link
+              to="/auth"
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[hsl(195,80%,50%)] text-white hover:bg-[hsl(195,80%,60%)] transition-colors font-bold mb-2 focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2"
+            >
+              <LogIn className="h-5 w-5" aria-hidden="true" />
+              <span>تسجيل الدخول</span>
+            </Link>
+          )}
+          {navItems
+            .filter(item => !item.protected || isAuthenticated)
+            .map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)] ${
+                    isActive(item.path)
+                      ? "bg-[hsl(195,80%,50%)] text-white font-bold"
+                      : "text-white/80 hover:bg-white/10 hover:text-white"
+                  }`}
+                  aria-current={isActive(item.path) ? "page" : undefined}
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
         </nav>
 
         <Separator className="my-6 bg-white/10" />

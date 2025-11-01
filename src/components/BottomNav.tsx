@@ -1,24 +1,31 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, ShoppingBag, Wallet, Bell, User } from "lucide-react";
+import { Home, ShoppingBag, Wallet, Bell, User, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const BottomNav = () => {
   const location = useLocation();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   const navItems = [
-    { path: "/", label: "الرئيسية", icon: Home },
-    { path: "/marketplace", label: "السوق", icon: ShoppingBag },
-    { path: "/wallet", label: "المحفظة", icon: Wallet },
-    { path: "/notifications", label: "الإشعارات", icon: Bell },
-    { path: "/profile", label: "حسابي", icon: User },
+    { path: "/", label: "الرئيسية", icon: Home, protected: false },
+    { path: "/marketplace", label: "السوق", icon: ShoppingBag, protected: false },
+    { path: "/wallet", label: "المحفظة", icon: Wallet, protected: true },
+    { path: "/notifications", label: "الإشعارات", icon: Bell, protected: true },
+    { path: "/profile", label: "حسابي", icon: User, protected: true },
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  
+  const visibleItems = isAuthenticated 
+    ? navItems 
+    : [...navItems.filter(item => !item.protected), { path: "/auth", label: "دخول", icon: LogIn, protected: false }];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[hsl(200,70%,15%)] border-t border-white/10 backdrop-blur-md pb-safe">
       <div className="flex items-center justify-around px-2 py-2">
-        {navItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.path);
           

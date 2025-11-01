@@ -62,13 +62,14 @@ const ProductDetails = () => {
       <>
         <SEO title="تحميل..." />
         <div className="min-h-screen relative overflow-hidden" dir="rtl">
-        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
-        <Navbar />
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]" role="status" aria-live="polite">
-          <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
-          <span className="sr-only">جاري تحميل تفاصيل المنتج...</span>
+          <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+          <Navbar />
+          <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]" role="status" aria-live="polite">
+            <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
+            <span className="sr-only">جاري تحميل تفاصيل المنتج...</span>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 

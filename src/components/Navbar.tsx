@@ -1,8 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { Snowflake } from "lucide-react";
+import { Snowflake, LogIn } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileNav } from "@/components/MobileNav";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 interface NavbarProps {
   showDesktopLinks?: boolean;
@@ -10,14 +12,16 @@ interface NavbarProps {
 
 export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
   const location = useLocation();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   const isActive = (path: string) => location.pathname === path;
 
   const desktopLinks = [
-    { path: "/", label: "الرئيسية" },
-    { path: "/marketplace", label: "السوق" },
-    { path: "/wallet", label: "المحفظة" },
-    { path: "/profile", label: "الملف الشخصي" },
+    { path: "/", label: "الرئيسية", protected: false },
+    { path: "/marketplace", label: "السوق", protected: false },
+    { path: "/wallet", label: "المحفظة", protected: true },
+    { path: "/profile", label: "الملف الشخصي", protected: true },
   ];
 
   return (
@@ -40,23 +44,39 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
       <div className="flex items-center gap-4">
         {showDesktopLinks && (
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-white/80">
-            {desktopLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  "hover:text-[hsl(195,80%,70%)] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)] rounded px-2 py-1",
-                  isActive(link.path) && "text-[hsl(195,80%,70%)] font-bold"
-                )}
-                aria-current={isActive(link.path) ? "page" : undefined}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {desktopLinks
+              .filter(link => !link.protected || isAuthenticated)
+              .map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={cn(
+                    "hover:text-[hsl(195,80%,70%)] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)] rounded px-2 py-1",
+                    isActive(link.path) && "text-[hsl(195,80%,70%)] font-bold"
+                  )}
+                  aria-current={isActive(link.path) ? "page" : undefined}
+                >
+                  {link.label}
+                </Link>
+              ))}
           </div>
         )}
         <div className="flex items-center gap-2">
-          <NotificationBell />
+          {isAuthenticated ? (
+            <NotificationBell />
+          ) : (
+            <Button 
+              asChild 
+              variant="outline" 
+              size="sm"
+              className="hidden md:flex border-[hsl(195,80%,70%)] text-[hsl(195,80%,70%)] hover:bg-[hsl(195,80%,70%)] hover:text-white focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2"
+            >
+              <Link to="/auth">
+                <LogIn className="h-4 w-4 mr-2" aria-hidden="true" />
+                تسجيل الدخول
+              </Link>
+            </Button>
+          )}
           <MobileNav />
         </div>
       </div>
