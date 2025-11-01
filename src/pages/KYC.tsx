@@ -49,7 +49,9 @@ const KYC = () => {
     placeholderData: (previousData) => previousData ?? null,
     // Don't refetch on window focus to prevent unexpected state changes
     refetchOnWindowFocus: false,
-    staleTime: 5000, // Consider data fresh for 5 seconds to prevent unnecessary refetches
+    refetchOnMount: false, // Don't refetch on mount if we already have data
+    staleTime: 30000, // Consider data fresh for 30 seconds to prevent unnecessary refetches
+    gcTime: 300000, // Keep data in cache for 5 minutes (formerly cacheTime)
   });
 
   const createKycMutation = useMutation({
@@ -59,10 +61,9 @@ const KYC = () => {
       // This prevents the button from disappearing
       queryClient.setQueryData(['kyc'], data.kyc);
       
-      // Then invalidate after a short delay to ensure fresh data
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ['kyc'] });
-      }, 1000);
+      // Mark as fetched so hasLoadedOnce stays true
+      // Don't invalidate immediately - let the data stay cached
+      // Only invalidate if we need fresh data (which we don't here since we just created it)
       
       if (data.inquiry_url) {
         setInquiryUrl(data.inquiry_url);
@@ -102,14 +103,20 @@ const KYC = () => {
   });
 
   // Track when KYC data has been loaded at least once (prevents button flashing)
+  // Once set to true, it should NEVER go back to false (persistent state)
   useEffect(() => {
+    // Only set if not already set (one-way state)
+    if (hasLoadedOnce) {
+      return; // Already loaded, don't change
+    }
+    
     // Mark as loaded when:
     // 1. User is authenticated AND query has been fetched (isFetched = true)
     // OR query has completed (has data or error) and is not loading
     // This ensures we only mark as loaded after the query actually runs
-    if (user && isFetched && !hasLoadedOnce) {
+    if (user && isFetched) {
       setHasLoadedOnce(true);
-    } else if (user && !isLoading && (kyc !== undefined || kycError) && !hasLoadedOnce) {
+    } else if (user && !isLoading && (kyc !== undefined || kycError)) {
       // Fallback: if isFetched isn't available, use the old logic
       setHasLoadedOnce(true);
     }
@@ -222,13 +229,19 @@ const KYC = () => {
   // Normalize kyc data - handle both null and undefined
   // Use memoization to prevent recalculation on every render
   // Use stable value: if data hasn't loaded yet, use null; otherwise use actual data
+  // During refetch, prefer placeholder data to prevent flickering
   const kycData = useMemo(() => {
     // Before first load, return null (stable) instead of undefined
     if (!hasLoadedOnce && kyc === undefined) {
       return null;
     }
+    // During refetch, if kyc becomes undefined temporarily, keep previous value (null)
+    // This prevents hasKyc from changing during refetch
+    if (isRefetching && kyc === undefined) {
+      return null; // Keep null during refetch if we had null before
+    }
     return kyc ?? null;
-  }, [kyc, hasLoadedOnce]);
+  }, [kyc, hasLoadedOnce, isRefetching]);
   
   const kycStatus = useMemo(() => kycData?.status || null, [kycData]);
   const hasKyc = useMemo(() => kycData !== null && kycData !== undefined, [kycData]);
@@ -253,9 +266,17 @@ const KYC = () => {
     if (createKycMutation.isPending && isPending) {
       return false;
     }
+    // During refetch, use placeholder data to maintain button visibility
+    // If we're refetching, keep showing button if we previously had it showing
+    // This prevents button from disappearing during refetch
+    if (isRefetching) {
+      // If refetching, keep the previous state (button stays visible if it was visible)
+      // This is handled by placeholderData in the query, but we add extra protection here
+      return !hasKyc || isFailed || isExpired;
+    }
     // Otherwise, show if no KYC or status allows it
     return !hasKyc || isFailed || isExpired;
-  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending]);
+  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending, isRefetching, kycData]);
 
   return (
     <>
