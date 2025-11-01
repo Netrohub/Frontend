@@ -196,6 +196,20 @@ const KYC = () => {
     };
   }, []);
 
+  // Cleanup Persona client on unmount
+  useEffect(() => {
+    return () => {
+      if (personaClientRef.current) {
+        try {
+          personaClientRef.current.destroy();
+        } catch (e) {
+          // Ignore errors when destroying
+        }
+        personaClientRef.current = null;
+      }
+    };
+  }, []);
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'verified':
