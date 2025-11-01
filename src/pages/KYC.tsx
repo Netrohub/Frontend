@@ -103,11 +103,11 @@ const KYC = () => {
 
   // Track when KYC data has been loaded at least once (prevents button flashing)
   useEffect(() => {
-    // Once data is loaded (not undefined), mark as loaded
-    if (kyc !== undefined && !hasLoadedOnce) {
+    // Once loading is complete (regardless of whether data is null or object), mark as loaded
+    if (!isLoading && !hasLoadedOnce) {
       setHasLoadedOnce(true);
     }
-  }, [kyc, hasLoadedOnce]);
+  }, [isLoading, hasLoadedOnce]);
 
   // Load Persona SDK
   useEffect(() => {
