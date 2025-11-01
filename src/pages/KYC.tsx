@@ -524,9 +524,41 @@ const KYC = () => {
                   <div className="text-sm text-white/80">
                     <p className="font-bold mb-1">ملاحظة</p>
                     <p>إذا كنت تواجه مشكلة أو تريد إعادة المحاولة، يمكنك الضغط على الزر أدناه.</p>
+                    <p className="mt-2 text-xs text-yellow-300">إذا أكملت التحقق للتو، اضغط على "تحديث الحالة" لتحميل آخر حالة.</p>
                   </div>
                 </div>
               </Card>
+              
+              {/* Manual sync button for pending status */}
+              <div className="flex justify-center gap-3">
+                <Button
+                  onClick={async () => {
+                    try {
+                      await kycApi.sync();
+                      toast.success("تم تحديث الحالة");
+                      refetch();
+                    } catch (error) {
+                      console.error('[KYC] Manual sync failed:', error);
+                      toast.error("فشل تحديث الحالة. الرجاء المحاولة مرة أخرى");
+                    }
+                  }}
+                  variant="outline"
+                  className="border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/20"
+                  disabled={isRefetching}
+                >
+                  {isRefetching ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      جاري التحديث...
+                    </>
+                  ) : (
+                    <>
+                      <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
+                      تحديث الحالة
+                    </>
+                  )}
+                </Button>
+              </div>
               
               {/* Show verification form even when pending - allows retry */}
               <div className="space-y-4">
