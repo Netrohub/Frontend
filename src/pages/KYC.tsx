@@ -350,14 +350,27 @@ const KYC = () => {
             toast.error("فشل فتح نافذة التحقق. الرجاء المحاولة مرة أخرى");
           }
         },
-        onComplete: ({ inquiryId, status }: { inquiryId: string; status: string }) => {
+        onComplete: async ({ inquiryId, status }: { inquiryId: string; status: string }) => {
           console.log('[KYC] Persona verification completed', { inquiryId, status });
           personaClientRef.current = null;
-          toast.success("تم إكمال عملية التحقق بنجاح");
-          // Refetch KYC status after a short delay (webhook should have updated it)
-          setTimeout(() => {
-            refetch();
-          }, 2000);
+          
+          // Sync KYC status from Persona API immediately
+          // This ensures status is saved even if webhook is delayed
+          try {
+            await kycApi.sync();
+            toast.success("تم إكمال عملية التحقق بنجاح");
+            // Refetch to get updated status
+            setTimeout(() => {
+              refetch();
+            }, 1000);
+          } catch (error) {
+            console.error('[KYC] Failed to sync status:', error);
+            // Still show success and refetch - webhook might update it
+            toast.success("تم إكمال عملية التحقق. جاري تحديث الحالة...");
+            setTimeout(() => {
+              refetch();
+            }, 2000);
+          }
         },
         onCancel: () => {
           console.log('[KYC] Persona verification cancelled');
