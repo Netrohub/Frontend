@@ -284,6 +284,23 @@ const KYC = () => {
     return shouldShow;
   }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending, kycStatus]);
 
+  // Log button rendering state changes
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('[KYC] Button render state:', {
+        canStartVerification,
+        user: !!user,
+        hasLoadedOnce,
+        hasKyc,
+        isFailed,
+        isExpired,
+        isPending,
+        status: kycStatus,
+        kycData: kycData === null ? 'null' : kycData === undefined ? 'undefined' : 'object'
+      });
+    }
+  }, [canStartVerification, user, hasLoadedOnce, hasKyc, isFailed, isExpired, isPending, kycStatus, kycData]);
+
   return (
     <>
       <SEO 
@@ -481,7 +498,7 @@ const KYC = () => {
                     )}
 
                     {/* Action Button - Always render when conditions are met, prevent unmounting */}
-                    {canStartVerification && (
+                    {canStartVerification ? (
                       <div className="space-y-4">
                         {!hasKyc && (
                           <div className="bg-blue-500/10 rounded-lg p-5 border border-blue-500/30">
@@ -525,7 +542,7 @@ const KYC = () => {
                           </p>
                         )}
                       </div>
-                    )}
+                    ) : null}
 
                     {/* Persona Modal */}
                     {showPersonaModal && inquiryUrl && (
