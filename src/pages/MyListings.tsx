@@ -1,30 +1,98 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Eye, Shield } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Shield, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { useAuth } from "@/contexts/AuthContext";
+import { listingsApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { Listing } from "@/types/api";
 
 const MyListings = () => {
-  // Mock user's own listings - can be bought AND sold by same account
-  const listings = [
-    { id: 1, title: "حساب مميز - المستوى 45", status: "active", price: "1,250", views: 48, level: 45 },
-    { id: 2, title: "حساب قوي - المستوى 38", status: "pending", price: "890", views: 23, level: 38 },
-    { id: 3, title: "حساب نادر - المستوى 52", status: "sold", price: "2,100", views: 156, level: 52 },
-  ];
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Fetch all listings and filter by current user
+  const { data: listingsResponse, isLoading } = useQuery({
+    queryKey: ['listings'],
+    queryFn: () => listingsApi.getAll(),
+    enabled: !!user,
+  });
+
+  // Filter listings to show only current user's listings
+  const listings = listingsResponse?.data?.filter((listing: Listing) => listing.user_id === user?.id) || [];
 
   // Empty state for when user has no listings
   const showEmptyState = listings.length === 0;
+
+  // Calculate stats
+  const stats = {
+    total: listings.length,
+    active: listings.filter((l: Listing) => l.status === 'active').length,
+    pending: listings.filter((l: Listing) => l.status === 'pending').length,
+    sold: listings.filter((l: Listing) => l.status === 'sold').length,
+  };
+
+  // Delete listing mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => listingsApi.delete(id),
+    onSuccess: () => {
+      toast.success("تم حذف الإعلان بنجاح");
+      queryClient.invalidateQueries({ queryKey: ['listings'] });
+    },
+    onError: () => {
+      toast.error("فشل حذف الإعلان");
+    },
+  });
 
   const getStatusBadge = (status: string) => {
     const styles = {
       active: "bg-green-500/20 text-green-400 border-green-500/30",
       pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
       sold: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+      inactive: "bg-gray-500/20 text-gray-400 border-gray-500/30",
     };
-    const labels = { active: "نشط", pending: "قيد المراجعة", sold: "مباع" };
-    return <Badge className={styles[status as keyof typeof styles]}>{labels[status as keyof typeof labels]}</Badge>;
+    const labels = { 
+      active: "نشط", 
+      pending: "قيد المراجعة", 
+      sold: "مباع",
+      inactive: "غير نشط"
+    };
+    return <Badge className={styles[status as keyof typeof styles] || styles.inactive}>{labels[status as keyof typeof labels] || status}</Badge>;
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
+          <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض إعلاناتك</p>
+            <Button asChild className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white">
+              <Link to="/auth">تسجيل الدخول</Link>
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -52,19 +120,19 @@ const MyListings = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="text-2xl font-black text-white mb-1">3</div>
+            <div className="text-2xl font-black text-white mb-1">{stats.total}</div>
             <div className="text-sm text-white/60">إجمالي الإعلانات</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="text-2xl font-black text-green-400 mb-1">1</div>
+            <div className="text-2xl font-black text-green-400 mb-1">{stats.active}</div>
             <div className="text-sm text-white/60">نشط</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="text-2xl font-black text-yellow-400 mb-1">1</div>
+            <div className="text-2xl font-black text-yellow-400 mb-1">{stats.pending}</div>
             <div className="text-sm text-white/60">قيد المراجعة</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="text-2xl font-black text-blue-400 mb-1">1</div>
+            <div className="text-2xl font-black text-blue-400 mb-1">{stats.sold}</div>
             <div className="text-sm text-white/60">مباع</div>
           </Card>
         </div>
@@ -90,12 +158,20 @@ const MyListings = () => {
           </Card>
         ) : (
           <div className="space-y-4">
-            {listings.map((listing) => (
+            {listings.map((listing: Listing) => (
             <Card key={listing.id} className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
               <div className="flex flex-col md:flex-row gap-4">
                 {/* Image */}
-                <div className="w-full md:w-32 h-32 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Shield className="h-12 w-12 text-white/20" />
+                <div className="w-full md:w-32 h-32 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {listing.images && listing.images.length > 0 ? (
+                    <img 
+                      src={listing.images[0]} 
+                      alt={listing.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Shield className="h-12 w-12 text-white/20" />
+                  )}
                 </div>
 
                 {/* Content */}
@@ -105,29 +181,32 @@ const MyListings = () => {
                       <h3 className="text-xl font-bold text-white mb-2">{listing.title}</h3>
                       <div className="flex items-center gap-2">
                         {getStatusBadge(listing.status)}
-                        <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                          المستوى {listing.level}
-                        </Badge>
                       </div>
                     </div>
                     <div className="text-left">
-                      <div className="text-2xl font-black text-[hsl(195,80%,70%)]">{listing.price}</div>
+                      <div className="text-2xl font-black text-[hsl(195,80%,70%)]">{listing.price.toLocaleString('ar-SA')}</div>
                       <div className="text-sm text-white/60">ريال</div>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-sm text-white/60">
                     <Eye className="h-4 w-4" />
-                    <span>{listing.views} مشاهدة</span>
+                    <span>{listing.views || 0} مشاهدة</span>
                   </div>
 
                   {/* Actions */}
                   <div className="flex gap-2 pt-2">
-                    <Button size="sm" variant="outline" className="gap-2 bg-white/5 hover:bg-white/10 text-white border-white/20">
-                      <Edit className="h-4 w-4" />
-                      تعديل
-                    </Button>
-                    <Button size="sm" variant="outline" className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                      onClick={() => {
+                        if (confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
+                          deleteMutation.mutate(listing.id);
+                        }
+                      }}
+                      disabled={deleteMutation.isPending}
+                    >
                       <Trash2 className="h-4 w-4" />
                       حذف
                     </Button>
