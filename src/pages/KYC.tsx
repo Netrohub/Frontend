@@ -499,15 +499,33 @@ const KYC = () => {
               {/* Debug info - remove in production */}
               {import.meta.env.DEV && (
                 <div className="p-2 bg-black/20 text-xs text-white/60 rounded space-y-1">
-                  <div>Debug:</div>
+                  <div className="font-bold mb-1">Debug Panel:</div>
                   <div>personaLoaded: {String(personaLoaded)}</div>
                   <div>hasPersona: {String(!!(window as any).Persona)}</div>
-                  <div>canStartVerification: {String(canStartVerification)}</div>
+                  <div>kyc status: {kyc?.status || 'null'}</div>
+                  <div>isPending: {String(isPending)}</div>
+                  <div>isVerified: {String(isVerified)}</div>
+                  <div>isFailed: {String(isFailed)}</div>
+                  <div>isExpired: {String(isExpired)}</div>
+                  <div className={`font-bold ${canStartVerification ? 'text-green-400' : 'text-red-400'}`}>
+                    canStartVerification: {String(canStartVerification)}
+                    {!canStartVerification && kyc && (
+                      <span className="text-xs text-yellow-400 block mt-1">
+                        Reason: {isPending ? 'KYC is pending' : isVerified ? 'KYC already verified' : 'Unknown'}
+                      </span>
+                    )}
+                  </div>
                   <div>mutationPending: {String(createKycMutation.isPending)}</div>
                   <div>isRefetching: {String(isRefetching)}</div>
-                  <div>kyc status: {kyc?.status || 'null'}</div>
-                  <div className={`font-bold ${(!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification) ? 'text-red-400' : 'text-green-400'}`}>
-                    buttonDisabled: {String(!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification)}
+                  <div className={`font-bold mt-2 ${(createKycMutation.isPending || isRefetching || !canStartVerification) ? 'text-red-400' : 'text-green-400'}`}>
+                    buttonDisabled: {String(createKycMutation.isPending || isRefetching || !canStartVerification)}
+                    {(createKycMutation.isPending || isRefetching || !canStartVerification) && (
+                      <span className="text-xs text-yellow-400 block mt-1">
+                        {createKycMutation.isPending ? 'Reason: Mutation in progress' : 
+                         isRefetching ? 'Reason: Refetching data' : 
+                         !canStartVerification ? 'Reason: Cannot start verification' : ''}
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
