@@ -235,7 +235,14 @@ const KYC = () => {
   const isPending = kyc?.status === 'pending';
   const isFailed = kyc?.status === 'failed';
   const isExpired = kyc?.status === 'expired';
-  const canStartVerification = !kyc || isFailed || isExpired;
+  
+  // User can start verification if:
+  // - No KYC exists
+  // - KYC is pending (allows retry)
+  // - KYC is failed
+  // - KYC is expired
+  // BUT NOT if verified (once verified, cannot start again)
+  const canStartVerification = !isVerified && (!kyc || isPending || isFailed || isExpired);
 
   const startPersonaVerification = () => {
     if (import.meta.env.DEV) {
@@ -251,7 +258,11 @@ const KYC = () => {
 
     // Check if button should be enabled
     if (!canStartVerification) {
-      toast.error('لا يمكن بدء التحقق في الوقت الحالي');
+      if (isVerified) {
+        toast.info('تم التحقق من هويتك بالفعل');
+      } else {
+        toast.error('لا يمكن بدء التحقق في الوقت الحالي');
+      }
       return;
     }
 
@@ -394,11 +405,95 @@ const KYC = () => {
               </Button>
             </div>
           ) : isPending ? (
-            // Pending Status
-            <div className="text-center py-8">
-              <Loader2 className="h-16 w-16 text-yellow-400 mx-auto mb-4 animate-spin" />
-              <h3 className="text-2xl font-bold text-white mb-2">قيد المراجعة</h3>
-              <p className="text-white/60 mb-6">جاري مراجعة معلوماتك. سيتم إشعارك عند اكتمال التحقق.</p>
+            // Pending Status - Show button to allow retry if needed
+            <div className="space-y-4">
+              <div className="text-center py-4">
+                <Loader2 className="h-16 w-16 text-yellow-400 mx-auto mb-4 animate-spin" />
+                <h3 className="text-2xl font-bold text-white mb-2">قيد المراجعة</h3>
+                <p className="text-white/60 mb-6">جاري مراجعة معلوماتك. سيتم إشعارك عند اكتمال التحقق.</p>
+              </div>
+              
+              <Card className="p-4 bg-yellow-500/10 border-yellow-500/30">
+                <div className="flex gap-2">
+                  <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-white/80">
+                    <p className="font-bold mb-1">ملاحظة</p>
+                    <p>إذا كنت تواجه مشكلة أو تريد إعادة المحاولة، يمكنك الضغط على الزر أدناه.</p>
+                  </div>
+                </div>
+              </Card>
+              
+              {/* Show verification form even when pending - allows retry */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
+                  <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
+                </div>
+                <p className="text-white/60 mb-4">
+                  سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك ورقم هاتفك بشكل آمن وسريع
+                </p>
+                
+                <Card className="p-6 bg-white/5 border-white/10">
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
+                      <ShieldCheck className="h-10 w-10 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white mb-2">خطوات التحقق</h4>
+                      <ul className="text-sm text-white/60 text-right space-y-2">
+                        <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
+                        <li>• التقط صورة سيلفي للتحقق</li>
+                        <li>• تحقق من رقم هاتفك</li>
+                        <li>• سيتم التحقق تلقائياً خلال دقائق</li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
+                  <div className="flex gap-2">
+                    <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-white/80">
+                      <p className="font-bold mb-1">آمن ومشفر</p>
+                      <p>نظام Persona معتمد من أكبر الشركات العالمية ويضمن حماية كاملة لبياناتك</p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Button 
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (import.meta.env.DEV) {
+                      console.log('[KYC] Button onClick fired (pending retry)', {
+                        personaLoaded,
+                        hasPersona: !!(window as any).Persona,
+                        canStartVerification,
+                        mutationPending: createKycMutation.isPending,
+                        isRefetching,
+                        kycStatus: kyc?.status
+                      });
+                    }
+                    startPersonaVerification();
+                  }}
+                  disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
+                  className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  {createKycMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      جاري إنشاء طلب التحقق...
+                    </>
+                  ) : (
+                    <>
+                      <IdCard className="h-5 w-5" />
+                      {personaLoaded || (window as any).Persona ? 'إعادة المحاولة' : 'جاري التحميل...'}
+                      <ArrowRight className="h-5 w-5" />
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
           ) : (
             // Step 3: Identity Verification with Persona
