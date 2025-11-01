@@ -264,11 +264,13 @@ const KYC = () => {
   const canStartVerification = useMemo(() => {
     // Must be authenticated and loaded
     if (!user || !hasLoadedOnce) {
+      if (import.meta.env.DEV) console.log('[KYC] Button disabled: no user or not loaded');
       return false;
     }
     
     // Don't enable if we're currently creating AND already have a pending KYC
     if (createKycMutation.isPending && isPending) {
+      if (import.meta.env.DEV) console.log('[KYC] Button disabled: creating pending');
       return false;
     }
     
@@ -276,8 +278,9 @@ const KYC = () => {
     // - No KYC record exists (!hasKyc)
     // - KYC status is failed
     // - KYC status is expired
+    // - KYC status is null/undefined (edge case - allow retry)
     // Disable (but still show) if status is pending or verified
-    const shouldEnable = !hasKyc || isFailed || isExpired;
+    const shouldEnable = !hasKyc || isFailed || isExpired || !kycStatus;
     
     if (import.meta.env.DEV) {
       console.log('[KYC] Button state:', {
@@ -286,8 +289,9 @@ const KYC = () => {
         isExpired,
         isPending,
         isVerified,
+        kycStatus,
         shouldEnable,
-        status: kycStatus
+        reason: !hasKyc ? 'no KYC' : isFailed ? 'failed' : isExpired ? 'expired' : !kycStatus ? 'no status' : isPending ? 'pending' : isVerified ? 'verified' : 'unknown'
       });
     }
     
@@ -535,8 +539,18 @@ const KYC = () => {
                         {/* Button - always show but disabled when not allowed */}
                         <Button
                           onClick={() => {
+                            if (import.meta.env.DEV) {
+                              console.log('[KYC] Button clicked', {
+                                canStartVerification,
+                                mutationPending: createKycMutation.isPending,
+                                isRefetching,
+                                willCall: canStartVerification && !createKycMutation.isPending && !isRefetching
+                              });
+                            }
                             if (canStartVerification && !createKycMutation.isPending && !isRefetching) {
                               createKycMutation.mutate();
+                            } else if (import.meta.env.DEV) {
+                              console.log('[KYC] Button click ignored - conditions not met');
                             }
                           }}
                           disabled={!canStartVerification || createKycMutation.isPending || isRefetching}
