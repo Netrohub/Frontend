@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Home = () => {
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
   return (
     <>
       <SEO 
@@ -160,23 +163,25 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative z-10 container mx-auto px-4 md:px-6 py-20 text-center">
-        <div className="max-w-3xl mx-auto space-y-6">
-          <h2 className="text-4xl md:text-5xl font-bold text-white">ابدأ التداول الآن</h2>
-          <p className="text-xl text-white/70">انضم لآلاف المستخدمين الذين يثقون بمنصتنا لتداول الحسابات بأمان</p>
-          <Button 
-            asChild
-            size="lg" 
-            className="gap-2 text-lg px-12 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
-          >
-            <Link to="/auth">
-              إنشاء حساب مجاني
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
-      </section>
+      {/* CTA Section - Hidden for authenticated users */}
+      {!isAuthenticated && (
+        <section className="relative z-10 container mx-auto px-4 md:px-6 py-20 text-center">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">ابدأ التداول الآن</h2>
+            <p className="text-xl text-white/70">انضم لآلاف المستخدمين الذين يثقون بمنصتنا لتداول الحسابات بأمان</p>
+            <Button 
+              asChild
+              size="lg" 
+              className="gap-2 text-lg px-12 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+            >
+              <Link to="/auth">
+                إنشاء حساب مجاني
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
