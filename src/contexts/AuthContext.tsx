@@ -1,7 +1,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi, api } from '@/lib/api';
 import type { User } from '@/types/api';
-import { IS_PRODUCTION } from '@/config/env';
+
+// Get IS_PRODUCTION from env without throwing if not configured
+const IS_PRODUCTION = (() => {
+  const nodeEnv = import.meta.env.NODE_ENV || import.meta.env.MODE || 'development';
+  return nodeEnv === 'production';
+})();
 
 interface AuthContextType {
   user: User | null;

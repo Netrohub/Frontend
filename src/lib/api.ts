@@ -26,20 +26,27 @@ import type {
   AdminKycResponse,
   ApiError,
 } from '@/types/api';
-import { API_BASE_URL } from '@/config/env';
+import { getAPIBaseURL } from '@/config/env';
 import { API_TIMEOUT } from '@/config/constants';
-import { IS_PRODUCTION } from '@/config/env';
+import { getEnvConfig } from '@/config/env';
+
+// Get IS_PRODUCTION from env without throwing if not configured
+const IS_PRODUCTION = (() => {
+  const nodeEnv = import.meta.env.NODE_ENV || import.meta.env.MODE || 'development';
+  return nodeEnv === 'production';
+})();
 
 interface RequestOptions extends RequestInit {
   headers?: HeadersInit;
 }
 
 class ApiClient {
-  private baseURL: string;
+  private baseURL: string | null = null;
   private token: string | null = null;
 
-  constructor(baseURL: string) {
-    this.baseURL = baseURL;
+  constructor(baseURL?: string) {
+    // Store the baseURL if provided, otherwise it will be lazily evaluated
+    this.baseURL = baseURL || null;
     // Load token from localStorage
     if (typeof window !== 'undefined') {
       this.token = localStorage.getItem('auth_token');
@@ -59,11 +66,19 @@ class ApiClient {
     return this.token;
   }
 
+  private getBaseURL(): string {
+    // Lazy evaluation - only get API_BASE_URL when actually making a request
+    if (!this.baseURL) {
+      this.baseURL = getAPIBaseURL();
+    }
+    return this.baseURL;
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestOptions = {}
   ): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = `${this.getBaseURL()}${endpoint}`;
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -197,7 +212,8 @@ class ApiClient {
 }
 
 // Create singleton instance
-export const api = new ApiClient(API_BASE_URL);
+// baseURL will be lazily evaluated when first request is made
+export const api = new ApiClient();
 
 // Auth API
 export const authApi = {

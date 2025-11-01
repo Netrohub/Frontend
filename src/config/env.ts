@@ -77,12 +77,20 @@ export function getGTMId(): string | undefined {
   return getEnv().VITE_GTM_ID;
 }
 
-// For backward compatibility, export constants that throw on access if not configured
-// These will only throw when the app tries to use them, not on import
-export const API_BASE_URL = getAPIBaseURL();
-export const GTM_ID = getGTMId();
-export const IS_PRODUCTION = getEnv().NODE_ENV === 'production';
-export const IS_DEVELOPMENT = getEnv().NODE_ENV === 'development';
+// Export constants that are safe to import (don't throw on import)
+// IS_PRODUCTION and IS_DEVELOPMENT are safe because they don't require API_BASE_URL
+export const IS_PRODUCTION = (() => {
+  const nodeEnv = import.meta.env.NODE_ENV || import.meta.env.MODE || 'development';
+  return nodeEnv === 'production';
+})();
+
+export const IS_DEVELOPMENT = (() => {
+  const nodeEnv = import.meta.env.NODE_ENV || import.meta.env.MODE || 'development';
+  return nodeEnv === 'development';
+})();
+
+// Note: API_BASE_URL and GTM_ID are NOT exported as constants
+// Use getAPIBaseURL() and getGTMId() functions instead to avoid import-time evaluation
 
 /**
  * Check if environment is properly configured

@@ -1,11 +1,12 @@
 /**
  * Google Tag Manager initialization
  */
-import { GTM_ID } from '@/config/env';
+import { getGTMId } from '@/config/env';
 
 export function initGTM() {
   // Skip if GTM ID is not configured
-  if (!GTM_ID) {
+  const gtmId = getGTMId();
+  if (!gtmId) {
     if (import.meta.env.DEV) {
       console.warn('GTM_ID not configured. Google Tag Manager will not be initialized.');
     }
@@ -32,12 +33,12 @@ export function initGTM() {
     if (f && f.parentNode) {
       f.parentNode.insertBefore(j, f);
     }
-  })(window, document, 'script', 'dataLayer', GTM_ID);
+  })(window, document, 'script', 'dataLayer', gtmId);
   
   // Add noscript iframe
   const noscript = document.createElement('noscript');
   const iframe = document.createElement('iframe');
-  iframe.src = `https://www.googletagmanager.com/ns.html?id=${GTM_ID}`;
+  iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
   iframe.height = '0';
   iframe.width = '0';
   iframe.style.display = 'none';

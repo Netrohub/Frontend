@@ -2,7 +2,12 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { IS_PRODUCTION } from "@/config/env";
+
+// Get IS_PRODUCTION from env without throwing if not configured
+const IS_PRODUCTION = (() => {
+  const nodeEnv = import.meta.env.NODE_ENV || import.meta.env.MODE || 'development';
+  return nodeEnv === 'production';
+})();
 
 interface Props {
   children: ReactNode;
