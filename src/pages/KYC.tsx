@@ -358,7 +358,7 @@ const KYC = () => {
           // This ensures status is saved even if webhook is delayed
           // Pass inquiryId so backend can create KYC record if it doesn't exist
           try {
-            await kycApi.sync({ inquiry_id: inquiryId });
+            await kycApi.sync(inquiryId ? { inquiry_id: inquiryId } : undefined);
             toast.success("تم إكمال عملية التحقق بنجاح");
             // Refetch to get updated status
             setTimeout(() => {
