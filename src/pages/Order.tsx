@@ -10,6 +10,7 @@ import { ordersApi, disputesApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import type { ApiError } from "@/types/api";
 
 const Order = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,8 +68,9 @@ const Order = () => {
         title: "تم تأكيد الطلب بنجاح",
         description: "شكراً لك! تم تأكيد استلام الحساب بنجاح.",
       });
-    } catch (error: any) {
-      toast.error(error.message || "فشل تأكيد الطلب");
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل تأكيد الطلب");
     }
   };
 

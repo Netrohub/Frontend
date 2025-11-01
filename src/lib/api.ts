@@ -24,11 +24,11 @@ import type {
   AdminListingResponse,
   AdminOrderResponse,
   AdminKycResponse,
+  ApiError,
 } from '@/types/api';
-
-// API Base URL with version prefix
-// All endpoints use /api/v1/ prefix for API versioning
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://backend-piz0.onrender.com/api/v1';
+import { API_BASE_URL } from '@/config/env';
+import { API_TIMEOUT } from '@/config/constants';
+import { IS_PRODUCTION } from '@/config/env';
 
 interface RequestOptions extends RequestInit {
   headers?: HeadersInit;
@@ -74,10 +74,9 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    // Request timeout: 30 seconds default
-    const timeout = 30000;
+    // Request timeout
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT);
 
     try {
       const response = await fetch(url, {
@@ -90,11 +89,11 @@ class ApiClient {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        let errorData: any;
+        let errorData: ApiError;
         try {
           errorData = await response.json();
         } catch {
-          errorData = { message: response.statusText };
+          errorData = { message: response.statusText, status: response.status };
         }
 
         // Handle Laravel validation errors (422 status)
@@ -102,21 +101,22 @@ class ApiClient {
           // Format validation errors into a readable message
           const errorMessages: string[] = [];
           Object.keys(errorData.errors).forEach((key) => {
-            if (Array.isArray(errorData.errors[key])) {
-              errorMessages.push(...errorData.errors[key]);
-            } else {
-              errorMessages.push(errorData.errors[key]);
+            const fieldErrors = errorData.errors![key];
+            if (Array.isArray(fieldErrors)) {
+              errorMessages.push(...fieldErrors);
+            } else if (typeof fieldErrors === 'string') {
+              errorMessages.push(fieldErrors);
             }
           });
           const errorMessage = errorMessages.length > 0 
             ? errorMessages.join(', ') 
             : errorData.message || 'Validation failed';
-          const error = new Error(errorMessage);
-          (error as any).errors = errorData.errors;
-          (error as any).status = response.status;
+          const error = new Error(errorMessage) as Error & ApiError;
+          error.errors = errorData.errors;
+          error.status = response.status;
           
           // Log validation errors for debugging
-          if (process.env.NODE_ENV !== 'production') {
+          if (!IS_PRODUCTION) {
             console.error('API Validation Error:', {
               endpoint,
               status: response.status,
@@ -129,12 +129,12 @@ class ApiClient {
 
         // Handle other errors
         const errorMessage = errorData.message || errorData.error || response.statusText || 'API request failed';
-        const error = new Error(errorMessage);
-        (error as any).status = response.status;
-        (error as any).data = errorData;
+        const error = new Error(errorMessage) as Error & ApiError;
+        error.status = response.status;
+        error.data = errorData;
         
         // Log all errors for debugging
-        if (process.env.NODE_ENV !== 'production') {
+        if (!IS_PRODUCTION) {
           console.error('API Error:', {
             endpoint,
             method: options.method || 'GET',
@@ -148,19 +148,19 @@ class ApiClient {
       }
 
       return response.json();
-    } catch (fetchError: any) {
+    } catch (fetchError) {
       clearTimeout(timeoutId);
       
       // Handle timeout errors
-      if (fetchError.name === 'AbortError') {
-        const timeoutError = new Error('Request timeout - The server took too long to respond');
-        (timeoutError as any).status = 408;
-        (timeoutError as any).timeout = true;
-        if (process.env.NODE_ENV !== 'production') {
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        const timeoutError = new Error('Request timeout - The server took too long to respond') as Error & ApiError;
+        timeoutError.status = 408;
+        timeoutError.timeout = true;
+        if (!IS_PRODUCTION) {
           console.error('API Request Timeout:', {
             endpoint,
             method: options.method || 'GET',
-            timeout: timeout / 1000 + 's',
+            timeout: API_TIMEOUT / 1000 + 's',
           });
         }
         throw timeoutError;
@@ -175,7 +175,7 @@ class ApiClient {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  async post<T>(endpoint: string, data?: any, options?: RequestOptions): Promise<T> {
+  async post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
@@ -183,7 +183,7 @@ class ApiClient {
     });
   }
 
-  async put<T>(endpoint: string, data?: any, options?: RequestOptions): Promise<T> {
+  async put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',

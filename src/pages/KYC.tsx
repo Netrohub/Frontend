@@ -8,6 +8,7 @@ import { kycApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import type { ApiError } from "@/types/api";
 
 const KYC = () => {
   const { user } = useAuth();
@@ -29,8 +30,9 @@ const KYC = () => {
       }
       toast.success("تم إنشاء طلب التحقق");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "فشل إنشاء طلب التحقق");
+    onError: (error: Error) => {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل إنشاء طلب التحقق");
     },
   });
 

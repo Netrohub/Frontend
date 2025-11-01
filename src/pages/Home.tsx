@@ -3,10 +3,16 @@ import { ArrowRight, Snowflake, Shield, Flame } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
+import { SEO } from "@/components/SEO";
 
 const Home = () => {
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <>
+      <SEO 
+        title="NXOLand - تداول آمن وموثوق للحسابات"
+        description="منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان. بيع وشراء الحسابات بأمان تام."
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Icy background with gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
@@ -201,6 +207,7 @@ const Home = () => {
       {/* Bottom Navigation for Mobile */}
       <BottomNav />
     </div>
+    </>
   );
 };
 

@@ -35,45 +35,61 @@ export function NotificationBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)]"
+          aria-label={`الإشعارات${unreadCount > 0 ? ` - ${unreadCount} إشعار غير مقروء` : ''}`}
+          aria-expanded="false"
+        >
+          <Bell className="h-5 w-5" aria-hidden="true" />
           {unreadCount > 0 && (
             <Badge
               variant="destructive"
               className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+              aria-label={`${unreadCount} إشعار غير مقروء`}
             >
+              <span className="sr-only">{unreadCount} إشعار غير مقروء</span>
               {unreadCount}
             </Badge>
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 bg-background border-border">
+      <DropdownMenuContent 
+        align="end" 
+        className="w-80 bg-background border-border"
+        role="menu"
+        aria-label="قائمة الإشعارات"
+      >
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="font-semibold text-lg">الإشعارات</h3>
+          <h3 className="font-semibold text-lg" id="notifications-heading">الإشعارات</h3>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMarkAllAsRead}
-              className="text-xs"
+              className="text-xs focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2"
+              aria-label="تحديد جميع الإشعارات كمقروءة"
             >
               تحديد الكل كمقروء
             </Button>
           )}
         </div>
-        <ScrollArea className="h-[400px]">
+        <ScrollArea className="h-[400px]" aria-labelledby="notifications-heading">
           {publishedNotifications.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
+            <div className="p-8 text-center text-muted-foreground" role="status" aria-live="polite">
               لا توجد إشعارات
             </div>
           ) : (
             publishedNotifications.map((notification) => (
               <DropdownMenuItem
                 key={notification.id}
-                className={`flex flex-col items-start gap-2 p-4 cursor-pointer ${
+                className={`flex flex-col items-start gap-2 p-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 ${
                   !notification.read ? "bg-accent/5" : ""
                 }`}
                 onClick={() => handleMarkAsRead(notification.id)}
+                role="menuitem"
+                aria-label={`${notification.title}. ${notification.message}`}
               >
                 <div className="flex items-start gap-3 w-full">
                   <div

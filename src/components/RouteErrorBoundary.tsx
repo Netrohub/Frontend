@@ -1,0 +1,111 @@
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { IS_PRODUCTION } from "@/config/env";
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error: Error | null;
+}
+
+/**
+ * Route-level Error Boundary
+ * Catches errors in route components and displays a user-friendly error message
+ * Allows users to navigate back or retry
+ */
+export class RouteErrorBoundary extends Component<Props, State> {
+
+  public state: State = {
+    hasError: false,
+    error: null,
+  };
+
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("RouteErrorBoundary caught an error:", error, errorInfo);
+
+    // Log error to error tracking service in production
+    if (IS_PRODUCTION) {
+      // TODO: Integrate with error tracking service (e.g., Sentry)
+      // Example: Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
+    }
+  }
+
+  private handleReset = () => {
+    this.setState({
+      hasError: false,
+      error: null,
+    });
+  };
+
+  private handleGoHome = () => {
+    this.handleReset();
+    // Use window.location instead of navigate hook since this is a class component
+    window.location.href = "/";
+  };
+
+  public render() {
+    if (this.state.hasError) {
+      // Use custom fallback if provided
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] p-4" dir="rtl">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-6 w-6 text-destructive" aria-hidden="true" />
+                <CardTitle>حدث خطأ</CardTitle>
+              </div>
+              <CardDescription>
+                حدث خطأ غير متوقع في هذه الصفحة. يرجى المحاولة مرة أخرى.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!IS_PRODUCTION && this.state.error && (
+                <div className="p-3 bg-destructive/10 rounded-md">
+                  <p className="text-sm font-mono text-destructive break-all">
+                    {this.state.error.toString()}
+                  </p>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Button 
+                  onClick={this.handleReset} 
+                  variant="outline" 
+                  className="flex-1 focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)]"
+                  aria-label="إعادة المحاولة"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" aria-hidden="true" />
+                  إعادة المحاولة
+                </Button>
+                <Button 
+                  onClick={this.handleGoHome} 
+                  className="flex-1 focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)]"
+                  aria-label="العودة للصفحة الرئيسية"
+                >
+                  <Home className="h-4 w-4 mr-2" aria-hidden="true" />
+                  الرئيسية
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+

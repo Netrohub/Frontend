@@ -1,24 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authApi, api } from '@/lib/api';
-
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  phone?: string;
-  role: 'user' | 'admin';
-  is_verified: boolean;
-  avatar?: string;
-  bio?: string;
-  wallet?: {
-    available_balance: number;
-    on_hold_balance: number;
-    withdrawn_total: number;
-  };
-  kyc_verification?: {
-    status: 'pending' | 'verified' | 'failed' | 'expired';
-  };
-}
+import type { User } from '@/types/api';
+import { IS_PRODUCTION } from '@/config/env';
 
 interface AuthContextType {
   user: User | null;
@@ -77,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authApi.logout();
     } catch (error) {
       // Continue with logout even if API call fails
-      if (process.env.NODE_ENV !== 'production') {
+      if (!IS_PRODUCTION) {
         console.error('Logout error:', error);
       }
     } finally {

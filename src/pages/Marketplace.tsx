@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,22 +9,8 @@ import { Navbar } from "@/components/Navbar";
 import { listingsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-
-interface Listing {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  images?: string[];
-  status: string;
-  views: number;
-  user?: {
-    id: number;
-    name: string;
-    avatar?: string;
-  };
-}
+import { PRICE_THRESHOLDS } from "@/config/constants";
+import type { Listing } from "@/types/api";
 
 const Marketplace = () => {
   const [search, setSearch] = useState("");
@@ -37,12 +23,16 @@ const Marketplace = () => {
   });
 
   const listings: Listing[] = data?.data || [];
-  const filteredListings = listings.filter((listing) => {
-    if (priceFilter === "low" && listing.price >= 500) return false;
-    if (priceFilter === "mid" && (listing.price < 500 || listing.price > 1500)) return false;
-    if (priceFilter === "high" && listing.price <= 1500) return false;
-    return true;
-  });
+  
+  // Memoize filtered listings to avoid recalculating on every render
+  const filteredListings = useMemo(() => {
+    return listings.filter((listing) => {
+      if (priceFilter === "low" && listing.price >= PRICE_THRESHOLDS.LOW_MAX) return false;
+      if (priceFilter === "mid" && (listing.price < PRICE_THRESHOLDS.MID_MIN || listing.price > PRICE_THRESHOLDS.MID_MAX)) return false;
+      if (priceFilter === "high" && listing.price <= PRICE_THRESHOLDS.HIGH_MIN) return false;
+      return true;
+    });
+  }, [listings, priceFilter]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ar-SA', {
@@ -151,12 +141,13 @@ const Marketplace = () => {
                       {account.images && account.images.length > 0 ? (
                         <img 
                           src={account.images[0]} 
-                          alt={account.title}
+                          alt={`${account.title} - ${account.category}`}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/40">
-                          <Shield className="h-12 w-12" />
+                        <div className="w-full h-full flex items-center justify-center text-white/40" aria-label="لا توجد صورة">
+                          <Shield className="h-12 w-12" aria-hidden="true" />
                         </div>
                       )}
                     </div>

@@ -9,8 +9,23 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 
+interface Member {
+  id: number;
+  name: string;
+  role: string;
+  sales: number;
+  revenue: string;
+  rating: number;
+  online: boolean;
+  isVerified: boolean;
+  email: string;
+  phone: string;
+  joined: string;
+  successRate: string;
+}
+
 const Members = () => {
-  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const members = [
@@ -22,7 +37,7 @@ const Members = () => {
     { id: 6, name: "نورة الغامدي", role: "بائع", sales: 76, revenue: "25,300", rating: 4.6, online: true, isVerified: false, email: "noura@example.com", phone: "+966508888888", joined: "2025-01-18", successRate: "94%" },
   ];
 
-  const handleViewProfile = (member: any) => {
+  const handleViewProfile = (member: Member) => {
     setSelectedMember(member);
     setIsDialogOpen(true);
   };

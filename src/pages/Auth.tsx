@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -9,6 +9,9 @@ import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-reac
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { sanitizeString, isValidEmail, isValidPassword } from "@/lib/utils/validation";
+import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
+import type { ApiError } from "@/types/api";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -25,13 +28,28 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Client-side validation
+    if (!isValidEmail(loginData.email)) {
+      toast.error("يرجى إدخال بريد إلكتروني صحيح");
+      return;
+    }
+    
+    if (!isValidPassword(loginData.password)) {
+      toast.error(`كلمة المرور يجب أن تكون ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} أحرف على الأقل`);
+      return;
+    }
+    
     setLoading(true);
     try {
-      await login(loginData.email, loginData.password);
+      // Sanitize inputs
+      const sanitizedEmail = sanitizeString(loginData.email);
+      await login(sanitizedEmail, loginData.password); // Password shouldn't be sanitized
       toast.success("تم تسجيل الدخول بنجاح");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "فشل تسجيل الدخول");
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل تسجيل الدخول");
     } finally {
       setLoading(false);
     }
@@ -39,23 +57,45 @@ const Auth = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Client-side validation
+    if (registerData.name.length < VALIDATION_RULES.NAME_MIN_LENGTH) {
+      toast.error(`الاسم يجب أن يكون ${VALIDATION_RULES.NAME_MIN_LENGTH} أحرف على الأقل`);
+      return;
+    }
+    
+    if (!isValidEmail(registerData.email)) {
+      toast.error("يرجى إدخال بريد إلكتروني صحيح");
+      return;
+    }
+    
+    if (!isValidPassword(registerData.password)) {
+      toast.error(`كلمة المرور يجب أن تكون ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} أحرف على الأقل`);
+      return;
+    }
+    
     if (registerData.password !== registerData.password_confirmation) {
       toast.error("كلمات المرور غير متطابقة");
       return;
     }
+    
     setLoading(true);
     try {
-      await register({
-        name: registerData.name,
-        email: registerData.email,
-        password: registerData.password,
+      // Sanitize inputs
+      const sanitizedData = {
+        name: sanitizeString(registerData.name),
+        email: sanitizeString(registerData.email),
+        password: registerData.password, // Don't sanitize passwords
         password_confirmation: registerData.password_confirmation,
-        phone: registerData.phone || undefined,
-      });
+        phone: registerData.phone ? sanitizeString(registerData.phone) : undefined,
+      };
+      
+      await register(sanitizedData);
       toast.success("تم إنشاء الحساب بنجاح");
       navigate("/");
-    } catch (error: any) {
-      toast.error(error.message || "فشل إنشاء الحساب");
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل إنشاء الحساب");
     } finally {
       setLoading(false);
     }
@@ -68,18 +108,20 @@ const Auth = () => {
       
       {/* Snow particles */}
       <div className="absolute inset-0 pointer-events-none">
-        {[...Array(50)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+        {useMemo(() => 
+          [...Array(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-${Math.random() * 20}%`,
+                animationDuration: `${ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN)}s`,
+                animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX}s`,
+              }}
+            />
+          )), []
+        )}
       </div>
 
       {/* Content */}
@@ -144,9 +186,14 @@ const Auth = () => {
                 </div>
 
                 <div className="flex justify-end">
-                  <a href="#" className="text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]">
+                  <button
+                    type="button"
+                    className="text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 rounded px-1"
+                    aria-label="نسيت كلمة المرور"
+                    onClick={() => toast.info("ميزة استعادة كلمة المرور قريباً")}
+                  >
                     نسيت كلمة المرور؟
-                  </a>
+                  </button>
                 </div>
 
                 <Button 

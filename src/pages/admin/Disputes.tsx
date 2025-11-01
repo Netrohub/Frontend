@@ -6,8 +6,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 
+interface AdminDispute {
+  id: string;
+  orderId: string;
+  reporter: string;
+  reporterEmail: string;
+  reported: string;
+  reportedEmail: string;
+  product: string;
+  reason: string;
+  description: string;
+  status: "open" | "investigating" | "resolved" | "closed";
+  priority: "high" | "medium" | "low";
+  date: string;
+  price: number;
+}
+
 const AdminDisputes = () => {
-  const [selectedDispute, setSelectedDispute] = useState<any>(null);
+  const [selectedDispute, setSelectedDispute] = useState<AdminDispute | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const disputes = [
@@ -58,7 +74,7 @@ const AdminDisputes = () => {
     },
   ];
 
-  const handleViewDetails = (dispute: any) => {
+  const handleViewDetails = (dispute: AdminDispute) => {
     setSelectedDispute(dispute);
     setIsDialogOpen(true);
   };

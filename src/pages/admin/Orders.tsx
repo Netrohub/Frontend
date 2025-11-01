@@ -6,8 +6,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Eye, CheckCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 
+interface AdminOrder {
+  id: string;
+  buyer: string;
+  buyerEmail: string;
+  seller: string;
+  sellerEmail: string;
+  product: string;
+  price: number;
+  status: "completed" | "pending" | "processing" | "cancelled";
+  date: string;
+  paymentMethod: string;
+}
+
 const AdminOrders = () => {
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const orders = [
@@ -17,7 +30,7 @@ const AdminOrders = () => {
     { id: "ORD-004", buyer: "أحمد صالح", buyerEmail: "ahmed@example.com", seller: "خالد العتيبي", sellerEmail: "khalid@example.com", product: "حساب ماين كرافت", price: 420, status: "cancelled", date: "2025-01-17", paymentMethod: "بطاقة ائتمان" },
   ];
 
-  const handleViewDetails = (order: any) => {
+  const handleViewDetails = (order: AdminOrder) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
   };

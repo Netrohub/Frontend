@@ -6,8 +6,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Search, Ban, CheckCircle, UserX, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
+interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  status: "active" | "suspended";
+  verified: boolean;
+  joined: string;
+  orders: number;
+  totalSpent: number;
+  lastActive: string;
+}
+
 const AdminUsers = () => {
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const users = [
@@ -17,7 +30,7 @@ const AdminUsers = () => {
     { id: 4, name: "نورة السعيد", email: "noura@example.com", phone: "+966555555555", status: "active", verified: true, joined: "2025-01-05", orders: 15, totalSpent: 7800, lastActive: "منذ 30 دقيقة" },
   ];
 
-  const handleViewDetails = (user: any) => {
+  const handleViewDetails = (user: AdminUser) => {
     setSelectedUser(user);
     setIsDialogOpen(true);
   };

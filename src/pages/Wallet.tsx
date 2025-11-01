@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,9 @@ import { walletApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { ANIMATION_CONFIG } from "@/config/constants";
+import { isValidNumber } from "@/lib/utils/validation";
+import type { ApiError } from "@/types/api";
 
 const Wallet = () => {
   const { user } = useAuth();
@@ -34,23 +37,33 @@ const Wallet = () => {
       setWithdrawAmount("");
       setBankAccount("");
     },
-    onError: (error: any) => {
-      toast.error(error.message || "فشل طلب السحب");
+    onError: (error: Error) => {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل طلب السحب");
     },
   });
 
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
-    const amount = parseFloat(withdrawAmount);
-    if (!amount || amount <= 0) {
+    
+    // Validate amount
+    if (!isValidNumber(withdrawAmount, 0.01, availableBalance)) {
       toast.error("يرجى إدخال مبلغ صحيح");
       return;
     }
-    if (!bankAccount) {
+    
+    const amount = parseFloat(withdrawAmount);
+    if (amount > availableBalance) {
+      toast.error("المبلغ أكبر من الرصيد المتاح");
+      return;
+    }
+    
+    if (!bankAccount || bankAccount.trim().length === 0) {
       toast.error("يرجى إدخال رقم الحساب البنكي");
       return;
     }
-    withdrawMutation.mutate({ amount, bank_account: bankAccount });
+    
+    withdrawMutation.mutate({ amount, bank_account: bankAccount.trim() });
   };
 
   const formatPrice = (price: number) => {
@@ -80,18 +93,20 @@ const Wallet = () => {
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
       {/* Animated snow particles */}
       <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+        {useMemo(() => 
+          [...Array(Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6))].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-${Math.random() * 20}%`,
+                animationDuration: `${ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN)}s`,
+                animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX}s`,
+              }}
+            />
+          )), []
+        )}
       </div>
 
       <Navbar />

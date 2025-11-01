@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,8 @@ import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { ANIMATION_CONFIG, ESCROW_HOLD_HOURS } from "@/config/constants";
+import type { ApiError } from "@/types/api";
 
 const Checkout = () => {
   const [searchParams] = useSearchParams();
@@ -48,8 +50,9 @@ const Checkout = () => {
       } else {
         toast.error("فشل إنشاء رابط الدفع");
       }
-    } catch (error: any) {
-      toast.error(error.message || "فشل إنشاء رابط الدفع");
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل إنشاء رابط الدفع");
     } finally {
       setProcessing(false);
     }
@@ -100,18 +103,20 @@ const Checkout = () => {
       
       {/* Snow particles */}
       <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+        {useMemo(() => 
+          [...Array(Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6))].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `-${Math.random() * 20}%`,
+                animationDuration: `${ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN)}s`,
+                animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX}s`,
+              }}
+            />
+          )), []
+        )}
       </div>
 
       {/* Navigation */}
@@ -158,7 +163,7 @@ const Checkout = () => {
                 <div className="space-y-2">
                   <h3 className="font-bold text-white">محمي بنظام الضمان</h3>
                   <p className="text-sm text-white/80 leading-relaxed">
-                    سيتم حفظ المبلغ في حساب ضمان لمدة 12 ساعة. يمكنك فحص الحساب والتأكد من صحته خلال هذه الفترة. إذا واجهت أي مشكلة، يمكنك فتح نزاع واسترداد أموالك بالكامل.
+                    سيتم حفظ المبلغ في حساب ضمان لمدة {ESCROW_HOLD_HOURS} ساعة. يمكنك فحص الحساب والتأكد من صحته خلال هذه الفترة. إذا واجهت أي مشكلة، يمكنك فتح نزاع واسترداد أموالك بالكامل.
                   </p>
                 </div>
               </div>

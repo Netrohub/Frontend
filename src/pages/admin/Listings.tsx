@@ -6,8 +6,21 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Eye, Ban, CheckCircle, Trash2 } from "lucide-react";
 import { useState } from "react";
 
+interface AdminListing {
+  id: number;
+  title: string;
+  seller: string;
+  sellerEmail: string;
+  price: number;
+  status: "active" | "pending" | "suspended";
+  views: number;
+  created: string;
+  category: string;
+  description: string;
+}
+
 const AdminListings = () => {
-  const [selectedListing, setSelectedListing] = useState<any>(null);
+  const [selectedListing, setSelectedListing] = useState<AdminListing | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const listings = [
@@ -17,7 +30,7 @@ const AdminListings = () => {
     { id: 4, title: "حساب ماين كرافت", seller: "نورة السعيد", sellerEmail: "noura@example.com", price: 420, status: "suspended", views: 156, created: "2025-01-17", category: "ماين كرافت", description: "حساب مع جميع التحديثات" },
   ];
 
-  const handleViewDetails = (listing: any) => {
+  const handleViewDetails = (listing: AdminListing) => {
     setSelectedListing(listing);
     setIsDialogOpen(true);
   };

@@ -170,6 +170,8 @@ export interface ApiError {
   errors?: Record<string, string[]>;
   error?: string;
   status?: number;
+  timeout?: boolean;
+  data?: unknown;
 }
 
 // Admin types

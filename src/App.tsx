@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,84 +7,280 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotificationBanner } from "@/components/NotificationBanner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { SkipLink } from "@/components/SkipLink";
+import { RouteErrorBoundary } from "@/components/RouteErrorBoundary";
+import { HelmetProvider } from "react-helmet-async";
+import { Loader2 } from "lucide-react";
+import { CACHE_TIMES } from "@/config/constants";
+
+// Public routes - loaded immediately
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import ProductDetails from "./pages/ProductDetails";
-import Checkout from "./pages/Checkout";
-import Order from "./pages/Order";
 import Members from "./pages/Members";
 import Leaderboard from "./pages/Leaderboard";
 import Auth from "./pages/Auth";
-import Sell from "./pages/Sell";
-import MyListings from "./pages/MyListings";
-import Disputes from "./pages/Disputes";
-import KYC from "./pages/KYC";
-import Admin from "./pages/Admin";
-import AdminUsers from "./pages/admin/Users";
-import AdminListings from "./pages/admin/Listings";
-import AdminOrders from "./pages/admin/Orders";
-import AdminDisputes from "./pages/admin/Disputes";
-import AdminSettings from "./pages/admin/Settings";
-import AdminNotifications from "./pages/admin/Notifications";
 import About from "./pages/About";
 import Help from "./pages/Help";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
-import Notifications from "./pages/Notifications";
-import Profile from "./pages/Profile";
-import EditProfile from "./pages/EditProfile";
-import Security from "./pages/Security";
-import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
+// Protected routes - lazy loaded
+const Checkout = lazy(() => import("./pages/Checkout"));
+const Order = lazy(() => import("./pages/Order"));
+const Sell = lazy(() => import("./pages/Sell"));
+const MyListings = lazy(() => import("./pages/MyListings"));
+const Disputes = lazy(() => import("./pages/Disputes"));
+const KYC = lazy(() => import("./pages/KYC"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const Profile = lazy(() => import("./pages/Profile"));
+const EditProfile = lazy(() => import("./pages/EditProfile"));
+const Security = lazy(() => import("./pages/Security"));
+const Wallet = lazy(() => import("./pages/Wallet"));
+
+// Admin routes - lazy loaded
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminUsers = lazy(() => import("./pages/admin/Users"));
+const AdminListings = lazy(() => import("./pages/admin/Listings"));
+const AdminOrders = lazy(() => import("./pages/admin/Orders"));
+const AdminDisputes = lazy(() => import("./pages/admin/Disputes"));
+const AdminSettings = lazy(() => import("./pages/admin/Settings"));
+const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
+
+// Loading component
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]">
+    <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+  </div>
+);
+
+// Configure React Query with proper defaults
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: CACHE_TIMES.STALE_TIME,
+      gcTime: CACHE_TIMES.CACHE_TIME, // Previously cacheTime
+      refetchOnWindowFocus: false,
+      retry: 1,
+      refetchOnMount: true,
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
 
 const App = () => (
   <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+            <SkipLink />
             <NotificationBanner />
-            <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order/:id" element={<Order />} />
-          <Route path="/members" element={<Members />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/sell" element={<Sell />} />
-          <Route path="/my-listings" element={<MyListings />} />
-          <Route path="/disputes" element={<Disputes />} />
-          <Route path="/kyc" element={<KYC />} />
-          <Route path="/admin" element={<Admin />}>
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="listings" element={<AdminListings />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="disputes" element={<AdminDisputes />} />
-            <Route path="notifications" element={<AdminNotifications />} />
-            <Route path="settings" element={<AdminSettings />} />
-          </Route>
-          <Route path="/about" element={<About />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/security" element={<Security />} />
-          <Route path="/wallet" element={<Wallet />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-            </Routes>
+            <main id="main-content" tabIndex={-1}>
+              <RouteErrorBoundary>
+                <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/members" element={<Members />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+
+              {/* Protected Routes - Require Authentication */}
+              <Route
+                path="/checkout"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Checkout />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/order/:id"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Order />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Sell />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/my-listings"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <MyListings />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/disputes"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Disputes />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/kyc"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <KYC />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/notifications"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Notifications />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Profile />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/edit-profile"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <EditProfile />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/security"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Security />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/wallet"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Wallet />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+
+              {/* Admin Routes - Require Admin Role */}
+              <Route
+                path="/admin"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute requireAdmin>
+                      <Admin />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              >
+                <Route
+                  path="users"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminUsers />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="listings"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminListings />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="orders"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminOrders />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="disputes"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminDisputes />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="notifications"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminNotifications />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="settings"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminSettings />
+                    </Suspense>
+                  }
+                />
+              </Route>
+
+                {/* 404 - Must be last */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              </RouteErrorBoundary>
+            </main>
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
     </QueryClientProvider>
+    </HelmetProvider>
   </ErrorBoundary>
 );
 

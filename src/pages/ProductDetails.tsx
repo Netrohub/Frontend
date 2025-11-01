@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +9,8 @@ import { listingsApi, ordersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import type { ApiError } from "@/types/api";
+import { SEO } from "@/components/SEO";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +24,8 @@ const ProductDetails = () => {
     enabled: !!listingId,
   });
 
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+
   const handleBuy = async () => {
     if (!user) {
       toast.error("يجب تسجيل الدخول أولاً");
@@ -28,11 +33,19 @@ const ProductDetails = () => {
       return;
     }
 
+    if (isCreatingOrder) {
+      return; // Prevent duplicate requests
+    }
+
+    setIsCreatingOrder(true);
     try {
       const order = await ordersApi.create({ listing_id: listingId });
       navigate(`/checkout?order_id=${order.id}`);
-    } catch (error: any) {
-      toast.error(error.message || "فشل إنشاء الطلب");
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل إنشاء الطلب");
+    } finally {
+      setIsCreatingOrder(false);
     }
   };
 
@@ -46,11 +59,14 @@ const ProductDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <>
+        <SEO title="تحميل..." />
+        <div className="min-h-screen relative overflow-hidden" dir="rtl">
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]" role="status" aria-live="polite">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
+          <span className="sr-only">جاري تحميل تفاصيل المنتج...</span>
         </div>
       </div>
     );
@@ -75,7 +91,13 @@ const ProductDetails = () => {
   const isOwner = user?.id === listing.user_id;
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <>
+      <SEO 
+        title={`${listing.title} - NXOLand`}
+        description={listing.description || `شراء ${listing.title} من ${listing.category}`}
+        url={`/product/${listing.id}`}
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
@@ -111,7 +133,12 @@ const ProductDetails = () => {
             <Card className="overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
                 {images.length > 0 ? (
-                  <img src={images[0]} alt={listing.title} className="w-full h-full object-cover" />
+                  <img 
+                    src={images[0]} 
+                    alt={`${listing.title} - ${listing.category}`}
+                    loading="eager"
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <Shield className="h-32 w-32 text-white/20" />
                 )}
@@ -122,7 +149,12 @@ const ProductDetails = () => {
               <div className="grid grid-cols-4 gap-3">
                 {images.slice(1, 5).map((img, i) => (
                   <Card key={i} className="aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden">
-                    <img src={img} alt={`${listing.title} ${i + 2}`} className="w-full h-full object-cover" />
+                    <img 
+                      src={img} 
+                      alt={`${listing.title} - صورة ${i + 2}`}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
                   </Card>
                 ))}
               </div>
@@ -167,10 +199,20 @@ const ProductDetails = () => {
             {!isOwner && listing.status === 'active' && (
               <Button 
                 onClick={handleBuy}
-                className="w-full py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold text-lg"
+                disabled={isCreatingOrder}
+                className="w-full py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                شراء الآن
-                <ArrowRight className="mr-2 h-5 w-5" />
+                {isCreatingOrder ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    جاري المعالجة...
+                  </>
+                ) : (
+                  <>
+                    شراء الآن
+                    <ArrowRight className="mr-2 h-5 w-5" />
+                  </>
+                )}
               </Button>
             )}
 
@@ -192,6 +234,7 @@ const ProductDetails = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

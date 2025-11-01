@@ -29,14 +29,20 @@ export const MobileNav = () => {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden text-white hover:bg-white/10"
+          className="md:hidden text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)]"
+          aria-label="فتح القائمة"
+          aria-expanded={open}
+          aria-controls="mobile-nav-menu"
         >
-          <Menu className="h-6 w-6" />
+          <Menu className="h-6 w-6" aria-hidden="true" />
+          <span className="sr-only">القائمة</span>
         </Button>
       </SheetTrigger>
       <SheetContent
         side="right"
         className="w-[280px] bg-[hsl(200,70%,15%)] border-white/10 backdrop-blur-md"
+        id="mobile-nav-menu"
+        aria-label="قائمة التنقل الرئيسية"
       >
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-xl font-bold text-white">القائمة</h2>
@@ -44,13 +50,15 @@ export const MobileNav = () => {
             variant="ghost"
             size="icon"
             onClick={() => setOpen(false)}
-            className="text-white hover:bg-white/10"
+            className="text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)]"
+            aria-label="إغلاق القائمة"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" aria-hidden="true" />
+            <span className="sr-only">إغلاق</span>
           </Button>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="space-y-2" aria-label="روابط التنقل">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -58,13 +66,14 @@ export const MobileNav = () => {
                 key={item.path}
                 to={item.path}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)] ${
                   isActive(item.path)
                     ? "bg-[hsl(195,80%,50%)] text-white font-bold"
                     : "text-white/80 hover:bg-white/10 hover:text-white"
                 }`}
+                aria-current={isActive(item.path) ? "page" : undefined}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className="h-5 w-5" aria-hidden="true" />
                 <span>{item.label}</span>
               </Link>
             );

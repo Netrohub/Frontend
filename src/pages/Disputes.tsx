@@ -13,6 +13,7 @@ import { disputesApi, ordersApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import type { Order, Dispute, ApiError } from "@/types/api";
 
 const Disputes = () => {
   const { user } = useAuth();
@@ -48,8 +49,9 @@ const Disputes = () => {
       setShowNewDispute(false);
       setDisputeData({ order_id: 0, reason: "", description: "" });
     },
-    onError: (error: any) => {
-      toast.error(error.message || "فشل إنشاء النزاع");
+    onError: (error: Error) => {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || "فشل إنشاء النزاع");
     },
   });
 
@@ -74,7 +76,7 @@ const Disputes = () => {
   };
 
   const availableOrders = orders?.data?.filter(
-    (order: any) => order.status === 'escrow_hold' || order.status === 'disputed'
+    (order: Order) => order.status === 'escrow_hold' || order.status === 'disputed'
   ) || [];
 
   if (!user) {
@@ -116,7 +118,7 @@ const Disputes = () => {
                       required
                     >
                       <option value={0}>اختر الطلب</option>
-                      {availableOrders.map((order: any) => (
+                      {availableOrders.map((order: Order) => (
                         <option key={order.id} value={order.id}>
                           طلب #{order.id} - {order.listing?.title || 'حساب'} - {order.amount} ريال
                         </option>
@@ -180,7 +182,7 @@ const Disputes = () => {
           </Card>
         ) : (
           <div className="space-y-4">
-            {disputes?.data?.map((dispute: any) => (
+            {disputes?.data?.map((dispute: Dispute) => (
               <Link key={dispute.id} to={`/disputes/${dispute.id}`}>
                 <Card className="p-6 bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer">
                   <div className="flex items-start justify-between mb-4">
