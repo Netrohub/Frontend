@@ -417,7 +417,7 @@ const KYC = () => {
                     <ShieldCheck className="h-10 w-10 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
+                    <h4 className="font-bold text-white mb-2">خطوات التحقق</h4>
                     <ul className="text-sm text-white/60 text-right space-y-2">
                       <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
                       <li>• التقط صورة سيلفي للتحقق</li>
