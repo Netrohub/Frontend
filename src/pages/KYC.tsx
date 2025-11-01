@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, CheckCircle2, AlertCircle, Loader2, XCircle, Clock, Info } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Navbar } from "@/components/Navbar";
 import { kycApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,18 +18,30 @@ const KYC = () => {
   const [showPersonaModal, setShowPersonaModal] = useState(false);
   const [inquiryUrl, setInquiryUrl] = useState<string | null>(null);
   const personaContainerRef = useRef<HTMLDivElement>(null);
+  // Track if we've successfully loaded KYC data at least once (prevents button flashing)
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const { data: kyc, isLoading, error: kycError, refetch, isRefetching } = useQuery({
     queryKey: ['kyc'],
     queryFn: async () => {
-      const response = await kycApi.get();
-      // Normalize null/undefined to null
-      return response ?? null;
+      try {
+        const response = await kycApi.get();
+        // Normalize null/undefined to null - ensure consistent response
+        return response ?? null;
+      } catch (error) {
+        // If error, return null instead of throwing
+        console.error('KYC fetch error:', error);
+        return null;
+      }
     },
     enabled: !!user,
     refetchInterval: (query) => {
       // Refetch every 30 seconds if status is pending
+      // Only refetch if we have data and it's pending (not on initial load)
       const kycData = query.state.data as any;
+      if (kycData === null || kycData === undefined) {
+        return false; // Don't refetch if no data
+      }
       return kycData?.status === 'pending' ? 30000 : false;
     },
     retry: 1,
@@ -37,6 +49,7 @@ const KYC = () => {
     placeholderData: (previousData) => previousData ?? null,
     // Don't refetch on window focus to prevent unexpected state changes
     refetchOnWindowFocus: false,
+    staleTime: 5000, // Consider data fresh for 5 seconds to prevent unnecessary refetches
   });
 
   const createKycMutation = useMutation({
@@ -87,6 +100,14 @@ const KYC = () => {
       console.error('KYC Creation Error:', error);
     },
   });
+
+  // Track when KYC data has been loaded at least once (prevents button flashing)
+  useEffect(() => {
+    // Once data is loaded (not undefined), mark as loaded
+    if (kyc !== undefined && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    }
+  }, [kyc, hasLoadedOnce]);
 
   // Load Persona SDK
   useEffect(() => {
@@ -193,19 +214,38 @@ const KYC = () => {
   }
 
   // Normalize kyc data - handle both null and undefined
-  // Use the current data, or keep previous data during refetch to prevent flashing
-  const kycData = kyc ?? null;
-  const kycStatus = kycData?.status || null;
-  const hasKyc = kycData !== null && kycData !== undefined;
-  const isVerified = kycStatus === 'verified';
-  const isPending = kycStatus === 'pending';
-  const isFailed = kycStatus === 'failed';
-  const isExpired = kycStatus === 'expired';
+  // Use memoization to prevent recalculation on every render
+  // Use stable value: if data hasn't loaded yet, use null; otherwise use actual data
+  const kycData = useMemo(() => {
+    // Before first load, return null (stable) instead of undefined
+    if (!hasLoadedOnce && kyc === undefined) {
+      return null;
+    }
+    return kyc ?? null;
+  }, [kyc, hasLoadedOnce]);
+  
+  const kycStatus = useMemo(() => kycData?.status || null, [kycData]);
+  const hasKyc = useMemo(() => kycData !== null && kycData !== undefined, [kycData]);
+  const isVerified = useMemo(() => kycStatus === 'verified', [kycStatus]);
+  const isPending = useMemo(() => kycStatus === 'pending', [kycStatus]);
+  const isFailed = useMemo(() => kycStatus === 'failed', [kycStatus]);
+  const isExpired = useMemo(() => kycStatus === 'expired', [kycStatus]);
   
   // Show button when: no KYC exists, or status is failed/expired (not verified or pending)
-  // Only hide button if we're actively creating AND have a pending status (to prevent flashing)
-  // If we're creating but don't have KYC yet, keep showing the button (it will be disabled)
-  const canStartVerification = (!hasKyc || isFailed || isExpired) && !(createKycMutation.isPending && isPending);
+  // Memoize this to prevent recalculation and button flashing
+  // Only calculate after initial load to prevent flashing
+  const canStartVerification = useMemo(() => {
+    // Wait for initial load before showing button
+    if (!hasLoadedOnce) {
+      return false;
+    }
+    // If we're currently creating, only hide if we already have a pending KYC
+    if (createKycMutation.isPending && isPending) {
+      return false;
+    }
+    // Otherwise, show if no KYC or status allows it
+    return !hasKyc || isFailed || isExpired;
+  }, [hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending]);
 
   return (
     <>
@@ -223,7 +263,7 @@ const KYC = () => {
             <p className="text-white/60">تحقق من هويتك للبدء في بيع الحسابات على المنصة</p>
           </div>
 
-          {isLoading && !kycData ? (
+          {isLoading && kyc === undefined ? (
             <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin text-white/60 mb-4" />
@@ -389,8 +429,8 @@ const KYC = () => {
                       </div>
                     )}
 
-                    {/* Action Button */}
-                    {canStartVerification && (
+                    {/* Action Button - Always render when conditions are met, prevent unmounting */}
+                    {canStartVerification ? (
                       <div className="space-y-4">
                         {!hasKyc && (
                           <div className="bg-blue-500/10 rounded-lg p-5 border border-blue-500/30">
@@ -407,7 +447,7 @@ const KYC = () => {
                         )}
                         <Button
                           onClick={() => {
-                            if (!createKycMutation.isPending) {
+                            if (!createKycMutation.isPending && !isRefetching) {
                               createKycMutation.mutate();
                             }
                           }}
