@@ -49,61 +49,84 @@ const KYC = () => {
   const createKycMutation = useMutation({
     mutationFn: () => kycApi.create(),
     onSuccess: (data) => {
+      if (import.meta.env.DEV) {
+        console.log('[KYC] Create success', {
+          kyc: data.kyc,
+          inquiryId: data.kyc?.persona_inquiry_id,
+          inquiryUrl: data.inquiry_url,
+          personaLoaded,
+          hasPersona: !!(window as any).Persona
+        });
+      }
+
+      // Update cache with new KYC data
       queryClient.setQueryData(['kyc'], data.kyc);
       
       // Initialize Persona with the inquiry ID if SDK is loaded
-      if (data.kyc?.persona_inquiry_id && personaLoaded && (window as any).Persona) {
-        try {
-          // Clean up any existing Persona client
-          if (personaClientRef.current) {
-            try {
-              personaClientRef.current.destroy();
-            } catch (e) {
-              // Ignore errors when destroying
+      if (data.kyc?.persona_inquiry_id) {
+        if (personaLoaded && (window as any).Persona) {
+          try {
+            // Clean up any existing Persona client
+            if (personaClientRef.current) {
+              try {
+                personaClientRef.current.destroy();
+              } catch (e) {
+                console.warn('[KYC] Error destroying existing Persona client:', e);
+              }
+            }
+            
+            // Use Persona SDK to open embedded widget
+            const personaClient = new (window as any).Persona.Client({
+              inquiryId: data.kyc.persona_inquiry_id,
+              onReady: () => {
+                console.log('[KYC] Persona widget ready');
+              },
+              onComplete: ({ inquiryId }: { inquiryId: string }) => {
+                console.log('[KYC] Persona verification completed', { inquiryId });
+                personaClientRef.current = null;
+                toast.success("تم إكمال عملية التحقق بنجاح");
+                // Refetch KYC status after a short delay
+                setTimeout(() => {
+                  refetch();
+                }, 2000);
+              },
+              onCancel: () => {
+                console.log('[KYC] Persona verification cancelled');
+                personaClientRef.current = null;
+                toast.info("تم إلغاء عملية التحقق");
+              },
+              onError: (error: any) => {
+                console.error('[KYC] Persona error:', error);
+                personaClientRef.current = null;
+                toast.error("حدث خطأ أثناء عملية التحقق");
+              },
+            });
+            
+            // Store reference for cleanup
+            personaClientRef.current = personaClient;
+            
+            // Open Persona widget (Persona handles its own modal)
+            personaClient.open();
+          } catch (error) {
+            console.error('[KYC] Failed to initialize Persona:', error);
+            // Fallback to opening in new window
+            if (data.inquiry_url) {
+              toast.info("سيتم فتح نافذة جديدة للتحقق");
+              window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
+            } else {
+              toast.error("فشل تحميل نظام التحقق. الرجاء المحاولة مرة أخرى");
             }
           }
-          
-          // Use Persona SDK to open embedded widget
-          const personaClient = new (window as any).Persona.Client({
-            inquiryId: data.kyc.persona_inquiry_id,
-            onReady: () => {
-              console.log('[KYC] Persona widget ready');
-            },
-            onComplete: ({ inquiryId }: { inquiryId: string }) => {
-              console.log('[KYC] Persona verification completed', { inquiryId });
-              personaClientRef.current = null;
-              toast.success("تم إكمال عملية التحقق بنجاح");
-              // Refetch KYC status
-              setTimeout(() => {
-                refetch();
-              }, 2000);
-            },
-            onCancel: () => {
-              console.log('[KYC] Persona verification cancelled');
-              personaClientRef.current = null;
-            },
-            onError: (error: any) => {
-              console.error('[KYC] Persona error:', error);
-              personaClientRef.current = null;
-              toast.error("حدث خطأ أثناء عملية التحقق");
-            },
-          });
-          
-          // Store reference for cleanup
-          personaClientRef.current = personaClient;
-          
-          // Open Persona widget (Persona handles its own modal)
-          personaClient.open();
-        } catch (error) {
-          console.error('[KYC] Failed to initialize Persona:', error);
-          toast.error("فشل تحميل نظام التحقق. الرجاء المحاولة مرة أخرى");
+        } else if (data.inquiry_url) {
+          // Fallback: Open Persona in a new window if SDK not loaded
+          toast.info("سيتم فتح نافذة جديدة للتحقق");
+          window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
+        } else {
+          toast.error("فشل الحصول على رابط التحقق");
         }
-      } else if (data.inquiry_url) {
-        // Fallback: Open Persona in a new window if SDK not loaded
-        window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
+      } else {
+        toast.error("فشل إنشاء طلب التحقق - لا يوجد معرف الاستعلام");
       }
-      
-      toast.success("تم إنشاء طلب التحقق بنجاح");
     },
     onError: (error: Error) => {
       const apiError = error as Error & ApiError;
@@ -158,6 +181,13 @@ const KYC = () => {
     };
   }, []);
 
+  // Calculate status flags
+  const isVerified = kyc?.status === 'verified';
+  const isPending = kyc?.status === 'pending';
+  const isFailed = kyc?.status === 'failed';
+  const isExpired = kyc?.status === 'expired';
+  const canStartVerification = !kyc || isFailed || isExpired;
+
   const startPersonaVerification = () => {
     if (import.meta.env.DEV) {
       console.log('[KYC] Button clicked', {
@@ -170,11 +200,24 @@ const KYC = () => {
       });
     }
 
-    if (!personaLoaded || !(window as any).Persona) {
+    // Check if button should be enabled
+    if (!canStartVerification) {
+      toast.error('لا يمكن بدء التحقق في الوقت الحالي');
+      return;
+    }
+
+    // Check if Persona SDK is loaded
+    if (!personaLoaded) {
       toast.error('جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى');
       return;
     }
 
+    if (!(window as any).Persona) {
+      toast.error('نظام التحقق غير متاح. الرجاء تحديث الصفحة والمحاولة مرة أخرى');
+      return;
+    }
+
+    // Prevent duplicate requests
     if (createKycMutation.isPending || isRefetching) {
       toast.info('جاري معالجة الطلب...');
       return;
@@ -183,12 +226,6 @@ const KYC = () => {
     // Create KYC inquiry via backend
     createKycMutation.mutate();
   };
-
-  const isVerified = kyc?.status === 'verified';
-  const isPending = kyc?.status === 'pending';
-  const isFailed = kyc?.status === 'failed';
-  const isExpired = kyc?.status === 'expired';
-  const canStartVerification = !kyc || isFailed || isExpired;
 
   if (!user) {
     return (
@@ -376,13 +413,22 @@ const KYC = () => {
               )}
 
               <Button 
+                type="button"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  if (import.meta.env.DEV) {
+                    console.log('[KYC] Button onClick fired', {
+                      personaLoaded,
+                      canStartVerification,
+                      mutationPending: createKycMutation.isPending,
+                      isRefetching
+                    });
+                  }
                   startPersonaVerification();
                 }}
                 disabled={!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification}
-                className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {createKycMutation.isPending ? (
                   <>
