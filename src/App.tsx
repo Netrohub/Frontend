@@ -31,6 +31,7 @@ import NotFound from "./pages/NotFound";
 const Checkout = lazy(() => import("./pages/Checkout"));
 const Order = lazy(() => import("./pages/Order"));
 const Sell = lazy(() => import("./pages/Sell"));
+const SellWOS = lazy(() => import("./pages/sell/SellWOS"));
 const MyListings = lazy(() => import("./pages/MyListings"));
 const Disputes = lazy(() => import("./pages/Disputes"));
 const KYC = lazy(() => import("./pages/KYC"));
@@ -125,6 +126,16 @@ const App = () => (
                   <Suspense fallback={<LoadingFallback />}>
                     <ProtectedRoute>
                       <Sell />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell/wos"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <SellWOS />
                     </ProtectedRoute>
                   </Suspense>
                 }
