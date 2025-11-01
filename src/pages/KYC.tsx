@@ -430,7 +430,7 @@ const KYC = () => {
                     )}
 
                     {/* Action Button - Always render when conditions are met, prevent unmounting */}
-                    {canStartVerification ? (
+                    {canStartVerification && (
                       <div className="space-y-4">
                         {!hasKyc && (
                           <div className="bg-blue-500/10 rounded-lg p-5 border border-blue-500/30">
