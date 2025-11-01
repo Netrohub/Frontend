@@ -51,14 +51,38 @@ function getEnvConfigOrThrow(): EnvConfig {
   return config;
 }
 
-// Export validated config
-export const env = getEnvConfigOrThrow();
+// Lazy getter for env config (only throws when accessed, not on import)
+let cachedEnv: EnvConfig | null = null;
 
-// Export individual values for convenience
-export const API_BASE_URL = env.VITE_API_BASE_URL;
-export const GTM_ID = env.VITE_GTM_ID;
-export const IS_PRODUCTION = env.NODE_ENV === 'production';
-export const IS_DEVELOPMENT = env.NODE_ENV === 'development';
+function getEnv(): EnvConfig {
+  if (!cachedEnv) {
+    cachedEnv = getEnvConfigOrThrow();
+  }
+  return cachedEnv;
+}
+
+// Export validated config (lazy evaluation - only throws when accessed)
+export const env = new Proxy({} as EnvConfig, {
+  get(_, prop) {
+    return getEnv()[prop as keyof EnvConfig];
+  }
+});
+
+// Export individual values as getters (lazy evaluation)
+export function getAPIBaseURL(): string {
+  return getEnv().VITE_API_BASE_URL;
+}
+
+export function getGTMId(): string | undefined {
+  return getEnv().VITE_GTM_ID;
+}
+
+// For backward compatibility, export constants that throw on access if not configured
+// These will only throw when the app tries to use them, not on import
+export const API_BASE_URL = getAPIBaseURL();
+export const GTM_ID = getGTMId();
+export const IS_PRODUCTION = getEnv().NODE_ENV === 'production';
+export const IS_DEVELOPMENT = getEnv().NODE_ENV === 'development';
 
 /**
  * Check if environment is properly configured

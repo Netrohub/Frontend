@@ -202,16 +202,16 @@ export const api = new ApiClient(API_BASE_URL);
 // Auth API
 export const authApi = {
   register: (data: { name: string; email: string; password: string; password_confirmation: string; phone?: string }) =>
-    api.post<AuthResponse>('/register', data),
+    api.post<AuthResponse>('/v1/register', data),
   
   login: (data: { email: string; password: string }) =>
-    api.post<AuthResponse>('/login', data),
+    api.post<AuthResponse>('/v1/login', data),
   
   logout: () =>
-    api.post<LogoutResponse>('/logout'),
+    api.post<LogoutResponse>('/v1/logout'),
   
   getUser: () =>
-    api.get<User>('/user'),
+    api.get<User>('/v1/user'),
 };
 
 // Listings API
@@ -221,20 +221,20 @@ export const listingsApi = {
     if (params?.category) query.append('category', params.category);
     if (params?.search) query.append('search', params.search);
     if (params?.page) query.append('page', params.page.toString());
-    return api.get<ListingResponse>(`/listings?${query.toString()}`);
+    return api.get<ListingResponse>(`/v1/listings?${query.toString()}`);
   },
   
   getById: (id: number) =>
-    api.get<Listing>(`/listings/${id}`),
+    api.get<Listing>(`/v1/listings/${id}`),
   
   create: (data: { title: string; description: string; price: number; category: string; images?: string[] }) =>
-    api.post<Listing>('/listings', data),
+    api.post<Listing>('/v1/listings', data),
   
   update: (id: number, data: Partial<{ title: string; description: string; price: number; category: string; images: string[]; status: 'active' | 'inactive' }>) =>
-    api.put<Listing>(`/listings/${id}`, data),
+    api.put<Listing>(`/v1/listings/${id}`, data),
   
   delete: (id: number) =>
-    api.delete<{ message: string }>(`/listings/${id}`),
+    api.delete<{ message: string }>(`/v1/listings/${id}`),
 };
 
 // Orders API
@@ -242,71 +242,71 @@ export const ordersApi = {
   getAll: (params?: { page?: number }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
-    return api.get<OrderResponse>(`/orders?${query.toString()}`);
+    return api.get<OrderResponse>(`/v1/orders?${query.toString()}`);
   },
   
   getById: (id: number) =>
-    api.get<Order>(`/orders/${id}`),
+    api.get<Order>(`/v1/orders/${id}`),
   
   create: (data: { listing_id: number; notes?: string }) =>
-    api.post<Order>('/orders', data),
+    api.post<Order>('/v1/orders', data),
   
   update: (id: number, data: Partial<{ status: 'cancelled'; notes: string }>) =>
-    api.put<Order>(`/orders/${id}`, data),
+    api.put<Order>(`/v1/orders/${id}`, data),
 };
 
 // Payments API
 export const paymentsApi = {
   create: (data: { order_id: number }) =>
-    api.post<PaymentCreateResponse>('/payments/create', data),
+    api.post<PaymentCreateResponse>('/v1/payments/create', data),
 };
 
 // Disputes API
 export const disputesApi = {
   getAll: () =>
-    api.get<DisputeResponse>('/disputes'),
+    api.get<DisputeResponse>('/v1/disputes'),
   
   getById: (id: number) =>
-    api.get<Dispute>(`/disputes/${id}`),
+    api.get<Dispute>(`/v1/disputes/${id}`),
   
   create: (data: { order_id: number; reason: string; description: string }) =>
-    api.post<Dispute>('/disputes', data),
+    api.post<Dispute>('/v1/disputes', data),
   
   update: (id: number, data: { status: 'under_review' | 'resolved' | 'closed'; resolution_notes?: string; resolution?: 'refund_buyer' | 'release_to_seller' }) =>
-    api.put<Dispute>(`/disputes/${id}`, data),
+    api.put<Dispute>(`/v1/disputes/${id}`, data),
 };
 
 // Wallet API
 export const walletApi = {
   get: () =>
-    api.get<Wallet>('/wallet'),
+    api.get<Wallet>('/v1/wallet'),
   
   withdraw: (data: { amount: number; bank_account: string }) =>
-    api.post<{ message: string; wallet: Wallet; note?: string }>('/wallet/withdraw', data),
+    api.post<{ message: string; wallet: Wallet; note?: string }>('/v1/wallet/withdraw', data),
 };
 
 // KYC API
 export const kycApi = {
   get: () =>
-    api.get<KycVerification | null>('/kyc'),
+    api.get<KycVerification | null>('/v1/kyc'),
   
   create: () =>
-    api.post<KycVerification>('/kyc'),
+    api.post<KycVerification>('/v1/kyc'),
 };
 
 // Public API
 export const publicApi = {
   leaderboard: () =>
-    api.get<LeaderboardResponse>('/leaderboard'),
+    api.get<LeaderboardResponse>('/v1/leaderboard'),
   
   members: (params?: { page?: number }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
-    return api.get<MemberResponse>(`/members?${query.toString()}`);
+    return api.get<MemberResponse>(`/v1/members?${query.toString()}`);
   },
   
   member: (id: number) =>
-    api.get<User>(`/members/${id}`),
+    api.get<User>(`/v1/members/${id}`),
 };
 
 // Admin API
@@ -314,25 +314,25 @@ export const adminApi = {
   users: (params?: { page?: number }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
-    return api.get<AdminUserResponse>(`/admin/users?${query.toString()}`);
+    return api.get<AdminUserResponse>(`/v1/admin/users?${query.toString()}`);
   },
   
   updateUser: (id: number, data: Partial<{ role: 'user' | 'admin'; is_verified: boolean; name: string; email: string }>) =>
-    api.put<User>(`/admin/users/${id}`, data),
+    api.put<User>(`/v1/admin/users/${id}`, data),
   
   deleteUser: (id: number) =>
-    api.delete<{ message: string }>(`/admin/users/${id}`),
+    api.delete<{ message: string }>(`/v1/admin/users/${id}`),
   
   disputes: () =>
-    api.get<AdminDisputeResponse>('/admin/disputes'),
+    api.get<AdminDisputeResponse>('/v1/admin/disputes'),
   
   listings: () =>
-    api.get<AdminListingResponse>('/admin/listings'),
+    api.get<AdminListingResponse>('/v1/admin/listings'),
   
   orders: () =>
-    api.get<AdminOrderResponse>('/admin/orders'),
+    api.get<AdminOrderResponse>('/v1/admin/orders'),
   
   kyc: () =>
-    api.get<AdminKycResponse>('/admin/kyc'),
+    api.get<AdminKycResponse>('/v1/admin/kyc'),
 };
 

@@ -68,3 +68,4 @@ After setting the environment variables and redeploying:
 - Changes to environment variables require a **new deployment**
 - The error page will display instructions in Arabic if variables are missing
 
+
