@@ -19,7 +19,7 @@ const KYC = () => {
   const [inquiryUrl, setInquiryUrl] = useState<string | null>(null);
   const personaContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: kyc, isLoading, error: kycError, refetch } = useQuery({
+  const { data: kyc, isLoading, error: kycError, refetch, isRefetching } = useQuery({
     queryKey: ['kyc'],
     queryFn: async () => {
       const response = await kycApi.get();
@@ -33,14 +33,24 @@ const KYC = () => {
       return kycData?.status === 'pending' ? 30000 : false;
     },
     retry: 1,
-    // Ensure null is treated as valid data (not an error)
-    placeholderData: null,
+    // Keep previous data during refetch to prevent UI flashing
+    placeholderData: (previousData) => previousData ?? null,
+    // Don't refetch on window focus to prevent unexpected state changes
+    refetchOnWindowFocus: false,
   });
 
   const createKycMutation = useMutation({
     mutationFn: () => kycApi.create(),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['kyc'] });
+      // Update the query data optimistically instead of invalidating immediately
+      // This prevents the button from disappearing
+      queryClient.setQueryData(['kyc'], data.kyc);
+      
+      // Then invalidate after a short delay to ensure fresh data
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['kyc'] });
+      }, 1000);
+      
       if (data.inquiry_url) {
         setInquiryUrl(data.inquiry_url);
         setShowPersonaModal(true);
@@ -183,6 +193,7 @@ const KYC = () => {
   }
 
   // Normalize kyc data - handle both null and undefined
+  // Use the current data, or keep previous data during refetch to prevent flashing
   const kycData = kyc ?? null;
   const kycStatus = kycData?.status || null;
   const hasKyc = kycData !== null && kycData !== undefined;
@@ -190,8 +201,11 @@ const KYC = () => {
   const isPending = kycStatus === 'pending';
   const isFailed = kycStatus === 'failed';
   const isExpired = kycStatus === 'expired';
+  
   // Show button when: no KYC exists, or status is failed/expired (not verified or pending)
-  const canStartVerification = !hasKyc || isFailed || isExpired;
+  // Only hide button if we're actively creating AND have a pending status (to prevent flashing)
+  // If we're creating but don't have KYC yet, keep showing the button (it will be disabled)
+  const canStartVerification = (!hasKyc || isFailed || isExpired) && !(createKycMutation.isPending && isPending);
 
   return (
     <>
@@ -392,8 +406,12 @@ const KYC = () => {
                           </div>
                         )}
                         <Button
-                          onClick={() => createKycMutation.mutate()}
-                          disabled={createKycMutation.isPending}
+                          onClick={() => {
+                            if (!createKycMutation.isPending) {
+                              createKycMutation.mutate();
+                            }
+                          }}
+                          disabled={createKycMutation.isPending || isRefetching}
                           className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                           size="lg"
                         >
