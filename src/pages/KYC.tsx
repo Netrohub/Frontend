@@ -17,7 +17,7 @@ const KYC = () => {
   const [personaLoaded, setPersonaLoaded] = useState(false);
   const [showPersonaModal, setShowPersonaModal] = useState(false);
   const [inquiryUrl, setInquiryUrl] = useState<string | null>(null);
-  const personaContainerRef = useRef<HTMLDivElement>(null);
+  const personaClientRef = useRef<any>(null);
   // Track if we've successfully loaded KYC data at least once (prevents button flashing)
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
@@ -61,14 +61,62 @@ const KYC = () => {
       // This prevents the button from disappearing
       queryClient.setQueryData(['kyc'], data.kyc);
       
-      // Mark as fetched so hasLoadedOnce stays true
-      // Don't invalidate immediately - let the data stay cached
-      // Only invalidate if we need fresh data (which we don't here since we just created it)
-      
-      if (data.inquiry_url) {
+      // Initialize Persona with the inquiry ID if SDK is loaded
+      if (data.kyc?.persona_inquiry_id && personaLoaded && (window as any).Persona) {
+        try {
+          // Clean up any existing Persona client
+          if (personaClientRef.current) {
+            try {
+              personaClientRef.current.destroy();
+            } catch (e) {
+              // Ignore errors when destroying
+            }
+          }
+          
+          // Use Persona SDK to open embedded widget
+          const personaClient = new (window as any).Persona.Client({
+            inquiryId: data.kyc.persona_inquiry_id,
+            onReady: () => {
+              console.log('[KYC] Persona widget ready');
+            },
+            onComplete: ({ inquiryId }: { inquiryId: string }) => {
+              console.log('[KYC] Persona verification completed', { inquiryId });
+              personaClientRef.current = null;
+              toast.success("تم إكمال عملية التحقق بنجاح");
+              // Refetch KYC status
+              setTimeout(() => {
+                refetch();
+              }, 2000);
+            },
+            onCancel: () => {
+              console.log('[KYC] Persona verification cancelled');
+              personaClientRef.current = null;
+            },
+            onError: (error: any) => {
+              console.error('[KYC] Persona error:', error);
+              personaClientRef.current = null;
+              toast.error("حدث خطأ أثناء عملية التحقق");
+            },
+          });
+          
+          // Store reference for cleanup
+          personaClientRef.current = personaClient;
+          
+          // Open Persona widget (Persona handles its own modal)
+          personaClient.open();
+        } catch (error) {
+          console.error('[KYC] Failed to initialize Persona:', error);
+          // Fallback to opening in new window
+          if (data.inquiry_url) {
+            setInquiryUrl(data.inquiry_url);
+            setShowPersonaModal(true);
+            window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
+          }
+        }
+      } else if (data.inquiry_url) {
+        // Fallback: Open Persona in a new window if SDK not loaded
         setInquiryUrl(data.inquiry_url);
         setShowPersonaModal(true);
-        // Open Persona in a new window/tab as fallback
         const personaWindow = window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
         
         // Listen for Persona completion (check every 2 seconds)
@@ -83,6 +131,7 @@ const KYC = () => {
           }
         }, 2000);
       }
+      
       toast.success("تم إنشاء طلب التحقق بنجاح");
     },
     onError: (error: Error) => {
@@ -582,8 +631,8 @@ const KYC = () => {
                       </div>
                     )}
 
-                    {/* Persona Modal */}
-                    {showPersonaModal && inquiryUrl && (
+                    {/* Persona Modal - Only shown for fallback (new window) approach */}
+                    {showPersonaModal && inquiryUrl && !personaLoaded && (
                       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                         <Card className="w-full max-w-2xl bg-[hsl(200,70%,15%)] border-white/20 p-6">
                           <div className="flex items-center justify-between mb-4">
