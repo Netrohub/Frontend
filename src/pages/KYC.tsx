@@ -146,6 +146,7 @@ const KYC = () => {
 
   // Load Persona SDK
   useEffect(() => {
+    // Check if Persona is already loaded
     if ((window as any).Persona) {
       setPersonaLoaded(true);
       return;
@@ -154,10 +155,29 @@ const KYC = () => {
     const script = document.createElement('script');
     script.src = 'https://cdn.withpersona.com/dist/persona-v5.0.0.js';
     script.async = true;
-    script.onload = () => setPersonaLoaded(true);
+    script.onload = () => {
+      // Double check Persona is available after script loads
+      if ((window as any).Persona) {
+        setPersonaLoaded(true);
+        if (import.meta.env.DEV) {
+          console.log('[KYC] Persona SDK loaded successfully');
+        }
+      } else {
+        console.warn('[KYC] Persona script loaded but Persona object not available');
+        // Wait a bit and check again
+        setTimeout(() => {
+          if ((window as any).Persona) {
+            setPersonaLoaded(true);
+          } else {
+            console.error('[KYC] Persona still not available after timeout');
+            setPersonaLoaded(true); // Allow fallback to work
+          }
+        }, 1000);
+      }
+    };
     script.onerror = () => {
-      console.error('Failed to load Persona SDK');
-      setPersonaLoaded(true); // Still allow verification to proceed
+      console.error('[KYC] Failed to load Persona SDK script');
+      setPersonaLoaded(true); // Still allow verification to proceed (will use fallback)
     };
     document.body.appendChild(script);
     return () => {
@@ -166,6 +186,35 @@ const KYC = () => {
       }
     };
   }, []);
+
+  // Also check periodically if Persona becomes available
+  useEffect(() => {
+    if (personaLoaded) return;
+    
+    const checkInterval = setInterval(() => {
+      if ((window as any).Persona && !personaLoaded) {
+        setPersonaLoaded(true);
+        if (import.meta.env.DEV) {
+          console.log('[KYC] Persona SDK detected via polling');
+        }
+        clearInterval(checkInterval);
+      }
+    }, 500);
+
+    // Clear interval after 10 seconds
+    const timeout = setTimeout(() => {
+      clearInterval(checkInterval);
+      if (!personaLoaded) {
+        console.warn('[KYC] Persona SDK not detected after 10 seconds, allowing fallback');
+        setPersonaLoaded(true); // Allow button to work with fallback
+      }
+    }, 10000);
+
+    return () => {
+      clearInterval(checkInterval);
+      clearTimeout(timeout);
+    };
+  }, [personaLoaded]);
 
   // Cleanup Persona client on unmount
   useEffect(() => {
@@ -206,15 +255,16 @@ const KYC = () => {
       return;
     }
 
-    // Check if Persona SDK is loaded
-    if (!personaLoaded) {
+    // Check if Persona SDK is available (check both state and window object)
+    const hasPersona = !!(window as any).Persona;
+    if (!personaLoaded && !hasPersona) {
       toast.error('جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى');
       return;
     }
 
-    if (!(window as any).Persona) {
-      toast.error('نظام التحقق غير متاح. الرجاء تحديث الصفحة والمحاولة مرة أخرى');
-      return;
+    // If Persona is available but state wasn't updated, update it now
+    if (hasPersona && !personaLoaded) {
+      setPersonaLoaded(true);
     }
 
     // Prevent duplicate requests
@@ -420,14 +470,16 @@ const KYC = () => {
                   if (import.meta.env.DEV) {
                     console.log('[KYC] Button onClick fired', {
                       personaLoaded,
+                      hasPersona: !!(window as any).Persona,
                       canStartVerification,
                       mutationPending: createKycMutation.isPending,
-                      isRefetching
+                      isRefetching,
+                      kycStatus: kyc?.status
                     });
                   }
                   startPersonaVerification();
                 }}
-                disabled={!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification}
+                disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
                 className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {createKycMutation.isPending ? (
@@ -438,7 +490,7 @@ const KYC = () => {
                 ) : (
                   <>
                     <IdCard className="h-5 w-5" />
-                    {personaLoaded ? 'بدء التحقق عبر Persona' : 'جاري التحميل...'}
+                    {personaLoaded || (window as any).Persona ? 'بدء التحقق عبر Persona' : 'جاري التحميل...'}
                     <ArrowRight className="h-5 w-5" />
                   </>
                 )}
