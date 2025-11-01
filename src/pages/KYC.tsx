@@ -317,8 +317,60 @@ const KYC = () => {
       return;
     }
 
-    // Create KYC inquiry via backend
-    createKycMutation.mutate();
+    // Use Persona embedded flow directly (creates inquiry automatically)
+    // This matches Persona's recommended approach from their documentation
+    try {
+      // Clean up any existing Persona client
+      if (personaClientRef.current) {
+        try {
+          personaClientRef.current.destroy();
+        } catch (e) {
+          console.warn('[KYC] Error destroying existing Persona client:', e);
+        }
+      }
+
+      // Initialize Persona Client with templateId and environmentId
+      // Persona will create the inquiry automatically when opened
+      const personaClient = new (window as any).Persona.Client({
+        templateId: 'itmpl_adDgCZjWg4q6EaB4TZEMLxWBeeyP', // From Persona dashboard
+        environmentId: 'env_G6yssyR43GAhoTicT3digMzo8gUL', // From Persona dashboard
+        referenceId: `user_${user?.id}`, // Link to our user
+        fields: {
+          'name-first': user?.name?.split(' ')[0] || '',
+          'name-last': user?.name?.split(' ')[1] || '',
+          'email-address': user?.email || '',
+        },
+        onReady: () => {
+          console.log('[KYC] Persona widget ready');
+          personaClient.open();
+        },
+        onComplete: ({ inquiryId, status }: { inquiryId: string; status: string }) => {
+          console.log('[KYC] Persona verification completed', { inquiryId, status });
+          personaClientRef.current = null;
+          toast.success("تم إكمال عملية التحقق بنجاح");
+          // Refetch KYC status after a short delay (webhook should have updated it)
+          setTimeout(() => {
+            refetch();
+          }, 2000);
+        },
+        onCancel: () => {
+          console.log('[KYC] Persona verification cancelled');
+          personaClientRef.current = null;
+          toast.info("تم إلغاء عملية التحقق");
+        },
+        onError: (error: any) => {
+          console.error('[KYC] Persona error:', error);
+          personaClientRef.current = null;
+          toast.error("حدث خطأ أثناء عملية التحقق");
+        },
+      });
+
+      // Store reference for cleanup
+      personaClientRef.current = personaClient;
+    } catch (error) {
+      console.error('[KYC] Failed to initialize Persona:', error);
+      toast.error("فشل تحميل نظام التحقق. الرجاء المحاولة مرة أخرى");
+    }
   };
 
   if (!user) {
