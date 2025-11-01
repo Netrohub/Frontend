@@ -245,18 +245,38 @@ const KYC = () => {
   // Note: kyc can be null (no record) or an object (has record)
   const hasKycRecord = kyc !== null && kyc !== undefined;
   const canStartVerification = !isVerified && (!hasKycRecord || isPending || isFailed || isExpired);
+  
+  // Debug logging - always log state changes
+  useEffect(() => {
+    console.log('[KYC] State update', {
+      isLoading,
+      kyc: kyc === null ? 'null' : kyc === undefined ? 'undefined' : { id: kyc.id, status: kyc.status },
+      hasKycRecord,
+      isVerified,
+      isPending,
+      isFailed,
+      isExpired,
+      canStartVerification,
+      personaLoaded,
+      hasPersona: !!(window as any).Persona
+    });
+  }, [isLoading, kyc, hasKycRecord, isVerified, isPending, isFailed, isExpired, canStartVerification, personaLoaded]);
 
   const startPersonaVerification = () => {
-    if (import.meta.env.DEV) {
-      console.log('[KYC] Button clicked', {
-        personaLoaded,
-        hasPersona: !!(window as any).Persona,
-        canStartVerification,
-        mutationPending: createKycMutation.isPending,
-        isRefetching,
-        kyc: kyc ? { id: kyc.id, status: kyc.status } : null
-      });
-    }
+    // Always log for debugging (including production)
+    console.log('[KYC] Button clicked', {
+      personaLoaded,
+      hasPersona: !!(window as any).Persona,
+      canStartVerification,
+      mutationPending: createKycMutation.isPending,
+      isRefetching,
+      kyc: kyc ? { id: kyc.id, status: kyc.status } : null,
+      hasKycRecord,
+      isVerified,
+      isPending,
+      isFailed,
+      isExpired
+    });
 
     // Check if button should be enabled
     if (!canStartVerification) {
@@ -593,42 +613,42 @@ const KYC = () => {
                 )}
               </Button>
               
-              {/* Debug info - remove in production */}
-              {import.meta.env.DEV && (
-                <div className="p-2 bg-black/20 text-xs text-white/60 rounded space-y-1">
-                  <div className="font-bold mb-1">Debug Panel:</div>
-                  <div>isLoading: {String(isLoading)}</div>
-                  <div>kyc: {kyc === null ? 'null' : kyc === undefined ? 'undefined' : `object(id:${kyc.id})`}</div>
-                  <div>hasKycRecord: {String(hasKycRecord)}</div>
-                  <div>kyc status: {kyc?.status || 'null'}</div>
-                  <div>isPending: {String(isPending)}</div>
-                  <div>isVerified: {String(isVerified)}</div>
-                  <div>isFailed: {String(isFailed)}</div>
-                  <div>isExpired: {String(isExpired)}</div>
-                  <div>personaLoaded: {String(personaLoaded)}</div>
-                  <div>hasPersona: {String(!!(window as any).Persona)}</div>
-                  <div className={`font-bold ${canStartVerification ? 'text-green-400' : 'text-red-400'}`}>
-                    canStartVerification: {String(canStartVerification)}
-                    {!canStartVerification && (
-                      <span className="text-xs text-yellow-400 block mt-1">
-                        Reason: {isVerified ? 'KYC already verified' : !hasKycRecord ? 'No KYC record (should be true)' : 'Unknown'}
-                      </span>
-                    )}
-                  </div>
-                  <div>mutationPending: {String(createKycMutation.isPending)}</div>
-                  <div>isRefetching: {String(isRefetching)}</div>
-                  <div className={`font-bold mt-2 ${(createKycMutation.isPending || isRefetching || !canStartVerification) ? 'text-red-400' : 'text-green-400'}`}>
-                    buttonDisabled: {String(createKycMutation.isPending || isRefetching || !canStartVerification)}
-                    {(createKycMutation.isPending || isRefetching || !canStartVerification) && (
-                      <span className="text-xs text-yellow-400 block mt-1">
-                        {createKycMutation.isPending ? 'Reason: Mutation in progress' : 
-                         isRefetching ? 'Reason: Refetching data' : 
-                         !canStartVerification ? `Reason: Cannot start (verified:${isVerified}, hasRecord:${hasKycRecord})` : ''}
-                      </span>
-                    )}
-                  </div>
+              {/* Debug info - Always visible for troubleshooting */}
+              <div className="p-3 bg-black/30 border border-yellow-500/30 text-xs text-white/80 rounded space-y-1 mt-4">
+                <div className="font-bold mb-2 text-yellow-400">🔍 Debug Panel (Production Mode):</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>isLoading: <span className="font-bold">{String(isLoading)}</span></div>
+                  <div>kyc: <span className="font-bold">{kyc === null ? 'null' : kyc === undefined ? 'undefined' : `object(id:${kyc.id})`}</span></div>
+                  <div>hasKycRecord: <span className="font-bold">{String(hasKycRecord)}</span></div>
+                  <div>kyc status: <span className="font-bold">{kyc?.status || 'null'}</span></div>
+                  <div>isPending: <span className="font-bold">{String(isPending)}</span></div>
+                  <div>isVerified: <span className="font-bold">{String(isVerified)}</span></div>
+                  <div>isFailed: <span className="font-bold">{String(isFailed)}</span></div>
+                  <div>isExpired: <span className="font-bold">{String(isExpired)}</span></div>
+                  <div>personaLoaded: <span className="font-bold">{String(personaLoaded)}</span></div>
+                  <div>hasPersona: <span className="font-bold">{String(!!(window as any).Persona)}</span></div>
                 </div>
-              )}
+                <div className={`font-bold mt-2 p-2 rounded ${canStartVerification ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                  canStartVerification: {String(canStartVerification)}
+                  {!canStartVerification && (
+                    <div className="text-xs text-yellow-400 mt-1">
+                      Reason: {isVerified ? 'KYC already verified' : !hasKycRecord ? 'No KYC record (should be true)' : 'Unknown'}
+                    </div>
+                  )}
+                </div>
+                <div>mutationPending: <span className="font-bold">{String(createKycMutation.isPending)}</span></div>
+                <div>isRefetching: <span className="font-bold">{String(isRefetching)}</span></div>
+                <div className={`font-bold mt-2 p-2 rounded ${(createKycMutation.isPending || isRefetching || !canStartVerification) ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                  buttonDisabled: {String(createKycMutation.isPending || isRefetching || !canStartVerification)}
+                  {(createKycMutation.isPending || isRefetching || !canStartVerification) && (
+                    <div className="text-xs text-yellow-400 mt-1">
+                      {createKycMutation.isPending ? 'Reason: Mutation in progress' : 
+                       isRefetching ? 'Reason: Refetching data' : 
+                       !canStartVerification ? `Reason: Cannot start (verified:${isVerified}, hasRecord:${hasKycRecord})` : ''}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <p className="text-xs text-center text-white/60">
                 بالضغط على "بدء التحقق" ستفتح نافذة Persona للتحقق من هويتك ورقم هاتفك
