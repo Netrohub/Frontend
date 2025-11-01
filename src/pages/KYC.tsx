@@ -159,8 +159,24 @@ const KYC = () => {
   }, []);
 
   const startPersonaVerification = () => {
+    if (import.meta.env.DEV) {
+      console.log('[KYC] Button clicked', {
+        personaLoaded,
+        hasPersona: !!(window as any).Persona,
+        canStartVerification,
+        mutationPending: createKycMutation.isPending,
+        isRefetching,
+        kyc: kyc ? { id: kyc.id, status: kyc.status } : null
+      });
+    }
+
     if (!personaLoaded || !(window as any).Persona) {
       toast.error('جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى');
+      return;
+    }
+
+    if (createKycMutation.isPending || isRefetching) {
+      toast.info('جاري معالجة الطلب...');
       return;
     }
 
@@ -360,7 +376,11 @@ const KYC = () => {
               )}
 
               <Button 
-                onClick={startPersonaVerification}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  startPersonaVerification();
+                }}
                 disabled={!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification}
                 className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -377,6 +397,22 @@ const KYC = () => {
                   </>
                 )}
               </Button>
+              
+              {/* Debug info - remove in production */}
+              {import.meta.env.DEV && (
+                <div className="p-2 bg-black/20 text-xs text-white/60 rounded space-y-1">
+                  <div>Debug:</div>
+                  <div>personaLoaded: {String(personaLoaded)}</div>
+                  <div>hasPersona: {String(!!(window as any).Persona)}</div>
+                  <div>canStartVerification: {String(canStartVerification)}</div>
+                  <div>mutationPending: {String(createKycMutation.isPending)}</div>
+                  <div>isRefetching: {String(isRefetching)}</div>
+                  <div>kyc status: {kyc?.status || 'null'}</div>
+                  <div className={`font-bold ${(!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification) ? 'text-red-400' : 'text-green-400'}`}>
+                    buttonDisabled: {String(!personaLoaded || createKycMutation.isPending || isRefetching || !canStartVerification)}
+                  </div>
+                </div>
+              )}
 
               <p className="text-xs text-center text-white/60">
                 بالضغط على "بدء التحقق" ستفتح نافذة Persona للتحقق من هويتك ورقم هاتفك
