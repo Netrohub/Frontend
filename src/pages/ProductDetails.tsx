@@ -16,6 +16,7 @@ const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const isAuthenticated = !!user;
   const listingId = id ? parseInt(id) : 0;
 
   const { data: listing, isLoading, error } = useQuery({
@@ -198,23 +199,37 @@ const ProductDetails = () => {
 
             {/* Action Buttons */}
             {!isOwner && listing.status === 'active' && (
-              <Button 
-                onClick={handleBuy}
-                disabled={isCreatingOrder}
-                className="w-full py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isCreatingOrder ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    جاري المعالجة...
-                  </>
+              <>
+                {isAuthenticated ? (
+                  <Button 
+                    onClick={handleBuy}
+                    disabled={isCreatingOrder}
+                    className="w-full py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isCreatingOrder ? (
+                      <>
+                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                        جاري المعالجة...
+                      </>
+                    ) : (
+                      <>
+                        شراء الآن
+                        <ArrowRight className="mr-2 h-5 w-5" />
+                      </>
+                    )}
+                  </Button>
                 ) : (
-                  <>
-                    شراء الآن
-                    <ArrowRight className="mr-2 h-5 w-5" />
-                  </>
+                  <Button 
+                    asChild
+                    className="w-full py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold text-lg"
+                  >
+                    <Link to="/auth">
+                      تسجيل الدخول للشراء
+                      <ArrowRight className="mr-2 h-5 w-5" />
+                    </Link>
+                  </Button>
                 )}
-              </Button>
+              </>
             )}
 
             {isOwner && (

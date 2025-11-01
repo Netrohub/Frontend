@@ -27,11 +27,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check if user is logged in on mount
     const token = api.getToken();
     if (token) {
-      refreshUser().catch(() => {
-        // If refresh fails, clear token
-        api.setToken(null);
+      // Add timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
         setLoading(false);
-      });
+      }, 10000); // 10 second timeout
+
+      refreshUser()
+        .then(() => {
+          clearTimeout(timeoutId);
+          setLoading(false);
+        })
+        .catch((error) => {
+          clearTimeout(timeoutId);
+          // If refresh fails, clear token
+          api.setToken(null);
+          setUser(null);
+          setLoading(false);
+          if (!IS_PRODUCTION) {
+            console.error('Failed to refresh user:', error);
+          }
+        });
     } else {
       setLoading(false);
     }
@@ -41,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const data = await authApi.getUser();
       setUser(data);
+      // Don't set loading here - it's handled in useEffect
     } catch (error) {
       setUser(null);
       api.setToken(null);

@@ -78,14 +78,27 @@ const Home = () => {
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button 
-              size="lg" 
-              className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
-              onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-            >
-              <span className="hidden sm:inline">كيف تعمل المنصة</span>
-              <span className="sm:hidden">كيف يعمل؟</span>
-            </Button>
+            {!isAuthenticated ? (
+              <Button 
+                asChild
+                size="lg" 
+                className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
+              >
+                <Link to="/auth">
+                  <span className="hidden sm:inline">ابدأ الآن</span>
+                  <span className="sm:hidden">ابدأ</span>
+                </Link>
+              </Button>
+            ) : (
+              <Button 
+                size="lg" 
+                className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <span className="hidden sm:inline">كيف تعمل المنصة</span>
+                <span className="sm:hidden">كيف يعمل؟</span>
+              </Button>
+            )}
           </div>
           
           {/* Feature badges */}

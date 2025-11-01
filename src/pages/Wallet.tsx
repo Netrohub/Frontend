@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Wallet as WalletIcon, ArrowDownToLine, Clock, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { walletApi } from "@/lib/api";
@@ -80,6 +81,9 @@ const Wallet = () => {
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 py-8 text-center">
           <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض المحفظة</p>
+          <Button asChild>
+            <Link to="/auth">تسجيل الدخول</Link>
+          </Button>
         </div>
       </div>
     );
@@ -88,6 +92,18 @@ const Wallet = () => {
   const availableBalance = wallet?.available_balance || 0;
   const onHoldBalance = wallet?.on_hold_balance || 0;
   const withdrawnTotal = wallet?.withdrawn_total || 0;
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
@@ -114,14 +130,8 @@ const Wallet = () => {
       <div className="relative z-10 container mx-auto px-4 py-8 pb-24">
         <h1 className="text-3xl md:text-4xl font-black text-white mb-8">المحفظة</h1>
 
-        {isLoading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-white/60" />
-          </div>
-        ) : (
-          <>
-            {/* Balance Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
+        {/* Balance Cards */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
               <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 rounded-lg bg-green-500/20">
@@ -153,65 +163,63 @@ const Wallet = () => {
               </Card>
             </div>
 
-            {/* Withdraw Button */}
-            <Dialog open={withdrawDialogOpen} onOpenChange={setWithdrawDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full md:w-auto mb-8 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
-                  <ArrowDownToLine className="mr-2 h-5 w-5" />
-                  سحب الأموال
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
-                <DialogHeader>
-                  <DialogTitle>سحب الأموال</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleWithdraw} className="space-y-4">
-                  <div>
-                    <Label>المبلغ</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      max={availableBalance}
-                      value={withdrawAmount}
-                      onChange={(e) => setWithdrawAmount(e.target.value)}
-                      className="bg-white/5 border-white/10"
-                      required
-                    />
-                    <p className="text-sm text-white/60 mt-1">
-                      الرصيد المتاح: {formatPrice(availableBalance)}
-                    </p>
-                  </div>
-                  <div>
-                    <Label>رقم الحساب البنكي</Label>
-                    <Input
-                      type="text"
-                      value={bankAccount}
-                      onChange={(e) => setBankAccount(e.target.value)}
-                      className="bg-white/5 border-white/10"
-                      placeholder="SA..."
-                      required
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={withdrawMutation.isPending}
-                    className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]"
-                  >
-                    {withdrawMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        جاري المعالجة...
-                      </>
-                    ) : (
-                      "تأكيد السحب"
-                    )}
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
-          </>
-        )}
+        {/* Withdraw Button */}
+        <Dialog open={withdrawDialogOpen} onOpenChange={setWithdrawDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full md:w-auto mb-8 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
+              <ArrowDownToLine className="mr-2 h-5 w-5" />
+              سحب الأموال
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
+            <DialogHeader>
+              <DialogTitle>سحب الأموال</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleWithdraw} className="space-y-4">
+              <div>
+                <Label>المبلغ</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={availableBalance}
+                  value={withdrawAmount}
+                  onChange={(e) => setWithdrawAmount(e.target.value)}
+                  className="bg-white/5 border-white/10"
+                  required
+                />
+                <p className="text-sm text-white/60 mt-1">
+                  الرصيد المتاح: {formatPrice(availableBalance)}
+                </p>
+              </div>
+              <div>
+                <Label>رقم الحساب البنكي</Label>
+                <Input
+                  type="text"
+                  value={bankAccount}
+                  onChange={(e) => setBankAccount(e.target.value)}
+                  className="bg-white/5 border-white/10"
+                  placeholder="SA..."
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={withdrawMutation.isPending}
+                className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]"
+              >
+                {withdrawMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    جاري المعالجة...
+                  </>
+                ) : (
+                  "تأكيد السحب"
+                )}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <BottomNav />

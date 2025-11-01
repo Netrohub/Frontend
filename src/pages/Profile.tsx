@@ -1,23 +1,62 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Shield, Package, LogOut, Star, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { User, Mail, Phone, Shield, Package, LogOut, Star, CheckCircle, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { authApi } from "@/lib/api";
 
 const Profile = () => {
-  // Mock user data
-  const user = {
-    name: "محمد أحمد",
-    email: "mohamed@example.com",
-    phone: "+966 50 123 4567",
-    rating: 4.8,
-    totalSales: 23,
-    totalPurchases: 15,
-    memberSince: "يناير 2024",
-    kycVerified: true,
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Get additional user stats if needed
+  const { data: userStats } = useQuery({
+    queryKey: ['user-stats'],
+    queryFn: async () => {
+      // You can add an API endpoint for user stats later
+      return { totalSales: 0, totalPurchases: 0 };
+    },
+    enabled: !!user,
+  });
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
+          <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض الملف الشخصي</p>
+          <Button asChild>
+            <Link to="/auth">تسجيل الدخول</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Format member since date
+  const memberSince = user.created_at 
+    ? new Date(user.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' })
+    : 'غير محدد';
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -52,10 +91,10 @@ const Profile = () => {
               <h2 className="text-2xl font-black text-white mb-2">{user.name}</h2>
               <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
                 <Star className="h-5 w-5 text-[hsl(40,90%,55%)] fill-current" />
-                <span className="text-lg font-bold text-white">{user.rating}</span>
+                <span className="text-lg font-bold text-white">4.8</span>
                 <span className="text-white/60">تقييم</span>
               </div>
-              {user.kycVerified ? (
+              {user.kyc_verification?.status === 'verified' ? (
                 <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                   <Shield className="h-3 w-3 ml-1" />
                   حساب موثق
@@ -70,15 +109,15 @@ const Profile = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 pb-6 border-b border-white/10">
             <div className="text-center p-4 bg-white/5 rounded-lg">
-              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{user.totalSales}</div>
+              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.totalSales || 0}</div>
               <div className="text-sm text-white/60">عدد المبيعات</div>
             </div>
             <div className="text-center p-4 bg-white/5 rounded-lg">
-              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{user.totalPurchases}</div>
+              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.totalPurchases || 0}</div>
               <div className="text-sm text-white/60">عدد المشتريات</div>
             </div>
             <div className="text-center p-4 bg-white/5 rounded-lg">
-              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{user.memberSince}</div>
+              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{memberSince}</div>
               <div className="text-sm text-white/60">عضو منذ</div>
             </div>
           </div>
@@ -88,16 +127,18 @@ const Profile = () => {
               <Mail className="h-5 w-5 text-[hsl(195,80%,70%)]" />
               <span>{user.email}</span>
             </div>
-            <div className="flex items-center gap-3 text-white/80">
-              <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" />
-              <span>{user.phone}</span>
-            </div>
+            {user.phone && (
+              <div className="flex items-center gap-3 text-white/80">
+                <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" />
+                <span>{user.phone}</span>
+              </div>
+            )}
           </div>
         </Card>
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {!user.kycVerified && (
+          {user.kyc_verification?.status !== 'verified' && (
             <Card className="p-6 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 backdrop-blur-sm group hover:border-yellow-500/50 transition-all">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -155,14 +196,12 @@ const Profile = () => {
               </Link>
             </Button>
             <Button 
-              asChild
+              onClick={handleLogout}
               variant="outline" 
               className="w-full justify-start gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30 min-h-[48px] text-sm md:text-base"
             >
-              <Link to="/">
-                <LogOut className="h-5 w-5 flex-shrink-0" />
-                <span className="truncate">تسجيل الخروج</span>
-              </Link>
+              <LogOut className="h-5 w-5 flex-shrink-0" />
+              <span className="truncate">تسجيل الخروج</span>
             </Button>
           </div>
         </Card>

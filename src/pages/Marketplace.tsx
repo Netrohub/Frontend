@@ -10,9 +10,12 @@ import { listingsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PRICE_THRESHOLDS } from "@/config/constants";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Listing } from "@/types/api";
 
 const Marketplace = () => {
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [priceFilter, setPriceFilter] = useState<string>("all");
@@ -121,11 +124,19 @@ const Marketplace = () => {
         {!isLoading && !error && filteredListings.length === 0 && (
           <div className="text-center py-20">
             <p className="text-white/60 text-lg mb-4">لا توجد حسابات متاحة حالياً</p>
-            <Link to="/sell">
-              <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
-                بيع حسابك الآن
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <Link to="/sell">
+                <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
+                  بيع حسابك الآن
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
+                  سجل الآن لتبدأ البيع
+                </Button>
+              </Link>
+            )}
           </div>
         )}
 
