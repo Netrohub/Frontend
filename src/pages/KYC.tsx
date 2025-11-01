@@ -19,7 +19,7 @@ const KYC = () => {
   const [inquiryUrl, setInquiryUrl] = useState<string | null>(null);
   const personaContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: kyc, isLoading, refetch } = useQuery({
+  const { data: kyc, isLoading, error: kycError, refetch } = useQuery({
     queryKey: ['kyc'],
     queryFn: () => kycApi.get(),
     enabled: !!user,
@@ -28,6 +28,7 @@ const KYC = () => {
       const kycData = query.state.data as any;
       return kycData?.status === 'pending' ? 30000 : false;
     },
+    retry: 1,
   });
 
   const createKycMutation = useMutation({
@@ -56,16 +57,40 @@ const KYC = () => {
     },
     onError: (error: Error) => {
       const apiError = error as Error & ApiError;
-      toast.error(apiError.message || "فشل إنشاء طلب التحقق");
+      let errorMessage = apiError.message || "فشل إنشاء طلب التحقق";
+      
+      // Show more detailed error messages
+      if (apiError.errors && Array.isArray(apiError.errors)) {
+        const firstError = apiError.errors[0];
+        if (firstError.title) {
+          errorMessage = firstError.title;
+        }
+      }
+      
+      toast.error(errorMessage);
+      console.error('KYC Creation Error:', error);
     },
   });
 
   // Load Persona SDK
   useEffect(() => {
+    // Check if Persona is already loaded
+    if ((window as any).Persona) {
+      setPersonaLoaded(true);
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = 'https://cdn.withpersona.com/dist/persona-v5.0.0.js';
     script.async = true;
-    script.onload = () => setPersonaLoaded(true);
+    script.onload = () => {
+      setPersonaLoaded(true);
+    };
+    script.onerror = () => {
+      console.error('Failed to load Persona SDK');
+      // Still allow verification to proceed (will open in new window)
+      setPersonaLoaded(true);
+    };
     document.body.appendChild(script);
     return () => {
       if (document.body.contains(script)) {
@@ -152,10 +177,12 @@ const KYC = () => {
   }
 
   const kycStatus = kyc?.status || null;
+  const hasKyc = !!kyc;
   const isVerified = kycStatus === 'verified';
   const isPending = kycStatus === 'pending';
   const isFailed = kycStatus === 'failed';
   const isExpired = kycStatus === 'expired';
+  const canStartVerification = !hasKyc || isFailed || isExpired;
 
   return (
     <>
@@ -178,6 +205,23 @@ const KYC = () => {
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin text-white/60 mb-4" />
                 <p className="text-white/60">جاري التحميل...</p>
+              </div>
+            </Card>
+          ) : kycError ? (
+            <Card className="p-8 bg-red-500/10 border-red-500/30 backdrop-blur-sm">
+              <div className="flex flex-col items-center justify-center py-8">
+                <AlertCircle className="h-12 w-12 text-red-400 mb-4" />
+                <p className="text-white font-bold mb-2">حدث خطأ</p>
+                <p className="text-white/80 text-sm text-center mb-4">
+                  {(kycError as Error & ApiError).message || "فشل تحميل بيانات التحقق"}
+                </p>
+                <Button
+                  onClick={() => refetch()}
+                  variant="outline"
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  إعادة المحاولة
+                </Button>
               </div>
             </Card>
           ) : (
@@ -317,25 +361,46 @@ const KYC = () => {
                     )}
 
                     {/* Action Button */}
-                    {(isFailed || isExpired || !kyc) && (
-                      <Button
-                        onClick={() => createKycMutation.mutate()}
-                        disabled={createKycMutation.isPending || !personaLoaded}
-                        className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] py-6 text-lg font-semibold"
-                        size="lg"
-                      >
-                        {createKycMutation.isPending ? (
-                          <>
-                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                            جاري إنشاء طلب التحقق...
-                          </>
-                        ) : (
-                          <>
-                            <ShieldCheck className="mr-2 h-5 w-5" />
-                            {kyc ? 'إعادة المحاولة' : 'ابدأ عملية التحقق'}
-                          </>
+                    {canStartVerification && (
+                      <div className="space-y-4">
+                        {!hasKyc && (
+                          <div className="bg-blue-500/10 rounded-lg p-5 border border-blue-500/30">
+                            <div className="flex items-start gap-3">
+                              <Info className="h-6 w-6 text-blue-400 mt-0.5 flex-shrink-0" />
+                              <div>
+                                <p className="text-blue-400 font-bold mb-2">ابدأ التحقق الآن</p>
+                                <p className="text-white/80 text-sm leading-relaxed">
+                                  لم تقم بإنشاء طلب تحقق بعد. اضغط على الزر أدناه لبدء عملية التحقق من الهوية.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
                         )}
-                      </Button>
+                        <Button
+                          onClick={() => createKycMutation.mutate()}
+                          disabled={createKycMutation.isPending}
+                          className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                          size="lg"
+                        >
+                          {createKycMutation.isPending ? (
+                            <>
+                              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                              جاري إنشاء طلب التحقق...
+                            </>
+                          ) : (
+                            <>
+                              <ShieldCheck className="mr-2 h-5 w-5" />
+                              {hasKyc ? 'إعادة المحاولة' : 'ابدأ عملية التحقق'}
+                            </>
+                          )}
+                        </Button>
+                        {!personaLoaded && !createKycMutation.isPending && (
+                          <p className="text-yellow-400 text-sm text-center">
+                            <Loader2 className="inline-block h-4 w-4 animate-spin mr-2" />
+                            جاري تحميل نظام التحقق...
+                          </p>
+                        )}
+                      </div>
                     )}
 
                     {/* Persona Modal */}
