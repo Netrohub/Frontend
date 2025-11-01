@@ -243,51 +243,62 @@ const KYC = () => {
   const isFailed = useMemo(() => kycStatus === 'failed', [kycStatus]);
   const isExpired = useMemo(() => kycStatus === 'expired', [kycStatus]);
   
-  // Show button when: no KYC exists, or status is failed/expired (not verified or pending)
-  // Simplified logic for reliability
-  const canStartVerification = useMemo(() => {
+  // Show button area when: user is authenticated and data has loaded
+  // Always show status to user, button enabled/disabled based on status
+  const canShowButtonArea = useMemo(() => {
     // Must be authenticated
     if (!user) {
-      if (import.meta.env.DEV) console.log('[KYC] canStartVerification: false (no user)');
       return false;
     }
     
     // Wait for initial load to complete
     if (!hasLoadedOnce) {
-      if (import.meta.env.DEV) console.log('[KYC] canStartVerification: false (not loaded yet)');
       return false;
     }
     
-    // Don't show if we're creating AND already have a pending KYC
+    // Always show the button area after load (user can see status)
+    return true;
+  }, [user, hasLoadedOnce]);
+
+  // Determine if button should be enabled (clickable)
+  const canStartVerification = useMemo(() => {
+    // Must be authenticated and loaded
+    if (!user || !hasLoadedOnce) {
+      return false;
+    }
+    
+    // Don't enable if we're currently creating AND already have a pending KYC
     if (createKycMutation.isPending && isPending) {
-      if (import.meta.env.DEV) console.log('[KYC] canStartVerification: false (creating pending)');
       return false;
     }
     
-    // Show button if:
+    // Enable button if:
     // - No KYC record exists (!hasKyc)
     // - KYC status is failed
     // - KYC status is expired
-    // Don't show if status is pending or verified
-    const shouldShow = !hasKyc || isFailed || isExpired;
+    // Disable (but still show) if status is pending or verified
+    const shouldEnable = !hasKyc || isFailed || isExpired;
     
     if (import.meta.env.DEV) {
-      console.log('[KYC] canStartVerification calculation:', {
+      console.log('[KYC] Button state:', {
         hasKyc,
         isFailed,
         isExpired,
-        shouldShow,
+        isPending,
+        isVerified,
+        shouldEnable,
         status: kycStatus
       });
     }
     
-    return shouldShow;
-  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending, kycStatus]);
+    return shouldEnable;
+  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, isPending, isVerified, createKycMutation.isPending, kycStatus]);
 
   // Log button rendering state changes
   useEffect(() => {
     if (import.meta.env.DEV) {
       console.log('[KYC] Button render state:', {
+        canShowButtonArea,
         canStartVerification,
         user: !!user,
         hasLoadedOnce,
@@ -295,11 +306,12 @@ const KYC = () => {
         isFailed,
         isExpired,
         isPending,
+        isVerified,
         status: kycStatus,
         kycData: kycData === null ? 'null' : kycData === undefined ? 'undefined' : 'object'
       });
     }
-  }, [canStartVerification, user, hasLoadedOnce, hasKyc, isFailed, isExpired, isPending, kycStatus, kycData]);
+  }, [canShowButtonArea, canStartVerification, user, hasLoadedOnce, hasKyc, isFailed, isExpired, isPending, isVerified, kycStatus, kycData]);
 
   return (
     <>
@@ -435,91 +447,99 @@ const KYC = () => {
                       </div>
                     </div>
 
-                    {/* Status Messages */}
-                    {isPending && (
-                      <div className="bg-yellow-500/10 rounded-lg p-5 border border-yellow-500/30">
-                        <div className="flex items-start gap-3">
-                          <Clock className="h-6 w-6 text-yellow-400 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="text-yellow-400 font-bold mb-2">قيد المراجعة</p>
-                            <p className="text-white/80 text-sm leading-relaxed">
-                              طلب التحقق الخاص بك قيد المراجعة من قبل فريقنا. سيتم إشعارك عبر البريد الإلكتروني عند اكتمال العملية.
-                            </p>
-                            {kycData?.created_at && (
-                              <p className="text-white/60 text-xs mt-3">
-                                تاريخ الطلب: {new Date(kycData.created_at).toLocaleDateString('ar-SA', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {isFailed && (
-                      <div className="bg-red-500/10 rounded-lg p-5 border border-red-500/30">
-                        <div className="flex items-start gap-3">
-                          <XCircle className="h-6 w-6 text-red-400 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="text-red-400 font-bold mb-2">فشل التحقق</p>
-                            <p className="text-white/80 text-sm leading-relaxed mb-3">
-                              لم يتم التحقق من هويتك. قد يكون السبب:
-                            </p>
-                            <ul className="list-disc list-inside space-y-1 text-white/70 text-sm">
-                              <li>عدم وضوح الصور المرفقة</li>
-                              <li>عدم تطابق المعلومات</li>
-                              <li>انتهاء صلاحية الوثائق</li>
-                            </ul>
-                            <p className="text-white/80 text-sm mt-3">
-                              يرجى المحاولة مرة أخرى مع التأكد من وضوح الصور وصحة المعلومات.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {isExpired && (
-                      <div className="bg-gray-500/10 rounded-lg p-5 border border-gray-500/30">
-                        <div className="flex items-start gap-3">
-                          <AlertCircle className="h-6 w-6 text-gray-400 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="text-gray-400 font-bold mb-2">انتهت صلاحية التحقق</p>
-                            <p className="text-white/80 text-sm leading-relaxed">
-                              انتهت صلاحية طلب التحقق الخاص بك. يرجى إنشاء طلب جديد للتحقق من هويتك.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Action Button - Always render when conditions are met, prevent unmounting */}
-                    {canStartVerification ? (
+                    {/* Action Button - Always show when loaded, display status for user */}
+                    {canShowButtonArea && (
                       <div className="space-y-4">
-                        {!hasKyc && (
+                        {/* Show info message when no KYC or when status allows action */}
+                        {(!hasKyc || isFailed || isExpired) && (
                           <div className="bg-blue-500/10 rounded-lg p-5 border border-blue-500/30">
                             <div className="flex items-start gap-3">
                               <Info className="h-6 w-6 text-blue-400 mt-0.5 flex-shrink-0" />
                               <div>
-                                <p className="text-blue-400 font-bold mb-2">ابدأ التحقق الآن</p>
+                                <p className="text-blue-400 font-bold mb-2">
+                                  {!hasKyc ? 'ابدأ التحقق الآن' : isFailed ? 'فشل التحقق' : 'انتهت صلاحية التحقق'}
+                                </p>
                                 <p className="text-white/80 text-sm leading-relaxed">
-                                  لم تقم بإنشاء طلب تحقق بعد. اضغط على الزر أدناه لبدء عملية التحقق من الهوية.
+                                  {!hasKyc 
+                                    ? 'لم تقم بإنشاء طلب تحقق بعد. اضغط على الزر أدناه لبدء عملية التحقق من الهوية.'
+                                    : isFailed
+                                    ? 'لم يتم التحقق من هويتك. يمكنك المحاولة مرة أخرى.'
+                                    : 'انتهت صلاحية طلب التحقق الخاص بك. يمكنك إنشاء طلب جديد.'}
                                 </p>
                               </div>
                             </div>
                           </div>
                         )}
+
+                        {/* Show status message when pending or verified */}
+                        {(isPending || isVerified) && (
+                          <div className={`rounded-lg p-5 border ${
+                            isVerified 
+                              ? 'bg-green-500/10 border-green-500/30' 
+                              : 'bg-yellow-500/10 border-yellow-500/30'
+                          }`}>
+                            <div className="flex items-start gap-3">
+                              {isVerified ? (
+                                <CheckCircle2 className="h-6 w-6 text-green-400 mt-0.5 flex-shrink-0" />
+                              ) : (
+                                <Clock className="h-6 w-6 text-yellow-400 mt-0.5 flex-shrink-0" />
+                              )}
+                              <div>
+                                <p className={`font-bold mb-2 ${isVerified ? 'text-green-400' : 'text-yellow-400'}`}>
+                                  {isVerified ? 'تم التحقق من هويتك' : 'قيد المراجعة'}
+                                </p>
+                                <p className="text-white/80 text-sm leading-relaxed">
+                                  {isVerified
+                                    ? 'تم التحقق من هويتك بنجاح. يمكنك الآن بيع الحسابات على المنصة.'
+                                    : 'طلب التحقق الخاص بك قيد المراجعة من قبل فريقنا. سيتم إشعارك عبر البريد الإلكتروني عند اكتمال العملية.'}
+                                </p>
+                                {isPending && kycData?.created_at && (
+                                  <p className="text-white/60 text-xs mt-3">
+                                    تاريخ الطلب: {new Date(kycData.created_at).toLocaleDateString('ar-SA', {
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Show failed status with details */}
+                        {isFailed && (
+                          <div className="bg-red-500/10 rounded-lg p-5 border border-red-500/30">
+                            <div className="flex items-start gap-3">
+                              <XCircle className="h-6 w-6 text-red-400 mt-0.5 flex-shrink-0" />
+                              <div>
+                                <p className="text-red-400 font-bold mb-2">فشل التحقق</p>
+                                <p className="text-white/80 text-sm leading-relaxed mb-3">
+                                  لم يتم التحقق من هويتك. قد يكون السبب:
+                                </p>
+                                <ul className="list-disc list-inside space-y-1 text-white/70 text-sm">
+                                  <li>عدم وضوح الصور المرفقة</li>
+                                  <li>عدم تطابق المعلومات</li>
+                                  <li>انتهاء صلاحية الوثائق</li>
+                                </ul>
+                                <p className="text-white/80 text-sm mt-3">
+                                  يرجى المحاولة مرة أخرى مع التأكد من وضوح الصور وصحة المعلومات.
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Button - always show but disabled when not allowed */}
                         <Button
                           onClick={() => {
-                            if (!createKycMutation.isPending && !isRefetching) {
+                            if (canStartVerification && !createKycMutation.isPending && !isRefetching) {
                               createKycMutation.mutate();
                             }
                           }}
-                          disabled={createKycMutation.isPending || isRefetching}
+                          disabled={!canStartVerification || createKycMutation.isPending || isRefetching}
                           className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] py-6 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                           size="lg"
                         >
@@ -531,18 +551,22 @@ const KYC = () => {
                           ) : (
                             <>
                               <ShieldCheck className="mr-2 h-5 w-5" />
-                              {hasKyc ? 'إعادة المحاولة' : 'ابدأ عملية التحقق'}
+                              {isPending || isVerified 
+                                ? (isPending ? 'قيد المراجعة...' : 'تم التحقق')
+                                : hasKyc 
+                                ? 'إعادة المحاولة' 
+                                : 'ابدأ عملية التحقق'}
                             </>
                           )}
                         </Button>
-                        {!personaLoaded && !createKycMutation.isPending && (
+                        {!personaLoaded && !createKycMutation.isPending && canStartVerification && (
                           <p className="text-yellow-400 text-sm text-center">
                             <Loader2 className="inline-block h-4 w-4 animate-spin mr-2" />
                             جاري تحميل نظام التحقق...
                           </p>
                         )}
                       </div>
-                    ) : null}
+                    )}
 
                     {/* Persona Modal */}
                     {showPersonaModal && inquiryUrl && (
