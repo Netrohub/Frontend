@@ -340,9 +340,15 @@ const KYC = () => {
           'name-last': user?.name?.split(' ')[1] || '',
           'email-address': user?.email || '',
         },
+        // Open immediately when ready (Persona handles modal overlay)
         onReady: () => {
-          console.log('[KYC] Persona widget ready');
-          personaClient.open();
+          console.log('[KYC] Persona widget ready, opening...');
+          try {
+            personaClient.open();
+          } catch (error) {
+            console.error('[KYC] Error opening Persona widget:', error);
+            toast.error("فشل فتح نافذة التحقق. الرجاء المحاولة مرة أخرى");
+          }
         },
         onComplete: ({ inquiryId, status }: { inquiryId: string; status: string }) => {
           console.log('[KYC] Persona verification completed', { inquiryId, status });
