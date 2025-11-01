@@ -110,7 +110,7 @@ const KYC = () => {
           } catch (error) {
             console.error('[KYC] Failed to initialize Persona:', error);
             // Fallback to opening in new window
-            if (data.inquiry_url) {
+      if (data.inquiry_url) {
               toast.info("سيتم فتح نافذة جديدة للتحقق");
               window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
             } else {
@@ -231,27 +231,36 @@ const KYC = () => {
   }, []);
 
   // Calculate status flags
-  const isVerified = kyc?.status === 'verified';
-  const isPending = kyc?.status === 'pending';
-  const isFailed = kyc?.status === 'failed';
-  const isExpired = kyc?.status === 'expired';
+  const kycStatus = kyc?.status;
+  const isVerified = kycStatus === 'verified';
+  const isPending = kycStatus === 'pending';
+  const isFailed = kycStatus === 'failed';
+  const isExpired = kycStatus === 'expired';
   
   // User can start verification if:
   // - No KYC exists (kyc is null or undefined)
+  // - KYC exists but status is null (invalid/empty record)
   // - KYC is pending (allows retry)
   // - KYC is failed
   // - KYC is expired
   // BUT NOT if verified (once verified, cannot start again)
   // Note: kyc can be null (no record) or an object (has record)
   const hasKycRecord = kyc !== null && kyc !== undefined;
-  const canStartVerification = !isVerified && (!hasKycRecord || isPending || isFailed || isExpired);
+  const hasValidStatus = kycStatus !== null && kycStatus !== undefined;
+  
+  // Allow verification if:
+  // - Not verified AND
+  // - (No KYC record OR status is null/invalid OR status allows retry)
+  const canStartVerification = !isVerified && (!hasKycRecord || !hasValidStatus || isPending || isFailed || isExpired);
   
   // Debug logging - always log state changes
   useEffect(() => {
     console.log('[KYC] State update', {
       isLoading,
       kyc: kyc === null ? 'null' : kyc === undefined ? 'undefined' : { id: kyc.id, status: kyc.status },
+      kycStatus,
       hasKycRecord,
+      hasValidStatus,
       isVerified,
       isPending,
       isFailed,
@@ -260,7 +269,7 @@ const KYC = () => {
       personaLoaded,
       hasPersona: !!(window as any).Persona
     });
-  }, [isLoading, kyc, hasKycRecord, isVerified, isPending, isFailed, isExpired, canStartVerification, personaLoaded]);
+  }, [isLoading, kyc, kycStatus, hasKycRecord, hasValidStatus, isVerified, isPending, isFailed, isExpired, canStartVerification, personaLoaded]);
 
   const startPersonaVerification = () => {
     // Always log for debugging (including production)
@@ -317,9 +326,9 @@ const KYC = () => {
           title="التحقق من الهوية - NXOLand"
           description="قم بتحقق من هويتك للبدء في بيع الحسابات على منصة NXOLand"
         />
-        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
-          <Navbar />
-          <div className="relative z-10 container mx-auto px-4 py-8 text-center">
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 py-8 text-center">
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm max-w-md mx-auto">
               <ShieldCheck className="h-16 w-16 text-white/40 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-white mb-4">تحقق من الهوية</h2>
@@ -375,7 +384,7 @@ const KYC = () => {
             <h1 className="text-3xl md:text-4xl font-black text-white">التحقق من الهوية - KYC</h1>
           </div>
           <p className="text-lg text-white/60">أكمل عملية التحقق لتتمكن من إضافة إعلانات</p>
-        </div>
+              </div>
 
         {/* Warning Alert */}
         <Card className="p-5 bg-red-500/10 border-red-500/30 backdrop-blur-sm mb-8">
@@ -516,8 +525,8 @@ const KYC = () => {
                   )}
                 </Button>
               </div>
-            </div>
-          ) : (
+              </div>
+            ) : (
             // Step 3: Identity Verification with Persona
             <div className="space-y-4">
               <div className="flex items-center gap-3 mb-4">
@@ -540,7 +549,7 @@ const KYC = () => {
                       <li>• التقط صورة سيلفي للتحقق</li>
                       <li>• تحقق من رقم هاتفك</li>
                       <li>• سيتم التحقق تلقائياً خلال دقائق</li>
-                    </ul>
+                  </ul>
                   </div>
                 </div>
               </Card>
@@ -552,7 +561,7 @@ const KYC = () => {
                     <p className="font-bold mb-1">آمن ومشفر</p>
                     <p>نظام Persona معتمد من أكبر الشركات العالمية ويضمن حماية كاملة لبياناتك</p>
                   </div>
-                </div>
+                      </div>
               </Card>
 
               {isFailed && (
@@ -577,9 +586,9 @@ const KYC = () => {
                     </div>
                   </div>
                 </Card>
-              )}
+                )}
 
-              <Button 
+                  <Button
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -598,20 +607,20 @@ const KYC = () => {
                 }}
                 disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
                 className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                {createKycMutation.isPending ? (
-                  <>
+                  >
+                    {createKycMutation.isPending ? (
+                      <>
                     <Loader2 className="h-5 w-5 animate-spin" />
                     جاري إنشاء طلب التحقق...
-                  </>
-                ) : (
-                  <>
+                      </>
+                    ) : (
+                      <>
                     <IdCard className="h-5 w-5" />
                     {personaLoaded || (window as any).Persona ? 'بدء التحقق عبر Persona' : 'جاري التحميل...'}
                     <ArrowRight className="h-5 w-5" />
-                  </>
-                )}
-              </Button>
+                      </>
+                    )}
+                  </Button>
               
               {/* Debug info - Always visible for troubleshooting */}
               <div className="p-3 bg-black/30 border border-yellow-500/30 text-xs text-white/80 rounded space-y-1 mt-4">
@@ -620,7 +629,8 @@ const KYC = () => {
                   <div>isLoading: <span className="font-bold">{String(isLoading)}</span></div>
                   <div>kyc: <span className="font-bold">{kyc === null ? 'null' : kyc === undefined ? 'undefined' : `object(id:${kyc.id})`}</span></div>
                   <div>hasKycRecord: <span className="font-bold">{String(hasKycRecord)}</span></div>
-                  <div>kyc status: <span className="font-bold">{kyc?.status || 'null'}</span></div>
+                  <div>kycStatus: <span className="font-bold">{kycStatus || 'null'}</span></div>
+                  <div>hasValidStatus: <span className="font-bold">{String(hasValidStatus)}</span></div>
                   <div>isPending: <span className="font-bold">{String(isPending)}</span></div>
                   <div>isVerified: <span className="font-bold">{String(isVerified)}</span></div>
                   <div>isFailed: <span className="font-bold">{String(isFailed)}</span></div>
@@ -632,7 +642,10 @@ const KYC = () => {
                   canStartVerification: {String(canStartVerification)}
                   {!canStartVerification && (
                     <div className="text-xs text-yellow-400 mt-1">
-                      Reason: {isVerified ? 'KYC already verified' : !hasKycRecord ? 'No KYC record (should be true)' : 'Unknown'}
+                      Reason: {isVerified ? 'KYC already verified' : 
+                               !hasKycRecord ? 'No KYC record' : 
+                               hasValidStatus ? `Status is ${kycStatus} (not allowed)` : 
+                               'Unknown'}
                     </div>
                   )}
                 </div>
@@ -653,9 +666,9 @@ const KYC = () => {
               <p className="text-xs text-center text-white/60">
                 بالضغط على "بدء التحقق" ستفتح نافذة Persona للتحقق من هويتك ورقم هاتفك
               </p>
-            </div>
-          )}
-        </Card>
+              </div>
+            )}
+          </Card>
 
         {/* Privacy Notice */}
         <Card className="p-5 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)] backdrop-blur-sm">
