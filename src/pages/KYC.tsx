@@ -111,16 +111,14 @@ const KYC = () => {
     }
     
     // Mark as loaded when:
-    // 1. User is authenticated AND query has been fetched (isFetched = true)
-    // OR query has completed (has data or error) and is not loading
-    // This ensures we only mark as loaded after the query actually runs
-    if (user && isFetched) {
-      setHasLoadedOnce(true);
-    } else if (user && !isLoading && (kyc !== undefined || kycError)) {
-      // Fallback: if isFetched isn't available, use the old logic
+    // 1. User is authenticated
+    // 2. Query is not loading
+    // 3. We have data (null or object) OR an error (both mean query completed)
+    if (user && !isLoading && (kyc !== undefined || kycError)) {
+      console.log('[KYC] Setting hasLoadedOnce to true', { user: !!user, isLoading, kyc: kyc !== undefined, kycError: !!kycError });
       setHasLoadedOnce(true);
     }
-  }, [user, isLoading, isFetched, kyc, kycError, hasLoadedOnce]);
+  }, [user, isLoading, kyc, kycError, hasLoadedOnce]);
 
   // Load Persona SDK
   useEffect(() => {
@@ -227,21 +225,16 @@ const KYC = () => {
   }
 
   // Normalize kyc data - handle both null and undefined
-  // Use memoization to prevent recalculation on every render
-  // Use stable value: if data hasn't loaded yet, use null; otherwise use actual data
-  // During refetch, prefer placeholder data to prevent flickering
+  // Use stable value: always normalize to null if undefined
+  // This prevents hasKyc from changing unexpectedly
   const kycData = useMemo(() => {
+    // Always normalize undefined to null for consistency
     // Before first load, return null (stable) instead of undefined
-    if (!hasLoadedOnce && kyc === undefined) {
+    if (kyc === undefined) {
       return null;
     }
-    // During refetch, if kyc becomes undefined temporarily, keep previous value (null)
-    // This prevents hasKyc from changing during refetch
-    if (isRefetching && kyc === undefined) {
-      return null; // Keep null during refetch if we had null before
-    }
     return kyc ?? null;
-  }, [kyc, hasLoadedOnce, isRefetching]);
+  }, [kyc]);
   
   const kycStatus = useMemo(() => kycData?.status || null, [kycData]);
   const hasKyc = useMemo(() => kycData !== null && kycData !== undefined, [kycData]);
@@ -251,32 +244,45 @@ const KYC = () => {
   const isExpired = useMemo(() => kycStatus === 'expired', [kycStatus]);
   
   // Show button when: no KYC exists, or status is failed/expired (not verified or pending)
-  // Memoize this to prevent recalculation and button flashing
-  // Only calculate after initial load to prevent flashing
+  // Simplified logic for reliability
   const canStartVerification = useMemo(() => {
-    // Must be authenticated to show button
+    // Must be authenticated
     if (!user) {
+      if (import.meta.env.DEV) console.log('[KYC] canStartVerification: false (no user)');
       return false;
     }
-    // Wait for initial load before showing button
+    
+    // Wait for initial load to complete
     if (!hasLoadedOnce) {
+      if (import.meta.env.DEV) console.log('[KYC] canStartVerification: false (not loaded yet)');
       return false;
     }
-    // If we're currently creating, only hide if we already have a pending KYC
+    
+    // Don't show if we're creating AND already have a pending KYC
     if (createKycMutation.isPending && isPending) {
+      if (import.meta.env.DEV) console.log('[KYC] canStartVerification: false (creating pending)');
       return false;
     }
-    // During refetch, use placeholder data to maintain button visibility
-    // If we're refetching, keep showing button if we previously had it showing
-    // This prevents button from disappearing during refetch
-    if (isRefetching) {
-      // If refetching, keep the previous state (button stays visible if it was visible)
-      // This is handled by placeholderData in the query, but we add extra protection here
-      return !hasKyc || isFailed || isExpired;
+    
+    // Show button if:
+    // - No KYC record exists (!hasKyc)
+    // - KYC status is failed
+    // - KYC status is expired
+    // Don't show if status is pending or verified
+    const shouldShow = !hasKyc || isFailed || isExpired;
+    
+    if (import.meta.env.DEV) {
+      console.log('[KYC] canStartVerification calculation:', {
+        hasKyc,
+        isFailed,
+        isExpired,
+        shouldShow,
+        status: kycStatus
+      });
     }
-    // Otherwise, show if no KYC or status allows it
-    return !hasKyc || isFailed || isExpired;
-  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending, isRefetching, kycData]);
+    
+    return shouldShow;
+  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending, kycStatus]);
 
   return (
     <>
@@ -324,8 +330,22 @@ const KYC = () => {
               <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
                 {/* Debug info - remove in production */}
                 {import.meta.env.DEV && (
-                  <div className="mb-4 p-2 bg-black/20 text-xs text-white/60 rounded">
-                    Debug: user={user ? 'yes' : 'no'}, isLoading={String(isLoading)}, hasLoadedOnce={String(hasLoadedOnce)}, hasKyc={String(hasKyc)}, status={kycStatus || 'null'}, canStart={String(canStartVerification)}, kyc={kyc === null ? 'null' : kyc === undefined ? 'undefined' : 'object'}
+                  <div className="mb-4 p-2 bg-black/20 text-xs text-white/60 rounded space-y-1">
+                    <div>Debug Panel:</div>
+                    <div>user: {user ? 'yes' : 'no'}</div>
+                    <div>isLoading: {String(isLoading)}</div>
+                    <div>isRefetching: {String(isRefetching)}</div>
+                    <div>isFetched: {String(isFetched)}</div>
+                    <div>hasLoadedOnce: {String(hasLoadedOnce)}</div>
+                    <div>kyc: {kyc === null ? 'null' : kyc === undefined ? 'undefined' : `object(id:${(kyc as any)?.id})`}</div>
+                    <div>kycData: {kycData === null ? 'null' : kycData === undefined ? 'undefined' : `object`}</div>
+                    <div>hasKyc: {String(hasKyc)}</div>
+                    <div>status: {kycStatus || 'null'}</div>
+                    <div>isPending: {String(isPending)}</div>
+                    <div>isFailed: {String(isFailed)}</div>
+                    <div>isExpired: {String(isExpired)}</div>
+                    <div>canStart: {String(canStartVerification)}</div>
+                    <div>mutationPending: {String(createKycMutation.isPending)}</div>
                   </div>
                 )}
                 <div className="text-center mb-6">
