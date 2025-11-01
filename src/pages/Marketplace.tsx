@@ -145,43 +145,39 @@ const Marketplace = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredListings.map((account) => (
               <Link key={account.id} to={`/product/${account.id}`}>
-                <Card className="bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer group">
-                  <div className="p-6">
-                    {/* Image */}
-                    <div className="relative aspect-video mb-4 rounded-lg overflow-hidden bg-white/5">
-                      {account.images && account.images.length > 0 ? (
-                        <img 
-                          src={account.images[0]} 
-                          alt={`${account.title} - ${account.category}`}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/40" aria-label="لا توجد صورة">
-                          <Shield className="h-12 w-12" aria-hidden="true" />
-                        </div>
-                      )}
-                    </div>
+                <Card className="overflow-hidden bg-white/5 border-white/10 hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:-translate-y-1 group backdrop-blur-sm">
+                  {/* Image */}
+                  <div className="relative h-48 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] overflow-hidden">
+                    {account.images && account.images.length > 0 ? (
+                      <img 
+                        src={account.images[0]} 
+                        alt={`${account.title} - ${account.category}`}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Shield className="h-20 w-20 text-white/20" />
+                      </div>
+                    )}
+                  </div>
 
-                    {/* Title */}
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {/* Content */}
+                  <div className="p-5 space-y-3">
+                    <h3 className="text-xl font-bold text-white group-hover:text-[hsl(195,80%,70%)] transition-colors">
                       {account.title}
                     </h3>
-
-                    {/* Category */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-sm text-white/60">{account.category}</span>
+                    
+                    <div className="flex items-center gap-2 text-sm text-white/60">
+                      <MapPin className="h-4 w-4" />
+                      <span>{account.category}</span>
                     </div>
 
-                    {/* Price */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-black text-[hsl(40,90%,55%)]">
-                        {formatPrice(account.price)}
-                      </span>
-                      <div className="flex items-center gap-1 text-white/60">
-                        <span className="text-sm">{account.views}</span>
-                        <span className="text-xs">مشاهدة</span>
-                      </div>
+                    <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                      <span className="text-2xl font-black text-[hsl(195,80%,70%)]">{formatPrice(account.price)} ريال</span>
+                      <Button size="sm" className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+                        عرض التفاصيل
+                      </Button>
                     </div>
                   </div>
                 </Card>
