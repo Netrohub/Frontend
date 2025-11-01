@@ -237,12 +237,14 @@ const KYC = () => {
   const isExpired = kyc?.status === 'expired';
   
   // User can start verification if:
-  // - No KYC exists
+  // - No KYC exists (kyc is null or undefined)
   // - KYC is pending (allows retry)
   // - KYC is failed
   // - KYC is expired
   // BUT NOT if verified (once verified, cannot start again)
-  const canStartVerification = !isVerified && (!kyc || isPending || isFailed || isExpired);
+  // Note: kyc can be null (no record) or an object (has record)
+  const hasKycRecord = kyc !== null && kyc !== undefined;
+  const canStartVerification = !isVerified && (!hasKycRecord || isPending || isFailed || isExpired);
 
   const startPersonaVerification = () => {
     if (import.meta.env.DEV) {
