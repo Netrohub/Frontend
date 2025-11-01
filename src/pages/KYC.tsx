@@ -21,7 +21,7 @@ const KYC = () => {
   // Track if we've successfully loaded KYC data at least once (prevents button flashing)
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-  const { data: kyc, isLoading, error: kycError, refetch, isRefetching } = useQuery({
+  const { data: kyc, isLoading, error: kycError, refetch, isRefetching, isFetched } = useQuery({
     queryKey: ['kyc'],
     queryFn: async () => {
       try {
@@ -103,11 +103,17 @@ const KYC = () => {
 
   // Track when KYC data has been loaded at least once (prevents button flashing)
   useEffect(() => {
-    // Once loading is complete (regardless of whether data is null or object), mark as loaded
-    if (!isLoading && !hasLoadedOnce) {
+    // Mark as loaded when:
+    // 1. User is authenticated AND query has been fetched (isFetched = true)
+    // OR query has completed (has data or error) and is not loading
+    // This ensures we only mark as loaded after the query actually runs
+    if (user && isFetched && !hasLoadedOnce) {
+      setHasLoadedOnce(true);
+    } else if (user && !isLoading && (kyc !== undefined || kycError) && !hasLoadedOnce) {
+      // Fallback: if isFetched isn't available, use the old logic
       setHasLoadedOnce(true);
     }
-  }, [isLoading, hasLoadedOnce]);
+  }, [user, isLoading, isFetched, kyc, kycError, hasLoadedOnce]);
 
   // Load Persona SDK
   useEffect(() => {
@@ -235,6 +241,10 @@ const KYC = () => {
   // Memoize this to prevent recalculation and button flashing
   // Only calculate after initial load to prevent flashing
   const canStartVerification = useMemo(() => {
+    // Must be authenticated to show button
+    if (!user) {
+      return false;
+    }
     // Wait for initial load before showing button
     if (!hasLoadedOnce) {
       return false;
@@ -245,7 +255,7 @@ const KYC = () => {
     }
     // Otherwise, show if no KYC or status allows it
     return !hasKyc || isFailed || isExpired;
-  }, [hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending]);
+  }, [user, hasLoadedOnce, hasKyc, isFailed, isExpired, createKycMutation.isPending, isPending]);
 
   return (
     <>
@@ -263,7 +273,7 @@ const KYC = () => {
             <p className="text-white/60">تحقق من هويتك للبدء في بيع الحسابات على المنصة</p>
           </div>
 
-          {isLoading && kyc === undefined ? (
+          {isLoading && (!user || kyc === undefined) ? (
             <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="flex flex-col items-center justify-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin text-white/60 mb-4" />
@@ -294,7 +304,7 @@ const KYC = () => {
                 {/* Debug info - remove in production */}
                 {process.env.NODE_ENV === 'development' && (
                   <div className="mb-4 p-2 bg-black/20 text-xs text-white/60 rounded">
-                    Debug: hasKyc={String(hasKyc)}, status={kycStatus || 'null'}, canStart={String(canStartVerification)}
+                    Debug: user={user ? 'yes' : 'no'}, isLoading={String(isLoading)}, hasLoadedOnce={String(hasLoadedOnce)}, hasKyc={String(hasKyc)}, status={kycStatus || 'null'}, canStart={String(canStartVerification)}, kyc={kyc === null ? 'null' : kyc === undefined ? 'undefined' : 'object'}
                   </div>
                 )}
                 <div className="text-center mb-6">
