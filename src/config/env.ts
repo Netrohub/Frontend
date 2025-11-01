@@ -11,28 +11,23 @@ interface EnvConfig {
 
 /**
  * Validates and returns environment configuration
- * Throws error if required variables are missing
+ * Returns null if validation fails (for graceful error handling)
  */
-export function getEnvConfig(): EnvConfig {
+export function getEnvConfig(): EnvConfig | null {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
   const gtmId = import.meta.env.VITE_GTM_ID;
   const nodeEnv = import.meta.env.NODE_ENV || import.meta.env.MODE || 'development';
 
   // Validate required environment variables
   if (!apiBaseUrl) {
-    throw new Error(
-      'VITE_API_BASE_URL is required. Please set it in your .env file.\n' +
-      'Example: VITE_API_BASE_URL=https://backend-piz0.onrender.com/api/v1'
-    );
+    return null;
   }
 
   // Validate API URL format
   try {
     new URL(apiBaseUrl);
   } catch {
-    throw new Error(
-      `VITE_API_BASE_URL must be a valid URL. Current value: ${apiBaseUrl}`
-    );
+    return null;
   }
 
   return {
@@ -42,12 +37,33 @@ export function getEnvConfig(): EnvConfig {
   };
 }
 
+/**
+ * Gets environment config or throws with user-friendly error
+ */
+function getEnvConfigOrThrow(): EnvConfig {
+  const config = getEnvConfig();
+  if (!config) {
+    const errorMessage = 'VITE_API_BASE_URL is required. Please set it in your environment variables.\n' +
+      'For Cloudflare Pages: Go to Settings → Environment Variables and add:\n' +
+      'VITE_API_BASE_URL=https://backend-piz0.onrender.com/api/v1';
+    throw new Error(errorMessage);
+  }
+  return config;
+}
+
 // Export validated config
-export const env = getEnvConfig();
+export const env = getEnvConfigOrThrow();
 
 // Export individual values for convenience
 export const API_BASE_URL = env.VITE_API_BASE_URL;
 export const GTM_ID = env.VITE_GTM_ID;
 export const IS_PRODUCTION = env.NODE_ENV === 'production';
 export const IS_DEVELOPMENT = env.NODE_ENV === 'development';
+
+/**
+ * Check if environment is properly configured
+ */
+export function isEnvConfigured(): boolean {
+  return getEnvConfig() !== null;
+}
 
