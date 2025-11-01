@@ -16,32 +16,72 @@ The following environment variables must be set in Cloudflare Pages for the appl
 
 ## How to Set Environment Variables in Cloudflare Pages
 
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Navigate to **Pages** → Your Project
-3. Click on **Settings** tab
-4. Scroll down to **Environment Variables** section
-5. Click **Add variable** for **Production** environment
-6. Add the following:
+### Step-by-Step Instructions:
 
-   **Variable 1:**
-   - Variable name: `VITE_API_BASE_URL`
-   - Value: `https://backend-piz0.onrender.com/api/v1`
-   - Environment: Production
+1. **Go to Cloudflare Dashboard**
+   - Visit: https://dash.cloudflare.com/
+   - Log in to your account
 
-   **Variable 2 (Optional):**
-   - Variable name: `VITE_GTM_ID`
-   - Value: `GTM-THXQ6Q9V`
-   - Environment: Production
+2. **Navigate to Pages**
+   - Click on **"Workers & Pages"** in the left sidebar
+   - Click on **"Pages"** 
+   - Find and click on your frontend project name
 
-7. Click **Save**
-8. **Redeploy** your site for changes to take effect
+3. **Open Settings**
+   - Click on the **"Settings"** tab at the top
+   - Scroll down to find the **"Environment Variables"** section
+
+4. **Add Environment Variables**
+   - Click **"Add variable"** button
+   - Select **"Production"** environment (or the environment you're deploying to)
+   
+   **Add Variable 1 (Required):**
+   - **Variable name:** `VITE_API_BASE_URL`
+   - **Value:** `https://backend-piz0.onrender.com/api/v1`
+   - **Environment:** Production
+   - Click **"Save"**
+
+   **Add Variable 2 (Optional - for Google Analytics):**
+   - Click **"Add variable"** again
+   - **Variable name:** `VITE_GTM_ID`
+   - **Value:** `GTM-THXQ6Q9V` (or your GTM ID)
+   - **Environment:** Production
+   - Click **"Save"**
+
+5. **Redeploy Your Site**
+   - After saving, you need to trigger a new deployment
+   - Go to **"Deployments"** tab
+   - Click **"Retry deployment"** on the latest deployment, OR
+   - Push a new commit to trigger automatic deployment, OR
+   - Click **"Create deployment"** and select your branch
 
 ## Verification
 
 After setting the environment variables and redeploying:
 
-1. The application should load without errors
-2. If the variable is missing, you'll see a user-friendly error page in Arabic explaining what needs to be configured
+1. **Wait for deployment to complete** (usually 2-5 minutes)
+2. **Visit your site** - The application should load without errors
+3. **Check the browser console** - There should be no errors about `VITE_API_BASE_URL`
+4. **If you see the error page**, it means:
+   - The variable wasn't set correctly, OR
+   - The deployment hasn't completed yet, OR
+   - The variable is set in the wrong environment
+
+## Current Error Message
+
+If you see this message, it means `VITE_API_BASE_URL` is not set:
+
+```
+خطأ في الإعدادات
+المتغير البيئي VITE_API_BASE_URL غير محدد
+
+يرجى إضافة المتغيرات التالية في Cloudflare Pages:
+VITE_API_BASE_URL=https://backend-piz0.onrender.com/api/v1
+
+Cloudflare Dashboard → Pages → Settings → Environment Variables
+```
+
+**This is normal behavior** - the app is gracefully handling the missing variable. Follow the steps above to fix it.
 
 ## Troubleshooting
 
