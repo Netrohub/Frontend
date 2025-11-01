@@ -310,8 +310,8 @@ export const kycApi = {
   create: () =>
     api.post<KycCreateResponse>('/kyc'),
   
-  sync: () =>
-    api.post<KycVerification>('/kyc/sync'),
+  sync: (data?: { inquiry_id?: string }) =>
+    api.post<KycVerification>('/kyc/sync', data),
 };
 
 // Public API

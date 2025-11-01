@@ -356,8 +356,9 @@ const KYC = () => {
           
           // Sync KYC status from Persona API immediately
           // This ensures status is saved even if webhook is delayed
+          // Pass inquiryId so backend can create KYC record if it doesn't exist
           try {
-            await kycApi.sync();
+            await kycApi.sync({ inquiry_id: inquiryId });
             toast.success("تم إكمال عملية التحقق بنجاح");
             // Refetch to get updated status
             setTimeout(() => {
