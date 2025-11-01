@@ -302,7 +302,7 @@ const KYC = () => {
               {/* Status Card */}
               <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
                 {/* Debug info - remove in production */}
-                {process.env.NODE_ENV === 'development' && (
+                {import.meta.env.DEV && (
                   <div className="mb-4 p-2 bg-black/20 text-xs text-white/60 rounded">
                     Debug: user={user ? 'yes' : 'no'}, isLoading={String(isLoading)}, hasLoadedOnce={String(hasLoadedOnce)}, hasKyc={String(hasKyc)}, status={kycStatus || 'null'}, canStart={String(canStartVerification)}, kyc={kyc === null ? 'null' : kyc === undefined ? 'undefined' : 'object'}
                   </div>
