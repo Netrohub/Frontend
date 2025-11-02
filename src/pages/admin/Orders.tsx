@@ -58,39 +58,52 @@ const AdminOrders = () => {
         </div>
       </Card>
 
-      {/* Orders List */}
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex justify-center items-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && orders.length === 0 && (
+        <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+          <p className="text-white/60">لا توجد طلبات لعرضها</p>
+        </Card>
+      )}
+
+      {/* Orders Grid */}
+      {!isLoading && orders.length > 0 && (
       <div className="space-y-4">
         {orders.map((order) => (
           <Card key={order.id} className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-lg font-bold text-white">#{order.id}</h3>
+                  <h3 className="text-lg font-bold text-white">طلب رقم #{order.id}</h3>
                   <Badge className={
                     order.status === "completed" 
                       ? "bg-green-500/20 text-green-400 border-green-500/30"
-                      : order.status === "pending"
+                      : order.status === "escrow_hold"
+                      ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                      : order.status === "pending_payment"
                       ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                      : order.status === "processing"
-                      ? "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
                       : "bg-red-500/20 text-red-400 border-red-500/30"
                   }>
-                    {order.status === "completed" ? "مكتمل" : 
-                     order.status === "pending" ? "قيد الانتظار" : 
-                     order.status === "processing" ? "قيد المعالجة" : "ملغي"}
+                    {order.status === "completed" ? "مكتمل" : order.status === "escrow_hold" ? "ضمان" : order.status === "pending_payment" ? "انتظار الدفع" : order.status === "cancelled" ? "ملغي" : order.status}
                   </Badge>
                 </div>
                 <div className="text-sm text-white/60 space-y-1">
-                  <div className="font-medium text-white/80">{order.product}</div>
+                  <div>المنتج: {order.listing?.title || 'غير محدد'}</div>
                   <div className="flex gap-4">
-                    <span>المشتري: {order.buyer}</span>
+                    <span>المشتري: {order.buyer?.name || 'غير محدد'}</span>
                     <span>•</span>
-                    <span>البائع: {order.seller}</span>
+                    <span>البائع: {order.seller?.name || 'غير محدد'}</span>
                   </div>
                   <div className="flex gap-4">
-                    <span>السعر: {order.price} ريال</span>
+                    <span>السعر: {order.total_price} ريال</span>
                     <span>•</span>
-                    <span>التاريخ: {order.date}</span>
+                    <span>تاريخ الطلب: {formatDate(order.created_at)}</span>
                   </div>
                 </div>
               </div>
@@ -101,18 +114,6 @@ const AdminOrders = () => {
                 <Eye className="h-4 w-4" />
                 عرض التفاصيل
               </Button>
-              {order.status === "pending" && (
-                <>
-                  <Button size="sm" variant="outline" className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30">
-                    <CheckCircle className="h-4 w-4" />
-                    قبول
-                  </Button>
-                  <Button size="sm" variant="outline" className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
-                    <XCircle className="h-4 w-4" />
-                    رفض
-                  </Button>
-                </>
-              )}
             </div>
           </Card>
         ))}
