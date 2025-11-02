@@ -61,8 +61,9 @@ const ProductDetails = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
+    return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
