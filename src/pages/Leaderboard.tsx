@@ -135,16 +135,16 @@ const Leaderboard = () => {
           {/* 1st Place */}
           {topSellers[0] && (
           <div className="md:order-2">
-            <Card className="p-5 text-center bg-gradient-to-br from-[hsl(45,100%,51%,0.15)] to-[hsl(45,100%,30%,0.1)] border-2 border-[hsl(45,100%,51%,0.5)] backdrop-blur-sm shadow-[0_0_40px_rgba(255,215,0,0.3)]">
+            <Card className="p-5 text-center bg-[hsl(195,80%,20%)] border-2 border-[hsl(195,80%,50%)] backdrop-blur-sm shadow-[0_0_40px_rgba(56,189,248,0.4)]">
               <div className="relative inline-block mb-3">
-                <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${getBadgeColor(1)} flex items-center justify-center shadow-[0_0_40px_rgba(255,215,0,0.6)]`}>
+                <div className={`w-20 h-20 rounded-full bg-gradient-to-br ${getBadgeColor(1)} flex items-center justify-center shadow-[0_0_40px_rgba(56,189,248,0.6)]`}>
                   <Trophy className="h-10 w-10 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-[hsl(45,100%,51%)] flex items-center justify-center font-black text-white shadow-lg text-sm">
+                <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-[hsl(195,80%,50%)] flex items-center justify-center font-black text-white shadow-lg text-sm">
                   1
                 </div>
               </div>
-              <Badge className="mb-2 bg-[hsl(45,100%,51%,0.3)] text-white border-[hsl(45,100%,51%)] font-bold text-xs">
+              <Badge className="mb-2 bg-[hsl(195,80%,30%)] text-white border-[hsl(195,80%,50%)] font-bold text-xs">
                 البائع الأول
               </Badge>
               <h3 className="font-black text-white text-xl mb-2 drop-shadow-lg flex items-center justify-center gap-2">
