@@ -373,6 +373,51 @@ export const publicApi = {
     api.get<User>(`/members/${id}`),
 };
 
+// Notifications API
+export const notificationsApi = {
+  getAll: (params?: { page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<any>(`/notifications?${query.toString()}`);
+  },
+  
+  getUnreadCount: () =>
+    api.get<{ count: number }>('/notifications/unread-count'),
+  
+  markAsRead: (id: number) =>
+    api.post<{ message: string }>(`/notifications/${id}/read`),
+  
+  markAllAsRead: () =>
+    api.post<{ message: string }>('/notifications/mark-all-read'),
+  
+  delete: (id: number) =>
+    api.delete<{ message: string }>(`/notifications/${id}`),
+  
+  deleteAllRead: () =>
+    api.delete<{ message: string }>('/notifications/read/all'),
+};
+
+// Settings API
+export const settingsApi = {
+  get: (key: string) =>
+    api.get<any>(`/settings/${key}`),
+  
+  getAll: () =>
+    api.get<any>('/admin/settings'),
+  
+  update: (key: string, value: any) =>
+    api.put<{ message: string }>(`/admin/settings/${key}`, { value }),
+  
+  bulkUpdate: (settings: Array<{ key: string; value: any }>) =>
+    api.post<{ message: string }>('/admin/settings/bulk', { settings }),
+  
+  create: (data: { key: string; value: any; type: string; group: string; description?: string }) =>
+    api.post<{ message: string }>('/admin/settings', data),
+  
+  delete: (key: string) =>
+    api.delete<{ message: string }>(`/admin/settings/${key}`),
+};
+
 // Admin API
 export const adminApi = {
   users: (params?: { page?: number }) => {
@@ -398,5 +443,8 @@ export const adminApi = {
   
   kyc: () =>
     api.get<AdminKycResponse>('/admin/kyc'),
+  
+  createNotification: (data: { user_id: number; type: string; title: string; message: string; icon?: string; color?: string }) =>
+    api.post<any>('/admin/notifications', data),
 };
 
