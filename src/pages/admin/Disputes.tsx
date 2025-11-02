@@ -106,7 +106,8 @@ const AdminDisputes = () => {
         </div>
       </Card>
 
-      {/* Disputes List */}
+      {/* Disputes Grid */}
+      {!isLoading && disputes.length > 0 && (
       <div className="space-y-4">
         {disputes.map((dispute) => (
           <Card key={dispute.id} className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
@@ -114,34 +115,27 @@ const AdminDisputes = () => {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                  <h3 className="text-lg font-bold text-white">#{dispute.id}</h3>
+                  <h3 className="text-lg font-bold text-white">نزاع رقم #{dispute.id}</h3>
                   <Badge className={
                     dispute.status === "open" 
                       ? "bg-red-500/20 text-red-400 border-red-500/30"
-                      : dispute.status === "investigating"
+                      : dispute.status === "under_review"
                       ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
                       : "bg-green-500/20 text-green-400 border-green-500/30"
                   }>
-                    {dispute.status === "open" ? "مفتوح" : 
-                     dispute.status === "investigating" ? "قيد التحقيق" : "محلول"}
-                  </Badge>
-                  <Badge className={
-                    dispute.priority === "high"
-                      ? "bg-red-500/20 text-red-400 border-red-500/30"
-                      : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                  }>
-                    {dispute.priority === "high" ? "أولوية عالية" : "أولوية متوسطة"}
+                    {dispute.status === "open" ? "مفتوح" : dispute.status === "under_review" ? "قيد المراجعة" : dispute.status === "resolved" ? "محلول" : dispute.status}
                   </Badge>
                 </div>
-                <div className="text-sm text-white/60 space-y-2">
-                  <div className="font-medium text-white/80">الطلب: #{dispute.orderId} - {dispute.product}</div>
+                <div className="text-sm text-white/60 space-y-1">
+                  <div>الطلب: #{dispute.order_id}</div>
                   <div className="flex gap-4">
-                    <span>المبلغ: {dispute.reporter}</span>
-                    <span>•</span>
-                    <span>المبلغ عنه: {dispute.reported}</span>
+                    <span>المُبلغ: {dispute.created_by?.name || 'غير محدد'}</span>
                   </div>
-                  <div className="text-amber-200/80">السبب: {dispute.reason}</div>
-                  <div>التاريخ: {dispute.date}</div>
+                  <div className="flex gap-4">
+                    <span>السبب: {dispute.reason}</span>
+                    <span>•</span>
+                    <span>التاريخ: {formatDate(dispute.created_at)}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -151,18 +145,6 @@ const AdminDisputes = () => {
                 <Eye className="h-4 w-4" />
                 عرض التفاصيل
               </Button>
-              {dispute.status !== "resolved" && (
-                <>
-                  <Button size="sm" variant="outline" className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30">
-                    <CheckCircle className="h-4 w-4" />
-                    حل لصالح المشتري
-                  </Button>
-                  <Button size="sm" variant="outline" className="gap-2 bg-[hsl(195,80%,50%,0.1)] hover:bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                    <XCircle className="h-4 w-4" />
-                    حل لصالح البائع
-                  </Button>
-                </>
-              )}
             </div>
           </Card>
         ))}
