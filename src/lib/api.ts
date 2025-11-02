@@ -265,7 +265,7 @@ export const imagesApi = {
     const token = localStorage.getItem('auth_token');
     
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT * 3); // Longer timeout for file uploads
+    const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT * 5); // Longer timeout for Cloudflare uploads
 
     try {
       const response = await fetch(`${baseURL}/images/upload`, {
@@ -288,14 +288,21 @@ export const imagesApi = {
       }
 
       const data = await response.json();
+      // Returns { urls: [...], images: [...full data...], count: N }
       return data.urls || [];
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error('Request timeout');
+        throw new Error('Request timeout - upload may still be processing');
       }
       throw error;
     }
   },
+
+  delete: (id: number) =>
+    api.delete<{ message: string; deleted: boolean }>(`/images/${id}`),
+
+  getAll: () =>
+    api.get<any>('/images'),
 };
 
 // Orders API
