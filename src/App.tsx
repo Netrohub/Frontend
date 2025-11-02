@@ -40,6 +40,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const EditProfile = lazy(() => import("./pages/EditProfile"));
 const Security = lazy(() => import("./pages/Security"));
 const Wallet = lazy(() => import("./pages/Wallet"));
+const Suggestions = lazy(() => import("./pages/Suggestions"));
 
 // Admin routes - lazy loaded
 const Admin = lazy(() => import("./pages/Admin"));
@@ -217,6 +218,14 @@ const App = () => (
                     <ProtectedRoute>
                       <Wallet />
                     </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/suggestions"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Suggestions />
                   </Suspense>
                 }
               />
