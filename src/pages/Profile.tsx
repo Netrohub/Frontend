@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, Shield, Package, LogOut, Star, CheckCircle, Loader2 } from "lucide-react";
+import { User, Mail, Phone, Shield, Package, LogOut, CheckCircle, Loader2, TrendingUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -13,14 +13,12 @@ const Profile = () => {
   const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Get additional user stats if needed
-  const { data: userStats } = useQuery({
+  // Get user statistics from API
+  const { data: userStats, isLoading: statsLoading } = useQuery({
     queryKey: ['user-stats'],
-    queryFn: async () => {
-      // You can add an API endpoint for user stats later
-      return { totalSales: 0, totalPurchases: 0 };
-    },
+    queryFn: () => authApi.getUserStats(),
     enabled: !!user,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
   const handleLogout = async () => {
@@ -53,9 +51,9 @@ const Profile = () => {
     );
   }
 
-  // Format member since date
+  // Format member since date (Gregorian/English format)
   const memberSince = user.created_at 
-    ? new Date(user.created_at).toLocaleDateString('ar-SA', { year: 'numeric', month: 'long' })
+    ? new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
     : 'غير محدد';
 
   return (
@@ -81,7 +79,7 @@ const Profile = () => {
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
                 <User className="h-12 w-12 text-white" />
               </div>
-              {user.kycVerified && (
+              {user.kyc_verification?.status === 'verified' && (
                 <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-green-500">
                   <CheckCircle className="h-5 w-5 text-white" />
                 </div>
@@ -89,11 +87,18 @@ const Profile = () => {
             </div>
             <div className="flex-1 text-center md:text-right">
               <h2 className="text-2xl font-black text-white mb-2">{user.name}</h2>
-              <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                <Star className="h-5 w-5 text-[hsl(40,90%,55%)] fill-current" />
-                <span className="text-lg font-bold text-white">4.8</span>
-                <span className="text-white/60">تقييم</span>
-              </div>
+              {statsLoading ? (
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+                  <Loader2 className="h-4 w-4 animate-spin text-white/60" />
+                  <span className="text-sm text-white/60">جاري التحميل...</span>
+                </div>
+              ) : userStats && userStats.total_revenue > 0 ? (
+                <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
+                  <TrendingUp className="h-5 w-5 text-green-400" />
+                  <span className="text-lg font-bold text-white">${userStats.total_revenue.toLocaleString('en-US')}</span>
+                  <span className="text-white/60">إجمالي الأرباح</span>
+                </div>
+              ) : null}
               {user.kyc_verification?.status === 'verified' ? (
                 <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                   <Shield className="h-3 w-3 ml-1" />
@@ -109,11 +114,15 @@ const Profile = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 pb-6 border-b border-white/10">
             <div className="text-center p-4 bg-white/5 rounded-lg">
-              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.totalSales || 0}</div>
+              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">
+                {statsLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-white/60" /> : (userStats?.total_sales || 0)}
+              </div>
               <div className="text-sm text-white/60">عدد المبيعات</div>
             </div>
             <div className="text-center p-4 bg-white/5 rounded-lg">
-              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.totalPurchases || 0}</div>
+              <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">
+                {statsLoading ? <Loader2 className="h-6 w-6 animate-spin mx-auto text-white/60" /> : (userStats?.total_purchases || 0)}
+              </div>
               <div className="text-sm text-white/60">عدد المشتريات</div>
             </div>
             <div className="text-center p-4 bg-white/5 rounded-lg">
@@ -176,24 +185,22 @@ const Profile = () => {
           <h3 className="text-lg font-bold text-white mb-4">إجراءات الحساب</h3>
           <div className="space-y-3">
             <Button 
-              asChild
               variant="outline" 
-              className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] text-sm md:text-base"
+              className="w-full justify-start gap-3 bg-white/5 text-white/40 border-white/10 cursor-not-allowed min-h-[48px] text-sm md:text-base"
+              disabled
+              title="قريباً"
             >
-              <Link to="/edit-profile">
-                <User className="h-5 w-5 flex-shrink-0" />
-                <span className="truncate">تعديل الملف الشخصي</span>
-              </Link>
+              <User className="h-5 w-5 flex-shrink-0" />
+              <span className="truncate">تعديل الملف الشخصي (قريباً)</span>
             </Button>
             <Button 
-              asChild
               variant="outline" 
-              className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] text-sm md:text-base"
+              className="w-full justify-start gap-3 bg-white/5 text-white/40 border-white/10 cursor-not-allowed min-h-[48px] text-sm md:text-base"
+              disabled
+              title="قريباً"
             >
-              <Link to="/security">
-                <Shield className="h-5 w-5 flex-shrink-0" />
-                <span className="truncate">الأمان والخصوصية</span>
-              </Link>
+              <Shield className="h-5 w-5 flex-shrink-0" />
+              <span className="truncate">الأمان والخصوصية (قريباً)</span>
             </Button>
             <Button 
               onClick={handleLogout}
