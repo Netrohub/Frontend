@@ -109,6 +109,25 @@ const Help = () => {
         </Card>
       </div>
 
+      {/* Feedback Section */}
+      <div className="relative z-10 container mx-auto px-4 py-8 max-w-3xl">
+        <Card className="p-8 bg-gradient-to-br from-[hsl(40,90%,15%)] to-[hsl(40,80%,10%)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">ساعدنا في التحسين</h2>
+          <p className="text-white/70 mb-6">
+            رأيك يهمنا! شارك تجربتك واقتراحاتك لتطوير المنصة
+          </p>
+          <Button 
+            asChild
+            size="lg"
+            className="gap-2 bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0"
+          >
+            <Link to="/suggestions">
+              قيّم المنصة وشارك اقتراحاتك
+            </Link>
+          </Button>
+        </Card>
+      </div>
+
       {/* Footer */}
       <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
         <div className="container mx-auto px-4 text-center">
