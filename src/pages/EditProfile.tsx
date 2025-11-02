@@ -2,27 +2,56 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, Phone, ArrowRight, Save } from "lucide-react";
-import { Link } from "react-router-dom";
+import { User, Mail, Phone, ArrowRight, Save, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { authApi } from "@/lib/api";
+import { toast } from "sonner";
 
 const EditProfile = () => {
-  const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
-    name: "محمد أحمد",
-    email: "mohamed@example.com",
-    phone: "+966 50 123 4567",
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: { name?: string; email?: string; phone?: string }) =>
+      authApi.updateProfile(data),
+    onSuccess: (updatedUser) => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      toast.success("تم تحديث الملف الشخصي بنجاح");
+      navigate("/profile");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "فشل تحديث الملف الشخصي");
+    },
   });
 
   const handleSave = () => {
-    toast({
-      title: "تم الحفظ بنجاح",
-      description: "تم تحديث معلومات الملف الشخصي",
-    });
+    if (!formData.name.trim()) {
+      toast.error("الاسم مطلوب");
+      return;
+    }
+    if (!formData.email.trim()) {
+      toast.error("البريد الإلكتروني مطلوب");
+      return;
+    }
+
+    updateProfileMutation.mutate(formData);
   };
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -52,8 +81,13 @@ const EditProfile = () => {
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
                 <User className="h-12 w-12 text-white" />
               </div>
-              <Button variant="outline" className="bg-white/5 hover:bg-white/10 text-white border-white/20">
-                تغيير الصورة
+              <Button 
+                variant="outline" 
+                className="bg-white/5 hover:bg-white/10 text-white/40 border-white/10 cursor-not-allowed"
+                disabled
+                title="قريباً"
+              >
+                تغيير الصورة (قريباً)
               </Button>
             </div>
 
@@ -67,6 +101,7 @@ const EditProfile = () => {
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                  disabled={updateProfileMutation.isPending}
                 />
               </div>
             </div>
@@ -82,6 +117,7 @@ const EditProfile = () => {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                  disabled={updateProfileMutation.isPending}
                 />
               </div>
             </div>
@@ -97,6 +133,7 @@ const EditProfile = () => {
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                  disabled={updateProfileMutation.isPending}
                 />
               </div>
             </div>
@@ -104,10 +141,20 @@ const EditProfile = () => {
             {/* Save Button */}
             <Button 
               onClick={handleSave}
-              className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+              disabled={updateProfileMutation.isPending}
+              className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px]"
             >
-              <Save className="h-5 w-5" />
-              حفظ التغييرات
+              {updateProfileMutation.isPending ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  جاري الحفظ...
+                </>
+              ) : (
+                <>
+                  <Save className="h-5 w-5" />
+                  حفظ التغييرات
+                </>
+              )}
             </Button>
           </div>
         </Card>

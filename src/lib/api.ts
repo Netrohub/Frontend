@@ -238,7 +238,18 @@ export const authApi = {
       active_listings: number;
       total_listings: number;
       member_since: string;
+      average_rating?: number;
+      total_reviews?: number;
     }>('/user/stats'),
+  
+  getUserActivity: () =>
+    api.get<any[]>('/user/activity'),
+  
+  updateProfile: (data: { name?: string; email?: string; phone?: string }) =>
+    api.put<User>('/user/profile', data),
+  
+  updatePassword: (data: { current_password: string; password: string; password_confirmation: string }) =>
+    api.put<{ message: string }>('/user/password', data),
 };
 
 // Listings API
@@ -433,6 +444,39 @@ export const settingsApi = {
   
   delete: (key: string) =>
     api.delete<{ message: string }>(`/admin/settings/${key}`),
+};
+
+// Reviews API
+export const reviewsApi = {
+  getBySeller: (sellerId: number, params?: { rating?: string; sort?: string; page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.rating) query.append('rating', params.rating);
+    if (params?.sort) query.append('sort', params.sort);
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<any>(`/reviews/seller/${sellerId}?${query.toString()}`);
+  },
+
+  getSellerStats: (sellerId: number) =>
+    api.get<{
+      average_rating: number;
+      total_reviews: number;
+      rating_distribution: { [key: number]: number };
+    }>(`/reviews/seller/${sellerId}/stats`),
+
+  create: (data: { order_id: number; seller_id: number; rating: number; comment: string }) =>
+    api.post<any>('/reviews', data),
+
+  update: (id: number, data: { rating: number; comment: string }) =>
+    api.put<any>(`/reviews/${id}`, data),
+
+  delete: (id: number) =>
+    api.delete<{ message: string }>(`/reviews/${id}`),
+
+  markHelpful: (id: number) =>
+    api.post<{ helpful_count: number; user_found_helpful: boolean }>(`/reviews/${id}/helpful`),
+
+  report: (id: number, reason: string) =>
+    api.post<{ message: string }>(`/reviews/${id}/report`, { reason }),
 };
 
 // Admin API

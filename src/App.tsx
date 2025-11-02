@@ -40,7 +40,10 @@ const Profile = lazy(() => import("./pages/Profile"));
 const EditProfile = lazy(() => import("./pages/EditProfile"));
 const Security = lazy(() => import("./pages/Security"));
 const Wallet = lazy(() => import("./pages/Wallet"));
+
+// Public lazy routes
 const Suggestions = lazy(() => import("./pages/Suggestions"));
+const Reviews = lazy(() => import("./pages/Reviews"));
 
 // Admin routes - lazy loaded
 const Admin = lazy(() => import("./pages/Admin"));
@@ -229,6 +232,13 @@ const App = () => (
                   </Suspense>
                 }
               />
+
+              {/* Reviews - Public */}
+              <Route path="/reviews/:userId" element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <Reviews />
+                </Suspense>
+              } />
 
               {/* Admin Routes - Require Admin Role */}
               <Route

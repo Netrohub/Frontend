@@ -3,25 +3,61 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Shield, Lock, Key, ArrowRight, Bell, Eye } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Shield, Lock, Key, ArrowRight, Bell, Eye, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMutation } from "@tanstack/react-query";
+import { authApi } from "@/lib/api";
+import { toast } from "sonner";
 
 const Security = () => {
-  const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [twoFactor, setTwoFactor] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [loginAlerts, setLoginAlerts] = useState(true);
+  const [passwordData, setPasswordData] = useState({
+    current_password: "",
+    password: "",
+    password_confirmation: "",
+  });
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: (data: { current_password: string; password: string; password_confirmation: string }) =>
+      authApi.updatePassword(data),
+    onSuccess: () => {
+      toast.success("تم تحديث كلمة المرور بنجاح");
+      setPasswordData({ current_password: "", password: "", password_confirmation: "" });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "فشل تحديث كلمة المرور");
+    },
+  });
 
   const handlePasswordChange = () => {
-    toast({
-      title: "تم الحفظ",
-      description: "تم تحديث كلمة المرور بنجاح",
-    });
+    if (!passwordData.current_password) {
+      toast.error("يرجى إدخال كلمة المرور الحالية");
+      return;
+    }
+    if (!passwordData.password || passwordData.password.length < 8) {
+      toast.error("كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل");
+      return;
+    }
+    if (passwordData.password !== passwordData.password_confirmation) {
+      toast.error("كلمة المرور غير متطابقة");
+      return;
+    }
+
+    updatePasswordMutation.mutate(passwordData);
   };
+
+  if (!user) {
+    navigate("/auth");
+    return null;
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -62,8 +98,11 @@ const Security = () => {
                 <Input
                   id="current-password"
                   type="password"
+                  value={passwordData.current_password}
+                  onChange={(e) => setPasswordData({ ...passwordData, current_password: e.target.value })}
                   className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="أدخل كلمة المرور الحالية"
+                  disabled={updatePasswordMutation.isPending}
                 />
               </div>
               <div className="space-y-2">
@@ -71,8 +110,11 @@ const Security = () => {
                 <Input
                   id="new-password"
                   type="password"
+                  value={passwordData.password}
+                  onChange={(e) => setPasswordData({ ...passwordData, password: e.target.value })}
                   className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
-                  placeholder="أدخل كلمة المرور الجديدة"
+                  placeholder="أدخل كلمة المرور الجديدة (8 أحرف على الأقل)"
+                  disabled={updatePasswordMutation.isPending}
                 />
               </div>
               <div className="space-y-2">
@@ -80,52 +122,59 @@ const Security = () => {
                 <Input
                   id="confirm-password"
                   type="password"
+                  value={passwordData.password_confirmation}
+                  onChange={(e) => setPasswordData({ ...passwordData, password_confirmation: e.target.value })}
                   className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   placeholder="أعد إدخال كلمة المرور الجديدة"
+                  disabled={updatePasswordMutation.isPending}
                 />
               </div>
               <Button 
                 onClick={handlePasswordChange}
-                className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+                disabled={updatePasswordMutation.isPending}
+                className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px]"
               >
-                <Key className="h-5 w-5" />
-                تحديث كلمة المرور
+                {updatePasswordMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    جاري التحديث...
+                  </>
+                ) : (
+                  <>
+                    <Key className="h-5 w-5" />
+                    تحديث كلمة المرور
+                  </>
+                )}
               </Button>
             </div>
           </Card>
 
-          {/* Two-Factor Authentication */}
-          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+          {/* Two-Factor Authentication - Coming Soon */}
+          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm opacity-60">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 rounded-lg bg-green-500/20">
                 <Shield className="h-6 w-6 text-green-400" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">المصادقة الثنائية</h2>
+                <h2 className="text-xl font-bold text-white">المصادقة الثنائية (قريباً)</h2>
                 <p className="text-sm text-white/60">حماية إضافية لحسابك</p>
               </div>
               <Switch
                 checked={twoFactor}
                 onCheckedChange={setTwoFactor}
+                disabled
               />
             </div>
-            {twoFactor && (
-              <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                <p className="text-sm text-white/80">
-                  سيتم إرسال رمز التحقق إلى هاتفك عند تسجيل الدخول
-                </p>
-              </div>
-            )}
           </Card>
 
-          {/* Privacy Settings */}
-          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+          {/* Privacy Settings - Coming Soon */}
+          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm opacity-60">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 rounded-lg bg-purple-500/20">
                 <Eye className="h-6 w-6 text-purple-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">الخصوصية</h2>
+                <h2 className="text-xl font-bold text-white">الخصوصية (قريباً)</h2>
                 <p className="text-sm text-white/60">إدارة إعدادات الخصوصية</p>
               </div>
             </div>
@@ -139,6 +188,7 @@ const Security = () => {
                 <Switch
                   checked={emailNotifications}
                   onCheckedChange={setEmailNotifications}
+                  disabled
                 />
               </div>
               <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
@@ -149,19 +199,20 @@ const Security = () => {
                 <Switch
                   checked={loginAlerts}
                   onCheckedChange={setLoginAlerts}
+                  disabled
                 />
               </div>
             </div>
           </Card>
 
-          {/* Sessions */}
-          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+          {/* Sessions - Coming Soon */}
+          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm opacity-60">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 rounded-lg bg-orange-500/20">
                 <Bell className="h-6 w-6 text-orange-400" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">الجلسات النشطة</h2>
+                <h2 className="text-xl font-bold text-white">الجلسات النشطة (قريباً)</h2>
                 <p className="text-sm text-white/60">إدارة الأجهزة المتصلة</p>
               </div>
             </div>
@@ -176,9 +227,10 @@ const Security = () => {
               </div>
               <Button 
                 variant="outline"
-                className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                className="w-full bg-red-500/10 text-red-400/40 border-red-500/20 cursor-not-allowed"
+                disabled
               >
-                إنهاء جميع الجلسات الأخرى
+                إنهاء جميع الجلسات الأخرى (قريباً)
               </Button>
             </div>
           </Card>
