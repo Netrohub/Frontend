@@ -184,8 +184,8 @@ const MyListings = () => {
                       </div>
                     </div>
                     <div className="text-left">
-                      <div className="text-2xl font-black text-[hsl(195,80%,70%)]">{listing.price.toLocaleString('ar-SA')}</div>
-                      <div className="text-sm text-white/60">ريال</div>
+                      <div className="text-2xl font-black text-[hsl(195,80%,70%)]">${listing.price.toLocaleString('en-US')}</div>
+                      <div className="text-sm text-white/60">USD</div>
                     </div>
                   </div>
 

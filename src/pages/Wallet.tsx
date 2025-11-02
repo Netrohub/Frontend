@@ -68,10 +68,9 @@ const Wallet = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR',
+    return '$' + new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(price);
   };
 

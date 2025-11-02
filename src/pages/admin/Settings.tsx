@@ -170,7 +170,7 @@ const AdminSettings = () => {
             </div>
 
             <div>
-              <Label htmlFor="minWithdraw" className="text-white/80">الحد الأدنى للسحب (ريال)</Label>
+              <Label htmlFor="minWithdraw" className="text-white/80">الحد الأدنى للسحب (USD)</Label>
               <Input 
                 id="minWithdraw"
                 type="number"

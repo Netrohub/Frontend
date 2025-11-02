@@ -123,8 +123,8 @@ const Leaderboard = () => {
                   <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                 )}
               </h3>
-              <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{topSellers[1].revenue}</div>
-              <div className="text-xs font-bold text-white/90 mb-2">ريال سعودي</div>
+              <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[1].revenue}</div>
+              <div className="text-xs font-bold text-white/90 mb-2">USD</div>
               <div className="flex items-center justify-center gap-1">
                 <span className="font-bold text-white text-sm">{topSellers[1].sales} عملية</span>
               </div>
@@ -153,8 +153,8 @@ const Leaderboard = () => {
                   <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                 )}
               </h3>
-              <div className="text-4xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{topSellers[0].revenue}</div>
-              <div className="text-sm font-bold text-white/90 mb-2">ريال سعودي</div>
+              <div className="text-4xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[0].revenue}</div>
+              <div className="text-sm font-bold text-white/90 mb-2">USD</div>
               <div className="flex items-center justify-center gap-1 text-[hsl(45,100%,60%)]">
                 <span className="font-bold text-lg text-white">{topSellers[0].sales} عملية</span>
               </div>
@@ -180,8 +180,8 @@ const Leaderboard = () => {
                   <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                 )}
               </h3>
-              <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{topSellers[2].revenue}</div>
-              <div className="text-xs font-bold text-white/90 mb-2">ريال سعودي</div>
+              <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[2].revenue}</div>
+              <div className="text-xs font-bold text-white/90 mb-2">USD</div>
               <div className="flex items-center justify-center gap-1">
                 <span className="font-bold text-white text-sm">{topSellers[2].sales} عملية</span>
               </div>
@@ -214,8 +214,8 @@ const Leaderboard = () => {
                   </div>
                 </div>
                 <div className="text-left">
-                  <div className="text-lg font-black text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{seller.revenue}</div>
-                  <div className="text-xs font-bold text-white/80">ريال</div>
+                  <div className="text-lg font-black text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${seller.revenue}</div>
+                  <div className="text-xs font-bold text-white/80">USD</div>
                 </div>
               </div>
             ))}

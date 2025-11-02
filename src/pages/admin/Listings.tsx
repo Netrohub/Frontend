@@ -130,7 +130,7 @@ const AdminListings = () => {
                 <div className="text-sm text-white/60 space-y-1">
                   <div>البائع: {listing.user?.name || 'غير محدد'}</div>
                   <div className="flex gap-4">
-                    <span>السعر: {listing.price} ريال</span>
+                    <span>السعر: ${listing.price}</span>
                     <span>•</span>
                     <span>المشاهدات: {listing.views || 0}</span>
                     <span>•</span>
@@ -216,7 +216,7 @@ const AdminListings = () => {
                 </div>
                 <div>
                   <span className="text-white/60">السعر:</span>
-                  <p className="text-white font-medium">{selectedListing.price} ريال</p>
+                  <p className="text-white font-medium">${selectedListing.price}</p>
                 </div>
                 <div>
                   <span className="text-white/60">الفئة:</span>

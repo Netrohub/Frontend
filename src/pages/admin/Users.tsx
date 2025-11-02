@@ -173,7 +173,7 @@ const AdminUsers = () => {
                     <div className="text-sm text-white/60">إجمالي الطلبات</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-white">{selectedUser.totalSpent} ريال</div>
+                    <div className="text-2xl font-bold text-white">${selectedUser.totalSpent}</div>
                     <div className="text-sm text-white/60">إجمالي المشتريات</div>
                   </div>
                   <div>

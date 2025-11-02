@@ -59,10 +59,9 @@ const Checkout = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR',
+    return '$' + new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price);
   };
 

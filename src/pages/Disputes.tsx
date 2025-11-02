@@ -120,7 +120,7 @@ const Disputes = () => {
                       <option value={0}>اختر الطلب</option>
                       {availableOrders.map((order: Order) => (
                         <option key={order.id} value={order.id}>
-                          طلب #{order.id} - {order.listing?.title || 'حساب'} - {order.amount} ريال
+                          طلب #{order.id} - {order.listing?.title || 'حساب'} - ${order.amount}
                         </option>
                       ))}
                     </select>

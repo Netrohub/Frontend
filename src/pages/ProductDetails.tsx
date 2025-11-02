@@ -228,8 +228,8 @@ const ProductDetails = () => {
               </div>
 
               <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">{formatPrice(listing.price)}</span>
-                <span className="text-2xl text-white/60">ريال</span>
+                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">${formatPrice(listing.price)}</span>
+                <span className="text-2xl text-white/60">USD</span>
               </div>
             </div>
 

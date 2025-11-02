@@ -77,7 +77,7 @@ const Admin = () => {
                   <Users className="h-8 w-8 text-[hsl(195,80%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">{stats?.total_users?.toLocaleString('ar-SA') || 0}</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.total_users?.toLocaleString('en-US') || 0}</div>
                 <div className="text-sm text-[hsl(195,80%,80%)] mb-2">إجمالي المستخدمين</div>
                 <div className={`text-xs font-medium ${stats?.users_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {stats?.users_growth > 0 ? '+' : ''}{stats?.users_growth || 0}% من الشهر الماضي
@@ -89,7 +89,7 @@ const Admin = () => {
                   <Package className="h-8 w-8 text-[hsl(280,70%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">{stats?.active_listings?.toLocaleString('ar-SA') || 0}</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.active_listings?.toLocaleString('en-US') || 0}</div>
                 <div className="text-sm text-[hsl(280,70%,80%)] mb-2">الإعلانات النشطة</div>
                 <div className={`text-xs font-medium ${stats?.listings_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {stats?.listings_growth > 0 ? '+' : ''}{stats?.listings_growth || 0}% من الشهر الماضي
@@ -101,7 +101,7 @@ const Admin = () => {
                   <ShoppingCart className="h-8 w-8 text-[hsl(40,90%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">{stats?.orders_this_month?.toLocaleString('ar-SA') || 0}</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.orders_this_month?.toLocaleString('en-US') || 0}</div>
                 <div className="text-sm text-[hsl(40,90%,80%)] mb-2">الطلبات هذا الشهر</div>
                 <div className={`text-xs font-medium ${stats?.orders_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {stats?.orders_growth > 0 ? '+' : ''}{stats?.orders_growth || 0}% من الشهر الماضي
@@ -113,8 +113,8 @@ const Admin = () => {
                   <DollarSign className="h-8 w-8 text-[hsl(120,60%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">{stats?.total_revenue?.toLocaleString('ar-SA') || 0}</div>
-                <div className="text-sm text-[hsl(120,60%,80%)] mb-2">الإيرادات (ريال)</div>
+                <div className="text-3xl font-black text-white mb-1">${stats?.total_revenue?.toLocaleString('en-US') || 0}</div>
+                <div className="text-sm text-[hsl(120,60%,80%)] mb-2">الإيرادات (USD)</div>
                 <div className={`text-xs font-medium ${stats?.revenue_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {stats?.revenue_growth > 0 ? '+' : ''}{stats?.revenue_growth || 0}% من الشهر الماضي
                 </div>

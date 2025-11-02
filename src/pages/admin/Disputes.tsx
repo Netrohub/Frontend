@@ -237,7 +237,7 @@ const AdminDisputes = () => {
                 <div className="p-3 bg-white/5 rounded-lg">
                   <h4 className="text-sm text-white/60 mb-2">معلومات الطلب</h4>
                   <p className="text-white font-medium">#{selectedDispute.orderId} - {selectedDispute.product}</p>
-                  <p className="text-sm text-white/50 mt-1">السعر: {selectedDispute.price} ريال</p>
+                  <p className="text-sm text-white/50 mt-1">السعر: ${selectedDispute.price}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">

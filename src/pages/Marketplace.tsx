@@ -38,10 +38,9 @@ const Marketplace = () => {
   }, [listings, priceFilter]);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR',
+    return new Intl.NumberFormat('en-US', {
       minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
@@ -174,7 +173,7 @@ const Marketplace = () => {
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                      <span className="text-2xl font-black text-[hsl(195,80%,70%)]">{formatPrice(account.price)} ريال</span>
+                      <span className="text-2xl font-black text-[hsl(195,80%,70%)]">${formatPrice(account.price)}</span>
                       <Button size="sm" className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
                         عرض التفاصيل
                       </Button>

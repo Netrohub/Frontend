@@ -138,7 +138,7 @@ const AdminOrders = () => {
                     <span>البائع: {order.seller?.name || 'غير محدد'}</span>
                   </div>
                   <div className="flex gap-4">
-                    <span>السعر: {order.total_price} ريال</span>
+                    <span>السعر: ${order.total_price}</span>
                     <span>•</span>
                     <span>تاريخ الطلب: {formatDate(order.created_at)}</span>
                   </div>
@@ -216,7 +216,7 @@ const AdminOrders = () => {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="p-3 bg-white/5 rounded-lg">
                     <h4 className="text-sm text-white/60 mb-1">السعر</h4>
-                    <p className="text-white font-medium">{selectedOrder.price} ريال</p>
+                    <p className="text-white font-medium">${selectedOrder.price}</p>
                   </div>
                   <div className="p-3 bg-white/5 rounded-lg">
                     <h4 className="text-sm text-white/60 mb-1">طريقة الدفع</h4>
