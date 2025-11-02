@@ -3,36 +3,36 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Search, Ban, CheckCircle, UserX, ShieldCheck } from "lucide-react";
+import { Search, Ban, CheckCircle, UserX, ShieldCheck, Loader2 } from "lucide-react";
 import { useState } from "react";
-
-interface AdminUser {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  status: "active" | "suspended";
-  verified: boolean;
-  joined: string;
-  orders: number;
-  totalSpent: number;
-  lastActive: string;
-}
+import { adminApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { User } from "@/types/api";
 
 const AdminUsers = () => {
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const users = [
-    { id: 1, name: "محمد أحمد", email: "mohammed@example.com", phone: "+966501234567", status: "active", verified: true, joined: "2025-01-15", orders: 12, totalSpent: 5400, lastActive: "منذ ساعتين" },
-    { id: 2, name: "سارة علي", email: "sara@example.com", phone: "+966509876543", status: "active", verified: true, joined: "2025-01-10", orders: 8, totalSpent: 3200, lastActive: "منذ 5 ساعات" },
-    { id: 3, name: "خالد العتيبي", email: "khaled@example.com", phone: "+966551234567", status: "suspended", verified: false, joined: "2025-01-08", orders: 3, totalSpent: 1050, lastActive: "منذ يومين" },
-    { id: 4, name: "نورة السعيد", email: "noura@example.com", phone: "+966555555555", status: "active", verified: true, joined: "2025-01-05", orders: 15, totalSpent: 7800, lastActive: "منذ 30 دقيقة" },
-  ];
+  const { data: usersResponse, isLoading } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: () => adminApi.users(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
 
-  const handleViewDetails = (user: AdminUser) => {
+  const users: User[] = usersResponse?.data || [];
+
+  const handleViewDetails = (user: User) => {
     setSelectedUser(user);
     setIsDialogOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   return (

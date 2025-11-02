@@ -3,30 +3,39 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Eye, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
+import { Search, Eye, CheckCircle, XCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { useState } from "react";
-
-interface AdminDispute {
-  id: string;
-  orderId: string;
-  reporter: string;
-  reporterEmail: string;
-  reported: string;
-  reportedEmail: string;
-  product: string;
-  reason: string;
-  description: string;
-  status: "open" | "investigating" | "resolved" | "closed";
-  priority: "high" | "medium" | "low";
-  date: string;
-  price: number;
-}
+import { adminApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { Dispute } from "@/types/api";
 
 const AdminDisputes = () => {
-  const [selectedDispute, setSelectedDispute] = useState<AdminDispute | null>(null);
+  const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const disputes = [
+  const { data: disputesResponse, isLoading } = useQuery({
+    queryKey: ['admin-disputes'],
+    queryFn: () => adminApi.disputes(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
+
+  const disputes: Dispute[] = disputesResponse?.data || [];
+
+  const handleViewDetails = (dispute: Dispute) => {
+    setSelectedDispute(dispute);
+    setIsDialogOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  /*const disputes = [
     { 
       id: "DIS-001", 
       orderId: "ORD-045", 
@@ -72,12 +81,7 @@ const AdminDisputes = () => {
       date: "2025-01-18",
       price: 280
     },
-  ];
-
-  const handleViewDetails = (dispute: AdminDispute) => {
-    setSelectedDispute(dispute);
-    setIsDialogOpen(true);
-  };
+  ];*/
 
   return (
     <div>
@@ -163,6 +167,7 @@ const AdminDisputes = () => {
           </Card>
         ))}
       </div>
+      )}
 
       {/* Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

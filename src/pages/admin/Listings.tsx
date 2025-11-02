@@ -3,36 +3,36 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Eye, Ban, CheckCircle, Trash2 } from "lucide-react";
+import { Search, Eye, Ban, CheckCircle, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
-
-interface AdminListing {
-  id: number;
-  title: string;
-  seller: string;
-  sellerEmail: string;
-  price: number;
-  status: "active" | "pending" | "suspended";
-  views: number;
-  created: string;
-  category: string;
-  description: string;
-}
+import { adminApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { Listing } from "@/types/api";
 
 const AdminListings = () => {
-  const [selectedListing, setSelectedListing] = useState<AdminListing | null>(null);
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const listings = [
-    { id: 1, title: "حساب فورتنايت مستوى عالي", seller: "محمد أحمد", sellerEmail: "mohammed@example.com", price: 500, status: "active", views: 245, created: "2025-01-20", category: "فورتنايت", description: "حساب مستوى عالي مع جميع الأسلحة والإضافات" },
-    { id: 2, title: "حساب كول أوف ديوتي", seller: "سارة علي", sellerEmail: "sara@example.com", price: 350, status: "active", views: 189, created: "2025-01-19", category: "كول أوف ديوتي", description: "حساب احترافي مع رتب متقدمة" },
-    { id: 3, title: "حساب روبلوكس مميز", seller: "خالد العتيبي", sellerEmail: "khalid@example.com", price: 280, status: "pending", views: 92, created: "2025-01-18", category: "روبلوكس", description: "حساب مميز مع عملات وإضافات حصرية" },
-    { id: 4, title: "حساب ماين كرافت", seller: "نورة السعيد", sellerEmail: "noura@example.com", price: 420, status: "suspended", views: 156, created: "2025-01-17", category: "ماين كرافت", description: "حساب مع جميع التحديثات" },
-  ];
+  const { data: listingsResponse, isLoading } = useQuery({
+    queryKey: ['admin-listings'],
+    queryFn: () => adminApi.listings(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
 
-  const handleViewDetails = (listing: AdminListing) => {
+  const listings: Listing[] = listingsResponse?.data || [];
+
+  const handleViewDetails = (listing: Listing) => {
     setSelectedListing(listing);
     setIsDialogOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -58,7 +58,22 @@ const AdminListings = () => {
         </div>
       </Card>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex justify-center items-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && listings.length === 0 && (
+        <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+          <p className="text-white/60">لا توجد إعلانات لعرضها</p>
+        </Card>
+      )}
+
       {/* Listings Grid */}
+      {!isLoading && listings.length > 0 && (
       <div className="space-y-4">
         {listings.map((listing) => (
           <Card key={listing.id} className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
@@ -69,21 +84,21 @@ const AdminListings = () => {
                   <Badge className={
                     listing.status === "active" 
                       ? "bg-green-500/20 text-green-400 border-green-500/30"
-                      : listing.status === "pending"
-                      ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                      : listing.status === "sold"
+                      ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
                       : "bg-red-500/20 text-red-400 border-red-500/30"
                   }>
-                    {listing.status === "active" ? "نشط" : listing.status === "pending" ? "قيد المراجعة" : "موقوف"}
+                    {listing.status === "active" ? "نشط" : listing.status === "sold" ? "مباع" : "غير نشط"}
                   </Badge>
                 </div>
                 <div className="text-sm text-white/60 space-y-1">
-                  <div>البائع: {listing.seller}</div>
+                  <div>البائع: {listing.user?.name || 'غير محدد'}</div>
                   <div className="flex gap-4">
                     <span>السعر: {listing.price} ريال</span>
                     <span>•</span>
-                    <span>المشاهدات: {listing.views}</span>
+                    <span>المشاهدات: {listing.views || 0}</span>
                     <span>•</span>
-                    <span>تاريخ النشر: {listing.created}</span>
+                    <span>تاريخ النشر: {formatDate(listing.created_at)}</span>
                   </div>
                 </div>
               </div>
@@ -94,7 +109,7 @@ const AdminListings = () => {
                 <Eye className="h-4 w-4" />
                 عرض التفاصيل
               </Button>
-              {listing.status !== "suspended" ? (
+              {listing.status === "active" ? (
                 <Button size="sm" variant="outline" className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
                   <Ban className="h-4 w-4" />
                   إيقاف
@@ -113,6 +128,7 @@ const AdminListings = () => {
           </Card>
         ))}
       </div>
+      )}
 
       {/* Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -138,11 +154,11 @@ const AdminListings = () => {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-white/60">البائع:</span>
-                  <p className="text-white font-medium">{selectedListing.seller}</p>
+                  <p className="text-white font-medium">{selectedListing.user?.name || 'غير محدد'}</p>
                 </div>
                 <div>
                   <span className="text-white/60">البريد الإلكتروني:</span>
-                  <p className="text-white font-medium">{selectedListing.sellerEmail}</p>
+                  <p className="text-white font-medium">{selectedListing.user?.email || 'غير محدد'}</p>
                 </div>
                 <div>
                   <span className="text-white/60">السعر:</span>
@@ -154,21 +170,21 @@ const AdminListings = () => {
                 </div>
                 <div>
                   <span className="text-white/60">المشاهدات:</span>
-                  <p className="text-white font-medium">{selectedListing.views}</p>
+                  <p className="text-white font-medium">{selectedListing.views || 0}</p>
                 </div>
                 <div>
                   <span className="text-white/60">تاريخ النشر:</span>
-                  <p className="text-white font-medium">{selectedListing.created}</p>
+                  <p className="text-white font-medium">{formatDate(selectedListing.created_at)}</p>
                 </div>
               </div>
 
               <div>
                 <span className="text-white/60 text-sm">الوصف:</span>
-                <p className="text-white mt-1">{selectedListing.description}</p>
+                <p className="text-white mt-1 whitespace-pre-line">{selectedListing.description}</p>
               </div>
 
               <div className="flex gap-2 pt-4 border-t border-white/10">
-                {selectedListing.status !== "suspended" ? (
+                {selectedListing.status === "active" ? (
                   <Button className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
                     <Ban className="h-4 w-4" />
                     إيقاف الإعلان

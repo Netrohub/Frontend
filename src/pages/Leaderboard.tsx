@@ -1,20 +1,38 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, TrendingUp, Medal, CheckCircle2 } from "lucide-react";
+import { Trophy, Star, TrendingUp, Medal, CheckCircle2, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { publicApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+
+interface LeaderboardUser {
+  id: number;
+  name: string;
+  avatar: string | null;
+  total_revenue: number;
+  total_sales: number;
+}
 
 const Leaderboard = () => {
-  const topSellers = [
-    { rank: 1, name: "فاطمة النور", revenue: "52,800", rating: 5.0, sales: 156, badge: "ذهبية", isVerified: true },
-    { rank: 2, name: "محمد العتيبي", revenue: "45,200", rating: 4.9, sales: 142, badge: "فضية", isVerified: true },
-    { rank: 3, name: "خالد الدوسري", revenue: "41,600", rating: 4.9, sales: 124, badge: "برونزية", isVerified: true },
-    { rank: 4, name: "أحمد السعيد", revenue: "32,100", rating: 4.8, sales: 98, isVerified: true },
-    { rank: 5, name: "سارة المطيري", revenue: "28,400", rating: 4.7, sales: 87, isVerified: false },
-    { rank: 6, name: "نورة الغامدي", revenue: "25,300", rating: 4.6, sales: 76, isVerified: false },
-    { rank: 7, name: "عبدالله القحطاني", revenue: "22,100", rating: 4.8, sales: 68, isVerified: true },
-    { rank: 8, name: "ريم الشهري", revenue: "19,800", rating: 4.7, sales: 62, isVerified: true },
-  ];
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['leaderboard'],
+    queryFn: () => publicApi.leaderboard(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const leaderboardUsers: LeaderboardUser[] = data || [];
+  
+  // Map to display format with ranks and badges
+  const topSellers = leaderboardUsers.map((user, index) => ({
+    rank: index + 1,
+    name: user.name,
+    revenue: user.total_revenue.toLocaleString('ar-SA'),
+    rating: 5.0, // TODO: Implement rating system in backend
+    sales: user.total_sales,
+    badge: index === 0 ? "ذهبية" : index === 1 ? "فضية" : index === 2 ? "برونزية" : undefined,
+    isVerified: true, // All leaderboard users are verified
+  }));
 
   const getBadgeColor = (rank: number) => {
     if (rank === 1) return "from-[hsl(45,100%,51%)] to-[hsl(45,100%,41%)]";
@@ -58,9 +76,37 @@ const Leaderboard = () => {
           <p className="text-lg text-white/60">أفضل البائعين على المنصة</p>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <p className="text-red-400 mb-4">فشل تحميل لوحة الصدارة</p>
+            <p className="text-white/60">يرجى المحاولة مرة أخرى لاحقاً</p>
+          </Card>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !error && topSellers.length === 0 && (
+          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <Trophy className="h-16 w-16 mx-auto mb-4 text-white/20" />
+            <p className="text-white/60">لا توجد بيانات لعرضها حالياً</p>
+          </Card>
+        )}
+
+        {/* Leaderboard Content */}
+        {!isLoading && !error && topSellers.length > 0 && (
+          <>
+
         {/* Top 3 Podium */}
         <div className="grid md:grid-cols-3 gap-4 mb-8">
           {/* 2nd Place */}
+          {topSellers[1] && (
           <div className="md:order-1 md:mt-8">
             <Card className="p-4 text-center bg-white/10 border-2 border-white/20 backdrop-blur-sm shadow-lg">
               <div className="relative inline-block mb-3">
@@ -80,13 +126,14 @@ const Leaderboard = () => {
               <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{topSellers[1].revenue}</div>
               <div className="text-xs font-bold text-white/90 mb-2">ريال سعودي</div>
               <div className="flex items-center justify-center gap-1">
-                <Star className="h-3 w-3 fill-[hsl(40,90%,55%)] text-[hsl(40,90%,55%)]" />
-                <span className="font-bold text-white text-sm">{topSellers[1].rating}</span>
+                <span className="font-bold text-white text-sm">{topSellers[1].sales} عملية</span>
               </div>
             </Card>
           </div>
+          )}
 
           {/* 1st Place */}
+          {topSellers[0] && (
           <div className="md:order-2">
             <Card className="p-5 text-center bg-gradient-to-br from-[hsl(45,100%,51%,0.15)] to-[hsl(45,100%,30%,0.1)] border-2 border-[hsl(45,100%,51%,0.5)] backdrop-blur-sm shadow-[0_0_40px_rgba(255,215,0,0.3)]">
               <div className="relative inline-block mb-3">
@@ -109,13 +156,14 @@ const Leaderboard = () => {
               <div className="text-4xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{topSellers[0].revenue}</div>
               <div className="text-sm font-bold text-white/90 mb-2">ريال سعودي</div>
               <div className="flex items-center justify-center gap-1 text-[hsl(45,100%,60%)]">
-                <Star className="h-4 w-4 fill-current drop-shadow-lg" />
-                <span className="font-bold text-lg text-white">{topSellers[0].rating}</span>
+                <span className="font-bold text-lg text-white">{topSellers[0].sales} عملية</span>
               </div>
             </Card>
           </div>
+          )}
 
           {/* 3rd Place */}
+          {topSellers[2] && (
           <div className="md:order-3 md:mt-8">
             <Card className="p-4 text-center bg-white/10 border-2 border-white/20 backdrop-blur-sm shadow-lg">
               <div className="relative inline-block mb-3">
@@ -135,11 +183,11 @@ const Leaderboard = () => {
               <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{topSellers[2].revenue}</div>
               <div className="text-xs font-bold text-white/90 mb-2">ريال سعودي</div>
               <div className="flex items-center justify-center gap-1">
-                <Star className="h-3 w-3 fill-[hsl(40,90%,55%)] text-[hsl(40,90%,55%)]" />
-                <span className="font-bold text-white text-sm">{topSellers[2].rating}</span>
+                <span className="font-bold text-white text-sm">{topSellers[2].sales} عملية</span>
               </div>
             </Card>
           </div>
+          )}
         </div>
 
         {/* Rest of Leaderboard */}
@@ -163,11 +211,6 @@ const Leaderboard = () => {
                   </div>
                   <div className="flex items-center gap-2 text-xs text-white/80 font-medium">
                     <span>{seller.sales} عملية</span>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 text-[hsl(40,90%,55%)] fill-current" />
-                      <span className="font-bold">{seller.rating}</span>
-                    </div>
                   </div>
                 </div>
                 <div className="text-left">
@@ -178,6 +221,8 @@ const Leaderboard = () => {
             ))}
           </div>
         </Card>
+        </>
+        )}
       </div>
 
       {/* Glow effects */}

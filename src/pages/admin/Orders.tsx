@@ -3,36 +3,36 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Eye, CheckCircle, XCircle } from "lucide-react";
+import { Search, Eye, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
-
-interface AdminOrder {
-  id: string;
-  buyer: string;
-  buyerEmail: string;
-  seller: string;
-  sellerEmail: string;
-  product: string;
-  price: number;
-  status: "completed" | "pending" | "processing" | "cancelled";
-  date: string;
-  paymentMethod: string;
-}
+import { adminApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type { Order } from "@/types/api";
 
 const AdminOrders = () => {
-  const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const orders = [
-    { id: "ORD-001", buyer: "محمد أحمد", buyerEmail: "mohammed@example.com", seller: "سارة علي", sellerEmail: "sara@example.com", product: "حساب فورتنايت", price: 500, status: "completed", date: "2025-01-20", paymentMethod: "بطاقة ائتمان" },
-    { id: "ORD-002", buyer: "خالد العتيبي", buyerEmail: "khalid@example.com", seller: "محمد أحمد", sellerEmail: "mohammed@example.com", product: "حساب كول أوف ديوتي", price: 350, status: "pending", date: "2025-01-19", paymentMethod: "تحويل بنكي" },
-    { id: "ORD-003", buyer: "نورة السعيد", buyerEmail: "noura@example.com", seller: "سارة علي", sellerEmail: "sara@example.com", product: "حساب روبلوكس", price: 280, status: "processing", date: "2025-01-18", paymentMethod: "محفظة إلكترونية" },
-    { id: "ORD-004", buyer: "أحمد صالح", buyerEmail: "ahmed@example.com", seller: "خالد العتيبي", sellerEmail: "khalid@example.com", product: "حساب ماين كرافت", price: 420, status: "cancelled", date: "2025-01-17", paymentMethod: "بطاقة ائتمان" },
-  ];
+  const { data: ordersResponse, isLoading } = useQuery({
+    queryKey: ['admin-orders'],
+    queryFn: () => adminApi.orders(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+  });
 
-  const handleViewDetails = (order: AdminOrder) => {
+  const orders: Order[] = ordersResponse?.data || [];
+
+  const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -117,6 +117,7 @@ const AdminOrders = () => {
           </Card>
         ))}
       </div>
+      )}
 
       {/* Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

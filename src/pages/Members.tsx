@@ -4,42 +4,43 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Search, Star, Users, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Search, Star, Users, TrendingUp, CheckCircle2, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
-
-interface Member {
-  id: number;
-  name: string;
-  role: string;
-  sales: number;
-  revenue: string;
-  rating: number;
-  online: boolean;
-  isVerified: boolean;
-  email: string;
-  phone: string;
-  joined: string;
-  successRate: string;
-}
+import { publicApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import type { User } from "@/types/api";
 
 const Members = () => {
-  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const members = [
-    { id: 1, name: "محمد العتيبي", role: "بائع", sales: 142, revenue: "45,200", rating: 4.9, online: true, isVerified: true, email: "mohammed@example.com", phone: "+966501234567", joined: "2025-01-15", successRate: "98%" },
-    { id: 2, name: "أحمد السعيد", role: "بائع", sales: 98, revenue: "32,100", rating: 4.8, online: false, isVerified: true, email: "ahmed@example.com", phone: "+966509876543", joined: "2025-01-10", successRate: "96%" },
-    { id: 3, name: "فاطمة النور", role: "بائع", sales: 156, revenue: "52,800", rating: 5.0, online: true, isVerified: true, email: "fatima@example.com", phone: "+966551234567", joined: "2025-01-05", successRate: "99%" },
-    { id: 4, name: "سارة المطيري", role: "بائع", sales: 87, revenue: "28,400", rating: 4.7, online: true, isVerified: false, email: "sara@example.com", phone: "+966555555555", joined: "2025-01-12", successRate: "95%" },
-    { id: 5, name: "خالد الدوسري", role: "بائع", sales: 124, revenue: "41,600", rating: 4.9, online: false, isVerified: true, email: "khalid@example.com", phone: "+966507777777", joined: "2025-01-08", successRate: "97%" },
-    { id: 6, name: "نورة الغامدي", role: "بائع", sales: 76, revenue: "25,300", rating: 4.6, online: true, isVerified: false, email: "noura@example.com", phone: "+966508888888", joined: "2025-01-18", successRate: "94%" },
-  ];
+  const { data: membersResponse, isLoading } = useQuery({
+    queryKey: ['members'],
+    queryFn: () => publicApi.members(),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
-  const handleViewProfile = (member: Member) => {
-    setSelectedMember(member);
+  const { data: selectedMemberDetails } = useQuery({
+    queryKey: ['member', selectedMemberId],
+    queryFn: () => publicApi.member(selectedMemberId!),
+    enabled: !!selectedMemberId,
+  });
+
+  const members: User[] = membersResponse?.data || [];
+
+  const handleViewProfile = (memberId: number) => {
+    setSelectedMemberId(memberId);
     setIsDialogOpen(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('ar-SA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -113,7 +114,22 @@ const Members = () => {
           </div>
         </div>
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+          </div>
+        )}
+
         {/* Members Grid */}
+        {!isLoading && members.length === 0 && (
+          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <Users className="h-16 w-16 mx-auto mb-4 text-white/20" />
+            <p className="text-white/60">لا توجد أعضاء لعرضهم حالياً</p>
+          </Card>
+        )}
+
+        {!isLoading && members.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member) => (
             <Card 
@@ -125,48 +141,40 @@ const Members = () => {
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                      <Users className="h-8 w-8 text-white" />
+                      {member.avatar ? (
+                        <img src={member.avatar} alt={member.name} className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        <Users className="h-8 w-8 text-white" />
+                      )}
                     </div>
-                    {member.online && (
-                      <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-[hsl(200,70%,15%)]" />
-                    )}
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-lg flex items-center gap-2">
                       {member.name}
-                      {member.isVerified && (
-                        <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
-                      )}
+                      <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                     </h3>
                     <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] text-xs">
-                      {member.role}
+                      عضو موثوق
                     </Badge>
                   </div>
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="space-y-3 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-white/60">عدد المبيعات</span>
-                  <span className="font-bold text-white">{member.sales}</span>
+              {/* Bio */}
+              {member.bio && (
+                <div className="mb-4">
+                  <p className="text-white/70 text-sm line-clamp-2">{member.bio}</p>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-white/60">الإيرادات</span>
-                  <span className="font-bold text-[hsl(195,80%,70%)]">{member.revenue} ريال</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-white/60">التقييم</span>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 text-[hsl(40,90%,55%)] fill-current" />
-                    <span className="font-bold text-white">{member.rating}</span>
-                  </div>
-                </div>
+              )}
+
+              {/* Join Date */}
+              <div className="text-sm text-white/60 mb-4">
+                عضو منذ {formatDate(member.created_at)}
               </div>
 
               {/* Action Button */}
               <Button 
-                onClick={() => handleViewProfile(member)}
+                onClick={() => handleViewProfile(member.id)}
                 className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
               >
                 عرض الملف الشخصي
@@ -174,6 +182,7 @@ const Members = () => {
             </Card>
           ))}
         </div>
+        )}
       </div>
 
       {/* Profile Dialog */}
@@ -184,55 +193,47 @@ const Members = () => {
               الملف الشخصي
             </DialogTitle>
           </DialogHeader>
-          {selectedMember && (
+          {selectedMemberDetails && (
             <div className="space-y-6">
               {/* Header */}
               <div className="flex items-center gap-4 p-4 bg-white/5 rounded-lg">
                 <div className="relative">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                    <Users className="h-10 w-10 text-white" />
+                    {selectedMemberDetails.avatar ? (
+                      <img src={selectedMemberDetails.avatar} alt={selectedMemberDetails.name} className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <Users className="h-10 w-10 text-white" />
+                    )}
                   </div>
-                  {selectedMember.online && (
-                    <div className="absolute bottom-0 right-0 w-5 h-5 bg-green-500 rounded-full border-2 border-[hsl(217,33%,17%)]" />
-                  )}
                 </div>
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold text-white flex items-center gap-2 mb-1">
-                    {selectedMember.name}
-                    {selectedMember.isVerified && (
-                      <CheckCircle2 className="h-6 w-6 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
-                    )}
+                    {selectedMemberDetails.name}
+                    <CheckCircle2 className="h-6 w-6 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                   </h3>
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                      {selectedMember.role}
-                    </Badge>
-                    {selectedMember.online ? (
-                      <span className="text-sm text-green-400">• متصل الآن</span>
-                    ) : (
-                      <span className="text-sm text-white/60">• غير متصل</span>
-                    )}
-                  </div>
+                  <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
+                    عضو موثوق
+                  </Badge>
                 </div>
               </div>
 
+              {/* Bio */}
+              {selectedMemberDetails.bio && (
+                <Card className="p-4 bg-white/5 border-white/10">
+                  <h4 className="font-bold text-white mb-2">عن العضو</h4>
+                  <p className="text-white/70 text-sm">{selectedMemberDetails.bio}</p>
+                </Card>
+              )}
+
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4 bg-white/5 border-white/10 text-center">
-                  <div className="text-2xl font-bold text-[hsl(195,80%,70%)] mb-1">{selectedMember.sales}</div>
-                  <div className="text-xs text-white/60">عملية بيع</div>
+                  <div className="text-2xl font-bold text-[hsl(195,80%,70%)] mb-1">{selectedMemberDetails.listings_count || 0}</div>
+                  <div className="text-xs text-white/60">إعلانات منشورة</div>
                 </Card>
                 <Card className="p-4 bg-white/5 border-white/10 text-center">
-                  <div className="text-2xl font-bold text-[hsl(40,90%,55%)] mb-1">{selectedMember.rating}</div>
-                  <div className="text-xs text-white/60">التقييم</div>
-                </Card>
-                <Card className="p-4 bg-white/5 border-white/10 text-center">
-                  <div className="text-2xl font-bold text-green-400 mb-1">{selectedMember.successRate}</div>
-                  <div className="text-xs text-white/60">معدل النجاح</div>
-                </Card>
-                <Card className="p-4 bg-white/5 border-white/10 text-center">
-                  <div className="text-2xl font-bold text-white mb-1">{selectedMember.revenue}</div>
-                  <div className="text-xs text-white/60">الإيرادات (ريال)</div>
+                  <div className="text-2xl font-bold text-[hsl(40,90%,55%)] mb-1">{selectedMemberDetails.orders_as_seller_count || 0}</div>
+                  <div className="text-xs text-white/60">عمليات بيع</div>
                 </Card>
               </div>
 
@@ -242,29 +243,12 @@ const Members = () => {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-white/60">تاريخ الانضمام:</span>
-                    <span className="text-[hsl(195,80%,80%)]">{selectedMember.joined}</span>
+                    <span className="text-[hsl(195,80%,80%)]">{formatDate(selectedMemberDetails.created_at)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">إجمالي المبيعات:</span>
-                    <span className="text-[hsl(195,80%,80%)]">{selectedMember.sales} عملية</span>
+                    <span className="text-white/60">إجمالي الإعلانات:</span>
+                    <span className="text-[hsl(195,80%,80%)]">{selectedMemberDetails.listings_count || 0} إعلان</span>
                   </div>
-                </div>
-              </Card>
-
-              {/* Rating */}
-              <Card className="p-4 bg-white/5 border-white/10">
-                <h4 className="font-bold text-white mb-3">التقييم</h4>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`h-5 w-5 ${i < Math.floor(selectedMember.rating) ? 'text-[hsl(40,90%,55%)] fill-current' : 'text-white/20'}`} 
-                      />
-                    ))}
-                  </div>
-                  <span className="text-lg font-bold text-white">{selectedMember.rating}</span>
-                  <span className="text-sm text-white/60">من 5.0</span>
                 </div>
               </Card>
             </div>
