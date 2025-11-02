@@ -229,6 +229,16 @@ export const authApi = {
   
   getUser: () =>
     api.get<User>('/user'),
+  
+  getUserStats: () =>
+    api.get<{
+      total_sales: number;
+      total_purchases: number;
+      total_revenue: number;
+      active_listings: number;
+      total_listings: number;
+      member_since: string;
+    }>('/user/stats'),
 };
 
 // Listings API
