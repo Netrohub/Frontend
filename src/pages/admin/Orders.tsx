@@ -3,16 +3,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Search, Eye, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { adminApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Order } from "@/types/api";
 
 const AdminOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: ordersResponse, isLoading } = useQuery({
     queryKey: ['admin-orders'],
@@ -22,9 +28,40 @@ const AdminOrders = () => {
 
   const orders: Order[] = ordersResponse?.data || [];
 
+  const cancelOrderMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: number; reason: string }) =>
+      adminApi.cancelOrder(id, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+      toast.success("تم إلغاء الطلب وإرجاع المبلغ للمشتري");
+      setShowCancelDialog(false);
+      setIsDialogOpen(false);
+      setCancelReason("");
+      setOrderToCancel(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "فشل إلغاء الطلب");
+    },
+  });
+
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
+  };
+
+  const handleCancelClick = (orderId: number) => {
+    setOrderToCancel(orderId);
+    setShowCancelDialog(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (!cancelReason.trim()) {
+      toast.error("يرجى إدخال سبب الإلغاء");
+      return;
+    }
+    if (orderToCancel) {
+      cancelOrderMutation.mutate({ id: orderToCancel, reason: cancelReason });
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -114,6 +151,18 @@ const AdminOrders = () => {
                 <Eye className="h-4 w-4" />
                 عرض التفاصيل
               </Button>
+              {order.status !== 'completed' && order.status !== 'cancelled' && (
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                  onClick={() => handleCancelClick(order.id)}
+                  disabled={cancelOrderMutation.isPending}
+                >
+                  {cancelOrderMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                  إلغاء
+                </Button>
+              )}
             </div>
           </Card>
         ))}
@@ -194,6 +243,61 @@ const AdminOrders = () => {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Order Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <DialogContent className="bg-[hsl(217,33%,17%)] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-red-400">إلغاء الطلب</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="cancel-reason" className="text-white/80">سبب الإلغاء</Label>
+              <Textarea
+                id="cancel-reason"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="اكتب سبب إلغاء الطلب..."
+                className="mt-2 bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                rows={4}
+              />
+            </div>
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+              <p className="text-sm text-yellow-400">
+                ⚠️ سيتم إلغاء الطلب وإرجاع المبلغ إلى محفظة المشتري تلقائياً
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowCancelDialog(false);
+                  setCancelReason("");
+                  setOrderToCancel(null);
+                }}
+                className="flex-1 bg-white/5 hover:bg-white/10 text-white border-white/20"
+                disabled={cancelOrderMutation.isPending}
+              >
+                إلغاء
+              </Button>
+              <Button
+                onClick={handleConfirmCancel}
+                disabled={!cancelReason.trim() || cancelOrderMutation.isPending}
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+              >
+                {cancelOrderMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    جاري الإلغاء...
+                  </>
+                ) : (
+                  "تأكيد الإلغاء"
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

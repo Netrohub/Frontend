@@ -427,6 +427,14 @@ export const settingsApi = {
 
 // Admin API
 export const adminApi = {
+  // Dashboard
+  getStats: () =>
+    api.get<any>('/admin/stats'),
+  
+  getActivity: () =>
+    api.get<any>('/admin/activity'),
+  
+  // Users
   users: (params?: { page?: number }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
@@ -439,18 +447,32 @@ export const adminApi = {
   deleteUser: (id: number) =>
     api.delete<{ message: string }>(`/admin/users/${id}`),
   
-  disputes: () =>
-    api.get<AdminDisputeResponse>('/admin/disputes'),
-  
+  // Listings
   listings: () =>
     api.get<AdminListingResponse>('/admin/listings'),
   
+  updateListingStatus: (id: number, status: 'active' | 'inactive' | 'sold') =>
+    api.put<{ message: string; listing: any }>(`/admin/listings/${id}/status`, { status }),
+  
+  deleteListing: (id: number) =>
+    api.delete<{ message: string }>(`/admin/listings/${id}`),
+  
+  // Orders
   orders: () =>
     api.get<AdminOrderResponse>('/admin/orders'),
   
+  cancelOrder: (id: number, reason: string) =>
+    api.post<{ message: string; order: any }>(`/admin/orders/${id}/cancel`, { reason }),
+  
+  // Disputes
+  disputes: () =>
+    api.get<AdminDisputeResponse>('/admin/disputes'),
+  
+  // KYC
   kyc: () =>
     api.get<AdminKycResponse>('/admin/kyc'),
   
+  // Notifications
   createNotification: (data: { user_id: number; type: string; title: string; message: string; icon?: string; color?: string }) =>
     api.post<any>('/admin/notifications', data),
 };

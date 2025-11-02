@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Search, Eye, CheckCircle, XCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { adminApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { adminApi, disputesApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Dispute } from "@/types/api";
 
 const AdminDisputes = () => {
   const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: disputesResponse, isLoading } = useQuery({
     queryKey: ['admin-disputes'],
@@ -22,9 +23,32 @@ const AdminDisputes = () => {
 
   const disputes: Dispute[] = disputesResponse?.data || [];
 
+  const resolveDisputeMutation = useMutation({
+    mutationFn: ({ id, resolution }: { id: number; resolution: 'buyer' | 'seller' }) =>
+      disputesApi.update(id, { 
+        status: 'resolved',
+        resolution: resolution,
+        admin_notes: `تم الحل لصالح ${resolution === 'buyer' ? 'المشتري' : 'البائع'} من قبل الإدارة`
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-disputes'] });
+      toast.success("تم حل النزاع بنجاح");
+      setIsDialogOpen(false);
+    },
+    onError: () => {
+      toast.error("فشل حل النزاع");
+    },
+  });
+
   const handleViewDetails = (dispute: Dispute) => {
     setSelectedDispute(dispute);
     setIsDialogOpen(true);
+  };
+
+  const handleResolve = (disputeId: number, resolution: 'buyer' | 'seller') => {
+    if (confirm(`هل أنت متأكد من حل النزاع لصالح ${resolution === 'buyer' ? 'المشتري' : 'البائع'}؟`)) {
+      resolveDisputeMutation.mutate({ id: disputeId, resolution });
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -145,6 +169,30 @@ const AdminDisputes = () => {
                 <Eye className="h-4 w-4" />
                 عرض التفاصيل
               </Button>
+              {dispute.status !== "resolved" && (
+                <>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                    onClick={() => handleResolve(dispute.id, 'buyer')}
+                    disabled={resolveDisputeMutation.isPending}
+                  >
+                    {resolveDisputeMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
+                    لصالح المشتري
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2 bg-[hsl(195,80%,50%,0.1)] hover:bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
+                    onClick={() => handleResolve(dispute.id, 'seller')}
+                    disabled={resolveDisputeMutation.isPending}
+                  >
+                    {resolveDisputeMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                    لصالح البائع
+                  </Button>
+                </>
+              )}
             </div>
           </Card>
         ))}

@@ -1,12 +1,42 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Users, AlertTriangle, ShieldCheck, DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
+import { Snowflake, Users, AlertTriangle, ShieldCheck, DollarSign, Package, ShoppingCart, TrendingUp, Loader2 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { AdminNavbar } from "@/components/AdminNavbar";
+import { adminApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 const Admin = () => {
   const location = useLocation();
   const isRootAdmin = location.pathname === "/admin";
+
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: () => adminApi.getStats(),
+    enabled: isRootAdmin,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const { data: activityData, isLoading: activityLoading } = useQuery({
+    queryKey: ['admin-activity'],
+    queryFn: () => adminApi.getActivity(),
+    enabled: isRootAdmin,
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  const formatTime = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (minutes < 1) return 'الآن';
+    if (minutes < 60) return `منذ ${minutes} دقيقة`;
+    if (hours < 24) return `منذ ${hours} ساعة`;
+    return `منذ ${days} يوم`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
@@ -36,15 +66,22 @@ const Admin = () => {
             </div>
 
             {/* Stats Grid */}
+            {statsLoading ? (
+              <div className="flex justify-center items-center min-h-[200px] mb-8">
+                <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+              </div>
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <Card className="p-5 bg-gradient-to-br from-[hsl(195,80%,50%,0.15)] to-[hsl(195,80%,30%,0.05)] border-[hsl(195,80%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.4)] transition-all">
                 <div className="flex items-center justify-between mb-3">
                   <Users className="h-8 w-8 text-[hsl(195,80%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">1,248</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.total_users?.toLocaleString('ar-SA') || 0}</div>
                 <div className="text-sm text-[hsl(195,80%,80%)] mb-2">إجمالي المستخدمين</div>
-                <div className="text-xs text-emerald-400 font-medium">+12% من الشهر الماضي</div>
+                <div className={`text-xs font-medium ${stats?.users_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {stats?.users_growth > 0 ? '+' : ''}{stats?.users_growth || 0}% من الشهر الماضي
+                </div>
               </Card>
 
               <Card className="p-5 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.05)] border-[hsl(280,70%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(280,70%,70%,0.4)] transition-all">
@@ -52,9 +89,11 @@ const Admin = () => {
                   <Package className="h-8 w-8 text-[hsl(280,70%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">342</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.active_listings?.toLocaleString('ar-SA') || 0}</div>
                 <div className="text-sm text-[hsl(280,70%,80%)] mb-2">الإعلانات النشطة</div>
-                <div className="text-xs text-emerald-400 font-medium">+8% من الشهر الماضي</div>
+                <div className={`text-xs font-medium ${stats?.listings_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {stats?.listings_growth > 0 ? '+' : ''}{stats?.listings_growth || 0}% من الشهر الماضي
+                </div>
               </Card>
 
               <Card className="p-5 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.05)] border-[hsl(40,90%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(40,90%,70%,0.4)] transition-all">
@@ -62,9 +101,11 @@ const Admin = () => {
                   <ShoppingCart className="h-8 w-8 text-[hsl(40,90%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">156</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.orders_this_month?.toLocaleString('ar-SA') || 0}</div>
                 <div className="text-sm text-[hsl(40,90%,80%)] mb-2">الطلبات هذا الشهر</div>
-                <div className="text-xs text-emerald-400 font-medium">+23% من الشهر الماضي</div>
+                <div className={`text-xs font-medium ${stats?.orders_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {stats?.orders_growth > 0 ? '+' : ''}{stats?.orders_growth || 0}% من الشهر الماضي
+                </div>
               </Card>
 
               <Card className="p-5 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.05)] border-[hsl(120,60%,70%,0.2)] backdrop-blur-sm hover:border-[hsl(120,60%,70%,0.4)] transition-all">
@@ -72,23 +113,27 @@ const Admin = () => {
                   <DollarSign className="h-8 w-8 text-[hsl(120,60%,70%)]" />
                   <TrendingUp className="h-5 w-5 text-green-400" />
                 </div>
-                <div className="text-3xl font-black text-white mb-1">24,580</div>
+                <div className="text-3xl font-black text-white mb-1">{stats?.total_revenue?.toLocaleString('ar-SA') || 0}</div>
                 <div className="text-sm text-[hsl(120,60%,80%)] mb-2">الإيرادات (ريال)</div>
-                <div className="text-xs text-emerald-400 font-medium">+18% من الشهر الماضي</div>
+                <div className={`text-xs font-medium ${stats?.revenue_growth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {stats?.revenue_growth > 0 ? '+' : ''}{stats?.revenue_growth || 0}% من الشهر الماضي
+                </div>
               </Card>
             </div>
+            )}
 
             {/* Quick Actions */}
+            {!statsLoading && stats && stats.open_disputes > 0 && (
             <div className="mb-8">
               <Card className="p-5 bg-gradient-to-br from-yellow-500/10 to-orange-500/5 border-yellow-500/20 backdrop-blur-sm hover:border-yellow-500/40 transition-all max-w-2xl">
                 <div className="flex items-center gap-3 mb-4">
                   <AlertTriangle className="h-6 w-6 text-yellow-400" />
                   <h2 className="text-xl font-bold text-white">النزاعات المفتوحة</h2>
                   <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 mr-auto">
-                    12 نزاع
+                    {stats.open_disputes} نزاع
                   </Badge>
                 </div>
-                <p className="text-amber-200/80 text-sm mb-4">يوجد 12 نزاع يحتاج إلى مراجعة وحل</p>
+                <p className="text-amber-200/80 text-sm mb-4">يوجد {stats.open_disputes} نزاع يحتاج إلى مراجعة وحل</p>
                 <Link to="/admin/disputes">
                   <button className="w-full py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg transition-colors border border-yellow-500/30">
                     عرض جميع النزاعات
@@ -96,26 +141,32 @@ const Admin = () => {
                 </Link>
               </Card>
             </div>
+            )}
 
             {/* Recent Activity */}
             <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
               <h2 className="text-xl font-bold text-white mb-4">النشاط الأخير</h2>
-              <div className="space-y-3">
-                {[
-                  { action: "مستخدم جديد انضم", user: "أحمد محمد", time: "منذ 5 دقائق", color: "text-[hsl(195,80%,70%)]" },
-                  { action: "طلب جديد", user: "سارة علي", time: "منذ 12 دقيقة", color: "text-green-400" },
-                  { action: "نزاع تم حله", user: "خالد العتيبي", time: "منذ 30 دقيقة", color: "text-[hsl(280,70%,70%)]" },
-                  { action: "إعلان جديد", user: "نورة السعيد", time: "منذ ساعة", color: "text-[hsl(40,90%,70%)]" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
-                    <div>
-                      <div className={`font-medium ${item.color}`}>{item.action}</div>
-                      <div className="text-sm text-white/80">{item.user}</div>
+              {activityLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-white/60" />
+                </div>
+              ) : activityData && activityData.length > 0 ? (
+                <div className="space-y-3">
+                  {activityData.map((item: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10 hover:border-white/20 transition-colors">
+                      <div>
+                        <div className={`font-medium ${item.color}`}>{item.action}</div>
+                        <div className="text-sm text-white/80">{item.user}</div>
+                      </div>
+                      <div className="text-xs text-white/60">{formatTime(item.timestamp)}</div>
                     </div>
-                    <div className="text-xs text-white/60">{item.time}</div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-white/60">
+                  <p>لا يوجد نشاط حديث</p>
+                </div>
+              )}
             </Card>
           </div>
         ) : (

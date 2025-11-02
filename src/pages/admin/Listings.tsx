@@ -6,13 +6,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Eye, Ban, CheckCircle, Trash2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { adminApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Listing } from "@/types/api";
 
 const AdminListings = () => {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: listingsResponse, isLoading } = useQuery({
     queryKey: ['admin-listings'],
@@ -22,9 +23,44 @@ const AdminListings = () => {
 
   const listings: Listing[] = listingsResponse?.data || [];
 
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: 'active' | 'inactive' | 'sold' }) =>
+      adminApi.updateListingStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-listings'] });
+      toast.success("تم تحديث حالة الإعلان");
+    },
+    onError: () => {
+      toast.error("فشل تحديث حالة الإعلان");
+    },
+  });
+
+  const deleteListingMutation = useMutation({
+    mutationFn: (id: number) => adminApi.deleteListing(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-listings'] });
+      toast.success("تم حذف الإعلان");
+      setIsDialogOpen(false);
+    },
+    onError: () => {
+      toast.error("فشل حذف الإعلان");
+    },
+  });
+
   const handleViewDetails = (listing: Listing) => {
     setSelectedListing(listing);
     setIsDialogOpen(true);
+  };
+
+  const handleToggleStatus = (listing: Listing) => {
+    const newStatus = listing.status === 'active' ? 'inactive' : 'active';
+    updateStatusMutation.mutate({ id: listing.id, status: newStatus });
+  };
+
+  const handleDelete = (id: number) => {
+    if (confirm('هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع عن هذا الإجراء.')) {
+      deleteListingMutation.mutate(id);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -110,18 +146,36 @@ const AdminListings = () => {
                 عرض التفاصيل
               </Button>
               {listing.status === "active" ? (
-                <Button size="sm" variant="outline" className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
-                  <Ban className="h-4 w-4" />
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                  onClick={() => handleToggleStatus(listing)}
+                  disabled={updateStatusMutation.isPending}
+                >
+                  {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Ban className="h-4 w-4" />}
                   إيقاف
                 </Button>
               ) : (
-                <Button size="sm" variant="outline" className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30">
-                  <CheckCircle className="h-4 w-4" />
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                  onClick={() => handleToggleStatus(listing)}
+                  disabled={updateStatusMutation.isPending}
+                >
+                  {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
                   تفعيل
                 </Button>
               )}
-              <Button size="sm" variant="outline" className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
-                <Trash2 className="h-4 w-4" />
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                onClick={() => handleDelete(listing.id)}
+                disabled={deleteListingMutation.isPending}
+              >
+                {deleteListingMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                 حذف
               </Button>
             </div>
@@ -185,18 +239,30 @@ const AdminListings = () => {
 
               <div className="flex gap-2 pt-4 border-t border-white/10">
                 {selectedListing.status === "active" ? (
-                  <Button className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
-                    <Ban className="h-4 w-4" />
+                  <Button 
+                    className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                    onClick={() => handleToggleStatus(selectedListing)}
+                    disabled={updateStatusMutation.isPending}
+                  >
+                    {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Ban className="h-4 w-4" />}
                     إيقاف الإعلان
                   </Button>
                 ) : (
-                  <Button className="flex-1 gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30">
-                    <CheckCircle className="h-4 w-4" />
+                  <Button 
+                    className="flex-1 gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                    onClick={() => handleToggleStatus(selectedListing)}
+                    disabled={updateStatusMutation.isPending}
+                  >
+                    {updateStatusMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
                     تفعيل الإعلان
                   </Button>
                 )}
-                <Button className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
-                  <Trash2 className="h-4 w-4" />
+                <Button 
+                  className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                  onClick={() => handleDelete(selectedListing.id)}
+                  disabled={deleteListingMutation.isPending}
+                >
+                  {deleteListingMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                   حذف الإعلان
                 </Button>
               </div>
