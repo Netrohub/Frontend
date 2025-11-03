@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -49,9 +49,10 @@ const Disputes = () => {
       setShowNewDispute(false);
       setDisputeData({ order_id: 0, reason: "", description: "" });
     },
-    onError: (error: Error) => {
-      const apiError = error as Error & ApiError;
-      toast.error(apiError.message || "فشل إنشاء النزاع");
+    onError: (error: any) => {
+      console.error('Dispute creation error:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || "فشل إنشاء النزاع";
+      toast.error(errorMessage);
     },
   });
 
@@ -61,6 +62,22 @@ const Disputes = () => {
       toast.error("يرجى ملء جميع الحقول");
       return;
     }
+    
+    // Validate that the order is still in escrow_hold status
+    const selectedOrder = orders?.data?.find((order: Order) => order.id === disputeData.order_id);
+    if (!selectedOrder) {
+      toast.error("الطلب غير موجود");
+      return;
+    }
+    if (selectedOrder.status !== 'escrow_hold') {
+      toast.error("يمكن إنشاء النزاع فقط للطلبات في حالة الضمان");
+      return;
+    }
+    if (selectedOrder.dispute_id) {
+      toast.error("يوجد نزاع بالفعل لهذا الطلب");
+      return;
+    }
+    
     createDisputeMutation.mutate(disputeData);
   };
 
@@ -75,8 +92,9 @@ const Disputes = () => {
     return <Badge className={statusInfo.className}>{statusInfo.text}</Badge>;
   };
 
+  // Only orders in escrow_hold can have NEW disputes created (not disputed ones - they already have a dispute)
   const availableOrders = orders?.data?.filter(
-    (order: Order) => order.status === 'escrow_hold' || order.status === 'disputed'
+    (order: Order) => order.status === 'escrow_hold' && !order.dispute_id
   ) || [];
 
   if (!user) {
@@ -107,6 +125,9 @@ const Disputes = () => {
               <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>فتح نزاع جديد</DialogTitle>
+                  <DialogDescription className="text-white/60">
+                    املأ النموذج أدناه لفتح نزاع على طلب في حالة الضمان
+                  </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleCreateDispute} className="space-y-4">
                   <div>
