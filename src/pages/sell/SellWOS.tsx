@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Upload, Plus, X, ShieldAlert, ArrowRight, Users, Zap, MapPin, GraduationCap, PawPrint, Crown, Swords, Loader2 } from "lucide-react";
+import { Upload, Plus, X, ShieldAlert, ArrowRight, Users, Zap, MapPin, GraduationCap, PawPrint, Crown, Swords, Loader2, ZoomIn } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import stoveLv1 from "@/assets/stove_lv_1.png";
 import stoveLv2 from "@/assets/stove_lv_2.png";
 import stoveLv3 from "@/assets/stove_lv_3.png";
@@ -52,6 +53,7 @@ const SellWOS = () => {
   const [accountPassword, setAccountPassword] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [billImages, setBillImages] = useState<{ first: string | null; three: string | null; last: string | null }>({
     first: null,
     three: null,
@@ -659,23 +661,43 @@ const SellWOS = () => {
             {/* Images */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white">صور الحساب</h2>
+              <p className="text-sm text-white/60">قم بتحميل صور (سكرين شوت) من جوالك - يمكنك رفع حتى 8 صور</p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {images.map((img, i) => (
-                  <div key={i} className="relative aspect-square bg-white/5 rounded-lg border border-white/10 overflow-hidden group">
-                    <img src={img} alt="" className="w-full h-full object-cover" />
-                    <button 
-                      type="button"
-                      className="absolute top-2 right-2 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => {
-                        URL.revokeObjectURL(images[i]);
-                        setImages(images.filter((_, idx) => idx !== i));
-                        setImageFiles(imageFiles.filter((_, idx) => idx !== i));
-                      }}
-                    >
-                      <X className="h-4 w-4 text-white" />
-                    </button>
-                  </div>
+                  <Dialog key={i}>
+                    <div className="relative group">
+                      <DialogTrigger asChild>
+                        <button 
+                          type="button"
+                          className="relative w-full bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
+                        >
+                          <img src={img} alt={`صورة ${i + 1}`} className="w-full h-auto object-contain max-h-48" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="h-8 w-8 text-white" />
+                          </div>
+                        </button>
+                      </DialogTrigger>
+                      <button 
+                        type="button"
+                        className="absolute -top-2 -right-2 p-1.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600"
+                        onClick={() => {
+                          URL.revokeObjectURL(images[i]);
+                          setImages(images.filter((_, idx) => idx !== i));
+                          setImageFiles(imageFiles.filter((_, idx) => idx !== i));
+                        }}
+                      >
+                        <X className="h-4 w-4 text-white" />
+                      </button>
+                    </div>
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
+                      <img 
+                        src={img} 
+                        alt={`صورة ${i + 1}`} 
+                        className="w-full h-auto object-contain max-h-[85vh] mx-auto"
+                      />
+                    </DialogContent>
+                  </Dialog>
                 ))}
                 
                 {images.length < 8 && (
@@ -736,117 +758,159 @@ const SellWOS = () => {
 
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mt-4">صور الفواتير (إلزامية)</h3>
-                <p className="text-sm text-white/60">سيتم عرض هذه الصور للمشتري بعد إتمام عملية الدفع</p>
+                <p className="text-sm text-white/60">قم بتحميل صور (سكرين شوت) الفواتير من جوالك - سيتم عرضها للمشتري بعد إتمام الدفع</p>
                 
                 <div>
                   <Label className="text-white mb-2 block">صورة أول فاتورة شراء *</Label>
-                  <div className="flex items-center gap-4">
-                    {billImages.first ? (
-                      <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-white/10">
-                        <img src={billImages.first} alt="First bill" className="w-full h-full object-cover" />
-                        <button
+                  {billImages.first ? (
+                    <Dialog>
+                      <div className="relative inline-block group">
+                        <DialogTrigger asChild>
+                          <button 
+                            type="button"
+                            className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
+                          >
+                            <img src={billImages.first} alt="أول فاتورة" className="h-32 w-auto object-contain" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="h-6 w-6 text-white" />
+                            </div>
+                          </button>
+                        </DialogTrigger>
+                        <button 
                           type="button"
+                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600"
                           onClick={() => {
                             if (billImages.first) URL.revokeObjectURL(billImages.first);
                             setBillImages({ ...billImages, first: null });
                             setBillFiles({ ...billFiles, first: null });
                           }}
-                          className="absolute top-1 right-1 p-1 bg-red-500 rounded-full"
                         >
-                          <X className="h-3 w-3 text-white" />
+                          <X className="h-4 w-4 text-white" />
                         </button>
                       </div>
-                    ) : null}
+                      <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
+                        <img src={billImages.first} alt="أول فاتورة" className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
                     <button
                       type="button"
                       onClick={() => billFirstRef.current?.click()}
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">{billImages.first ? 'تغيير الصورة' : 'اختر صورة'}</span>
+                      <span className="text-sm text-white/60">اختر صورة</span>
                     </button>
-                    <input
-                      ref={billFirstRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleBillImageUpload(e, 'first')}
-                      className="hidden"
-                    />
-                  </div>
+                  )}
+                  <input
+                    ref={billFirstRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleBillImageUpload(e, 'first')}
+                    className="hidden"
+                  />
                 </div>
 
                 <div>
                   <Label className="text-white mb-2 block">صورة ثلاث فواتير مختلفة التوقيت *</Label>
-                  <div className="flex items-center gap-4">
-                    {billImages.three ? (
-                      <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-white/10">
-                        <img src={billImages.three} alt="Three bills" className="w-full h-full object-cover" />
-                        <button
+                  {billImages.three ? (
+                    <Dialog>
+                      <div className="relative inline-block group">
+                        <DialogTrigger asChild>
+                          <button 
+                            type="button"
+                            className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
+                          >
+                            <img src={billImages.three} alt="فواتير متعددة" className="h-32 w-auto object-contain" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="h-6 w-6 text-white" />
+                            </div>
+                          </button>
+                        </DialogTrigger>
+                        <button 
                           type="button"
+                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600"
                           onClick={() => {
                             if (billImages.three) URL.revokeObjectURL(billImages.three);
                             setBillImages({ ...billImages, three: null });
                             setBillFiles({ ...billFiles, three: null });
                           }}
-                          className="absolute top-1 right-1 p-1 bg-red-500 rounded-full"
                         >
-                          <X className="h-3 w-3 text-white" />
+                          <X className="h-4 w-4 text-white" />
                         </button>
                       </div>
-                    ) : null}
+                      <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
+                        <img src={billImages.three} alt="فواتير متعددة" className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
                     <button
                       type="button"
                       onClick={() => billThreeRef.current?.click()}
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">{billImages.three ? 'تغيير الصورة' : 'اختر صورة'}</span>
+                      <span className="text-sm text-white/60">اختر صورة</span>
                     </button>
-                    <input
-                      ref={billThreeRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleBillImageUpload(e, 'three')}
-                      className="hidden"
-                    />
-                  </div>
+                  )}
+                  <input
+                    ref={billThreeRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleBillImageUpload(e, 'three')}
+                    className="hidden"
+                  />
                 </div>
 
                 <div>
                   <Label className="text-white mb-2 block">صورة آخر فاتورة شراء *</Label>
-                  <div className="flex items-center gap-4">
-                    {billImages.last ? (
-                      <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-white/10">
-                        <img src={billImages.last} alt="Last bill" className="w-full h-full object-cover" />
-                        <button
+                  {billImages.last ? (
+                    <Dialog>
+                      <div className="relative inline-block group">
+                        <DialogTrigger asChild>
+                          <button 
+                            type="button"
+                            className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
+                          >
+                            <img src={billImages.last} alt="آخر فاتورة" className="h-32 w-auto object-contain" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="h-6 w-6 text-white" />
+                            </div>
+                          </button>
+                        </DialogTrigger>
+                        <button 
                           type="button"
+                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600"
                           onClick={() => {
                             if (billImages.last) URL.revokeObjectURL(billImages.last);
                             setBillImages({ ...billImages, last: null });
                             setBillFiles({ ...billFiles, last: null });
                           }}
-                          className="absolute top-1 right-1 p-1 bg-red-500 rounded-full"
                         >
-                          <X className="h-3 w-3 text-white" />
+                          <X className="h-4 w-4 text-white" />
                         </button>
                       </div>
-                    ) : null}
+                      <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
+                        <img src={billImages.last} alt="آخر فاتورة" className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
                     <button
                       type="button"
                       onClick={() => billLastRef.current?.click()}
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">{billImages.last ? 'تغيير الصورة' : 'اختر صورة'}</span>
+                      <span className="text-sm text-white/60">اختر صورة</span>
                     </button>
-                    <input
-                      ref={billLastRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleBillImageUpload(e, 'last')}
-                      className="hidden"
-                    />
-                  </div>
+                  )}
+                  <input
+                    ref={billLastRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleBillImageUpload(e, 'last')}
+                    className="hidden"
+                  />
                 </div>
               </div>
 
