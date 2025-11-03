@@ -49,9 +49,11 @@ const Marketplace = () => {
   }, [listings, priceFilter]);
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ar-SA', {
+      style: 'currency',
+      currency: 'SAR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 2,
     }).format(price);
   };
 
@@ -120,9 +122,9 @@ const Marketplace = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">جميع الأسعار</SelectItem>
-                  <SelectItem value="low">أقل من $500</SelectItem>
-                  <SelectItem value="mid">$500 - $1500</SelectItem>
-                  <SelectItem value="high">أكثر من $1500</SelectItem>
+                  <SelectItem value="low">أقل من 500 ر.س</SelectItem>
+                  <SelectItem value="mid">500 - 1500 ر.س</SelectItem>
+                  <SelectItem value="high">أكثر من 1500 ر.س</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -205,7 +207,7 @@ const Marketplace = () => {
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                      <span className="text-2xl font-black text-[hsl(195,80%,70%)]">${formatPrice(account.price)}</span>
+                      <span className="text-2xl font-black text-[hsl(195,80%,70%)]">{formatPrice(account.price)}</span>
                       <Button size="sm" className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
                         عرض التفاصيل
                       </Button>

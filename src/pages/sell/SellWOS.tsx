@@ -364,7 +364,7 @@ const SellWOS = () => {
               </div>
 
               <div>
-                <Label className="text-white mb-2 block">السعر (USD) *</Label>
+                <Label className="text-white mb-2 block">السعر (ر.س) *</Label>
                 <Input 
                   type="number"
                   value={price}
