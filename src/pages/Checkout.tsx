@@ -31,7 +31,7 @@ const Checkout = () => {
   useEffect(() => {
     if (!user) {
       toast.error("يجب تسجيل الدخول أولاً");
-      navigate("/auth");
+      navigate("/auth", { replace: true });
     }
   }, [user, navigate]);
 
