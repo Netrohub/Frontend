@@ -38,6 +38,7 @@ const Sell = lazy(() => import("./pages/Sell"));
 const SellWOS = lazy(() => import("./pages/sell/SellWOS"));
 const MyListings = lazy(() => import("./pages/MyListings"));
 const Disputes = lazy(() => import("./pages/Disputes"));
+const DisputeDetails = lazy(() => import("./pages/DisputeDetails"));
 const KYC = lazy(() => import("./pages/KYC"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Profile = lazy(() => import("./pages/Profile"));
@@ -171,6 +172,16 @@ const App = () => (
                   <Suspense fallback={<LoadingFallback />}>
                     <ProtectedRoute>
                       <Disputes />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/disputes/:id"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <DisputeDetails />
                     </ProtectedRoute>
                   </Suspense>
                 }
