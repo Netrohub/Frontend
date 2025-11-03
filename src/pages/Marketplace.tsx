@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Tag, Star, Shield, Loader2 } from "lucide-react";
+import { Search, Filter, Tag, Star, Shield, Loader2, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -127,6 +127,14 @@ const Marketplace = () => {
                   <SelectItem value="high">أكثر من 1500 ر.س</SelectItem>
                 </SelectContent>
               </Select>
+
+              <Button 
+                size="icon" 
+                className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] border-0"
+                aria-label="خيارات تصفية إضافية"
+              >
+                <Filter className="h-5 w-5" />
+              </Button>
             </div>
           </div>
           
@@ -202,9 +210,16 @@ const Marketplace = () => {
                     </h3>
                     
                     <div className="flex items-center gap-2 text-sm text-white/60">
-                      <Tag className="h-4 w-4" />
+                      <MapPin className="h-4 w-4" />
                       <span>{account.category}</span>
                     </div>
+
+                    {account.user?.average_rating > 0 && (
+                      <div className="flex items-center gap-1 text-[hsl(40,90%,55%)]">
+                        <Star className="h-4 w-4 fill-current" />
+                        <span className="font-medium">{account.user.average_rating.toFixed(1)}</span>
+                      </div>
+                    )}
 
                     <div className="flex items-center justify-between pt-3 border-t border-white/10">
                       <span className="text-2xl font-black text-[hsl(195,80%,70%)]">{formatPrice(account.price)}</span>
