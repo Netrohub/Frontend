@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, Loader2, Mail } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
-import axios from 'axios';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
@@ -26,13 +25,25 @@ const VerifyEmail = () => {
       }
 
       try {
+        // Call backend verification endpoint directly
         const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'https://backend-piz0.onrender.com';
         const verifyUrl = `${backendUrl}/api/v1/email/verify/${id}/${hash}?expires=${expires}&signature=${signature}`;
 
-        const response = await axios.get(verifyUrl);
+        const response = await fetch(verifyUrl, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'فشل التحقق');
+        }
 
         setStatus('success');
-        setMessage(response.data.message || 'تم توثيق بريدك الإلكتروني بنجاح!');
+        setMessage(data.message || 'تم توثيق بريدك الإلكتروني بنجاح!');
 
         // Redirect to profile after 3 seconds
         setTimeout(() => {
@@ -41,7 +52,7 @@ const VerifyEmail = () => {
       } catch (error: any) {
         setStatus('error');
         setMessage(
-          error.response?.data?.message || 
+          error.message || 
           'فشل توثيق البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية.'
         );
       }
