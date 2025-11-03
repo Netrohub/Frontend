@@ -25,6 +25,7 @@ import About from "./pages/About";
 import Help from "./pages/Help";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
 // Protected routes - lazy loaded
@@ -102,6 +103,7 @@ const App = () => (
                 <Route path="/help" element={<Help />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
 
               {/* Protected Routes - Require Authentication */}
               <Route
