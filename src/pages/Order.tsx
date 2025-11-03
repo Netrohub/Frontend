@@ -92,10 +92,17 @@ const Order = () => {
   };
 
   const formatPrice = (price: number) => {
-    return '$' + new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ar-SA', {
+      style: 'currency',
+      currency: 'SAR',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 2,
     }).format(price);
+  };
+
+  const handleCopyCredential = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`تم نسخ ${label}`);
   };
 
   if (isLoading) {
@@ -180,6 +187,86 @@ const Order = () => {
           </Card>
         )}
 
+        {/* Credentials Card - Only show for escrow_hold or completed orders */}
+        {(order.status === 'escrow_hold' || order.status === 'completed') && order.listing && (
+          <Card className="p-6 mb-6 bg-white/5 border-white/10 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-white">معلومات الحساب</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowCredentials(!showCredentials)}
+                className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] hover:bg-white/5"
+              >
+                {showCredentials ? (
+                  <>
+                    <EyeOff className="h-4 w-4 ml-2" />
+                    إخفاء
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 ml-2" />
+                    عرض
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {showCredentials ? (
+              <div className="space-y-4">
+                {order.listing.account_credentials?.email && (
+                  <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-white/60">البريد الإلكتروني</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 text-[hsl(195,80%,70%)]"
+                        onClick={() => handleCopyCredential(order.listing.account_credentials?.email || '', 'البريد الإلكتروني')}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="font-mono text-white font-medium">{order.listing.account_credentials.email}</div>
+                  </div>
+                )}
+
+                {order.listing.account_credentials?.password && (
+                  <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-white/60">كلمة المرور</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-8 text-[hsl(195,80%,70%)]"
+                        onClick={() => handleCopyCredential(order.listing.account_credentials?.password || '', 'كلمة المرور')}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="font-mono text-white font-medium">{order.listing.account_credentials.password}</div>
+                  </div>
+                )}
+
+                <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
+                  <div className="flex gap-3">
+                    <AlertTriangle className="h-5 w-5 text-[hsl(40,90%,55%)] flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-white/80">
+                      <p className="font-bold mb-1">تحذير هام:</p>
+                      <p>قم بتغيير كلمة المرور فوراً بعد تسجيل الدخول. لا تشارك هذه المعلومات مع أي شخص.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Shield className="h-16 w-16 text-white/20 mx-auto mb-4" />
+                <p className="text-white/60">اضغط "عرض" للكشف عن معلومات الحساب</p>
+              </div>
+            )}
+          </Card>
+        )}
+
         {/* Order Details */}
         <Card className="p-6 mb-6 bg-white/5 border-white/10 backdrop-blur-sm">
           <h3 className="text-xl font-bold text-white mb-4">تفاصيل الطلب</h3>
@@ -216,10 +303,15 @@ const Order = () => {
               size="lg"
               onClick={handleConfirmOrder}
               disabled={orderConfirmed}
-              className="gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold"
+              className="gap-2 text-sm md:text-base py-4 md:py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px] touch-manipulation active:scale-95 transition-transform"
             >
-              <CheckCircle2 className="h-5 w-5" />
-              {orderConfirmed ? "تم التأكيد" : "تأكيد - الحساب يعمل بشكل صحيح"}
+              <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+              <span className="hidden md:inline">
+                {orderConfirmed ? "تم التأكيد" : "تأكيد - الحساب يعمل بشكل صحيح"}
+              </span>
+              <span className="md:hidden">
+                {orderConfirmed ? "تم التأكيد" : "تأكيد الاستلام"}
+              </span>
             </Button>
 
             <Button 
@@ -227,10 +319,11 @@ const Order = () => {
               variant="outline"
               onClick={handleOpenDispute}
               disabled={orderConfirmed}
-              className="gap-2 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold"
+              className="gap-2 text-sm md:text-base py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px] touch-manipulation active:scale-95 transition-transform"
             >
-              <AlertTriangle className="h-5 w-5" />
-              فتح نزاع - هناك مشكلة
+              <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+              <span className="hidden md:inline">فتح نزاع - هناك مشكلة</span>
+              <span className="md:hidden">فتح نزاع</span>
             </Button>
           </div>
         )}
