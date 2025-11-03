@@ -81,15 +81,29 @@ const SellWOS = () => {
       return;
     }
 
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
     // Create preview URLs and store files
     const newImages: string[] = [];
     const newFiles: File[] = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`الصورة ${file.name} كبيرة جداً. الحد الأقصى 5 ميجابايت (${(file.size / 1024 / 1024).toFixed(1)} ميجابايت)`);
+        continue; // Skip this file
+      }
+      
       const previewUrl = URL.createObjectURL(file);
       newImages.push(previewUrl);
       newFiles.push(file);
     }
+    
+    if (newImages.length === 0) {
+      return; // All files were too large
+    }
+    
     setImages([...images, ...newImages]);
     setImageFiles([...imageFiles, ...newFiles]);
   };
@@ -98,6 +112,14 @@ const SellWOS = () => {
   const handleBillImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'first' | 'three' | 'last') => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(`الصورة كبيرة جداً. الحد الأقصى 5 ميجابايت (الحجم الحالي: ${(file.size / 1024 / 1024).toFixed(1)} ميجابايت)`);
+      return;
+    }
 
     const previewUrl = URL.createObjectURL(file);
     setBillImages({ ...billImages, [type]: previewUrl });
