@@ -1,11 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, MapPin, Star, Shield, Loader2 } from "lucide-react";
+import { Search, Filter, Tag, Star, Shield, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
+import { SEO } from "@/components/SEO";
 import { listingsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -16,9 +18,18 @@ import type { Listing } from "@/types/api";
 const Marketplace = () => {
   const { user } = useAuth();
   const isAuthenticated = !!user;
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("all");
   const [priceFilter, setPriceFilter] = useState<string>("all");
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['listings', { search, category: category !== 'all' ? category : undefined }],
@@ -45,20 +56,33 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+    <>
+      <SEO 
+        title="سوق الحسابات - NXOLand"
+        description="تصفح واشتر حسابات الألعاب بأمان. مئات الحسابات المتاحة للشراء مع نظام ضمان متكامل."
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
-      {/* Navigation */}
-      <Navbar />
+        {/* Skip link for keyboard navigation */}
+        <a 
+          href="#marketplace-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+        >
+          تخطي إلى السوق
+        </a>
 
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-2">سوق الحسابات</h1>
-          <p className="text-white/60">تصفح واختر الحساب المثالي لك</p>
-        </div>
+        {/* Navigation */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div id="marketplace-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8">
+          {/* Header */}
+          <div className="mb-8">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">سوق الحسابات</h1>
+            <p className="text-white/60">تصفح واختر الحساب المثالي لك</p>
+          </div>
 
         {/* Search and Filters */}
         <div className="mb-8 space-y-4">
@@ -69,15 +93,16 @@ const Marketplace = () => {
               <Input 
                 placeholder="ابحث عن حساب..."
                 className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[hsl(195,80%,70%,0.5)]"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                aria-label="بحث في الحسابات المتاحة"
               />
             </div>
             
             {/* Filters */}
             <div className="flex gap-3">
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" aria-label="تصفية حسب الفئة">
                   <SelectValue placeholder="الفئة" />
                 </SelectTrigger>
                 <SelectContent>
@@ -90,18 +115,25 @@ const Marketplace = () => {
               </Select>
 
               <Select value={priceFilter} onValueChange={setPriceFilter}>
-                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white">
+                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" aria-label="تصفية حسب السعر">
                   <SelectValue placeholder="السعر" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">جميع الأسعار</SelectItem>
-                  <SelectItem value="low">أقل من 500</SelectItem>
-                  <SelectItem value="mid">500 - 1500</SelectItem>
-                  <SelectItem value="high">أكثر من 1500</SelectItem>
+                  <SelectItem value="low">أقل من $500</SelectItem>
+                  <SelectItem value="mid">$500 - $1500</SelectItem>
+                  <SelectItem value="high">أكثر من $1500</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
+          
+          {/* Results Count */}
+          {!isLoading && !error && listings.length > 0 && (
+            <p className="text-white/60 mb-4 text-sm">
+              عرض {filteredListings.length} من أصل {listings.length} حساب
+            </p>
+          )}
         </div>
 
         {/* Loading State */}
@@ -168,7 +200,7 @@ const Marketplace = () => {
                     </h3>
                     
                     <div className="flex items-center gap-2 text-sm text-white/60">
-                      <MapPin className="h-4 w-4" />
+                      <Tag className="h-4 w-4" />
                       <span>{account.category}</span>
                     </div>
 
@@ -184,8 +216,12 @@ const Marketplace = () => {
             ))}
           </div>
         )}
+        </div>
+        
+        {/* Bottom Navigation for Mobile */}
+        <BottomNav />
       </div>
-    </div>
+    </>
   );
 };
 
