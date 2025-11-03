@@ -15,6 +15,9 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        arctic: "bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 shadow-[0_0_30px_rgba(56,189,248,0.4)] hover:shadow-[0_0_40px_rgba(56,189,248,0.5)]",
+        "arctic-ghost": "bg-white/5 hover:bg-white/10 text-white border-white/20 border",
+        danger: "bg-[hsl(0,70%,60%)] hover:bg-[hsl(0,70%,50%)] text-white border-0",
       },
       size: {
         default: "h-10 px-4 py-2",

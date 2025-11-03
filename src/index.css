@@ -58,6 +58,23 @@ All colors MUST be HSL.
     --trust-blue: 215 85% 45%;
     --trust-green: 145 60% 45%;
     
+    /* Navbar Colors */
+    --nav-background: 200 70% 15%;
+    --nav-highlight: 195 80% 70%;
+    --nav-accent: 40 90% 55%;
+    
+    /* Status Colors - Arctic Theme */
+    --status-success: 160 60% 50%;
+    --status-success-foreground: 0 0% 100%;
+    --status-warning: 40 90% 55%;
+    --status-warning-foreground: 220 30% 12%;
+    --status-error: 0 70% 60%;
+    --status-error-foreground: 0 0% 100%;
+    --status-info: 195 80% 70%;
+    --status-info-foreground: 220 30% 12%;
+    --status-pending: 40 90% 55%;
+    --status-pending-foreground: 220 30% 12%;
+    
     /* Gradients */
     --gradient-arctic: linear-gradient(135deg, hsl(200 85% 45%) 0%, hsl(200 90% 65%) 100%);
     --gradient-ice: linear-gradient(180deg, hsl(210 40% 98%) 0%, hsl(200 30% 95%) 100%);
@@ -123,6 +140,10 @@ All colors MUST be HSL.
     --border: 220 25% 20%;
     --input: 220 25% 20%;
     --ring: 200 85% 55%;
+    
+    --nav-background: 200 70% 20%;
+    --nav-highlight: 195 80% 75%;
+    --nav-accent: 40 90% 60%;
   }
 }
 
