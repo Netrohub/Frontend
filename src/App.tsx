@@ -26,6 +26,7 @@ import Help from "./pages/Help";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import VerifyEmail from "./pages/VerifyEmail";
+import PaymentCallback from "./pages/PaymentCallback";
 import NotFound from "./pages/NotFound";
 
 // Protected routes - critical pages loaded immediately
@@ -124,6 +125,14 @@ const App = () => (
                       <Order />
                     </ProtectedRoute>
                   </Suspense>
+                }
+              />
+              <Route
+                path="/orders/:id/payment/callback"
+                element={
+                  <ProtectedRoute>
+                    <PaymentCallback />
+                  </ProtectedRoute>
                 }
               />
               <Route
