@@ -20,8 +20,8 @@ const Home = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
       {/* Animated snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(50)].map((_, i) => (
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        {[...Array(30)].map((_, i) => (
           <div
             key={i}
             className="absolute w-1 h-1 bg-white/60 rounded-full animate-fall"
@@ -36,13 +36,21 @@ const Home = () => {
       </div>
       
       {/* Frost overlay effect */}
-      <div className="absolute inset-0 bg-gradient-radial from-transparent via-[hsl(195,80%,50%,0.05)] to-transparent opacity-40" />
+      <div className="absolute inset-0 bg-gradient-radial from-transparent via-[hsl(195,80%,50%,0.05)] to-transparent opacity-40" aria-hidden="true" />
+      
+      {/* Skip link for keyboard navigation */}
+      <a 
+        href="#main-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+      >
+        تخطي إلى المحتوى الرئيسي
+      </a>
       
       {/* Navigation */}
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative z-10 container mx-auto px-4 md:px-6 py-24 md:py-32">
+      <section id="main-content" className="relative z-10 container mx-auto px-4 md:px-6 py-24 md:py-32">
         <div className="flex flex-col items-center text-center space-y-8">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[hsl(195,80%,70%,0.3)]">
@@ -94,6 +102,7 @@ const Home = () => {
                 size="lg" 
                 className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                aria-label="التمرير إلى قسم الميزات"
               >
                 <span className="hidden sm:inline">كيف تعمل المنصة</span>
                 <span className="sm:hidden">كيف يعمل؟</span>
@@ -222,8 +231,8 @@ const Home = () => {
       </footer>
 
       {/* Glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[hsl(200,70%,40%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '1s' }} />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[hsl(200,70%,40%,0.15)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" style={{ animationDelay: '1s' }} />
       
       {/* Bottom Navigation for Mobile */}
       <BottomNav />
