@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2 } from "lucide-react";
 import stoveLv1 from "@/assets/stove_lv_1.png";
 import stoveLv2 from "@/assets/stove_lv_2.png";
@@ -36,6 +37,7 @@ const ProductDetails = () => {
   });
 
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
 
   const handleBuy = async () => {
     if (!user) {
@@ -174,7 +176,10 @@ const ProductDetails = () => {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Left Column - Images */}
           <div className="space-y-4">
-            <Card className="overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm">
+            <Card 
+              className="overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all"
+              onClick={() => images.length > 0 && setEnlargedImage(images[0])}
+            >
               <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
                 {images.length > 0 ? (
                   <img 
@@ -192,7 +197,11 @@ const ProductDetails = () => {
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {images.slice(1, 5).map((img, i) => (
-                  <Card key={i} className="aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden">
+                  <Card 
+                    key={i} 
+                    className="aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all"
+                    onClick={() => setEnlargedImage(img)}
+                  >
                     <img 
                       src={img} 
                       alt={`${listing.title} - صورة ${i + 2}`}
@@ -550,6 +559,23 @@ const ProductDetails = () => {
 
       {/* Glow effects */}
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
+      
+      {/* Image Enlarge Dialog */}
+      <Dialog open={!!enlargedImage} onOpenChange={() => setEnlargedImage(null)}>
+        <DialogContent className="max-w-4xl w-full bg-background/95 backdrop-blur-sm border-white/10">
+          {enlargedImage ? (
+            <img 
+              src={enlargedImage} 
+              alt="Enlarged view"
+              className="w-full h-auto object-contain max-h-[85vh] rounded-lg"
+            />
+          ) : (
+            <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center rounded-lg">
+              <Shield className="h-64 w-64 text-white/20" />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
     </>
   );
