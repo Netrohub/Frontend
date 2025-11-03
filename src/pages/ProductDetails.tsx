@@ -63,9 +63,9 @@ const ProductDetails = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('ar-SA', {
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      maximumFractionDigits: 2,
     }).format(price);
   };
 
@@ -218,8 +218,14 @@ const ProductDetails = () => {
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                  <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                  {listing.status === 'active' ? 'متاح الآن' : 'غير متاح'}
+                  <Badge className={
+                    listing.status === 'active' 
+                      ? "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
+                      : listing.status === 'sold'
+                      ? "bg-red-500/20 text-red-400 border-red-500/30"
+                      : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                  }>
+                  {listing.status === 'active' ? 'متاح الآن' : listing.status === 'sold' ? 'تم البيع' : 'غير متاح'}
                 </Badge>
                 {listing.user?.is_verified && (
                   <Badge className="bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]">
@@ -238,8 +244,8 @@ const ProductDetails = () => {
               </div>
 
               <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">${formatPrice(listing.price)}</span>
-                <span className="text-2xl text-white/60">USD</span>
+                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">{formatPrice(listing.price)}</span>
+                <span className="text-2xl text-white/60">ر.س</span>
               </div>
             </div>
 
@@ -547,9 +553,9 @@ const ProductDetails = () => {
               </div>
             )}
 
-            {listing.status !== 'active' && (
-              <Badge className="w-full justify-center py-2 bg-red-500/20 text-red-400 border-red-500/30">
-                غير متاح
+            {listing.status !== 'active' && !isOwner && (
+              <Badge className="w-full justify-center py-3 text-lg bg-red-500/20 text-red-400 border-red-500/30">
+                {listing.status === 'sold' ? '🔒 تم البيع' : 'غير متاح'}
               </Badge>
             )}
           </div>
