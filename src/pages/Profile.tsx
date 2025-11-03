@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { 
   User, 
@@ -188,14 +189,9 @@ const Profile = () => {
               ) : null}
               
               {user.kyc_verification?.status === 'verified' ? (
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                  <Shield className="h-3 w-3 ml-1" />
-                  حساب موثق
-                </Badge>
+                <StatusBadge status="success" label="حساب موثق" />
               ) : (
-                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                  يتطلب توثيق KYC
-                </Badge>
+                <StatusBadge status="warning" label="يتطلب توثيق KYC" />
               )}
             </div>
           </div>
@@ -271,15 +267,9 @@ const Profile = () => {
               <Mail className="h-5 w-5 text-[hsl(195,80%,70%)]" />
               <span>{user.email}</span>
               {user.email_verified_at ? (
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  موثق
-                </Badge>
+                <StatusBadge status="success" label="موثق" className="text-xs" />
               ) : (
-                <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
-                  <AlertCircle className="h-3 w-3 mr-1" />
-                  غير موثق
-                </Badge>
+                <StatusBadge status="warning" label="غير موثق" className="text-xs" />
               )}
             </div>
             
@@ -288,15 +278,9 @@ const Profile = () => {
                 <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" />
                 <span>{user.phone}</span>
                 {user.phone_verified_at ? (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 text-xs">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    موثق
-                  </Badge>
+                  <StatusBadge status="success" label="موثق" className="text-xs" />
                 ) : (
-                  <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
-                    <AlertCircle className="h-3 w-3 mr-1" />
-                    غير موثق
-                  </Badge>
+                  <StatusBadge status="warning" label="غير موثق" className="text-xs" />
                 )}
               </div>
             )}

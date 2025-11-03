@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Snowflake, LogIn } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileNav } from "@/components/MobileNav";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -47,7 +48,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                   التداول
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+                  <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%,0.95)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl z-50">
                     <li>
                       <Link to="/marketplace" className={cn(
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
@@ -94,7 +95,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                   المجتمع
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl">
+                  <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%,0.95)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl z-50">
                     <li>
                       <Link to="/leaderboard" className={cn(
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
@@ -161,6 +162,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
           </NavigationMenu>
         )}
         <div className="flex items-center gap-2">
+          <GlobalSearch />
           {isAuthenticated ? (
             <NotificationBell />
           ) : (

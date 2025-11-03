@@ -13,6 +13,9 @@ import { RouteErrorBoundary } from "@/components/RouteErrorBoundary";
 import { HelmetProvider } from "react-helmet-async";
 import { Loader2 } from "lucide-react";
 import { CACHE_TIMES } from "@/config/constants";
+import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
+import { GlobalSearch } from "@/components/GlobalSearch";
+import { QuickNav } from "@/components/QuickNav";
 
 // Public routes - loaded immediately
 import Home from "./pages/Home";
@@ -83,20 +86,19 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <ErrorBoundary>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-            <SkipLink />
-            <NotificationBanner />
-            <main id="main-content" tabIndex={-1}>
-              <RouteErrorBoundary>
-                <Routes>
+// App content with keyboard shortcuts
+const AppContent = () => {
+  useKeyboardShortcuts();
+  
+  return (
+    <>
+      <SkipLink />
+      <NotificationBanner />
+      <GlobalSearch />
+      <QuickNav />
+      <main id="main-content" tabIndex={-1}>
+        <RouteErrorBoundary>
+          <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -334,15 +336,29 @@ const App = () => (
                 />
               </Route>
 
-                {/* 404 - Must be last */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              </RouteErrorBoundary>
-            </main>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+            {/* 404 - Must be last */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </RouteErrorBoundary>
+      </main>
+    </>
+  );
+};
+
+const App = () => (
+  <ErrorBoundary>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
     </HelmetProvider>
   </ErrorBoundary>
 );

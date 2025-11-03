@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
 import { Package, Loader2, Clock, CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -20,22 +21,32 @@ const Orders = () => {
     enabled: !!user,
   });
 
-  const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { text: string; className: string; icon: any }> = {
-      pending: { text: "بانتظار الدفع", className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30", icon: Clock },
-      escrow_hold: { text: "قيد المراجعة", className: "bg-blue-500/20 text-blue-400 border-blue-500/30", icon: Clock },
-      completed: { text: "مكتمل", className: "bg-green-500/20 text-green-400 border-green-500/30", icon: CheckCircle2 },
-      disputed: { text: "بنزاع", className: "bg-red-500/20 text-red-400 border-red-500/30", icon: AlertTriangle },
-      cancelled: { text: "ملغي", className: "bg-gray-500/20 text-gray-400 border-gray-500/30", icon: XCircle },
+  const getStatusType = (status: string): "success" | "warning" | "error" | "info" | "pending" => {
+    switch (status) {
+      case "completed":
+        return "success";
+      case "escrow_hold":
+      case "paid":
+        return "pending";
+      case "disputed":
+        return "error";
+      case "cancelled":
+        return "warning";
+      default:
+        return "info";
+    }
+  };
+
+  const getStatusLabel = (status: string): string => {
+    const labels: Record<string, string> = {
+      pending: "بانتظار الدفع",
+      paid: "تم الدفع",
+      escrow_hold: "قيد المراجعة",
+      completed: "مكتمل",
+      disputed: "بنزاع",
+      cancelled: "ملغي",
     };
-    const statusInfo = statusMap[status] || statusMap.pending;
-    const StatusIcon = statusInfo.icon;
-    return (
-      <Badge className={statusInfo.className}>
-        <StatusIcon className="h-3 w-3 mr-1" />
-        {statusInfo.text}
-      </Badge>
-    );
+    return labels[status] || status;
   };
 
   const formatPrice = (price: number) => {
@@ -105,7 +116,7 @@ const Orders = () => {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <span className="text-sm font-bold text-white/60">#{order.id}</span>
-                            {getStatusBadge(order.status)}
+                            <StatusBadge status={getStatusType(order.status)} label={getStatusLabel(order.status)} />
                           </div>
                           <h3 className="font-bold text-white mb-1">
                             {order.listing?.title || 'حساب محذوف'}
