@@ -11,7 +11,8 @@ import { toast } from "sonner";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { publicApi } from "@/lib/api";
+import { suggestionsApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Suggestion {
   id: number;
@@ -19,54 +20,16 @@ interface Suggestion {
   description: string;
   upvotes: number;
   downvotes: number;
-  comments: number;
+  comments?: number;
   status: "pending" | "approved" | "implemented";
-  author: string;
-  date: string;
-  userVote: "up" | "down" | null;
+  user?: { name: string };
+  created_at?: string;
+  user_vote?: "up" | "down" | null;
 }
 
-const mockSuggestions: Suggestion[] = [
-  {
-    id: 1,
-    title: "إضافة وضع الليل التلقائي",
-    description: "سيكون من الرائع لو كان هناك وضع ليلي يتحول تلقائياً حسب وقت اليوم",
-    upvotes: 45,
-    downvotes: 3,
-    comments: 12,
-    status: "pending",
-    author: "أحمد محمد",
-    date: "2024-01-15",
-    userVote: null,
-  },
-  {
-    id: 2,
-    title: "تحسين سرعة البحث",
-    description: "البحث في المنتجات يأخذ وقت طويل، يحتاج تحسين في الأداء",
-    upvotes: 32,
-    downvotes: 1,
-    comments: 8,
-    status: "approved",
-    author: "فاطمة علي",
-    date: "2024-01-14",
-    userVote: "up",
-  },
-  {
-    id: 3,
-    title: "إضافة خاصية المقارنة بين المنتجات",
-    description: "أود أن أتمكن من مقارنة منتجين أو أكثر جنباً إلى جنب",
-    upvotes: 67,
-    downvotes: 5,
-    comments: 23,
-    status: "implemented",
-    author: "محمد خالد",
-    date: "2024-01-10",
-    userVote: null,
-  },
-];
-
 const Suggestions = () => {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>(mockSuggestions);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [activeTab, setActiveTab] = useState("all");
@@ -75,87 +38,101 @@ const Suggestions = () => {
   const [platformRating, setPlatformRating] = useState(0);
   const [platformReview, setPlatformReview] = useState("");
 
-  // TODO: Get platform review stats from API when backend is ready
-  // For now, showing defaults until backend endpoint exists
-  const platformStats = {
-    average_rating: 0,
-    total_reviews: 0,
-    rating_distribution: {
-      5: 0,
-      4: 0,
-      3: 0,
-      2: 0,
-      1: 0,
+  // Fetch suggestions from API
+  const { data: suggestionsData } = useQuery({
+    queryKey: ['suggestions', activeTab],
+    queryFn: () => suggestionsApi.getAll({ status: activeTab }),
+  });
+
+  // Fetch platform stats from API
+  const { data: platformStats } = useQuery({
+    queryKey: ['platform-stats'],
+    queryFn: () => suggestionsApi.getPlatformStats(),
+  });
+
+  // Fetch user's platform review
+  const { data: userReview } = useQuery({
+    queryKey: ['user-platform-review'],
+    queryFn: () => suggestionsApi.getUserPlatformReview(),
+    enabled: !!user,
+  });
+
+  const suggestions = suggestionsData?.data || [];
+
+  // Vote mutation
+  const voteMutation = useMutation({
+    mutationFn: ({ id, voteType }: { id: number; voteType: 'up' | 'down' }) =>
+      suggestionsApi.vote(id, voteType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suggestions'] });
     },
-  };
+    onError: () => {
+      toast.error("فشل التصويت. يرجى المحاولة مرة أخرى");
+    },
+  });
 
   const handleVote = (id: number, voteType: "up" | "down") => {
-    setSuggestions((prev) =>
-      prev.map((suggestion) => {
-        if (suggestion.id === id) {
-          const wasUpvoted = suggestion.userVote === "up";
-          const wasDownvoted = suggestion.userVote === "down";
-          
-          let newUpvotes = suggestion.upvotes;
-          let newDownvotes = suggestion.downvotes;
-          let newUserVote: "up" | "down" | null = voteType;
-
-          if (voteType === "up") {
-            if (wasUpvoted) {
-              newUpvotes -= 1;
-              newUserVote = null;
-            } else {
-              newUpvotes += 1;
-              if (wasDownvoted) newDownvotes -= 1;
-            }
-          } else {
-            if (wasDownvoted) {
-              newDownvotes -= 1;
-              newUserVote = null;
-            } else {
-              newDownvotes += 1;
-              if (wasUpvoted) newUpvotes -= 1;
-            }
-          }
-
-          return {
-            ...suggestion,
-            upvotes: newUpvotes,
-            downvotes: newDownvotes,
-            userVote: newUserVote,
-          };
-        }
-        return suggestion;
-      })
-    );
+    if (!user) {
+      toast.error("يجب تسجيل الدخول للتصويت");
+      return;
+    }
+    voteMutation.mutate({ id, voteType });
   };
 
+  // Create suggestion mutation
+  const createSuggestionMutation = useMutation({
+    mutationFn: (data: { title: string; description: string }) =>
+      suggestionsApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suggestions'] });
+      setNewTitle("");
+      setNewDescription("");
+      toast.success("تم إرسال اقتراحك بنجاح");
+    },
+    onError: () => {
+      toast.error("فشل إرسال الاقتراح");
+    },
+  });
+
   const handleSubmit = () => {
+    if (!user) {
+      toast.error("يجب تسجيل الدخول لإضافة اقتراح");
+      return;
+    }
+    
     if (!newTitle.trim() || !newDescription.trim()) {
       toast.error("يرجى ملء جميع الحقول");
       return;
     }
 
-    const newSuggestion: Suggestion = {
-      id: Date.now(),
+    createSuggestionMutation.mutate({
       title: newTitle,
       description: newDescription,
-      upvotes: 0,
-      downvotes: 0,
-      comments: 0,
-      status: "pending",
-      author: "أنت",
-      date: new Date().toISOString().split("T")[0],
-      userVote: null,
-    };
-
-    setSuggestions([newSuggestion, ...suggestions]);
-    setNewTitle("");
-    setNewDescription("");
-    toast.success("تم إرسال اقتراحك بنجاح");
+    });
   };
 
+  // Submit platform review mutation
+  const submitPlatformReviewMutation = useMutation({
+    mutationFn: (data: { rating: number; review?: string }) =>
+      suggestionsApi.submitPlatformReview(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platform-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['user-platform-review'] });
+      setPlatformRating(0);
+      setPlatformReview("");
+      toast.success("شكراً لتقييمك! تم إرسال رأيك بنجاح");
+    },
+    onError: () => {
+      toast.error("فشل إرسال التقييم");
+    },
+  });
+
   const handlePlatformReviewSubmit = () => {
+    if (!user) {
+      toast.error("يجب تسجيل الدخول لتقييم المنصة");
+      return;
+    }
+    
     if (platformRating === 0) {
       toast.error("الرجاء اختيار تقييم");
       return;
@@ -165,16 +142,14 @@ const Suggestions = () => {
       return;
     }
 
-    // TODO: Backend integration when platform reviews endpoint is ready
-    // await platformReviewsApi.create({ rating: platformRating, review: platformReview });
-    
-    toast.success("شكراً لك! تم إرسال تقييمك بنجاح");
-    setPlatformRating(0);
-    setPlatformReview("");
+    submitPlatformReviewMutation.mutate({
+      rating: platformRating,
+      review: platformReview,
+    });
   };
 
   const getRatingPercentage = (count: number) => {
-    if (platformStats.total_reviews === 0) return '0';
+    if (!platformStats || platformStats.total_reviews === 0) return '0';
     return ((count / platformStats.total_reviews) * 100).toFixed(0);
   };
 
@@ -187,13 +162,6 @@ const Suggestions = () => {
     const variant = variants[status] || variants.pending;
     return <Badge className={variant.className}>{variant.label}</Badge>;
   };
-
-  const filterSuggestions = () => {
-    if (activeTab === "all") return suggestions;
-    return suggestions.filter((s) => s.status === activeTab);
-  };
-
-  const sortedSuggestions = [...filterSuggestions()].sort((a, b) => b.upvotes - a.upvotes);
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -225,7 +193,7 @@ const Suggestions = () => {
           </CardHeader>
           <CardContent>
             {/* Platform Stats - Show only if we have reviews */}
-            {platformStats.total_reviews > 0 && (
+            {platformStats && platformStats.total_reviews > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 p-6 bg-white/5 rounded-lg border border-white/10">
                 <div className="text-center md:text-right">
                   <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
@@ -380,7 +348,7 @@ const Suggestions = () => {
 
         {/* Suggestions List */}
         <div className="space-y-4">
-          {sortedSuggestions.map((suggestion) => (
+          {suggestions.map((suggestion: Suggestion) => (
             <Card
               key={suggestion.id}
               className="bg-white/5 backdrop-blur-sm border border-white/10 hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:bg-white/10"
@@ -394,7 +362,7 @@ const Suggestions = () => {
                       size="icon"
                       onClick={() => handleVote(suggestion.id, "up")}
                       className={`hover:bg-[hsl(160,60%,45%,0.2)] ${
-                        suggestion.userVote === "up"
+                        suggestion.user_vote === "up"
                           ? "bg-[hsl(160,60%,45%,0.2)] text-[hsl(160,60%,50%)]"
                           : "text-white/60"
                       }`}
@@ -410,7 +378,7 @@ const Suggestions = () => {
                       size="icon"
                       onClick={() => handleVote(suggestion.id, "down")}
                       className={`hover:bg-[hsl(0,70%,55%,0.2)] ${
-                        suggestion.userVote === "down"
+                        suggestion.user_vote === "down"
                           ? "bg-[hsl(0,70%,55%,0.2)] text-[hsl(0,70%,60%)]"
                           : "text-white/60"
                       }`}
@@ -427,9 +395,9 @@ const Suggestions = () => {
                     </div>
                     <p className="text-white/60 mb-4">{suggestion.description}</p>
                     <div className="flex items-center gap-4 text-sm text-white/50">
-                      <span>{suggestion.author}</span>
+                      <span>{suggestion.user?.name || 'مستخدم'}</span>
                       <span>•</span>
-                      <span>{suggestion.date}</span>
+                      <span>{suggestion.created_at ? new Date(suggestion.created_at).toLocaleDateString('ar-SA') : ''}</span>
                       <span>•</span>
                       <div className="flex items-center gap-1">
                         <MessageSquare className="w-4 h-4" />
@@ -443,7 +411,7 @@ const Suggestions = () => {
           ))}
         </div>
 
-        {sortedSuggestions.length === 0 && (
+        {suggestions.length === 0 && (
           <Card className="border-dashed border-white/20 bg-white/5">
             <CardContent className="p-12 text-center">
               <MessageSquare className="w-12 h-12 mx-auto mb-4 text-white/40" />

@@ -531,3 +531,33 @@ export const adminApi = {
     api.post<any>('/admin/notifications', data),
 };
 
+// Suggestions API
+export const suggestionsApi = {
+  getAll: (params?: { status?: string; page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.status && params.status !== 'all') query.append('status', params.status);
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<any>(`/suggestions?${query.toString()}`);
+  },
+  
+  create: (data: { title: string; description: string }) =>
+    api.post<any>('/suggestions', data),
+  
+  vote: (id: number, voteType: 'up' | 'down') =>
+    api.post<any>(`/suggestions/${id}/vote`, { vote_type: voteType }),
+  
+  // Platform Reviews
+  getPlatformStats: () =>
+    api.get<{
+      average_rating: number;
+      total_reviews: number;
+      rating_distribution: Record<string, number>;
+    }>('/platform/stats'),
+  
+  submitPlatformReview: (data: { rating: number; review?: string }) =>
+    api.post<any>('/platform/review', data),
+  
+  getUserPlatformReview: () =>
+    api.get<{ rating: number; review: string } | null>('/platform/review/user'),
+};
+
