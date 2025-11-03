@@ -27,14 +27,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
 
   return (
     <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-      <Link to="/" className="flex items-center gap-2 hover:scale-105 transition-transform duration-300">
-        <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)] animate-pulse" />
-        <span className="text-xl md:text-2xl font-black text-white">
-          NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-        </span>
-      </Link>
-      
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 order-2">
         {showDesktopLinks && (
           <NavigationMenu className="hidden md:block">
             <NavigationMenuList className="gap-2">
@@ -186,6 +179,13 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
           <MobileNav />
         </div>
       </div>
+      
+      <Link to="/" className="flex items-center gap-2 hover:scale-105 transition-transform duration-300 order-1">
+        <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)] animate-pulse" />
+        <span className="text-xl md:text-2xl font-black text-white">
+          NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
+        </span>
+      </Link>
     </nav>
   );
 };
