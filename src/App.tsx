@@ -28,8 +28,10 @@ import Privacy from "./pages/Privacy";
 import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
+// Protected routes - critical pages loaded immediately
+import Checkout from "./pages/Checkout";
+
 // Protected routes - lazy loaded
-const Checkout = lazy(() => import("./pages/Checkout"));
 const Order = lazy(() => import("./pages/Order"));
 const Sell = lazy(() => import("./pages/Sell"));
 const SellWOS = lazy(() => import("./pages/sell/SellWOS"));
@@ -109,11 +111,9 @@ const App = () => (
               <Route
                 path="/checkout"
                 element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <ProtectedRoute>
-                      <Checkout />
-                    </ProtectedRoute>
-                  </Suspense>
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
                 }
               />
               <Route
