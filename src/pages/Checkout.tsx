@@ -5,8 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Shield, CreditCard, CheckCircle2, Loader2 } from "lucide-react";
+import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
+import { SEO } from "@/components/SEO";
 import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,9 +36,27 @@ const Checkout = () => {
     }
   }, [user, navigate]);
 
+  // Validate order amount matches listing price (prevent fraud)
+  useEffect(() => {
+    if (order && order.listing) {
+      const priceDifference = Math.abs(order.amount - order.listing.price);
+      if (priceDifference > 0.01) {
+        toast.error("خطأ في المبلغ. يرجى المحاولة مرة أخرى");
+        navigate(`/product/${order.listing.id}`, { replace: true });
+      }
+    }
+  }, [order, navigate]);
+
   const handlePayment = async () => {
     if (!orderId) {
       toast.error("طلب غير صحيح");
+      return;
+    }
+
+    // CRITICAL: Prevent buyer from purchasing own listing
+    if (order?.listing?.seller_id === user?.id) {
+      toast.error("لا يمكنك شراء إعلانك الخاص");
+      navigate(`/product/${order.listing.id}`, { replace: true });
       return;
     }
 
@@ -111,9 +130,15 @@ const Checkout = () => {
   const totalAmount = order.amount;
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+    <>
+      <SEO 
+        title="إتمام الشراء - NXOLand"
+        description="أكمل عملية الدفع بأمان مع نظام الضمان والحماية الكاملة للمشتري"
+        noIndex={true}
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
       {/* Snow particles */}
       <div className="absolute inset-0 pointer-events-none">
@@ -125,9 +150,19 @@ const Checkout = () => {
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-2">إتمام الشراء</h1>
-          <p className="text-white/60">أكمل عملية الدفع بأمان</p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">إتمام الشراء</h1>
+            <p className="text-white/60">أكمل عملية الدفع بأمان</p>
+          </div>
+          {order?.listing && (
+            <Button asChild variant="outline" className="bg-white/5 hover:bg-white/10 text-white border-white/20">
+              <Link to={`/product/${order.listing.id}`}>
+                <ArrowRight className="h-5 w-5 ml-2" />
+                العودة للإعلان
+              </Link>
+            </Button>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
@@ -199,6 +234,16 @@ const Checkout = () => {
                 <span className="text-3xl font-black text-[hsl(195,80%,70%)]">{formatPrice(totalAmount)}</span>
               </div>
 
+              {order.status !== 'pending' && (
+                <div className="mb-4 p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                  <p className="text-yellow-400 text-sm">
+                    {order.status === 'completed' && 'هذا الطلب مكتمل بالفعل'}
+                    {order.status === 'cancelled' && 'هذا الطلب ملغي'}
+                    {order.status === 'disputed' && 'هذا الطلب قيد النزاع'}
+                  </p>
+                </div>
+              )}
+
               <Button 
                 onClick={handlePayment}
                 disabled={processing || order.status !== 'pending'}
@@ -239,7 +284,8 @@ const Checkout = () => {
 
       {/* Glow effects */}
       <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
-    </div>
+      </div>
+    </>
   );
 };
 

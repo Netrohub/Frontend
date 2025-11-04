@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Mail, Phone, ArrowRight, Save, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
@@ -23,6 +23,17 @@ const EditProfile = () => {
     phone: user?.phone || "",
   });
 
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Detect changes
+  useEffect(() => {
+    const changed = 
+      formData.name !== (user?.name || "") ||
+      formData.email !== (user?.email || "") ||
+      formData.phone !== (user?.phone || "");
+    setHasChanges(changed);
+  }, [formData, user]);
+
   const updateProfileMutation = useMutation({
     mutationFn: (data: { name?: string; email?: string; phone?: string }) =>
       authApi.updateProfile(data),
@@ -31,18 +42,34 @@ const EditProfile = () => {
       toast.success("تم تحديث الملف الشخصي بنجاح");
       navigate("/profile");
     },
-    onError: (error: any) => {
+    onError: (error: any) =>
       toast.error(error.message || "فشل تحديث الملف الشخصي");
     },
   });
+
+  const isValidEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
 
   const handleSave = () => {
     if (!formData.name.trim()) {
       toast.error("الاسم مطلوب");
       return;
     }
+    if (formData.name.trim().length < 3) {
+      toast.error("الاسم يجب أن يكون 3 أحرف على الأقل");
+      return;
+    }
+    if (formData.name.length > 100) {
+      toast.error("الاسم طويل جداً (الحد الأقصى 100 حرف)");
+      return;
+    }
     if (!formData.email.trim()) {
       toast.error("البريد الإلكتروني مطلوب");
+      return;
+    }
+    if (!isValidEmail(formData.email)) {
+      toast.error("صيغة البريد الإلكتروني غير صحيحة");
       return;
     }
 
@@ -89,6 +116,11 @@ const EditProfile = () => {
 
         {/* Edit Form */}
         <Card className="p-6 md:p-8 bg-white/5 border-white/10 backdrop-blur-sm">
+          {hasChanges && (
+            <div className="mb-6 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+              <p className="text-yellow-400 text-sm">لديك تغييرات غير محفوظة</p>
+            </div>
+          )}
           <div className="space-y-6">
             {/* Avatar Section */}
             <div className="flex flex-col items-center gap-4 pb-6 border-b border-white/10">
@@ -158,7 +190,7 @@ const EditProfile = () => {
             {/* Save Button */}
             <Button 
               onClick={handleSave}
-              disabled={updateProfileMutation.isPending}
+              disabled={updateProfileMutation.isPending || !hasChanges}
               className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px]"
             >
               {updateProfileMutation.isPending ? (
