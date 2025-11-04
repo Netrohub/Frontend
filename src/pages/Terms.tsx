@@ -1,18 +1,33 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
+import { SEO } from "@/components/SEO";
 
 const Terms = () => {
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+    <>
+      <SEO 
+        title="الشروط والأحكام - NXOLand"
+        description="اقرأ الشروط والأحكام الخاصة باستخدام منصة NXOLand. تعرف على قواعد البيع والشراء، نظام الضمان، والسياسات المتبعة."
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
-      {/* Navigation */}
-      <Navbar />
+        {/* Skip link for keyboard navigation */}
+        <a 
+          href="#terms-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+        >
+          تخطي إلى المحتوى
+        </a>
 
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl">
+        {/* Navigation */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div id="terms-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">الشروط والأحكام</h1>
           <p className="text-white/60">آخر تحديث: يناير 2025</p>
@@ -111,8 +126,11 @@ const Terms = () => {
             </p>
           </section>
         </Card>
+        </div>
+
+        <BottomNav />
       </div>
-    </div>
+    </>
   );
 };
 

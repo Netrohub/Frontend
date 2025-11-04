@@ -1,46 +1,67 @@
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Shield, Zap, Users, Target, Heart, ShoppingCart, Package, CheckCircle, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
+import { SEO } from "@/components/SEO";
 
 const About = () => {
+  // Memoize snow particles for performance
+  const snowParticles = useMemo(() => 
+    [...Array(30)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+          animationDelay: `${Math.random() * 5}s`,
+        }}
+      />
+    )), []
+  );
+
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
-      
-      {/* Snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Navigation */}
-      <Navbar />
-
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-16 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">من نحن</h1>
-          <p className="text-xl text-white/70 max-w-2xl mx-auto">
-            منصة NXOLand هي أول منصة عربية متخصصة في تداول حسابات الألعاب بنظام ضمان متكامل
-          </p>
+    <>
+      <SEO 
+        title="من نحن - NXOLand"
+        description="تعرف على قصة NXOLand - أول منصة عربية متخصصة في تداول حسابات الألعاب بنظام ضمان متكامل. رؤيتنا، قيمنا، وكيفية عمل المنصة."
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
+        
+        {/* Skip link for keyboard navigation */}
+        <a 
+          href="#about-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+        >
+          تخطي إلى المحتوى
+        </a>
+        
+        {/* Snow particles */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {snowParticles}
         </div>
 
-        {/* Mission */}
-        <Card className="p-8 mb-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
-          <Target className="h-12 w-12 text-[hsl(195,80%,70%)] mx-auto mb-4" />
+        {/* Navigation */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div id="about-content" className="relative z-10 container mx-auto px-4 md:px-6 py-16 max-w-4xl pb-24 md:pb-16">
+          {/* Header */}
+          <div className="text-center mb-16">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">من نحن</h1>
+            <p className="text-xl text-white/70 max-w-2xl mx-auto">
+              منصة NXOLand هي أول منصة عربية متخصصة في تداول حسابات الألعاب بنظام ضمان متكامل
+            </p>
+          </div>
+
+          {/* Mission */}
+          <Card className="p-8 mb-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <Target className="h-12 w-12 text-[hsl(195,80%,70%)] mx-auto mb-4" aria-hidden="true" />
           <h2 className="text-2xl font-bold text-white mb-4">رؤيتنا</h2>
           <p className="text-white/80 text-lg leading-relaxed">
             نسعى لتوفير بيئة آمنة وموثوقة لتداول حسابات الألعاب، حيث يمكن للاعبين شراء وبيع حساباتهم 
@@ -48,26 +69,26 @@ const About = () => {
           </p>
         </Card>
 
-        {/* Values */}
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
-            <Shield className="h-10 w-10 text-[hsl(195,80%,70%)] mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">الأمان</h3>
-            <p className="text-white/70">حماية كاملة لجميع المعاملات</p>
-          </Card>
+          {/* Values */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
+              <Shield className="h-10 w-10 text-[hsl(195,80%,70%)] mx-auto mb-4" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-white mb-2">الأمان</h3>
+              <p className="text-white/70">حماية كاملة لجميع المعاملات</p>
+            </Card>
 
-          <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
-            <Zap className="h-10 w-10 text-[hsl(40,90%,55%)] mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">السرعة</h3>
-            <p className="text-white/70">معاملات فورية وسلسة</p>
-          </Card>
+            <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
+              <Zap className="h-10 w-10 text-[hsl(40,90%,55%)] mx-auto mb-4" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-white mb-2">السرعة</h3>
+              <p className="text-white/70">معاملات فورية وسلسة</p>
+            </Card>
 
-          <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
-            <Heart className="h-10 w-10 text-red-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">الثقة</h3>
-            <p className="text-white/70">مجتمع موثوق ومدعوم</p>
-          </Card>
-        </div>
+            <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
+              <Heart className="h-10 w-10 text-red-400 mx-auto mb-4" aria-hidden="true" />
+              <h3 className="text-xl font-bold text-white mb-2">الثقة</h3>
+              <p className="text-white/70">مجتمع موثوق ومدعوم</p>
+            </Card>
+          </div>
 
         {/* Story */}
         <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-8">
@@ -87,16 +108,16 @@ const About = () => {
           </div>
         </Card>
 
-        {/* How It Works */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-white mb-8 text-center">كيف تعمل المنصة</h2>
-          
-          {/* Buyer Steps */}
-          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
-            <div className="flex items-center gap-3 mb-6">
-              <ShoppingCart className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-              <h3 className="text-2xl font-bold text-white">خطوات المشتري</h3>
-            </div>
+          {/* How It Works */}
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">كيف تعمل المنصة</h2>
+            
+            {/* Buyer Steps */}
+            <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
+              <div className="flex items-center gap-3 mb-6">
+                <ShoppingCart className="h-8 w-8 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+                <h3 className="text-2xl font-bold text-white">خطوات المشتري</h3>
+              </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(195,80%,70%,0.2)] flex items-center justify-center">
@@ -140,12 +161,12 @@ const About = () => {
             </div>
           </Card>
 
-          {/* Seller Steps */}
-          <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <TrendingUp className="h-8 w-8 text-[hsl(40,90%,55%)]" />
-              <h3 className="text-2xl font-bold text-white">خطوات البائع</h3>
-            </div>
+            {/* Seller Steps */}
+            <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <TrendingUp className="h-8 w-8 text-[hsl(40,90%,55%)]" aria-hidden="true" />
+                <h3 className="text-2xl font-bold text-white">خطوات البائع</h3>
+              </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[hsl(40,90%,55%,0.2)] flex items-center justify-center">
@@ -214,13 +235,16 @@ const About = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-white/50">© 2025 NXOLand. جميع الحقوق محفوظة.</p>
-        </div>
-      </footer>
-    </div>
+        {/* Footer */}
+        <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-white/50">© 2025 NXOLand. جميع الحقوق محفوظة.</p>
+          </div>
+        </footer>
+
+        <BottomNav />
+      </div>
+    </>
   );
 };
 
