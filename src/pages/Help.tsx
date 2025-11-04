@@ -1,9 +1,12 @@
+import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
+import { SEO } from "@/components/SEO";
 
 const Help = () => {
   const faqs = [
@@ -33,37 +36,55 @@ const Help = () => {
     },
   ];
 
+  // Memoize snow particles for performance
+  const snowParticles = useMemo(() => 
+    [...Array(30)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+          animationDelay: `${Math.random() * 5}s`,
+        }}
+      />
+    )), []
+  );
+
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
-      
-      {/* Snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Navigation */}
-      <Navbar />
-
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-16 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">مركز المساعدة</h1>
-          <p className="text-xl text-white/70">إجابات على الأسئلة الشائعة</p>
+    <>
+      <SEO 
+        title="مركز المساعدة - NXOLand"
+        description="إجابات على الأسئلة الشائعة حول NXOLand. تعرف على كيفية شراء وبيع الحسابات، نظام الضمان، والتواصل مع فريق الدعم."
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
+        
+        {/* Skip link for keyboard navigation */}
+        <a 
+          href="#help-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+        >
+          تخطي إلى المحتوى
+        </a>
+        
+        {/* Snow particles */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          {snowParticles}
         </div>
+
+        {/* Navigation */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div id="help-content" className="relative z-10 container mx-auto px-4 md:px-6 py-16 max-w-4xl pb-24 md:pb-16">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">مركز المساعدة</h1>
+            <p className="text-xl text-white/70">إجابات على الأسئلة الشائعة</p>
+          </div>
 
         {/* FAQs */}
         <Card className="p-6 mb-8 bg-white/5 border-white/10 backdrop-blur-sm">
@@ -93,8 +114,8 @@ const Help = () => {
               size="lg"
               className="flex-col h-auto py-8 px-12 bg-[#5865F2] hover:bg-[#4752C4] border-0 text-white gap-3 min-h-[120px]"
             >
-              <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="h-12 w-12 mb-2" />
+              <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" aria-label="انضم إلى Discord للحصول على الدعم">
+                <MessageCircle className="h-12 w-12 mb-2" aria-hidden="true" />
                 <span className="font-bold text-xl">انضم إلى Discord</span>
                 <span className="text-sm text-white/90">قناة الدعم الرسمية - متاح 24/7</span>
               </a>
@@ -109,32 +130,34 @@ const Help = () => {
         </Card>
       </div>
 
-      {/* Feedback Section */}
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-3xl">
-        <Card className="p-8 bg-gradient-to-br from-[hsl(40,90%,15%)] to-[hsl(40,80%,10%)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">ساعدنا في التحسين</h2>
-          <p className="text-white/70 mb-6">
-            رأيك يهمنا! شارك تجربتك واقتراحاتك لتطوير المنصة
-          </p>
-          <Button 
-            asChild
-            size="lg"
-            className="gap-2 bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0"
-          >
-            <Link to="/suggestions">
-              قيّم المنصة وشارك اقتراحاتك
-            </Link>
-          </Button>
-        </Card>
-      </div>
-
-      {/* Footer */}
-      <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-white/50">© 2025 NXOLand. جميع الحقوق محفوظة.</p>
+          {/* Feedback Section */}
+          <Card className="p-8 bg-gradient-to-br from-[hsl(40,90%,15%)] to-[hsl(40,80%,10%)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm text-center">
+            <h2 className="text-2xl font-bold text-white mb-4">ساعدنا في التحسين</h2>
+            <p className="text-white/70 mb-6">
+              رأيك يهمنا! شارك تجربتك واقتراحاتك لتطوير المنصة
+            </p>
+            <Button 
+              asChild
+              size="lg"
+              className="gap-2 bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0"
+            >
+              <Link to="/suggestions">
+                قيّم المنصة وشارك اقتراحاتك
+              </Link>
+            </Button>
+          </Card>
         </div>
-      </footer>
-    </div>
+
+        {/* Footer */}
+        <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-white/50">© 2025 NXOLand. جميع الحقوق محفوظة.</p>
+          </div>
+        </footer>
+
+        <BottomNav />
+      </div>
+    </>
   );
 };
 
