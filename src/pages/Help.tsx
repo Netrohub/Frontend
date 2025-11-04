@@ -128,7 +128,6 @@ const Help = () => {
             </p>
           </div>
         </Card>
-      </div>
 
           {/* Feedback Section */}
           <Card className="p-8 bg-gradient-to-br from-[hsl(40,90%,15%)] to-[hsl(40,80%,10%)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm text-center">
