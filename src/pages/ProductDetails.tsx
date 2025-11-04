@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +16,7 @@ import stoveLv9 from "@/assets/stove_lv_9.png";
 import stoveLv10 from "@/assets/stove_lv_10.png";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
 import { listingsApi, ordersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -68,6 +69,22 @@ const ProductDetails = () => {
       maximumFractionDigits: 2,
     }).format(price);
   };
+
+  // Memoize snow particles for performance
+  const snowParticles = useMemo(() => 
+    [...Array(30)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+          animationDelay: `${Math.random() * 5}s`,
+        }}
+      />
+    )), []
+  );
 
   // Helper to get stove level image
   const getStoveImage = (level: string) => {
@@ -145,31 +162,28 @@ const ProductDetails = () => {
       />
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
+      
+      {/* Skip link for keyboard navigation */}
+      <a 
+        href="#product-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+      >
+        تخطي إلى تفاصيل المنتج
+      </a>
       
       {/* Snow particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        {snowParticles}
       </div>
 
       {/* Navigation */}
       <Navbar />
 
       {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
+      <div id="product-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
         <Link to="/marketplace" className="inline-flex items-center gap-2 text-white/60 hover:text-[hsl(195,80%,70%)] mb-6 transition-colors">
-          <ArrowRight className="h-4 w-4" />
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
           العودة للسوق
         </Link>
 
@@ -189,7 +203,7 @@ const ProductDetails = () => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <Shield className="h-32 w-32 text-white/20" />
+                  <Shield className="h-32 w-32 text-white/20" aria-hidden="true" />
                 )}
               </div>
             </Card>
@@ -238,7 +252,7 @@ const ProductDetails = () => {
               
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center gap-2 text-white/60">
-                  <MapPin className="h-4 w-4" />
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
                   <span>السيرفر: {accountDetails['السيرفر'] || 'غير محدد'}</span>
                 </div>
               </div>
@@ -512,14 +526,14 @@ const ProductDetails = () => {
                     >
                       {isCreatingOrder ? (
                         <>
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
                           جاري المعالجة...
                         </>
                       ) : (
                         <>
-                          <Shield className="h-5 w-5" />
+                          <Shield className="h-5 w-5" aria-hidden="true" />
                           شراء الآن بأمان
-                          <ArrowRight className="h-5 w-5" />
+                          <ArrowRight className="h-5 w-5" aria-hidden="true" />
                         </>
                       )}
                     </Button>
@@ -564,7 +578,7 @@ const ProductDetails = () => {
     </div>
 
       {/* Glow effects */}
-      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" />
       
       {/* Image Enlarge Dialog */}
       <Dialog open={!!enlargedImage} onOpenChange={() => setEnlargedImage(null)}>
@@ -577,11 +591,13 @@ const ProductDetails = () => {
             />
           ) : (
             <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center rounded-lg">
-              <Shield className="h-64 w-64 text-white/20" />
+              <Shield className="h-64 w-64 text-white/20" aria-hidden="true" />
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      <BottomNav />
     </div>
     </>
   );
