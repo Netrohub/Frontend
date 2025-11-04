@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShieldCheck, CheckCircle2, AlertCircle, IdCard, ArrowRight, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ShieldCheck, CheckCircle2, AlertCircle, ArrowRight, Loader2, Clock } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { kycApi } from "@/lib/api";
@@ -10,9 +10,17 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { SEO } from "@/components/SEO";
+import { KYCVerificationForm } from "@/components/KYCVerificationForm";
+
+const debugLog = (message: string, data?: any) => {
+  if (import.meta.env.DEV) {
+    console.log(`[KYC] ${message}`, data);
+  }
+};
 
 const KYC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [personaLoaded, setPersonaLoaded] = useState(false);
   const personaClientRef = useRef<any>(null);
@@ -25,7 +33,7 @@ const KYC = () => {
         const response = await kycApi.get();
         return response ?? null;
       } catch (error) {
-        console.error('KYC fetch error:', error);
+        debugLog('KYC fetch error', error);
         return null;
       }
     },
@@ -49,15 +57,11 @@ const KYC = () => {
   const createKycMutation = useMutation({
     mutationFn: () => kycApi.create(),
     onSuccess: (data) => {
-      if (import.meta.env.DEV) {
-        console.log('[KYC] Create success', {
-          kyc: data.kyc,
-          inquiryId: data.kyc?.persona_inquiry_id,
-          inquiryUrl: data.inquiry_url,
-          personaLoaded,
-          hasPersona: !!(window as any).Persona
-        });
-      }
+      debugLog('Create success', {
+        kyc: data.kyc,
+        inquiryId: data.kyc?.persona_inquiry_id,
+        inquiryUrl: data.inquiry_url,
+      });
 
       // Update cache with new KYC data
       queryClient.setQueryData(['kyc'], data.kyc);
@@ -71,56 +75,46 @@ const KYC = () => {
               try {
                 personaClientRef.current.destroy();
               } catch (e) {
-                console.warn('[KYC] Error destroying existing Persona client:', e);
+                debugLog('Error destroying existing Persona client', e);
               }
             }
             
             // Use Persona SDK to open embedded widget
             const personaClient = new (window as any).Persona.Client({
               inquiryId: data.kyc.persona_inquiry_id,
-              onReady: () => {
-                console.log('[KYC] Persona widget ready');
-              },
+              onReady: () => debugLog('Persona widget ready'),
               onComplete: ({ inquiryId }: { inquiryId: string }) => {
-                console.log('[KYC] Persona verification completed', { inquiryId });
+                debugLog('Persona verification completed', { inquiryId });
                 personaClientRef.current = null;
                 toast.success("تم إكمال عملية التحقق بنجاح");
                 // Refetch KYC status after a short delay
-                setTimeout(() => {
-                  refetch();
-                }, 2000);
+                setTimeout(() => refetch(), 2000);
               },
               onCancel: () => {
-                console.log('[KYC] Persona verification cancelled');
+                debugLog('Persona verification cancelled');
                 personaClientRef.current = null;
                 toast.info("تم إلغاء عملية التحقق");
               },
               onError: (error: any) => {
-                console.error('[KYC] Persona error:', error);
+                debugLog('Persona error', error);
                 personaClientRef.current = null;
                 toast.error("حدث خطأ أثناء عملية التحقق");
               },
             });
             
-            // Store reference for cleanup
             personaClientRef.current = personaClient;
-            
-            // Open Persona widget (Persona handles its own modal)
             personaClient.open();
           } catch (error) {
-            console.error('[KYC] Failed to initialize Persona:', error);
-            // Fallback to opening in new window
-      if (data.inquiry_url) {
-              toast.info("سيتم فتح نافذة جديدة للتحقق");
-              window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
+            debugLog('Failed to initialize Persona', error);
+            // Fallback to opening in new window/tab
+            if (data.inquiry_url) {
+              openPersonaFallback(data.inquiry_url);
             } else {
               toast.error("فشل تحميل نظام التحقق. الرجاء المحاولة مرة أخرى");
             }
           }
         } else if (data.inquiry_url) {
-          // Fallback: Open Persona in a new window if SDK not loaded
-          toast.info("سيتم فتح نافذة جديدة للتحقق");
-          window.open(data.inquiry_url, 'persona-verification', 'width=600,height=700');
+          openPersonaFallback(data.inquiry_url);
         } else {
           toast.error("فشل الحصول على رابط التحقق");
         }
@@ -140,9 +134,24 @@ const KYC = () => {
       }
       
       toast.error(errorMessage);
-      console.error('KYC Creation Error:', error);
+      debugLog('KYC Creation Error', error);
     },
   });
+
+  // Helper function for mobile-friendly Persona fallback
+  const openPersonaFallback = (url: string) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // On mobile, open in same tab (popups often blocked)
+      toast.info("سيتم نقلك إلى صفحة التحقق...");
+      window.location.href = url;
+    } else {
+      // On desktop, open in new tab
+      toast.info("سيتم فتح نافذة جديدة للتحقق");
+      window.open(url, '_blank', 'width=600,height=700');
+    }
+  };
 
   // Load Persona SDK
   useEffect(() => {
@@ -158,28 +167,22 @@ const KYC = () => {
     script.crossOrigin = 'anonymous';
     script.async = true;
     script.onload = () => {
-      // Double check Persona is available after script loads
       if ((window as any).Persona) {
         setPersonaLoaded(true);
-        if (import.meta.env.DEV) {
-          console.log('[KYC] Persona SDK loaded successfully');
-        }
+        debugLog('Persona SDK loaded successfully');
       } else {
-        console.warn('[KYC] Persona script loaded but Persona object not available');
-        // Wait a bit and check again
         setTimeout(() => {
           if ((window as any).Persona) {
             setPersonaLoaded(true);
           } else {
-            console.error('[KYC] Persona still not available after timeout');
-            setPersonaLoaded(true); // Allow fallback to work
+            setPersonaLoaded(true); // Allow fallback
           }
         }, 1000);
       }
     };
     script.onerror = () => {
-      console.error('[KYC] Failed to load Persona SDK script');
-      setPersonaLoaded(true); // Still allow verification to proceed (will use fallback)
+      debugLog('Failed to load Persona SDK script');
+      setPersonaLoaded(true); // Allow fallback
     };
     document.body.appendChild(script);
     return () => {
@@ -188,35 +191,6 @@ const KYC = () => {
       }
     };
   }, []);
-
-  // Also check periodically if Persona becomes available
-  useEffect(() => {
-    if (personaLoaded) return;
-    
-    const checkInterval = setInterval(() => {
-      if ((window as any).Persona && !personaLoaded) {
-        setPersonaLoaded(true);
-        if (import.meta.env.DEV) {
-          console.log('[KYC] Persona SDK detected via polling');
-        }
-        clearInterval(checkInterval);
-      }
-    }, 500);
-
-    // Clear interval after 10 seconds
-    const timeout = setTimeout(() => {
-      clearInterval(checkInterval);
-      if (!personaLoaded) {
-        console.warn('[KYC] Persona SDK not detected after 10 seconds, allowing fallback');
-        setPersonaLoaded(true); // Allow button to work with fallback
-      }
-    }, 10000);
-
-    return () => {
-      clearInterval(checkInterval);
-      clearTimeout(timeout);
-    };
-  }, [personaLoaded]);
 
   // Cleanup Persona client on unmount
   useEffect(() => {
@@ -239,57 +213,27 @@ const KYC = () => {
   const isFailed = kycStatus === 'failed';
   const isExpired = kycStatus === 'expired';
   
-  // User can start verification if:
-  // - No KYC exists (kyc is null or undefined)
-  // - KYC exists but status is null (invalid/empty record)
-  // - KYC is pending (allows retry)
-  // - KYC is failed
-  // - KYC is expired
-  // BUT NOT if verified (once verified, cannot start again)
-  // Note: kyc can be null (no record) or an object (has record)
   const hasKycRecord = kyc !== null && kyc !== undefined;
   const hasValidStatus = kycStatus !== null && kycStatus !== undefined;
-  
-  // Allow verification if:
-  // - Not verified AND
-  // - (No KYC record OR status is null/invalid OR status allows retry)
   const canStartVerification = !isVerified && (!hasKycRecord || !hasValidStatus || isPending || isFailed || isExpired);
-  
-  // Debug logging - always log state changes
-  useEffect(() => {
-    console.log('[KYC] State update', {
-      isLoading,
-      kyc: kyc === null ? 'null' : kyc === undefined ? 'undefined' : { id: kyc.id, status: kyc.status },
-      kycStatus,
-      hasKycRecord,
-      hasValidStatus,
-      isVerified,
-      isPending,
-      isFailed,
-      isExpired,
-      canStartVerification,
-      personaLoaded,
-      hasPersona: !!(window as any).Persona
-    });
-  }, [isLoading, kyc, kycStatus, hasKycRecord, hasValidStatus, isVerified, isPending, isFailed, isExpired, canStartVerification, personaLoaded]);
+
+  debugLog('State update', {
+    isLoading,
+    kycStatus,
+    isVerified,
+    isPending,
+    isFailed,
+    isExpired,
+    canStartVerification,
+  });
 
   const startPersonaVerification = () => {
-    // Always log for debugging (including production)
-    console.log('[KYC] Button clicked', {
+    debugLog('Button clicked', {
       personaLoaded,
       hasPersona: !!(window as any).Persona,
       canStartVerification,
-      mutationPending: createKycMutation.isPending,
-      isRefetching,
-      kyc: kyc ? { id: kyc.id, status: kyc.status } : null,
-      hasKycRecord,
-      isVerified,
-      isPending,
-      isFailed,
-      isExpired
     });
 
-    // Check if button should be enabled
     if (!canStartVerification) {
       if (isVerified) {
         toast.info('تم التحقق من هويتك بالفعل');
@@ -299,69 +243,58 @@ const KYC = () => {
       return;
     }
 
-    // Check if Persona SDK is available (check both state and window object)
     const hasPersona = !!(window as any).Persona;
     if (!personaLoaded && !hasPersona) {
       toast.error('جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى');
       return;
     }
 
-    // If Persona is available but state wasn't updated, update it now
     if (hasPersona && !personaLoaded) {
       setPersonaLoaded(true);
     }
 
-    // Prevent duplicate requests
     if (createKycMutation.isPending || isRefetching) {
       toast.info('جاري معالجة الطلب...');
       return;
     }
 
-    // Use Persona embedded flow directly (creates inquiry automatically)
-    // This matches Persona's recommended approach from their documentation
+    // Initialize Persona Client with templateId and environmentId
     try {
-      // Clean up any existing Persona client
       if (personaClientRef.current) {
         try {
           personaClientRef.current.destroy();
         } catch (e) {
-          console.warn('[KYC] Error destroying existing Persona client:', e);
+          debugLog('Error destroying existing Persona client', e);
         }
       }
 
-      // Initialize Persona Client with templateId and environmentId
-      // Persona will create the inquiry automatically when opened
       const personaClient = new (window as any).Persona.Client({
-        templateId: 'itmpl_adDgCZjWg4q6EaB4TZEMLxWBeeyP', // From Persona dashboard
-        environmentId: 'env_G6yssyR43GAhoTicT3digMzo8gUL', // From Persona dashboard
-        referenceId: `user_${user?.id}`, // Link to our user
+        templateId: import.meta.env.VITE_PERSONA_TEMPLATE_ID || 'itmpl_adDgCZjWg4q6EaB4TZEMLxWBeeyP',
+        environmentId: import.meta.env.VITE_PERSONA_ENVIRONMENT_ID || 'env_G6yssyR43GAhoTicT3digMzo8gUL',
+        referenceId: `user_${user?.id}`,
         fields: {
           'name-first': user?.name?.split(' ')[0] || '',
           'name-last': user?.name?.split(' ')[1] || '',
           'email-address': user?.email || '',
         },
-        // Open immediately when ready (Persona handles modal overlay)
         onReady: () => {
-          console.log('[KYC] Persona widget ready, opening...');
+          debugLog('Persona widget ready, opening...');
           try {
             personaClient.open();
           } catch (error) {
-            console.error('[KYC] Error opening Persona widget:', error);
+            debugLog('Error opening Persona widget', error);
             toast.error("فشل فتح نافذة التحقق. الرجاء المحاولة مرة أخرى");
           }
         },
         onComplete: async ({ inquiryId, status }: { inquiryId: string; status: string }) => {
-          console.log('[KYC] Persona verification completed', { inquiryId, status });
+          debugLog('Persona verification completed', { inquiryId, status });
           personaClientRef.current = null;
           
-          // Sync KYC status from Persona API immediately
-          // This ensures status is saved even if webhook is delayed
-          // Pass inquiryId so backend can create KYC record if it doesn't exist
+          // Sync KYC status from Persona API
           try {
             const syncResult = await kycApi.sync(inquiryId ? { inquiry_id: inquiryId } : undefined);
-            console.log('[KYC] Sync result:', syncResult);
+            debugLog('Sync result', syncResult);
             
-            // Check the synced status from Persona
             const syncedStatus = (syncResult as any).status || (syncResult as any).kyc?.status;
             
             if (syncedStatus === 'verified') {
@@ -374,35 +307,28 @@ const KYC = () => {
               toast.success("تم إكمال عملية التحقق. جاري مراجعة معلوماتك...");
             }
             
-            // Refetch to get updated status
-            setTimeout(() => {
-              refetch();
-            }, 1000);
+            setTimeout(() => refetch(), 1000);
           } catch (error) {
-            console.error('[KYC] Failed to sync status:', error);
-            // Still show success and refetch - webhook might update it
+            debugLog('Failed to sync status', error);
             toast.success("تم إكمال عملية التحقق. جاري تحديث الحالة...");
-            setTimeout(() => {
-              refetch();
-            }, 2000);
+            setTimeout(() => refetch(), 2000);
           }
         },
         onCancel: () => {
-          console.log('[KYC] Persona verification cancelled');
+          debugLog('Persona verification cancelled');
           personaClientRef.current = null;
           toast.info("تم إلغاء عملية التحقق");
         },
         onError: (error: any) => {
-          console.error('[KYC] Persona error:', error);
+          debugLog('Persona error', error);
           personaClientRef.current = null;
           toast.error("حدث خطأ أثناء عملية التحقق");
         },
       });
 
-      // Store reference for cleanup
       personaClientRef.current = personaClient;
     } catch (error) {
-      console.error('[KYC] Failed to initialize Persona:', error);
+      debugLog('Failed to initialize Persona', error);
       toast.error("فشل تحميل نظام التحقق. الرجاء المحاولة مرة أخرى");
     }
   };
@@ -414,15 +340,15 @@ const KYC = () => {
           title="التحقق من الهوية - NXOLand"
           description="قم بتحقق من هويتك للبدء في بيع الحسابات على منصة NXOLand"
         />
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
-        <Navbar />
-        <div className="relative z-10 container mx-auto px-4 py-8 text-center">
+        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+          <Navbar />
+          <div className="relative z-10 container mx-auto px-4 py-8 text-center">
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm max-w-md mx-auto">
               <ShieldCheck className="h-16 w-16 text-white/40 mx-auto mb-4" />
               <h2 className="text-2xl font-bold text-white mb-4">تحقق من الهوية</h2>
               <p className="text-white/60 mb-6">يجب تسجيل الدخول للتحقق من الهوية</p>
               <Button 
-                onClick={() => window.location.href = '/auth'}
+                onClick={() => navigate('/auth')}
                 className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]"
               >
                 تسجيل الدخول
@@ -472,7 +398,7 @@ const KYC = () => {
             <h1 className="text-3xl md:text-4xl font-black text-white">التحقق من الهوية - KYC</h1>
           </div>
           <p className="text-lg text-white/60">أكمل عملية التحقق لتتمكن من إضافة إعلانات</p>
-              </div>
+        </div>
 
         {/* Warning Alert */}
         <Card className="p-5 bg-red-500/10 border-red-500/30 backdrop-blur-sm mb-8">
@@ -508,11 +434,16 @@ const KYC = () => {
               </Button>
             </div>
           ) : isVerified ? (
-            // All Steps Completed
+            // Verified Status
             <div className="text-center py-8">
               <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-white mb-2">تم إكمال التحقق!</h3>
-              <p className="text-white/60 mb-6">تم التحقق من هويتك بنجاح. يمكنك الآن إضافة إعلانات للبيع.</p>
+              <p className="text-white/60 mb-2">تم التحقق من هويتك بنجاح. يمكنك الآن إضافة إعلانات للبيع.</p>
+              {kyc?.verified_at && (
+                <p className="text-sm text-white/50 mb-6">
+                  تاريخ التحقق: {new Date(kyc.verified_at).toLocaleDateString('ar-SA')}
+                </p>
+              )}
               <Button 
                 asChild
                 className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
@@ -524,7 +455,7 @@ const KYC = () => {
               </Button>
             </div>
           ) : isFailed ? (
-            // Verification Failed/Rejected
+            // Failed Status
             <div className="space-y-4">
               <div className="text-center py-4">
                 <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
@@ -536,8 +467,7 @@ const KYC = () => {
                 <div className="flex gap-2">
                   <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-white/80">
-                    <p className="font-bold mb-1">ملاحظة</p>
-                    <p>قد يكون سبب الرفض:</p>
+                    <p className="font-bold mb-1">أسباب محتملة للرفض:</p>
                     <ul className="list-disc list-inside mt-2 space-y-1">
                       <li>صور غير واضحة أو غير مكتملة</li>
                       <li>معلومات غير متطابقة</li>
@@ -548,72 +478,20 @@ const KYC = () => {
                 </div>
               </Card>
               
-              {/* Show verification form to allow retry */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h3 className="text-xl font-bold text-white">إعادة التحقق من الهوية - Persona</h3>
-                </div>
-                <p className="text-white/60 mb-4">
-                  يمكنك إعادة محاولة التحقق من هويتك الآن
-                </p>
-                
-                <Card className="p-6 bg-white/5 border-white/10">
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
-                      <ShieldCheck className="h-10 w-10 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white mb-2">خطوات التحقق</h4>
-                      <ul className="text-sm text-white/60 text-right space-y-2">
-                        <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
-                        <li>• التقط صورة سيلفي للتحقق</li>
-                        <li>• تحقق من رقم هاتفك</li>
-                        <li>• سيتم التحقق تلقائياً خلال دقائق</li>
-                      </ul>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
-                  <div className="flex gap-2">
-                    <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-white/80">
-                      <p className="font-bold mb-1">آمن ومشفر</p>
-                      <p>نظام Persona معتمد من أكبر الشركات العالمية ويضمن حماية كاملة لبياناتك</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Button 
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    startPersonaVerification();
-                  }}
-                  disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
-                  className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {createKycMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      جاري بدء التحقق...
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-5 w-5" />
-                      إعادة التحقق عبر Persona
-                    </>
-                  )}
-                </Button>
-              </div>
+              <KYCVerificationForm 
+                onStart={startPersonaVerification}
+                isLoading={createKycMutation.isPending}
+                isRefetching={isRefetching}
+                canStart={canStartVerification}
+                personaLoaded={personaLoaded}
+                buttonText="إعادة المحاولة"
+              />
             </div>
           ) : isExpired ? (
-            // Verification Expired
+            // Expired Status
             <div className="space-y-4">
               <div className="text-center py-4">
-                <AlertCircle className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
+                <Clock className="h-16 w-16 text-yellow-400 mx-auto mb-4" />
                 <h3 className="text-2xl font-bold text-white mb-2">انتهت صلاحية التحقق</h3>
                 <p className="text-white/60 mb-6">انتهت صلاحية عملية التحقق السابقة. يرجى إعادة إجراء عملية التحقق.</p>
               </div>
@@ -628,39 +506,17 @@ const KYC = () => {
                 </div>
               </Card>
               
-              {/* Show verification form to allow retry */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
-                </div>
-                
-                <Button 
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    startPersonaVerification();
-                  }}
-                  disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
-                  className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {createKycMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      جاري بدء التحقق...
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck className="h-5 w-5" />
-                      بدء التحقق عبر Persona
-                    </>
-                  )}
-                </Button>
-              </div>
+              <KYCVerificationForm 
+                onStart={startPersonaVerification}
+                isLoading={createKycMutation.isPending}
+                isRefetching={isRefetching}
+                canStart={canStartVerification}
+                personaLoaded={personaLoaded}
+                buttonText="بدء التحقق الآن"
+              />
             </div>
           ) : isPending ? (
-            // Pending Status - Show button to allow retry if needed
+            // Pending Status
             <div className="space-y-4">
               <div className="text-center py-4">
                 <Loader2 className="h-16 w-16 text-yellow-400 mx-auto mb-4 animate-spin" />
@@ -673,14 +529,13 @@ const KYC = () => {
                   <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-white/80">
                     <p className="font-bold mb-1">ملاحظة</p>
-                    <p>إذا كنت تواجه مشكلة أو تريد إعادة المحاولة، يمكنك الضغط على الزر أدناه.</p>
-                    <p className="mt-2 text-xs text-yellow-300">إذا أكملت التحقق للتو، اضغط على "تحديث الحالة" لتحميل آخر حالة.</p>
+                    <p>عادةً ما يستغرق التحقق بضع دقائق. إذا أكملت التحقق للتو، يمكنك الضغط على "تحديث الحالة" أدناه.</p>
                   </div>
                 </div>
               </Card>
               
-              {/* Manual sync button for pending status */}
-              <div className="flex justify-center gap-3">
+              {/* Manual sync button */}
+              <div className="flex justify-center">
                 <Button
                   onClick={async () => {
                     try {
@@ -688,7 +543,7 @@ const KYC = () => {
                       toast.success("تم تحديث الحالة");
                       refetch();
                     } catch (error) {
-                      console.error('[KYC] Manual sync failed:', error);
+                      debugLog('Manual sync failed', error);
                       toast.error("فشل تحديث الحالة. الرجاء المحاولة مرة أخرى");
                     }
                   }}
@@ -709,222 +564,38 @@ const KYC = () => {
                   )}
                 </Button>
               </div>
-              
-              {/* Show verification form even when pending - allows retry */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
-                </div>
-                <p className="text-white/60 mb-4">
-                  سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك ورقم هاتفك بشكل آمن وسريع
-                </p>
-                
-                <Card className="p-6 bg-white/5 border-white/10">
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
-                      <ShieldCheck className="h-10 w-10 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-white mb-2">خطوات التحقق</h4>
-                      <ul className="text-sm text-white/60 text-right space-y-2">
-                        <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
-                        <li>• التقط صورة سيلفي للتحقق</li>
-                        <li>• تحقق من رقم هاتفك</li>
-                        <li>• سيتم التحقق تلقائياً خلال دقائق</li>
-                      </ul>
-                    </div>
-                  </div>
-                </Card>
+            </div>
+          ) : (
+            // Initial State - No KYC record
+            <KYCVerificationForm 
+              onStart={startPersonaVerification}
+              isLoading={createKycMutation.isPending}
+              isRefetching={isRefetching}
+              canStart={canStartVerification}
+              personaLoaded={personaLoaded}
+            />
+          )}
 
-                <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
-                  <div className="flex gap-2">
-                    <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-white/80">
-                      <p className="font-bold mb-1">آمن ومشفر</p>
-                      <p>نظام Persona معتمد من أكبر الشركات العالمية ويضمن حماية كاملة لبياناتك</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Button 
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (import.meta.env.DEV) {
-                      console.log('[KYC] Button onClick fired (pending retry)', {
-                        personaLoaded,
-                        hasPersona: !!(window as any).Persona,
-                        canStartVerification,
-                        mutationPending: createKycMutation.isPending,
-                        isRefetching,
-                        kycStatus: kyc?.status
-                      });
-                    }
-                    startPersonaVerification();
-                  }}
-                  disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
-                  className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                >
-                  {createKycMutation.isPending ? (
-                    <>
-                      <Loader2 className="h-5 w-5 animate-spin" />
-                      جاري إنشاء طلب التحقق...
-                    </>
-                  ) : (
-                    <>
-                      <IdCard className="h-5 w-5" />
-                      {personaLoaded || (window as any).Persona ? 'إعادة المحاولة' : 'جاري التحميل...'}
-                      <ArrowRight className="h-5 w-5" />
-                    </>
-                  )}
-                </Button>
+          {/* Debug Panel - ONLY in Development */}
+          {import.meta.env.DEV && (
+            <div className="p-3 bg-black/30 border border-yellow-500/30 text-xs text-white/80 rounded space-y-1 mt-4">
+              <div className="font-bold mb-2 text-yellow-400">🔍 Debug Panel (DEV ONLY):</div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>isLoading: <span className="font-bold">{String(isLoading)}</span></div>
+                <div>kycStatus: <span className="font-bold">{kycStatus || 'null'}</span></div>
+                <div>isVerified: <span className="font-bold">{String(isVerified)}</span></div>
+                <div>isPending: <span className="font-bold">{String(isPending)}</span></div>
+                <div>isFailed: <span className="font-bold">{String(isFailed)}</span></div>
+                <div>isExpired: <span className="font-bold">{String(isExpired)}</span></div>
+                <div>personaLoaded: <span className="font-bold">{String(personaLoaded)}</span></div>
+                <div>hasPersona: <span className="font-bold">{String(!!(window as any).Persona)}</span></div>
               </div>
+              <div className={`font-bold mt-2 p-2 rounded ${canStartVerification ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                canStartVerification: {String(canStartVerification)}
               </div>
-            ) : (
-            // Step 3: Identity Verification with Persona
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 mb-4">
-                <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
-              </div>
-              <p className="text-white/60 mb-4">
-                سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك ورقم هاتفك بشكل آمن وسريع
-              </p>
-              
-              <Card className="p-6 bg-white/5 border-white/10">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
-                    <ShieldCheck className="h-10 w-10 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white mb-2">خطوات التحقق</h4>
-                    <ul className="text-sm text-white/60 text-right space-y-2">
-                      <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
-                      <li>• التقط صورة سيلفي للتحقق</li>
-                      <li>• تحقق من رقم هاتفك</li>
-                      <li>• سيتم التحقق تلقائياً خلال دقائق</li>
-                  </ul>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
-                <div className="flex gap-2">
-                  <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-white/80">
-                    <p className="font-bold mb-1">آمن ومشفر</p>
-                    <p>نظام Persona معتمد من أكبر الشركات العالمية ويضمن حماية كاملة لبياناتك</p>
-                  </div>
-                      </div>
-              </Card>
-
-              {isFailed && (
-                <Card className="p-4 bg-red-500/10 border-red-500/30">
-                  <div className="flex gap-2">
-                    <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-white/80">
-                      <p className="font-bold mb-1">فشل التحقق</p>
-                      <p>لم يتم التحقق من هويتك. يرجى المحاولة مرة أخرى.</p>
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {isExpired && (
-                <Card className="p-4 bg-yellow-500/10 border-yellow-500/30">
-                  <div className="flex gap-2">
-                    <AlertCircle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-white/80">
-                      <p className="font-bold mb-1">انتهت صلاحية التحقق</p>
-                      <p>يرجى إعادة إجراء عملية التحقق.</p>
-                    </div>
-                  </div>
-                </Card>
-                )}
-
-                  <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (import.meta.env.DEV) {
-                    console.log('[KYC] Button onClick fired', {
-                      personaLoaded,
-                      hasPersona: !!(window as any).Persona,
-                      canStartVerification,
-                      mutationPending: createKycMutation.isPending,
-                      isRefetching,
-                      kycStatus: kyc?.status
-                    });
-                  }
-                  startPersonaVerification();
-                }}
-                disabled={createKycMutation.isPending || isRefetching || !canStartVerification}
-                className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                  >
-                    {createKycMutation.isPending ? (
-                      <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    جاري إنشاء طلب التحقق...
-                      </>
-                    ) : (
-                      <>
-                    <IdCard className="h-5 w-5" />
-                    {personaLoaded || (window as any).Persona ? 'بدء التحقق عبر Persona' : 'جاري التحميل...'}
-                    <ArrowRight className="h-5 w-5" />
-                      </>
-                    )}
-                  </Button>
-              
-              {/* Debug info - Always visible for troubleshooting */}
-              <div className="p-3 bg-black/30 border border-yellow-500/30 text-xs text-white/80 rounded space-y-1 mt-4">
-                <div className="font-bold mb-2 text-yellow-400">🔍 Debug Panel (Production Mode):</div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>isLoading: <span className="font-bold">{String(isLoading)}</span></div>
-                  <div>kyc: <span className="font-bold">{kyc === null ? 'null' : kyc === undefined ? 'undefined' : `object(id:${kyc.id})`}</span></div>
-                  <div>hasKycRecord: <span className="font-bold">{String(hasKycRecord)}</span></div>
-                  <div>kycStatus: <span className="font-bold">{kycStatus || 'null'}</span></div>
-                  <div>hasValidStatus: <span className="font-bold">{String(hasValidStatus)}</span></div>
-                  <div>isPending: <span className="font-bold">{String(isPending)}</span></div>
-                  <div>isVerified: <span className="font-bold">{String(isVerified)}</span></div>
-                  <div>isFailed: <span className="font-bold">{String(isFailed)}</span></div>
-                  <div>isExpired: <span className="font-bold">{String(isExpired)}</span></div>
-                  <div>personaLoaded: <span className="font-bold">{String(personaLoaded)}</span></div>
-                  <div>hasPersona: <span className="font-bold">{String(!!(window as any).Persona)}</span></div>
-                </div>
-                <div className={`font-bold mt-2 p-2 rounded ${canStartVerification ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                  canStartVerification: {String(canStartVerification)}
-                  {!canStartVerification && (
-                    <div className="text-xs text-yellow-400 mt-1">
-                      Reason: {isVerified ? 'KYC already verified' : 
-                               !hasKycRecord ? 'No KYC record' : 
-                               hasValidStatus ? `Status is ${kycStatus} (not allowed)` : 
-                               'Unknown'}
-                    </div>
-                  )}
-                </div>
-                <div>mutationPending: <span className="font-bold">{String(createKycMutation.isPending)}</span></div>
-                <div>isRefetching: <span className="font-bold">{String(isRefetching)}</span></div>
-                <div className={`font-bold mt-2 p-2 rounded ${(createKycMutation.isPending || isRefetching || !canStartVerification) ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
-                  buttonDisabled: {String(createKycMutation.isPending || isRefetching || !canStartVerification)}
-                  {(createKycMutation.isPending || isRefetching || !canStartVerification) && (
-                    <div className="text-xs text-yellow-400 mt-1">
-                      {createKycMutation.isPending ? 'Reason: Mutation in progress' : 
-                       isRefetching ? 'Reason: Refetching data' : 
-                       !canStartVerification ? `Reason: Cannot start (verified:${isVerified}, hasRecord:${hasKycRecord})` : ''}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <p className="text-xs text-center text-white/60">
-                بالضغط على "بدء التحقق" ستفتح نافذة Persona للتحقق من هويتك ورقم هاتفك
-              </p>
-              </div>
-            )}
-          </Card>
+            </div>
+          )}
+        </Card>
 
         {/* Privacy Notice */}
         <Card className="p-5 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)] backdrop-blur-sm">

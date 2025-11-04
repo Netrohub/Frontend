@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Clock, CheckCircle2, AlertTriangle, Copy, Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Shield, Clock, CheckCircle2, AlertTriangle, Copy, Eye, EyeOff, Loader2, Calendar } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { Navbar } from "@/components/Navbar";
-import { ordersApi, disputesApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { ordersApi, listingsApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
@@ -16,11 +16,12 @@ const Order = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { toast: toastHook } = useToast();
+  const queryClient = useQueryClient();
   const [showCredentials, setShowCredentials] = useState(false);
-  const [orderConfirmed, setOrderConfirmed] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const orderId = id ? parseInt(id) : 0;
 
+  // Fetch order details
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', orderId],
     queryFn: () => ordersApi.getById(orderId),
@@ -31,6 +32,21 @@ const Order = () => {
     },
   });
 
+  // Check if current user is the buyer
+  const isBuyer = order?.buyer_id === user?.id;
+  const isSeller = order?.seller_id === user?.id;
+
+  // Fetch credentials separately (SECURITY: only when authorized)
+  const shouldFetchCredentials = isBuyer && order?.listing_id && 
+    (order?.status === 'escrow_hold' || order?.status === 'completed');
+
+  const { data: credentials, isLoading: credentialsLoading } = useQuery({
+    queryKey: ['listing-credentials', order?.listing_id],
+    queryFn: () => order?.listing_id ? listingsApi.getCredentials(order.listing_id) : Promise.reject(),
+    enabled: shouldFetchCredentials,
+  });
+
+  // Countdown timer
   const [timeLeft, setTimeLeft] = useState<string>("");
 
   useEffect(() => {
@@ -60,19 +76,43 @@ const Order = () => {
     }
   }, [order?.escrow_release_at]);
 
-  const handleConfirmOrder = async () => {
-    try {
-      await ordersApi.update(orderId, { status: 'completed' });
-      setOrderConfirmed(true);
-      toastHook({
-        title: "تم تأكيد الطلب بنجاح",
-        description: "شكراً لك! تم تأكيد استلام الحساب بنجاح.",
-      });
-    } catch (error) {
-      const apiError = error as Error & ApiError;
-      toast.error(apiError.message || "فشل تأكيد الطلب");
-    }
-  };
+  // Confirm order mutation (buyer only)
+  const confirmMutation = useMutation({
+    mutationFn: () => ordersApi.confirm(orderId),
+    onSuccess: () => {
+      toast.success("تم تأكيد الطلب بنجاح! شكراً لك على استخدام منصتنا");
+      queryClient.invalidateQueries({ queryKey: ['order', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      setShowConfirmDialog(false);
+    },
+    onError: (error: any) => {
+      if (error.error_code === 'ONLY_BUYER_CAN_CONFIRM') {
+        toast.error("فقط المشتري يمكنه تأكيد الطلب");
+      } else if (error.error_code === 'INVALID_ORDER_STATUS') {
+        toast.error("لا يمكن تأكيد هذا الطلب في حالته الحالية");
+      } else {
+        toast.error(error.message || "فشل تأكيد الطلب");
+      }
+      setShowConfirmDialog(false);
+    },
+  });
+
+  // Cancel order mutation
+  const cancelMutation = useMutation({
+    mutationFn: () => ordersApi.cancel(orderId),
+    onSuccess: () => {
+      toast.success("تم إلغاء الطلب بنجاح");
+      queryClient.invalidateQueries({ queryKey: ['order', orderId] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+    },
+    onError: (error: any) => {
+      if (error.error_code === 'CANNOT_CANCEL_COMPLETED') {
+        toast.error("لا يمكن إلغاء طلب مكتمل");
+      } else {
+        toast.error(error.message || "فشل إلغاء الطلب");
+      }
+    },
+  });
 
   const handleOpenDispute = () => {
     navigate(`/disputes?order_id=${orderId}`);
@@ -92,17 +132,37 @@ const Order = () => {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR',
+    return `$${price.toLocaleString('en-US', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
-    }).format(price);
+    })}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ar-SA', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
   };
 
   const handleCopyCredential = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`تم نسخ ${label}`);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text);
+      toast.success(`تم نسخ ${label}`);
+    } else {
+      // Fallback for browsers without clipboard API
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      toast.success(`تم نسخ ${label}`);
+    }
   };
 
   if (isLoading) {
@@ -123,17 +183,25 @@ const Order = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar showDesktopLinks={false} />
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
-          <p className="text-red-400 mb-4">الطلب غير موجود</p>
+          <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
+            <AlertTriangle className="h-16 w-16 text-red-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">الطلب غير موجود</h2>
+            <p className="text-white/60 mb-6">لم يتم العثور على الطلب المطلوب</p>
+            <Button asChild className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
+              <Link to="/orders">العودة إلى الطلبات</Link>
+            </Button>
+          </Card>
         </div>
       </div>
     );
   }
 
-  const canConfirm = order.status === 'escrow_hold' && !orderConfirmed;
-  const canDispute = order.status === 'escrow_hold' || order.status === 'disputed';
+  const canConfirm = isBuyer && order.status === 'escrow_hold';
+  const canDispute = isBuyer && (order.status === 'escrow_hold' || order.status === 'disputed');
+  const canCancel = (isBuyer || isSeller) && order.status !== 'completed';
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden pb-20" dir="rtl">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
@@ -159,13 +227,14 @@ const Order = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl">
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <h1 className="text-4xl md:text-5xl font-black text-white">طلب #{order.id}</h1>
+          <div className="flex items-center gap-3 mb-4 flex-wrap">
+            <h1 className="text-3xl md:text-4xl font-black text-white">طلب #{order.id}</h1>
             {getStatusBadge(order.status)}
           </div>
-          <p className="text-white/60">
-            {order.created_at ? new Date(order.created_at).toLocaleDateString('ar-SA') : 'تاريخ غير متاح'}
-          </p>
+          <div className="flex items-center gap-2 text-white/60">
+            <Calendar className="h-4 w-4" />
+            <p>{formatDate(order.created_at)}</p>
+          </div>
         </div>
 
         {/* Timer Card - Only show if in escrow */}
@@ -187,8 +256,8 @@ const Order = () => {
           </Card>
         )}
 
-        {/* Credentials Card - Only show for escrow_hold or completed orders */}
-        {(order.status === 'escrow_hold' || order.status === 'completed') && order.listing && (
+        {/* Credentials Card - Only show for BUYER in escrow_hold or completed */}
+        {isBuyer && (order.status === 'escrow_hold' || order.status === 'completed') && (
           <Card className="p-6 mb-6 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-white">معلومات الحساب</h2>
@@ -213,57 +282,108 @@ const Order = () => {
             </div>
 
             {showCredentials ? (
-              <div className="space-y-4">
-                {order.listing.account_credentials?.email && (
-                  <div className="p-4 bg-white/5 rounded-lg border border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-white/60">البريد الإلكتروني</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 text-[hsl(195,80%,70%)]"
-                        onClick={() => handleCopyCredential(order.listing.account_credentials?.email || '', 'البريد الإلكتروني')}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
+              credentialsLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-white/60" />
+                </div>
+              ) : credentials ? (
+                <div className="space-y-4">
+                  {credentials.account_email && (
+                    <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-white/60">البريد الإلكتروني</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 text-[hsl(195,80%,70%)]"
+                          onClick={() => handleCopyCredential(credentials.account_email, 'البريد الإلكتروني')}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="font-mono text-white font-medium break-all">{credentials.account_email}</div>
                     </div>
-                    <div className="font-mono text-white font-medium">{order.listing.account_credentials.email}</div>
-                  </div>
-                )}
+                  )}
 
-                {order.listing.account_credentials?.password && (
-                  <div className="p-4 bg-white/5 rounded-lg border border-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-white/60">كلمة المرور</span>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-8 text-[hsl(195,80%,70%)]"
-                        onClick={() => handleCopyCredential(order.listing.account_credentials?.password || '', 'كلمة المرور')}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
+                  {credentials.account_password && (
+                    <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-white/60">كلمة المرور</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-8 text-[hsl(195,80%,70%)]"
+                          onClick={() => handleCopyCredential(credentials.account_password, 'كلمة المرور')}
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="font-mono text-white font-medium break-all">{credentials.account_password}</div>
                     </div>
-                    <div className="font-mono text-white font-medium">{order.listing.account_credentials.password}</div>
-                  </div>
-                )}
+                  )}
 
-                <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
-                  <div className="flex gap-3">
-                    <AlertTriangle className="h-5 w-5 text-[hsl(40,90%,55%)] flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-white/80">
-                      <p className="font-bold mb-1">تحذير هام:</p>
-                      <p>قم بتغيير كلمة المرور فوراً بعد تسجيل الدخول. لا تشارك هذه المعلومات مع أي شخص.</p>
+                  {/* Bill Images */}
+                  {credentials.account_metadata?.bill_images && (
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-white">صور الفواتير</h4>
+                      <div className="grid grid-cols-3 gap-3">
+                        {credentials.account_metadata.bill_images.first && (
+                          <div className="bg-white/5 rounded-lg border border-white/10 p-2">
+                            <img src={credentials.account_metadata.bill_images.first} alt="أول فاتورة" className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">أول فاتورة</p>
+                          </div>
+                        )}
+                        {credentials.account_metadata.bill_images.three && (
+                          <div className="bg-white/5 rounded-lg border border-white/10 p-2">
+                            <img src={credentials.account_metadata.bill_images.three} alt="فواتير متعددة" className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">فواتير متعددة</p>
+                          </div>
+                        )}
+                        {credentials.account_metadata.bill_images.last && (
+                          <div className="bg-white/5 rounded-lg border border-white/10 p-2">
+                            <img src={credentials.account_metadata.bill_images.last} alt="آخر فاتورة" className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">آخر فاتورة</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
+                    <div className="flex gap-3">
+                      <AlertTriangle className="h-5 w-5 text-[hsl(40,90%,55%)] flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-white/80">
+                        <p className="font-bold mb-1">تحذير هام:</p>
+                        <p>قم بتغيير كلمة المرور فوراً بعد تسجيل الدخول. لا تشارك هذه المعلومات مع أي شخص.</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-8">
+                  <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-3" />
+                  <p className="text-white/60">فشل تحميل بيانات الحساب</p>
+                </div>
+              )
             ) : (
               <div className="text-center py-12">
                 <Shield className="h-16 w-16 text-white/20 mx-auto mb-4" />
                 <p className="text-white/60">اضغط "عرض" للكشف عن معلومات الحساب</p>
               </div>
             )}
+          </Card>
+        )}
+
+        {/* Seller View - Waiting for buyer confirmation */}
+        {isSeller && order.status === 'escrow_hold' && (
+          <Card className="p-6 mb-6 bg-blue-500/10 border-blue-500/30">
+            <div className="flex items-center gap-3">
+              <Clock className="h-6 w-6 text-blue-400" />
+              <div>
+                <p className="text-blue-400 font-bold">في انتظار تأكيد المشتري</p>
+                <p className="text-white/70 text-sm mt-1">الأموال محتجزة وسيتم تحويلها بعد تأكيد المشتري</p>
+              </div>
+            </div>
           </Card>
         )}
 
@@ -277,48 +397,63 @@ const Order = () => {
                 <span className="font-medium">{order.listing.title}</span>
               </div>
             )}
-            {order.seller && (
+            {isBuyer && order.seller && (
               <div className="flex justify-between text-white/80">
                 <span>البائع:</span>
-                <span className="font-medium">{order.seller.name}</span>
+                <Link to={`/profile/${order.seller.id}`} className="font-medium text-[hsl(195,80%,70%)] hover:underline">
+                  {order.seller.name}
+                </Link>
+              </div>
+            )}
+            {isSeller && order.buyer && (
+              <div className="flex justify-between text-white/80">
+                <span>المشتري:</span>
+                <Link to={`/profile/${order.buyer.id}`} className="font-medium text-[hsl(195,80%,70%)] hover:underline">
+                  {order.buyer.name}
+                </Link>
               </div>
             )}
             <div className="flex justify-between text-white/80">
               <span>المبلغ المدفوع:</span>
-              <span className="font-bold text-[hsl(195,80%,70%)]">{formatPrice(order.amount)}</span>
+              <span className="font-bold text-[hsl(195,80%,70%)] text-xl">{formatPrice(order.amount)}</span>
             </div>
             {order.notes && (
-              <div className="flex justify-between text-white/80">
-                <span>ملاحظات:</span>
-                <span className="font-medium">{order.notes}</span>
+              <div className="pt-3 border-t border-white/10">
+                <span className="text-sm text-white/60 block mb-2">ملاحظات:</span>
+                <p className="text-white/80">{order.notes}</p>
               </div>
             )}
           </div>
         </Card>
 
-        {/* Action Buttons */}
+        {/* Action Buttons for Buyer */}
         {canConfirm && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <Button 
               size="lg"
-              onClick={handleConfirmOrder}
-              disabled={orderConfirmed}
+              onClick={() => setShowConfirmDialog(true)}
+              disabled={confirmMutation.isPending}
               className="gap-2 text-sm md:text-base py-4 md:py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px] touch-manipulation active:scale-95 transition-transform"
             >
-              <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
-              <span className="hidden md:inline">
-                {orderConfirmed ? "تم التأكيد" : "تأكيد - الحساب يعمل بشكل صحيح"}
-              </span>
-              <span className="md:hidden">
-                {orderConfirmed ? "تم التأكيد" : "تأكيد الاستلام"}
-              </span>
+              {confirmMutation.isPending ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  جاري التأكيد...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                  <span className="hidden md:inline">تأكيد - الحساب يعمل بشكل صحيح</span>
+                  <span className="md:hidden">تأكيد الاستلام</span>
+                </>
+              )}
             </Button>
 
             <Button 
               size="lg"
               variant="outline"
               onClick={handleOpenDispute}
-              disabled={orderConfirmed}
+              disabled={confirmMutation.isPending}
               className="gap-2 text-sm md:text-base py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white border-white/20 font-bold disabled:opacity-50 disabled:cursor-not-allowed min-h-[56px] touch-manipulation active:scale-95 transition-transform"
             >
               <AlertTriangle className="h-5 w-5 flex-shrink-0" />
@@ -328,27 +463,107 @@ const Order = () => {
           </div>
         )}
 
+        {/* Cancel Button */}
+        {canCancel && (
+          <Button 
+            variant="outline"
+            size="lg"
+            onClick={() => cancelMutation.mutate()}
+            disabled={cancelMutation.isPending}
+            className="w-full gap-2 mb-6 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+          >
+            {cancelMutation.isPending ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                جاري الإلغاء...
+              </>
+            ) : (
+              <>
+                <AlertTriangle className="h-5 w-5" />
+                إلغاء الطلب {order.status === 'escrow_hold' && '(مع استرجاع المبلغ)'}
+              </>
+            )}
+          </Button>
+        )}
+
+        {/* Completed Status */}
         {order.status === 'completed' && (
-          <Card className="p-6 bg-green-500/10 border-green-500/30">
+          <Card className="p-6 bg-green-500/10 border-green-500/30 mb-6">
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-6 w-6 text-green-400" />
-              <p className="text-green-400 font-bold">تم تأكيد الطلب بنجاح</p>
+              <div>
+                <p className="text-green-400 font-bold">تم تأكيد الطلب بنجاح</p>
+                {order.confirmed_at && (
+                  <p className="text-white/60 text-sm mt-1">تاريخ التأكيد: {formatDate(order.confirmed_at)}</p>
+                )}
+              </div>
             </div>
           </Card>
         )}
 
-        {order.dispute && (
-          <Card className="p-6 bg-red-500/10 border-red-500/30 mt-6">
-            <div className="flex items-center gap-3 mb-2">
-              <AlertTriangle className="h-6 w-6 text-red-400" />
-              <p className="text-red-400 font-bold">يوجد نزاع مفتوح</p>
+        {/* Cancelled Status */}
+        {order.status === 'cancelled' && (
+          <Card className="p-6 bg-gray-500/10 border-gray-500/30 mb-6">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-gray-400" />
+              <p className="text-gray-400 font-bold">تم إلغاء الطلب</p>
             </div>
-            <Link to={`/disputes/${order.dispute.id}`}>
-              <Button variant="outline" className="mt-4">عرض النزاع</Button>
-            </Link>
+          </Card>
+        )}
+
+        {/* Dispute Info */}
+        {order.dispute && (
+          <Card className="p-6 bg-red-500/10 border-red-500/30 mb-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-6 w-6 text-red-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-red-400 font-bold">يوجد نزاع مفتوح</p>
+                  <p className="text-white/70 text-sm mt-1">تم فتح نزاع على هذا الطلب</p>
+                </div>
+              </div>
+              <Button asChild variant="outline" className="bg-white/5 border-white/20 text-white">
+                <Link to={`/disputes/${order.dispute.id}`}>
+                  عرض النزاع
+                </Link>
+              </Button>
+            </div>
           </Card>
         )}
       </div>
+
+      {/* Confirm Order Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد استلام الحساب</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              هل أنت متأكد أن الحساب يعمل بشكل صحيح وتريد تأكيد الاستلام؟
+              <br /><br />
+              <span className="text-[hsl(40,90%,55%)] font-semibold">⚠️ تحذير:</span> بعد التأكيد، سيتم تحويل الأموال للبائع ولن يمكنك فتح نزاع.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmMutation.mutate()}
+              className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white"
+              disabled={confirmMutation.isPending}
+            >
+              {confirmMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                  جاري التأكيد...
+                </>
+              ) : (
+                'نعم، تأكيد الاستلام'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Glow effects */}
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />

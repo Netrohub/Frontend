@@ -1,24 +1,51 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, ArrowRight, Loader2, MessageSquare, User, Calendar } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { AlertTriangle, ArrowRight, Loader2, MessageSquare, User, Calendar, XCircle } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
 import { disputesApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import type { Dispute } from "@/types/api";
 
 const DisputeDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   
   const { data: dispute, isLoading, error } = useQuery({
     queryKey: ['dispute', id],
     queryFn: () => disputesApi.getById(parseInt(id!)),
     enabled: !!id && !!user,
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: (disputeId: number) => disputesApi.cancel(disputeId),
+    onSuccess: () => {
+      toast.success("تم إلغاء النزاع بنجاح");
+      queryClient.invalidateQueries({ queryKey: ['disputes'] });
+      queryClient.invalidateQueries({ queryKey: ['dispute', id] });
+      navigate('/disputes');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "فشل إلغاء النزاع");
+    },
   });
 
   const getStatusBadge = (status: string) => {
@@ -166,9 +193,58 @@ const DisputeDetails = () => {
               {/* Actions */}
               {dispute.status === 'open' && (
                 <Card className="p-6 bg-blue-500/10 border-blue-500/30">
-                  <div className="flex items-center gap-3 text-blue-400">
-                    <AlertTriangle className="h-5 w-5" />
-                    <p>النزاع قيد المراجعة. سيتم التواصل معك خلال 24-48 ساعة.</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-blue-400">
+                      <AlertTriangle className="h-5 w-5" />
+                      <p>النزاع قيد المراجعة. سيتم التواصل معك خلال 24-48 ساعة.</p>
+                    </div>
+                    {dispute.initiated_by === user.id && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="gap-2 bg-white/5 text-white border-white/20 hover:bg-white/10"
+                          >
+                            <XCircle className="h-4 w-4" />
+                            إلغاء النزاع
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-white text-right">
+                              إلغاء النزاع
+                            </AlertDialogTitle>
+                            <AlertDialogDescription className="text-white/80 text-right">
+                              هل أنت متأكد من إلغاء هذا النزاع؟
+                              <br /><br />
+                              سيتم إعادة الطلب إلى حالة الضمان ويمكنك متابعة المعاملة.
+                              <br /><br />
+                              ⚠️ لا يمكن إعادة فتح النزاع بعد إلغائه.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter className="gap-2">
+                            <AlertDialogCancel className="bg-white/10 text-white border-white/20">
+                              تراجع
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => cancelMutation.mutate(dispute.id)}
+                              disabled={cancelMutation.isPending}
+                              className="bg-yellow-500 hover:bg-yellow-600 text-white"
+                            >
+                              {cancelMutation.isPending ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                                  جاري الإلغاء...
+                                </>
+                              ) : (
+                                'إلغاء النزاع'
+                              )}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
                   </div>
                 </Card>
               )}

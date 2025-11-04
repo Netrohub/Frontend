@@ -5,10 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertTriangle, Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
 import { disputesApi, ordersApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,6 +23,8 @@ const Disputes = () => {
   const orderIdParam = searchParams.get('order_id');
   const queryClient = useQueryClient();
   const [showNewDispute, setShowNewDispute] = useState(!!orderIdParam);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [disputeData, setDisputeData] = useState({
     order_id: orderIdParam ? parseInt(orderIdParam) : 0,
     reason: "",
@@ -28,8 +32,11 @@ const Disputes = () => {
   });
 
   const { data: disputes, isLoading } = useQuery({
-    queryKey: ['disputes'],
-    queryFn: () => disputesApi.getAll(),
+    queryKey: ['disputes', currentPage, statusFilter],
+    queryFn: () => disputesApi.getAll({
+      page: currentPage,
+      status: statusFilter !== 'all' ? statusFilter : undefined,
+    }),
     enabled: !!user,
   });
 
@@ -112,10 +119,11 @@ const Disputes = () => {
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
       <Navbar />
 
-      <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl md:text-4xl font-black text-white">النزاعات</h1>
-          {availableOrders.length > 0 && (
+      <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl pb-24 md:pb-8">
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl md:text-4xl font-black text-white">النزاعات</h1>
+            {availableOrders.length > 0 && (
             <Dialog open={showNewDispute} onOpenChange={setShowNewDispute}>
               <DialogTrigger asChild>
                 <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
@@ -184,7 +192,47 @@ const Disputes = () => {
                 </form>
               </DialogContent>
             </Dialog>
-          )}
+            )}
+          </div>
+
+          {/* Status Filter */}
+          <Tabs value={statusFilter} onValueChange={(v) => {
+            setStatusFilter(v);
+            setCurrentPage(1); // Reset to page 1 when filtering
+          }}>
+            <TabsList className="grid w-full grid-cols-5 bg-white/5 border border-white/10">
+              <TabsTrigger 
+                value="all"
+                className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
+              >
+                الكل
+              </TabsTrigger>
+              <TabsTrigger 
+                value="open"
+                className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
+              >
+                مفتوح
+              </TabsTrigger>
+              <TabsTrigger 
+                value="under_review"
+                className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
+              >
+                قيد المراجعة
+              </TabsTrigger>
+              <TabsTrigger 
+                value="resolved"
+                className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
+              >
+                تم الحل
+              </TabsTrigger>
+              <TabsTrigger 
+                value="closed"
+                className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
+              >
+                مغلق
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         {isLoading ? (
@@ -202,28 +250,91 @@ const Disputes = () => {
             )}
           </Card>
         ) : (
-          <div className="space-y-4">
-            {disputes?.data?.map((dispute: Dispute) => (
-              <Link key={dispute.id} to={`/disputes/${dispute.id}`}>
-                <Card className="p-6 bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-2">{dispute.reason}</h3>
-                      <p className="text-white/60 text-sm">طلب #{dispute.order_id}</p>
+          <>
+            <div className="space-y-4">
+              {disputes?.data?.map((dispute: Dispute) => (
+                <Link key={dispute.id} to={`/disputes/${dispute.id}`}>
+                  <Card className="p-6 bg-white/5 border-white/10 hover:bg-white/10 transition-all cursor-pointer">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-2">{dispute.reason}</h3>
+                        <p className="text-white/60 text-sm">طلب #{dispute.order_id}</p>
+                      </div>
+                      {getStatusBadge(dispute.status)}
                     </div>
-                    {getStatusBadge(dispute.status)}
-                  </div>
-                  <p className="text-white/80 mb-4 line-clamp-2">{dispute.description}</p>
-                  <div className="flex items-center justify-between text-sm text-white/60">
-                    <span>{dispute.party === 'buyer' ? 'مشتري' : 'بائع'}</span>
-                    <span>{dispute.created_at ? new Date(dispute.created_at).toLocaleDateString('ar-SA') : ''}</span>
-                  </div>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                    <p className="text-white/80 mb-4 line-clamp-2">{dispute.description}</p>
+                    <div className="flex items-center justify-between text-sm text-white/60">
+                      <span>{dispute.party === 'buyer' ? 'مشتري' : 'بائع'}</span>
+                      <span>{dispute.created_at ? new Date(dispute.created_at).toLocaleDateString('ar-SA') : ''}</span>
+                    </div>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {disputes && disputes.last_page > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1 || isLoading}
+                  className="bg-white/5 text-white border-white/20 hover:bg-white/10"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  السابق
+                </Button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, disputes.last_page) }, (_, i) => {
+                    let page;
+                    if (disputes.last_page <= 5) {
+                      page = i + 1;
+                    } else if (currentPage <= 3) {
+                      page = i + 1;
+                    } else if (currentPage >= disputes.last_page - 2) {
+                      page = disputes.last_page - 4 + i;
+                    } else {
+                      page = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <Button
+                        key={page}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        disabled={isLoading}
+                        className={`min-w-[40px] ${
+                          currentPage === page
+                            ? 'bg-[hsl(195,80%,50%)] text-white border-[hsl(195,80%,50%)]'
+                            : 'bg-white/5 text-white border-white/20 hover:bg-white/10'
+                        }`}
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(disputes.last_page, p + 1))}
+                  disabled={currentPage === disputes.last_page || isLoading}
+                  className="bg-white/5 text-white border-white/20 hover:bg-white/10"
+                >
+                  التالي
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      <BottomNav />
     </div>
   );
 };

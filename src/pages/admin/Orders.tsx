@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Search, Eye, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Search, Eye, XCircle, Loader2, ShoppingCart, User, DollarSign, Calendar, Package, CreditCard, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,11 +18,12 @@ const AdminOrders = () => {
   const [cancelReason, setCancelReason] = useState("");
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
 
   const { data: ordersResponse, isLoading } = useQuery({
-    queryKey: ['admin-orders'],
-    queryFn: () => adminApi.orders(),
+    queryKey: ['admin-orders', searchTerm],
+    queryFn: () => adminApi.orders({ search: searchTerm || undefined }),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
@@ -64,19 +65,74 @@ const AdminOrders = () => {
     }
   };
 
+  const handleSearch = () => {
+    // Search is automatic via queryKey dependency
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ar-SA', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
+  };
+
+  const formatPrice = (amount: number) => {
+    return `$${amount.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return {
+          label: 'مكتمل',
+          className: 'bg-green-500/20 text-green-400 border-green-500/30'
+        };
+      case 'escrow_hold':
+        return {
+          label: 'في الضمان',
+          className: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+        };
+      case 'paid':
+        return {
+          label: 'مدفوع',
+          className: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
+        };
+      case 'pending':
+        return {
+          label: 'قيد الانتظار',
+          className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+        };
+      case 'cancelled':
+        return {
+          label: 'ملغي',
+          className: 'bg-red-500/20 text-red-400 border-red-500/30'
+        };
+      case 'disputed':
+        return {
+          label: 'متنازع عليه',
+          className: 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+        };
+      default:
+        return {
+          label: status,
+          className: 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+        };
+    }
   };
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-3xl font-black text-white mb-2">إدارة الطلبات</h1>
-        <p className="text-white/60">عرض وإدارة جميع الطلبات على المنصة</p>
+        <p className="text-white/60">
+          عرض وإدارة جميع الطلبات على المنصة ({orders.length} طلب)
+        </p>
       </div>
 
       {/* Search */}
@@ -85,11 +141,17 @@ const AdminOrders = () => {
           <div className="relative flex-1">
             <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/40" />
             <Input 
-              placeholder="البحث عن طلب..."
+              placeholder="البحث برقم الطلب أو اسم المشتري أو البائع..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
             />
           </div>
-          <Button className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+          <Button 
+            onClick={handleSearch}
+            className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+          >
             بحث
           </Button>
         </div>
@@ -105,139 +167,250 @@ const AdminOrders = () => {
       {/* Empty State */}
       {!isLoading && orders.length === 0 && (
         <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
-          <p className="text-white/60">لا توجد طلبات لعرضها</p>
+          <ShoppingCart className="h-12 w-12 text-white/30 mx-auto mb-4" />
+          <p className="text-white/60">
+            {searchTerm ? 'لا توجد طلبات مطابقة للبحث' : 'لا توجد طلبات لعرضها'}
+          </p>
         </Card>
       )}
 
       {/* Orders Grid */}
       {!isLoading && orders.length > 0 && (
       <div className="space-y-4">
-        {orders.map((order) => (
-          <Card key={order.id} className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-lg font-bold text-white">طلب رقم #{order.id}</h3>
-                  <Badge className={
-                    order.status === "completed" 
-                      ? "bg-green-500/20 text-green-400 border-green-500/30"
-                      : order.status === "escrow_hold"
-                      ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                      : order.status === "pending_payment"
-                      ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                      : "bg-red-500/20 text-red-400 border-red-500/30"
-                  }>
-                    {order.status === "completed" ? "مكتمل" : order.status === "escrow_hold" ? "ضمان" : order.status === "pending_payment" ? "انتظار الدفع" : order.status === "cancelled" ? "ملغي" : order.status}
-                  </Badge>
-                </div>
-                <div className="text-sm text-white/60 space-y-1">
-                  <div>المنتج: {order.listing?.title || 'غير محدد'}</div>
-                  <div className="flex gap-4">
-                    <span>المشتري: {order.buyer?.name || 'غير محدد'}</span>
-                    <span>•</span>
-                    <span>البائع: {order.seller?.name || 'غير محدد'}</span>
+        {orders.map((order) => {
+          const statusBadge = getStatusBadge(order.status);
+          
+          return (
+            <Card key={order.id} className="p-5 bg-white/5 border-white/10 backdrop-blur-sm hover:border-white/20 transition-colors">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-bold text-white">طلب رقم #{order.id}</h3>
+                    <Badge className={statusBadge.className}>
+                      {statusBadge.label}
+                    </Badge>
                   </div>
-                  <div className="flex gap-4">
-                    <span>السعر: ${order.total_price}</span>
-                    <span>•</span>
-                    <span>تاريخ الطلب: {formatDate(order.created_at)}</span>
+                  <div className="text-sm text-white/60 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      المنتج: {order.listing?.title || 'غير محدد'}
+                    </div>
+                    <div className="flex gap-4 flex-wrap">
+                      <span className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        المشتري: {order.buyer?.name || 'غير محدد'}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        البائع: {order.seller?.name || 'غير محدد'}
+                      </span>
+                    </div>
+                    <div className="flex gap-4 flex-wrap">
+                      <span className="flex items-center gap-1">
+                        <DollarSign className="h-4 w-4" />
+                        {formatPrice(order.amount)}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(order.created_at)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex gap-2 pt-3 border-t border-white/10">
-              <Button size="sm" variant="outline" className="flex-1 gap-2 bg-white/5 hover:bg-white/10 text-white border-white/20" onClick={() => handleViewDetails(order)}>
-                <Eye className="h-4 w-4" />
-                عرض التفاصيل
-              </Button>
-              {order.status !== 'completed' && order.status !== 'cancelled' && (
+              <div className="flex gap-2 pt-3 border-t border-white/10">
                 <Button 
                   size="sm" 
                   variant="outline" 
-                  className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
-                  onClick={() => handleCancelClick(order.id)}
-                  disabled={cancelOrderMutation.isPending}
+                  className="flex-1 gap-2 bg-white/5 hover:bg-white/10 text-white border-white/20" 
+                  onClick={() => handleViewDetails(order)}
                 >
-                  {cancelOrderMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
-                  إلغاء
+                  <Eye className="h-4 w-4" />
+                  عرض التفاصيل
                 </Button>
-              )}
-            </div>
-          </Card>
-        ))}
+                {order.status !== 'completed' && order.status !== 'cancelled' && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                    onClick={() => handleCancelClick(order.id)}
+                    disabled={cancelOrderMutation.isPending}
+                  >
+                    {cancelOrderMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
+                    إلغاء
+                  </Button>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </div>
       )}
 
       {/* Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="bg-[hsl(217,33%,17%)] border-white/10 text-white max-w-2xl">
+        <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">تفاصيل الطلب</DialogTitle>
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-bold mb-2">#{selectedOrder.id}</h3>
-                <Badge className={
-                  selectedOrder.status === "completed" 
-                    ? "bg-green-500/20 text-green-400 border-green-500/30"
-                    : selectedOrder.status === "pending"
-                    ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                    : selectedOrder.status === "processing"
-                    ? "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
-                    : "bg-red-500/20 text-red-400 border-red-500/30"
-                }>
-                  {selectedOrder.status === "completed" ? "مكتمل" : 
-                   selectedOrder.status === "pending" ? "قيد الانتظار" : 
-                   selectedOrder.status === "processing" ? "قيد المعالجة" : "ملغي"}
+                <h3 className="text-lg font-bold mb-2">طلب رقم #{selectedOrder.id}</h3>
+                <Badge className={getStatusBadge(selectedOrder.status).className}>
+                  {getStatusBadge(selectedOrder.status).label}
                 </Badge>
               </div>
 
-              <div className="space-y-3">
-                <div className="p-3 bg-white/5 rounded-lg">
-                  <h4 className="text-sm text-white/60 mb-2">المنتج</h4>
-                  <p className="text-white font-medium">{selectedOrder.product}</p>
+              {/* Listing Info */}
+              <Card className="p-4 bg-white/5 border-white/10">
+                <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <Package className="h-4 w-4 text-[hsl(195,80%,70%)]" />
+                  معلومات المنتج
+                </h4>
+                <div className="space-y-2">
+                  <div>
+                    <span className="text-white/60 text-sm">العنوان:</span>
+                    <p className="text-white font-medium">{selectedOrder.listing?.title || 'غير محدد'}</p>
+                  </div>
+                  {selectedOrder.listing?.description && (
+                    <div>
+                      <span className="text-white/60 text-sm">الوصف:</span>
+                      <p className="text-white/80 text-sm mt-1">{selectedOrder.listing.description.substring(0, 100)}...</p>
+                    </div>
+                  )}
                 </div>
+              </Card>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-white/5 rounded-lg">
-                    <h4 className="text-sm text-white/60 mb-1">المشتري</h4>
-                    <p className="text-white font-medium">{selectedOrder.buyer}</p>
-                    <p className="text-sm text-white/50">{selectedOrder.buyerEmail}</p>
+              {/* Buyer & Seller Info */}
+              <div className="grid grid-cols-2 gap-3">
+                <Card className="p-4 bg-white/5 border-white/10">
+                  <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <User className="h-4 w-4 text-green-400" />
+                    المشتري
+                  </h4>
+                  <div className="space-y-1">
+                    <p className="text-white font-medium">{selectedOrder.buyer?.name || 'غير محدد'}</p>
+                    <p className="text-sm text-white/60">{selectedOrder.buyer?.email || 'غير محدد'}</p>
                   </div>
-                  <div className="p-3 bg-white/5 rounded-lg">
-                    <h4 className="text-sm text-white/60 mb-1">البائع</h4>
-                    <p className="text-white font-medium">{selectedOrder.seller}</p>
-                    <p className="text-sm text-white/50">{selectedOrder.sellerEmail}</p>
+                </Card>
+                <Card className="p-4 bg-white/5 border-white/10">
+                  <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                    <User className="h-4 w-4 text-blue-400" />
+                    البائع
+                  </h4>
+                  <div className="space-y-1">
+                    <p className="text-white font-medium">{selectedOrder.seller?.name || 'غير محدد'}</p>
+                    <p className="text-sm text-white/60">{selectedOrder.seller?.email || 'غير محدد'}</p>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="p-3 bg-white/5 rounded-lg">
-                    <h4 className="text-sm text-white/60 mb-1">السعر</h4>
-                    <p className="text-white font-medium">${selectedOrder.price}</p>
-                  </div>
-                  <div className="p-3 bg-white/5 rounded-lg">
-                    <h4 className="text-sm text-white/60 mb-1">طريقة الدفع</h4>
-                    <p className="text-white font-medium text-sm">{selectedOrder.paymentMethod}</p>
-                  </div>
-                  <div className="p-3 bg-white/5 rounded-lg">
-                    <h4 className="text-sm text-white/60 mb-1">التاريخ</h4>
-                    <p className="text-white font-medium text-sm">{selectedOrder.date}</p>
-                  </div>
-                </div>
+                </Card>
               </div>
 
-              {selectedOrder.status === "pending" && (
+              {/* Payment Info */}
+              <Card className="p-4 bg-white/5 border-white/10">
+                <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-[hsl(195,80%,70%)]" />
+                  معلومات الدفع
+                </h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-white/60 text-xs">المبلغ</span>
+                    <p className="text-white font-bold text-lg">{formatPrice(selectedOrder.amount)}</p>
+                  </div>
+                  <div>
+                    <span className="text-white/60 text-xs">حالة الدفع</span>
+                    <p className="text-white font-medium text-sm">
+                      {selectedOrder.payment?.status === 'paid' ? 'مدفوع' : 
+                       selectedOrder.payment?.status === 'pending' ? 'قيد الانتظار' :
+                       'غير محدد'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-white/60 text-xs">معرف الدفع</span>
+                    <p className="text-white font-medium text-xs">
+                      {selectedOrder.payment?.id ? `#${selectedOrder.payment.id}` : 'N/A'}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Order Timeline */}
+              <Card className="p-4 bg-white/5 border-white/10">
+                <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-[hsl(195,80%,70%)]" />
+                  الجدول الزمني
+                </h4>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-white/60">تاريخ الإنشاء:</span>
+                    <span className="text-white">{formatDate(selectedOrder.created_at)}</span>
+                  </div>
+                  {selectedOrder.updated_at && (
+                    <div className="flex justify-between">
+                      <span className="text-white/60">آخر تحديث:</span>
+                      <span className="text-white">{formatDate(selectedOrder.updated_at)}</span>
+                    </div>
+                  )}
+                  {selectedOrder.cancelled_at && (
+                    <div className="flex justify-between">
+                      <span className="text-white/60">تاريخ الإلغاء:</span>
+                      <span className="text-red-400">{formatDate(selectedOrder.cancelled_at)}</span>
+                    </div>
+                  )}
+                </div>
+              </Card>
+
+              {/* Cancellation Info */}
+              {selectedOrder.status === 'cancelled' && selectedOrder.cancellation_reason && (
+                <Card className="p-4 bg-red-500/10 border-red-500/30">
+                  <h4 className="text-sm font-bold text-red-400 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    سبب الإلغاء
+                  </h4>
+                  <p className="text-white/80 text-sm">{selectedOrder.cancellation_reason}</p>
+                  {selectedOrder.cancelled_by && (
+                    <p className="text-white/60 text-xs mt-2">
+                      تم الإلغاء بواسطة: {selectedOrder.cancelled_by === 'admin' ? 'الإدارة' : 'المستخدم'}
+                    </p>
+                  )}
+                </Card>
+              )}
+
+              {/* Dispute Info */}
+              {selectedOrder.status === 'disputed' && selectedOrder.dispute && (
+                <Card className="p-4 bg-orange-500/10 border-orange-500/30">
+                  <h4 className="text-sm font-bold text-orange-400 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    نزاع نشط
+                  </h4>
+                  <p className="text-white/80 text-sm">{selectedOrder.dispute.reason}</p>
+                  <p className="text-white/60 text-xs mt-2">
+                    الحالة: {selectedOrder.dispute.status === 'open' ? 'مفتوح' : 
+                             selectedOrder.dispute.status === 'resolved' ? 'محلول' : 
+                             'مغلق'}
+                  </p>
+                </Card>
+              )}
+
+              {/* Actions */}
+              {selectedOrder.status !== 'completed' && selectedOrder.status !== 'cancelled' && (
                 <div className="flex gap-2 pt-4 border-t border-white/10">
-                  <Button className="flex-1 gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30">
-                    <CheckCircle className="h-4 w-4" />
-                    قبول الطلب
-                  </Button>
-                  <Button className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30">
-                    <XCircle className="h-4 w-4" />
-                    رفض الطلب
+                  <Button 
+                    className="flex-1 gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                    onClick={() => handleCancelClick(selectedOrder.id)}
+                    disabled={cancelOrderMutation.isPending}
+                  >
+                    {cancelOrderMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <XCircle className="h-4 w-4" />
+                        إلغاء الطلب
+                      </>
+                    )}
                   </Button>
                 </div>
               )}
@@ -248,7 +421,7 @@ const AdminOrders = () => {
 
       {/* Cancel Order Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
-        <DialogContent className="bg-[hsl(217,33%,17%)] border-white/10 text-white">
+        <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-red-400">إلغاء الطلب</DialogTitle>
           </DialogHeader>
@@ -264,11 +437,11 @@ const AdminOrders = () => {
                 rows={4}
               />
             </div>
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+            <Card className="p-3 bg-yellow-500/10 border-yellow-500/30">
               <p className="text-sm text-yellow-400">
                 ⚠️ سيتم إلغاء الطلب وإرجاع المبلغ إلى محفظة المشتري تلقائياً
               </p>
-            </div>
+            </Card>
             <div className="flex gap-2">
               <Button
                 variant="outline"

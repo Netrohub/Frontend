@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Eye, Shield, Loader2 } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Plus, Edit, Trash2, Eye, Shield, Loader2, CheckCircle2, XCircle, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,58 +11,95 @@ import { listingsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { Listing } from "@/types/api";
+import { useState } from "react";
 
 const MyListings = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [markAsSoldId, setMarkAsSoldId] = useState<number | null>(null);
 
-  // Fetch all listings and filter by current user
+  // Fetch ONLY current user's listings (SECURITY: data isolation)
   const { data: listingsResponse, isLoading } = useQuery({
-    queryKey: ['listings'],
-    queryFn: () => listingsApi.getAll(),
+    queryKey: ['my-listings', user?.id, statusFilter, currentPage],
+    queryFn: () => listingsApi.getMyListings({ 
+      status: statusFilter,
+      page: currentPage,
+    }),
     enabled: !!user,
   });
 
-  // Filter listings to show only current user's listings
-  const listings = listingsResponse?.data?.filter((listing: Listing) => listing.user_id === user?.id) || [];
+  const listings = listingsResponse?.data || [];
+  const pagination = listingsResponse?.meta;
+
+  // Calculate stats in single pass (performance optimization)
+  const stats = listings.reduce((acc, listing: Listing) => {
+    acc.total++;
+    if (listing.status === 'active') acc.active++;
+    if (listing.status === 'inactive') acc.inactive++;
+    if (listing.status === 'sold') acc.sold++;
+    return acc;
+  }, { total: 0, active: 0, inactive: 0, sold: 0 });
 
   // Empty state for when user has no listings
-  const showEmptyState = listings.length === 0;
-
-  // Calculate stats
-  const stats = {
-    total: listings.length,
-    active: listings.filter((l: Listing) => l.status === 'active').length,
-    pending: listings.filter((l: Listing) => l.status === 'pending').length,
-    sold: listings.filter((l: Listing) => l.status === 'sold').length,
-  };
+  const showEmptyState = listings.length === 0 && statusFilter === "all";
 
   // Delete listing mutation
   const deleteMutation = useMutation({
     mutationFn: (id: number) => listingsApi.delete(id),
     onSuccess: () => {
       toast.success("تم حذف الإعلان بنجاح");
-      queryClient.invalidateQueries({ queryKey: ['listings'] });
+      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      setDeleteId(null);
     },
-    onError: () => {
-      toast.error("فشل حذف الإعلان");
+    onError: (error: any) => {
+      if (error.error_code === 'HAS_ACTIVE_ORDERS') {
+        toast.error("لا يمكن حذف الإعلان لأن لديه طلبات نشطة");
+      } else {
+        toast.error(error.message || "فشل حذف الإعلان");
+      }
+      setDeleteId(null);
+    },
+  });
+
+  // Update status mutation (mark as sold, deactivate, reactivate)
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) => 
+      listingsApi.update(id, { status: status as 'active' | 'inactive' | 'sold' }),
+    onSuccess: () => {
+      toast.success("تم تحديث حالة الإعلان");
+      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      setMarkAsSoldId(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "فشل تحديث الإعلان");
+      setMarkAsSoldId(null);
     },
   });
 
   const getStatusBadge = (status: string) => {
     const styles = {
       active: "bg-green-500/20 text-green-400 border-green-500/30",
-      pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
       sold: "bg-blue-500/20 text-blue-400 border-blue-500/30",
       inactive: "bg-gray-500/20 text-gray-400 border-gray-500/30",
     };
     const labels = { 
       active: "نشط", 
-      pending: "قيد المراجعة", 
       sold: "مباع",
       inactive: "غير نشط"
     };
     return <Badge className={styles[status as keyof typeof styles] || styles.inactive}>{labels[status as keyof typeof labels] || status}</Badge>;
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ar-SA', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    }).format(date);
   };
 
   if (!user) {
@@ -95,7 +134,7 @@ const MyListings = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden pb-20" dir="rtl">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
 
@@ -128,14 +167,24 @@ const MyListings = () => {
             <div className="text-sm text-white/60">نشط</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
-            <div className="text-2xl font-black text-yellow-400 mb-1">{stats.pending}</div>
-            <div className="text-sm text-white/60">قيد المراجعة</div>
+            <div className="text-2xl font-black text-gray-400 mb-1">{stats.inactive}</div>
+            <div className="text-sm text-white/60">غير نشط</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-2xl font-black text-blue-400 mb-1">{stats.sold}</div>
             <div className="text-sm text-white/60">مباع</div>
           </Card>
         </div>
+
+        {/* Status Filter */}
+        <Tabs value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setCurrentPage(1); }} className="mb-6">
+          <TabsList className="bg-white/5 border border-white/10">
+            <TabsTrigger value="all" className="data-[state=active]:bg-[hsl(195,80%,50%)]">الكل</TabsTrigger>
+            <TabsTrigger value="active" className="data-[state=active]:bg-[hsl(195,80%,50%)]">نشط</TabsTrigger>
+            <TabsTrigger value="inactive" className="data-[state=active]:bg-[hsl(195,80%,50%)]">غير نشط</TabsTrigger>
+            <TabsTrigger value="sold" className="data-[state=active]:bg-[hsl(195,80%,50%)]">مباع</TabsTrigger>
+          </TabsList>
+        </Tabs>
 
         {/* Listings */}
         {showEmptyState ? (
@@ -156,75 +205,188 @@ const MyListings = () => {
               </div>
             </div>
           </Card>
+        ) : listings.length === 0 ? (
+          <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
+            <p className="text-white/60">لا توجد إعلانات {statusFilter !== 'all' ? `بحالة "${statusFilter}"` : ''}</p>
+          </Card>
         ) : (
-          <div className="space-y-4">
-            {listings.map((listing: Listing) => (
-            <Card key={listing.id} className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
-              <div className="flex flex-col md:flex-row gap-4">
-                {/* Image */}
-                <div className="w-full md:w-32 h-32 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  {listing.images && listing.images.length > 0 ? (
-                    <img 
-                      src={listing.images[0]} 
-                      alt={listing.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Shield className="h-12 w-12 text-white/20" />
-                  )}
-                </div>
+          <>
+            <div className="space-y-4 mb-6">
+              {listings.map((listing: Listing) => (
+                <Card key={listing.id} className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
+                  <div className="flex flex-col md:flex-row gap-4">
+                    {/* Image */}
+                    <div className="w-full md:w-32 h-32 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {listing.images && listing.images.length > 0 ? (
+                        <img 
+                          src={listing.images[0]} 
+                          alt={listing.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Shield className="h-12 w-12 text-white/20" />
+                      )}
+                    </div>
 
-                {/* Content */}
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-white mb-2">{listing.title}</h3>
-                      <div className="flex items-center gap-2">
-                        {getStatusBadge(listing.status)}
+                    {/* Content */}
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-white mb-2">{listing.title}</h3>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            {getStatusBadge(listing.status)}
+                            <div className="flex items-center gap-1 text-sm text-white/60">
+                              <Calendar className="h-3.5 w-3.5" />
+                              <span>{formatDate(listing.created_at)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-left">
+                          <div className="text-2xl font-black text-[hsl(195,80%,70%)]">${listing.price.toLocaleString('en-US')}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm text-white/60">
+                        <Eye className="h-4 w-4" />
+                        <span>{listing.views || 0} مشاهدة</span>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-2 flex-wrap">
+                        {listing.status === "active" && (
+                          <>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="gap-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                              onClick={() => updateStatusMutation.mutate({ id: listing.id, status: 'inactive' })}
+                              disabled={updateStatusMutation.isPending}
+                            >
+                              <XCircle className="h-4 w-4" />
+                              إيقاف
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-blue-500/30"
+                              onClick={() => setMarkAsSoldId(listing.id)}
+                              disabled={updateStatusMutation.isPending}
+                            >
+                              <CheckCircle2 className="h-4 w-4" />
+                              مباع
+                            </Button>
+                          </>
+                        )}
+                        {listing.status === "inactive" && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                            onClick={() => updateStatusMutation.mutate({ id: listing.id, status: 'active' })}
+                            disabled={updateStatusMutation.isPending}
+                          >
+                            <CheckCircle2 className="h-4 w-4" />
+                            تنشيط
+                          </Button>
+                        )}
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                          onClick={() => setDeleteId(listing.id)}
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          حذف
+                        </Button>
+                        <Button size="sm" asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 mr-auto">
+                          <Link to={`/product/${listing.id}`}>
+                            <Eye className="h-4 w-4" />
+                            معاينة
+                          </Link>
+                        </Button>
                       </div>
                     </div>
-                    <div className="text-left">
-                      <div className="text-2xl font-black text-[hsl(195,80%,70%)]">{listing.price.toLocaleString('ar-SA')} ر.س</div>
-                    </div>
                   </div>
+                </Card>
+              ))}
+            </div>
 
-                  <div className="flex items-center gap-2 text-sm text-white/60">
-                    <Eye className="h-4 w-4" />
-                    <span>{listing.views || 0} مشاهدة</span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      className="gap-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
-                      onClick={() => {
-                        if (confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
-                          deleteMutation.mutate(listing.id);
-                        }
-                      }}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      حذف
-                    </Button>
-                    {listing.status === "active" && (
-                      <Button size="sm" asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 mr-auto">
-                        <Link to={`/product/${listing.id}`}>
-                          <Eye className="h-4 w-4" />
-                          معاينة
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </div>
+            {/* Pagination */}
+            {pagination && pagination.last_page > 1 && (
+              <div className="flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                >
+                  السابق
+                </Button>
+                <span className="text-white/60 px-4">
+                  صفحة {pagination.current_page} من {pagination.last_page}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(pagination.last_page, p + 1))}
+                  disabled={currentPage === pagination.last_page}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/10"
+                >
+                  التالي
+                </Button>
               </div>
-            </Card>
-          ))}
-          </div>
+            )}
+          </>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع عن هذا الإجراء.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteMutation.mutate(deleteId)}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              حذف
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Mark as Sold Confirmation Dialog */}
+      <AlertDialog open={markAsSoldId !== null} onOpenChange={(open) => !open && setMarkAsSoldId(null)}>
+        <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد البيع</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              هل تم بيع هذا الحساب؟ سيتم تحديث حالة الإعلان إلى "مباع" وإخفاءه من القوائم العامة.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => markAsSoldId && updateStatusMutation.mutate({ id: markAsSoldId, status: 'sold' })}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              تأكيد البيع
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Glow effects */}
       <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />

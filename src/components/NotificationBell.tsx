@@ -8,28 +8,59 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useNotifications } from "@/hooks/use-notifications";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { notificationsApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export function NotificationBell() {
-  const { publishedNotifications, markAsRead, markAllAsRead } = useNotifications();
-  const unreadCount = publishedNotifications.filter((n) => !n.read).length;
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const handleMarkAsRead = (id: string) => {
-    markAsRead(id);
+  // Get unread count from backend
+  const { data: unreadData } = useQuery({
+    queryKey: ['notifications-unread-count'],
+    queryFn: () => notificationsApi.getUnreadCount(),
+    enabled: !!user,
+    refetchInterval: 10000, // Poll every 10 seconds
+  });
+
+  // Get recent notifications (last 5 for bell dropdown)
+  const { data: notificationsData } = useQuery({
+    queryKey: ['notifications-recent'],
+    queryFn: () => notificationsApi.getAll({ page: 1 }),
+    enabled: !!user,
+    refetchInterval: 10000, // Poll every 10 seconds
+  });
+
+  const unreadCount = unreadData?.count || 0;
+  const recentNotifications = notificationsData?.data?.slice(0, 5) || [];
+
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: number) => notificationsApi.markAsRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+    },
+  });
+
+  const handleMarkAsRead = (id: number) => {
+    markAsReadMutation.mutate(id);
   };
 
-  const handleMarkAllAsRead = () => {
-    markAllAsRead();
-  };
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
 
-  const getNotificationIcon = (type: string) => {
-    const colors = {
-      order: "bg-primary/10 text-primary",
-      dispute: "bg-destructive/10 text-destructive",
-      message: "bg-accent/10 text-accent-foreground",
-      system: "bg-muted text-muted-foreground",
-    };
-    return colors[type];
+    if (minutes < 1) return 'الآن';
+    if (minutes < 60) return `منذ ${minutes} د`;
+    if (hours < 24) return `منذ ${hours} س`;
+    return `منذ ${days} ي`;
   };
 
   return (
@@ -57,74 +88,83 @@ export function NotificationBell() {
       </DropdownMenuTrigger>
       <DropdownMenuContent 
         align="end" 
-        className="w-80 bg-background border-border"
+        className="w-80 bg-[hsl(200,70%,20%)] border-white/10"
         role="menu"
         aria-label="قائمة الإشعارات"
       >
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h3 className="font-semibold text-lg" id="notifications-heading">الإشعارات</h3>
-          {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleMarkAllAsRead}
-              className="text-xs focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2"
-              aria-label="تحديد جميع الإشعارات كمقروءة"
-            >
-              تحديد الكل كمقروء
-            </Button>
-          )}
+        <div className="flex items-center justify-between p-4 border-b border-white/10">
+          <h3 className="font-semibold text-lg text-white" id="notifications-heading">
+            الإشعارات
+            {unreadCount > 0 && (
+              <Badge className="mr-2 bg-[hsl(195,80%,50%)] text-white text-xs">
+                {unreadCount}
+              </Badge>
+            )}
+          </h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/notifications')}
+            className="text-xs text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]"
+          >
+            عرض الكل
+          </Button>
         </div>
         <ScrollArea className="h-[400px]" aria-labelledby="notifications-heading">
-          {publishedNotifications.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground" role="status" aria-live="polite">
+          {recentNotifications.length === 0 ? (
+            <div className="p-8 text-center text-white/60" role="status" aria-live="polite">
               لا توجد إشعارات
             </div>
           ) : (
-            publishedNotifications.map((notification) => (
+            recentNotifications.map((notification: any) => (
               <DropdownMenuItem
                 key={notification.id}
-                className={`flex flex-col items-start gap-2 p-4 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 ${
-                  !notification.read ? "bg-accent/5" : ""
+                className={`flex flex-col items-start gap-2 p-4 cursor-pointer hover:bg-white/10 ${
+                  !notification.read ? "bg-white/5" : ""
                 }`}
-                onClick={() => handleMarkAsRead(notification.id)}
+                onClick={() => {
+                  if (!notification.read) {
+                    handleMarkAsRead(notification.id);
+                  }
+                  navigate('/notifications');
+                }}
                 role="menuitem"
                 aria-label={`${notification.title}. ${notification.message}`}
               >
                 <div className="flex items-start gap-3 w-full">
                   <div
                     className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                      !notification.read ? "bg-primary" : "bg-transparent"
+                      !notification.read ? "bg-[hsl(195,80%,50%)]" : "bg-transparent"
                     }`}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className={`px-2 py-1 rounded text-xs ${getNotificationIcon(
-                          notification.type
-                        )}`}
-                      >
-                        {notification.type === "order" && "طلب"}
-                        {notification.type === "dispute" && "نزاع"}
-                        {notification.type === "message" && "رسالة"}
-                        {notification.type === "system" && "نظام"}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {notification.time}
-                      </span>
-                    </div>
-                    <p className="font-medium text-sm mb-1">
+                    <p className="font-medium text-sm mb-1 text-white">
                       {notification.title}
                     </p>
-                    <p className="text-xs text-muted-foreground line-clamp-2">
+                    <p className="text-xs text-white/60 line-clamp-2">
                       {notification.message}
                     </p>
+                    <span className="text-xs text-white/40 mt-1 block">
+                      {formatTime(notification.created_at)}
+                    </span>
                   </div>
                 </div>
               </DropdownMenuItem>
             ))
           )}
         </ScrollArea>
+        {recentNotifications.length > 0 && (
+          <div className="p-3 border-t border-white/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/notifications')}
+              className="w-full text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] hover:bg-white/5"
+            >
+              عرض جميع الإشعارات
+            </Button>
+          </div>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

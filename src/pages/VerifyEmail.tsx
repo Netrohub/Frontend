@@ -2,14 +2,34 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, XCircle, Loader2, Mail } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Mail, ArrowRight } from 'lucide-react';
 import { Navbar } from '@/components/Navbar';
+import { SEO } from '@/components/SEO';
+import { authApi } from '@/lib/api';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'timeout'>('loading');
   const [message, setMessage] = useState('');
+  const [countdown, setCountdown] = useState(3);
+
+  // Resend verification email mutation
+  const resendMutation = useMutation({
+    mutationFn: () => authApi.resendVerificationEmail(),
+    onSuccess: (data) => {
+      toast.success(data.message || "تم إرسال رسالة التحقق إلى بريدك الإلكتروني");
+    },
+    onError: (error: any) => {
+      if (error.message?.includes('already verified') || error.message?.includes('موثق بالفعل')) {
+        toast.info("البريد الإلكتروني موثق بالفعل");
+      } else {
+        toast.error(error.message || "فشل إرسال رسالة التحقق");
+      }
+    },
+  });
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -24,8 +44,16 @@ const VerifyEmail = () => {
         return;
       }
 
+      // Add timeout to prevent infinite loading
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        setStatus('timeout');
+        setMessage('انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.');
+      }, 30000); // 30 second timeout
+
       try {
-        // Call backend verification endpoint directly
+        // Call backend verification endpoint
         const backendUrl = import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'https://backend-piz0.onrender.com';
         const verifyUrl = `${backendUrl}/api/v1/email/verify/${id}/${hash}?expires=${expires}&signature=${signature}`;
 
@@ -34,7 +62,10 @@ const VerifyEmail = () => {
           headers: {
             'Accept': 'application/json',
           },
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
 
         const data = await response.json();
 
@@ -43,28 +74,52 @@ const VerifyEmail = () => {
         }
 
         setStatus('success');
-        setMessage(data.message || 'تم توثيق بريدك الإلكتروني بنجاح!');
-
-        // Redirect to profile after 3 seconds
-        setTimeout(() => {
-          navigate('/profile');
-        }, 3000);
+        setMessage('تم توثيق بريدك الإلكتروني بنجاح! يمكنك الآن شراء الحسابات والتفاعل مع المنصة.');
       } catch (error: any) {
-        setStatus('error');
-        setMessage(
-          error.message || 
-          'فشل توثيق البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية.'
-        );
+        clearTimeout(timeoutId);
+        
+        if (error.name === 'AbortError') {
+          setStatus('timeout');
+          setMessage('انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.');
+        } else {
+          setStatus('error');
+          setMessage(
+            error.message || 
+            'فشل توثيق البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية.'
+          );
+        }
       }
     };
 
     verifyEmail();
-  }, [searchParams, navigate]);
+  }, [searchParams]);
+
+  // Countdown timer for auto-redirect on success
+  useEffect(() => {
+    if (status === 'success') {
+      const timer = setInterval(() => {
+        setCountdown((c) => {
+          if (c <= 1) {
+            clearInterval(timer);
+            navigate('/profile');
+            return 0;
+          }
+          return c - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [status, navigate]);
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] pt-20 pb-12 px-4">
+      <SEO 
+        title="توثيق البريد الإلكتروني - NXOLand"
+        description="توثيق عنوان البريد الإلكتروني لحسابك على منصة NXOLand"
+      />
+      <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] pt-20 pb-12 px-4" dir="rtl">
+        <Navbar />
         <div className="container mx-auto max-w-2xl">
           <Card className="p-8 bg-white/10 border-white/20 backdrop-blur-sm text-center">
             {status === 'loading' && (
@@ -83,33 +138,49 @@ const VerifyEmail = () => {
                 <h2 className="text-2xl font-bold text-white mb-2">تم التوثيق بنجاح! ✅</h2>
                 <p className="text-white/80 mb-6">{message}</p>
                 <p className="text-sm text-white/60 mb-4">
-                  سيتم تحويلك إلى ملفك الشخصي خلال ثوانٍ...
+                  سيتم تحويلك إلى ملفك الشخصي خلال {countdown} {countdown === 1 ? 'ثانية' : 'ثواني'}...
                 </p>
-                <Button
-                  asChild
-                  className="bg-green-500 hover:bg-green-600 text-white"
-                >
-                  <Link to="/profile">انتقل إلى الملف الشخصي</Link>
-                </Button>
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    asChild
+                    className="bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    <Link to="/profile">
+                      انتقل الآن
+                      <ArrowRight className="h-4 w-4 mr-2" />
+                    </Link>
+                  </Button>
+                </div>
               </>
             )}
 
-            {status === 'error' && (
+            {(status === 'error' || status === 'timeout') && (
               <>
                 <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
                   <XCircle className="h-12 w-12 text-red-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">فشل التوثيق ❌</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {status === 'timeout' ? 'انتهت المهلة ⏱️' : 'فشل التوثيق ❌'}
+                </h2>
                 <p className="text-white/80 mb-6">{message}</p>
+                
                 <div className="space-y-3">
                   <Button
-                    asChild
+                    onClick={() => resendMutation.mutate()}
+                    disabled={resendMutation.isPending}
                     className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white w-full"
                   >
-                    <Link to="/profile">
-                      <Mail className="h-4 w-4 ml-2" />
-                      إعادة إرسال رسالة التحقق
-                    </Link>
+                    {resendMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        جاري الإرسال...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-4 w-4 mr-2" />
+                        إعادة إرسال رسالة التحقق
+                      </>
+                    )}
                   </Button>
                   <Button
                     asChild
@@ -119,6 +190,15 @@ const VerifyEmail = () => {
                     <Link to="/">العودة للرئيسية</Link>
                   </Button>
                 </div>
+
+                {status === 'timeout' && (
+                  <Card className="p-4 bg-yellow-500/10 border-yellow-500/30 mt-6">
+                    <div className="text-sm text-white/80 text-right">
+                      <p className="font-bold mb-1">⏱️ نصيحة:</p>
+                      <p>قد تكون المشكلة في اتصال الإنترنت. تأكد من الاتصال وحاول مرة أخرى.</p>
+                    </div>
+                  </Card>
+                )}
               </>
             )}
           </Card>
@@ -129,4 +209,3 @@ const VerifyEmail = () => {
 };
 
 export default VerifyEmail;
-

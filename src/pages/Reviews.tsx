@@ -8,11 +8,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ReviewCard } from "@/components/ReviewCard";
 import { StarRating } from "@/components/StarRating";
 import { ErrorState } from "@/components/ErrorState";
+import { ReviewForm } from "@/components/ReviewForm";
 import { 
   Star, 
   TrendingUp, 
   Filter,
-  ChevronDown
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,6 +23,27 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewsApi } from "@/lib/api";
@@ -32,13 +56,29 @@ const Reviews = () => {
   const queryClient = useQueryClient();
   const [activeFilter, setActiveFilter] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Report Dialog State
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [reportingReviewId, setReportingReviewId] = useState<number | null>(null);
+  const [reportReason, setReportReason] = useState<string>("");
+  const [reportDetails, setReportDetails] = useState("");
+  
+  // Edit Dialog State
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingReview, setEditingReview] = useState<any>(null);
+  
+  // Delete Confirmation State
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletingReviewId, setDeletingReviewId] = useState<number | null>(null);
 
   // Get reviews from API
   const { data: reviewsData, isLoading, error, refetch } = useQuery({
-    queryKey: ['reviews', userId, activeFilter, sortBy],
+    queryKey: ['reviews', userId, activeFilter, sortBy, currentPage],
     queryFn: () => reviewsApi.getBySeller(parseInt(userId!), {
       rating: activeFilter !== 'all' ? activeFilter : undefined,
       sort: sortBy,
+      page: currentPage,
     }),
     enabled: !!userId,
     staleTime: 60 * 1000, // 1 minute
@@ -69,9 +109,45 @@ const Reviews = () => {
       reviewsApi.report(reviewId, reason),
     onSuccess: () => {
       toast.success("تم الإبلاغ عن التقييم بنجاح");
+      setReportDialogOpen(false);
+      setReportReason("");
+      setReportDetails("");
+    },
+    onError: (error: any) => {
+      if (error.data?.error_code === 'ALREADY_REPORTED') {
+        toast.error("لقد قمت بالإبلاغ عن هذا التقييم من قبل");
+      } else {
+        toast.error(error.message || "فشل الإبلاغ عن التقييم");
+      }
+    },
+  });
+
+  // Edit review mutation
+  const editMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: any }) => 
+      reviewsApi.update(id, data),
+    onSuccess: () => {
+      toast.success("تم تحديث التقييم بنجاح");
+      setEditDialogOpen(false);
+      setEditingReview(null);
+      queryClient.invalidateQueries({ queryKey: ['reviews', userId] });
     },
     onError: () => {
-      toast.error("فشل الإبلاغ عن التقييم");
+      toast.error("فشل تحديث التقييم");
+    },
+  });
+
+  // Delete review mutation
+  const deleteMutation = useMutation({
+    mutationFn: (reviewId: number) => reviewsApi.delete(reviewId),
+    onSuccess: () => {
+      toast.success("تم حذف التقييم بنجاح");
+      setDeleteDialogOpen(false);
+      setDeletingReviewId(null);
+      queryClient.invalidateQueries({ queryKey: ['reviews', userId] });
+    },
+    onError: () => {
+      toast.error("فشل حذف التقييم");
     },
   });
 
@@ -239,22 +315,92 @@ const Reviews = () => {
             onRetry={() => refetch()}
           />
         ) : reviews.length > 0 ? (
-          <div className="space-y-4">
-            {reviews.map((review: any) => (
-              <ReviewCard
-                key={review.id}
-                review={review}
-                isOwnReview={currentUser?.id === review.reviewer_id}
-                onHelpful={(id) => markHelpfulMutation.mutate(parseInt(id))}
-                onReport={(id) => {
-                  const reason = prompt("ما هو سبب الإبلاغ عن هذا التقييم؟");
-                  if (reason && reason.trim()) {
-                    reportMutation.mutate({ reviewId: parseInt(id), reason: reason.trim() });
-                  }
-                }}
-              />
-            ))}
-          </div>
+          <>
+            <div className="space-y-4">
+              {reviews.map((review: any) => (
+                <ReviewCard
+                  key={review.id}
+                  review={review}
+                  isOwnReview={currentUser?.id === review.reviewer_id}
+                  onHelpful={(id) => markHelpfulMutation.mutate(parseInt(id))}
+                  onReport={(id) => {
+                    setReportingReviewId(parseInt(id));
+                    setReportDialogOpen(true);
+                  }}
+                  onEdit={(id) => {
+                    const reviewToEdit = reviews.find((r: any) => r.id.toString() === id);
+                    if (reviewToEdit) {
+                      setEditingReview(reviewToEdit);
+                      setEditDialogOpen(true);
+                    }
+                  }}
+                  onDelete={(id) => {
+                    setDeletingReviewId(parseInt(id));
+                    setDeleteDialogOpen(true);
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Pagination */}
+            {reviewsData && reviewsData.last_page > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1 || isLoading}
+                  className="bg-white/5 text-white border-white/20 hover:bg-white/10"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  السابق
+                </Button>
+
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, reviewsData.last_page) }, (_, i) => {
+                    let page;
+                    if (reviewsData.last_page <= 5) {
+                      page = i + 1;
+                    } else if (currentPage <= 3) {
+                      page = i + 1;
+                    } else if (currentPage >= reviewsData.last_page - 2) {
+                      page = reviewsData.last_page - 4 + i;
+                    } else {
+                      page = currentPage - 2 + i;
+                    }
+
+                    return (
+                      <Button
+                        key={page}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        disabled={isLoading}
+                        className={`min-w-[40px] ${
+                          currentPage === page
+                            ? 'bg-[hsl(195,80%,50%)] text-white border-[hsl(195,80%,50%)]'
+                            : 'bg-white/5 text-white border-white/20 hover:bg-white/10'
+                        }`}
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(reviewsData.last_page, p + 1))}
+                  disabled={currentPage === reviewsData.last_page || isLoading}
+                  className="bg-white/5 text-white border-white/20 hover:bg-white/10"
+                >
+                  التالي
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <Card className="p-12 bg-white/5 border-white/10 border-dashed text-center">
             <Star className="h-12 w-12 mx-auto mb-4 text-white/30" />
@@ -268,6 +414,167 @@ const Reviews = () => {
 
       {/* Bottom Navigation */}
       <BottomNav />
+
+      {/* Report Dialog */}
+      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+        <DialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
+          <DialogHeader>
+            <DialogTitle className="text-white text-right">إبلاغ عن تقييم غير لائق</DialogTitle>
+            <DialogDescription className="text-white/80 text-right">
+              اختر سبب الإبلاغ عن هذا التقييم. سيتم مراجعة البلاغ من قبل فريق المشرفين.
+            </DialogDescription>
+          </DialogHeader>
+
+          <RadioGroup value={reportReason} onValueChange={setReportReason}>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <RadioGroupItem value="spam" id="spam" />
+                <Label htmlFor="spam" className="text-white cursor-pointer">
+                  محتوى غير مرغوب (spam)
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <RadioGroupItem value="offensive" id="offensive" />
+                <Label htmlFor="offensive" className="text-white cursor-pointer">
+                  محتوى مسيء أو غير لائق
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <RadioGroupItem value="fake" id="fake" />
+                <Label htmlFor="fake" className="text-white cursor-pointer">
+                  تقييم مزيف أو ملفق
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <RadioGroupItem value="irrelevant" id="irrelevant" />
+                <Label htmlFor="irrelevant" className="text-white cursor-pointer">
+                  غير متعلق بالمنتج أو الخدمة
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <RadioGroupItem value="other" id="other" />
+                <Label htmlFor="other" className="text-white cursor-pointer">
+                  سبب آخر
+                </Label>
+              </div>
+            </div>
+          </RadioGroup>
+
+          {reportReason === 'other' && (
+            <Textarea
+              placeholder="يرجى توضيح السبب... (10 أحرف على الأقل)"
+              value={reportDetails}
+              onChange={(e) => setReportDetails(e.target.value)}
+              className="bg-white/5 border-white/20 text-white placeholder:text-white/40 resize-none"
+              maxLength={500}
+              rows={4}
+            />
+          )}
+
+          <DialogFooter className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setReportDialogOpen(false);
+                setReportReason("");
+                setReportDetails("");
+              }}
+              disabled={reportMutation.isPending}
+              className="bg-white/5 text-white border-white/20 hover:bg-white/10"
+            >
+              إلغاء
+            </Button>
+            <Button
+              onClick={() => {
+                if (!reportReason) {
+                  toast.error("يرجى اختيار سبب الإبلاغ");
+                  return;
+                }
+                if (reportReason === 'other' && reportDetails.trim().length < 10) {
+                  toast.error("يرجى توضيح السبب (10 أحرف على الأقل)");
+                  return;
+                }
+                if (reportingReviewId) {
+                  reportMutation.mutate({
+                    reviewId: reportingReviewId,
+                    reason: reportReason === 'other' ? reportDetails : reportReason,
+                  });
+                }
+              }}
+              disabled={!reportReason || reportMutation.isPending || (reportReason === 'other' && reportDetails.trim().length < 10)}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              {reportMutation.isPending ? "جاري الإرسال..." : "إرسال الإبلاغ"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="bg-[hsl(200,70%,15%)] border-white/20 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white text-right">تعديل التقييم</DialogTitle>
+            <DialogDescription className="text-white/80 text-right">
+              قم بتحديث تقييمك وتعليقك
+            </DialogDescription>
+          </DialogHeader>
+          {editingReview && (
+            <ReviewForm
+              existingReview={{
+                id: editingReview.id.toString(),
+                rating: editingReview.rating,
+                comment: editingReview.comment,
+              }}
+              onSubmit={async (data) => {
+                editMutation.mutate({
+                  id: editingReview.id,
+                  data,
+                });
+              }}
+              onCancel={() => {
+                setEditDialogOpen(false);
+                setEditingReview(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white text-right">
+              حذف التقييم
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white/80 text-right">
+              هل أنت متأكد من حذف هذا التقييم؟ هذا الإجراء لا يمكن التراجع عنه.
+              <br /><br />
+              سيتم حذف التقييم نهائياً من المنصة ولن تتمكن من استعادته.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel 
+              className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+              disabled={deleteMutation.isPending}
+            >
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (deletingReviewId) {
+                  deleteMutation.mutate(deletingReviewId);
+                }
+              }}
+              disabled={deleteMutation.isPending}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              {deleteMutation.isPending ? "جاري الحذف..." : "حذف التقييم"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

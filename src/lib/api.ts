@@ -230,6 +230,10 @@ export const authApi = {
   getUser: () =>
     api.get<User>('/user'),
   
+  // Resend email verification
+  resendVerificationEmail: () =>
+    api.post<{ message: string }>('/email/resend'),
+  
   getUserStats: () =>
     api.get<{
       total_sales: number;
@@ -262,17 +266,54 @@ export const listingsApi = {
     return api.get<ListingResponse>(`/listings?${query.toString()}`);
   },
   
+  // Get current user's listings only (SECURITY: data isolation)
+  getMyListings: (params?: { status?: string; search?: string; page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.status) query.append('status', params.status);
+    if (params?.search) query.append('search', params.search);
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<ListingResponse>(`/my-listings?${query.toString()}`);
+  },
+  
   getById: (id: number) =>
     api.get<Listing>(`/listings/${id}`),
   
-  create: (data: { title: string; description: string; price: number; category: string; images?: string[] }) =>
+  create: (data: { 
+    title: string; 
+    description: string; 
+    price: number; 
+    category: string; 
+    images?: string[];
+    account_email?: string;
+    account_password?: string;
+    account_metadata?: any;
+  }) =>
     api.post<Listing>('/listings', data),
   
-  update: (id: number, data: Partial<{ title: string; description: string; price: number; category: string; images: string[]; status: 'active' | 'inactive' }>) =>
+  update: (id: number, data: Partial<{ 
+    title: string; 
+    description: string; 
+    price: number; 
+    category: string; 
+    images: string[]; 
+    status: 'active' | 'inactive' | 'sold';
+    account_email?: string;
+    account_password?: string;
+    account_metadata?: any;
+  }>) =>
     api.put<Listing>(`/listings/${id}`, data),
   
   delete: (id: number) =>
     api.delete<{ message: string }>(`/listings/${id}`),
+  
+  // Get account credentials (only for owner, buyer after purchase, or admin)
+  getCredentials: (id: number) =>
+    api.get<{
+      listing_id: number;
+      account_email: string;
+      account_password: string;
+      account_metadata: any;
+    }>(`/listings/${id}/credentials`),
 };
 
 export const imagesApi = {
@@ -342,6 +383,14 @@ export const ordersApi = {
   
   update: (id: number, data: Partial<{ status: 'cancelled'; notes: string }>) =>
     api.put<Order>(`/orders/${id}`, data),
+  
+  // Confirm order receipt (buyer only)
+  confirm: (id: number) =>
+    api.post<{ message: string; order: Order }>(`/orders/${id}/confirm`),
+  
+  // Cancel order (buyer or seller, with refund if in escrow)
+  cancel: (id: number) =>
+    api.post<{ message: string; order: Order }>(`/orders/${id}/cancel`),
 };
 
 // Payments API
@@ -352,14 +401,21 @@ export const paymentsApi = {
 
 // Disputes API
 export const disputesApi = {
-  getAll: () =>
-    api.get<DisputeResponse>('/disputes'),
+  getAll: (params?: { page?: number; status?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.status) query.append('status', params.status);
+    return api.get<DisputeResponse>(`/disputes?${query.toString()}`);
+  },
   
   getById: (id: number) =>
     api.get<Dispute>(`/disputes/${id}`),
   
   create: (data: { order_id: number; reason: string; description: string }) =>
     api.post<Dispute>('/disputes', data),
+  
+  cancel: (id: number) =>
+    api.post<{ message: string; dispute: Dispute }>(`/disputes/${id}/cancel`),
   
   update: (id: number, data: { status: 'under_review' | 'resolved' | 'closed'; resolution_notes?: string; resolution?: 'refund_buyer' | 'release_to_seller' }) =>
     api.put<Dispute>(`/disputes/${id}`, data),
@@ -370,8 +426,11 @@ export const walletApi = {
   get: () =>
     api.get<Wallet>('/wallet'),
   
+  getWithdrawals: () =>
+    api.get<any[]>('/wallet/withdrawals'),
+  
   withdraw: (data: { amount: number; bank_account: string }) =>
-    api.post<{ message: string; wallet: Wallet; note?: string }>('/wallet/withdraw', data),
+    api.post<{ message: string; wallet: Wallet; withdrawal_request?: any; note?: string }>('/wallet/withdraw', data),
 };
 
 // KYC API
@@ -403,9 +462,11 @@ export const publicApi = {
 
 // Notifications API
 export const notificationsApi = {
-  getAll: (params?: { page?: number }) => {
+  getAll: (params?: { page?: number; filter?: string; type?: string }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
+    if (params?.filter) query.append('filter', params.filter);
+    if (params?.type) query.append('type', params.type);
     return api.get<any>(`/notifications?${query.toString()}`);
   },
   
@@ -489,9 +550,10 @@ export const adminApi = {
     api.get<any>('/admin/activity'),
   
   // Users
-  users: (params?: { page?: number }) => {
+  users: (params?: { page?: number; search?: string }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
+    if (params?.search) query.append('search', params.search);
     return api.get<AdminUserResponse>(`/admin/users?${query.toString()}`);
   },
   
@@ -502,8 +564,12 @@ export const adminApi = {
     api.delete<{ message: string }>(`/admin/users/${id}`),
   
   // Listings
-  listings: () =>
-    api.get<AdminListingResponse>('/admin/listings'),
+  listings: (params?: { page?: number; search?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.search) query.append('search', params.search);
+    return api.get<AdminListingResponse>(`/admin/listings?${query.toString()}`);
+  },
   
   updateListingStatus: (id: number, status: 'active' | 'inactive' | 'sold') =>
     api.put<{ message: string; listing: any }>(`/admin/listings/${id}/status`, { status }),
@@ -512,23 +578,45 @@ export const adminApi = {
     api.delete<{ message: string }>(`/admin/listings/${id}`),
   
   // Orders
-  orders: () =>
-    api.get<AdminOrderResponse>('/admin/orders'),
+  orders: (params?: { page?: number; search?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.search) query.append('search', params.search);
+    return api.get<AdminOrderResponse>(`/admin/orders?${query.toString()}`);
+  },
   
   cancelOrder: (id: number, reason: string) =>
     api.post<{ message: string; order: any }>(`/admin/orders/${id}/cancel`, { reason }),
   
   // Disputes
-  disputes: () =>
-    api.get<AdminDisputeResponse>('/admin/disputes'),
+  disputes: (params?: { page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<AdminDisputeResponse>(`/admin/disputes?${query.toString()}`);
+  },
   
   // KYC
-  kyc: () =>
-    api.get<AdminKycResponse>('/admin/kyc'),
+  kyc: (params?: { page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<AdminKycResponse>(`/admin/kyc?${query.toString()}`);
+  },
   
   // Notifications
-  createNotification: (data: { user_id: number; type: string; title: string; message: string; icon?: string; color?: string }) =>
-    api.post<any>('/admin/notifications', data),
+  createNotification: (data: { 
+    user_id?: number; 
+    broadcast?: boolean; 
+    target_role?: 'all' | 'buyer' | 'seller';
+    type: string; 
+    title: string; 
+    message: string; 
+    icon?: string; 
+    color?: string;
+  }) =>
+    api.post<{ message: string; users_count?: number }>('/admin/notifications', data),
+  
+  getNotificationHistory: () =>
+    api.get<any[]>('/admin/notifications/history'),
 };
 
 // Suggestions API

@@ -17,7 +17,7 @@ import stoveLv8 from "@/assets/stove_lv_8.png";
 import stoveLv9 from "@/assets/stove_lv_9.png";
 import stoveLv10 from "@/assets/stove_lv_10.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { listingsApi, imagesApi } from "@/lib/api";
@@ -53,7 +53,6 @@ const SellWOS = () => {
   const [accountPassword, setAccountPassword] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [billImages, setBillImages] = useState<{ first: string | null; three: string | null; last: string | null }>({
     first: null,
     three: null,
@@ -139,10 +138,65 @@ const SellWOS = () => {
     }
   };
 
+  // Helper function for numeric input validation
+  const handleNumericInput = (value: string, setter: (val: string) => void) => {
+    // Allow only numbers and commas
+    const cleaned = value.replace(/[^\d,]/g, '');
+    setter(cleaned);
+  };
+
+  // Cleanup object URLs on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Revoke all listing image URLs
+      images.forEach(url => {
+        try {
+          URL.revokeObjectURL(url);
+        } catch (e) {
+          // Already revoked or invalid
+        }
+      });
+      
+      // Revoke all bill image URLs
+      [billImages.first, billImages.three, billImages.last].forEach(url => {
+        if (url) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch (e) {
+            // Already revoked or invalid
+          }
+        }
+      });
+    };
+  }, [images, billImages]);
+
+  // Handle cancel with confirmation
+  const handleCancel = () => {
+    const hasData = title || images.length > 0 || accountEmail || accountPassword || 
+                   server || price || stoveLevel || troops || totalPower;
+    
+    if (hasData) {
+      const confirmed = window.confirm(
+        'هل أنت متأكد من الإلغاء؟ ستفقد جميع البيانات المدخلة.'
+      );
+      if (!confirmed) return;
+    }
+    
+    navigate('/my-listings');
+  };
+
   // Create listing mutation
   const createListingMutation = useMutation({
-    mutationFn: (data: { title: string; description: string; price: number; category: string; images?: string[] }) =>
-      listingsApi.create(data),
+    mutationFn: (data: { 
+      title: string; 
+      description: string; 
+      price: number; 
+      category: string; 
+      images?: string[];
+      account_email: string;
+      account_password: string;
+      account_metadata?: any;
+    }) => listingsApi.create(data),
     onSuccess: () => {
       toast.success("تم نشر الإعلان بنجاح!");
       queryClient.invalidateQueries({ queryKey: ['listings'] });
@@ -150,8 +204,23 @@ const SellWOS = () => {
     },
     onError: (error: Error) => {
       const apiError = error as Error & ApiError;
-      const errorMessage = apiError.message || "فشل نشر الإعلان";
-      toast.error(errorMessage);
+      
+      // Handle specific error codes
+      if ('error_code' in apiError) {
+        const errorCode = (apiError as any).error_code;
+        
+        if (errorCode === 'PRICE_TOO_LOW') {
+          toast.error("السعر منخفض جداً. الحد الأدنى للسعر هو $10");
+        } else if (errorCode === 'DUPLICATE_LISTING_DETECTED') {
+          toast.error("يبدو أن لديك إعلان مماثل بالفعل");
+        } else if (errorCode === 'MAX_ACTIVE_LISTINGS_REACHED') {
+          toast.error("لقد وصلت إلى الحد الأقصى من الإعلانات النشطة");
+        } else {
+          toast.error(apiError.message || "فشل نشر الإعلان");
+        }
+      } else {
+        toast.error(apiError.message || "فشل نشر الإعلان");
+      }
     },
   });
 
@@ -225,10 +294,17 @@ const SellWOS = () => {
       toast.info("جاري رفع الصور...");
       const uploadedUrls = await imagesApi.upload(allFiles);
 
-      // Build description from form data
+      // Split images: first images are listing images, last 3 are bill images
+      const listingImageCount = imageFiles.length;
+      const listingImages = uploadedUrls.slice(0, listingImageCount);
+      const billImagesUrls = {
+        first: uploadedUrls[listingImageCount],
+        three: uploadedUrls[listingImageCount + 1],
+        last: uploadedUrls[listingImageCount + 2],
+      };
+
+      // Build description from form data (NO passwords/emails!)
       const descriptionParts = [
-        `البريد الإلكتروني: ${accountEmail}`,
-        `كلمة المرور: ${accountPassword}`,
         `السيرفر: ${server}`,
         `حجرة الاحتراق: ${stoveLevel}`,
         helios.length > 0 ? `هيليوس: ${helios.join(', ')}` : 'هيليوس: لا يوجد',
@@ -248,13 +324,36 @@ const SellWOS = () => {
 
       const description = descriptionParts.join('\n');
 
-      // Use uploaded URLs
+      // Build account metadata
+      const accountMetadata = {
+        server,
+        stove_level: stoveLevel,
+        helios: helios.length > 0 ? helios : null,
+        troops,
+        total_power: totalPower,
+        hero_power: heroPower,
+        island,
+        expert_power: expertPower,
+        hero_total_power: heroTotalPower,
+        pet_power: petPower,
+        has_email: hasEmail === 'yes',
+        has_apple: hasApple === 'yes',
+        has_google: hasGoogle === 'yes',
+        has_facebook: hasFacebook === 'yes',
+        has_game_center: hasGameCenter === 'yes',
+        bill_images: billImagesUrls,
+      };
+
+      // Use uploaded URLs - send credentials as SEPARATE fields (will be encrypted)
       createListingMutation.mutate({
         title: title.trim(),
-        description,
+        description, // NO passwords here!
         price: parseFloat(price),
         category: 'game_account',
-        images: uploadedUrls,
+        images: listingImages,
+        account_email: accountEmail,      // Separate field (will be encrypted)
+        account_password: accountPassword, // Separate field (will be encrypted)
+        account_metadata: accountMetadata, // Game-specific data
       });
     } catch (error) {
       console.error('Failed to upload images:', error);
@@ -335,8 +434,12 @@ const SellWOS = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="مثال: حساب قوي - المستوى 45"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                  maxLength={255}
                   required
                 />
+                <p className="text-sm text-white/60 mt-1">
+                  {title.length}/255 حرف
+                </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
@@ -364,17 +467,21 @@ const SellWOS = () => {
               </div>
 
               <div>
-                <Label className="text-white mb-2 block">السعر (ر.س) *</Label>
+                <Label className="text-white mb-2 block">السعر ($) *</Label>
                 <Input 
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  placeholder="1250"
+                  placeholder="100"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  min="0"
+                  min="10"
+                  max="10000"
                   step="0.01"
                   required
                 />
+                <p className="text-sm text-white/60 mt-1">
+                  الحد الأدنى: $10 | الحد الأقصى: $10,000
+                </p>
               </div>
 
               <div className="space-y-4">
@@ -506,9 +613,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={troops}
-                      onChange={(e) => setTroops(e.target.value)}
+                      onChange={(e) => handleNumericInput(e.target.value, setTroops)}
                       placeholder="مثال: 1,500,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern="[\d,]+"
+                      title="يرجى إدخال أرقام فقط"
                       required
                     />
                   </div>
@@ -521,9 +630,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={totalPower}
-                      onChange={(e) => setTotalPower(e.target.value)}
+                      onChange={(e) => handleNumericInput(e.target.value, setTotalPower)}
                       placeholder="مثال: 50,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern="[\d,]+"
+                      title="يرجى إدخال أرقام فقط"
                       required
                     />
                   </div>
@@ -538,9 +649,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={heroPower}
-                      onChange={(e) => setHeroPower(e.target.value)}
+                      onChange={(e) => handleNumericInput(e.target.value, setHeroPower)}
                       placeholder="مثال: 10,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern="[\d,]+"
+                      title="يرجى إدخال أرقام فقط"
                       required
                     />
                   </div>
@@ -553,9 +666,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={island}
-                      onChange={(e) => setIsland(e.target.value)}
+                      onChange={(e) => handleNumericInput(e.target.value, setIsland)}
                       placeholder="مثال: 7"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern="[\d,]+"
+                      title="يرجى إدخال أرقام فقط"
                       required
                     />
                   </div>
@@ -570,9 +685,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={expertPower}
-                      onChange={(e) => setExpertPower(e.target.value)}
+                      onChange={(e) => handleNumericInput(e.target.value, setExpertPower)}
                       placeholder="مثال: 5,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern="[\d,]+"
+                      title="يرجى إدخال أرقام فقط"
                       required
                     />
                   </div>
@@ -585,9 +702,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={heroTotalPower}
-                      onChange={(e) => setHeroTotalPower(e.target.value)}
+                      onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower)}
                       placeholder="مثال: 15,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern="[\d,]+"
+                      title="يرجى إدخال أرقام فقط"
                       required
                     />
                   </div>
@@ -601,9 +720,11 @@ const SellWOS = () => {
                   <Input 
                     type="text"
                     value={petPower}
-                    onChange={(e) => setPetPower(e.target.value)}
+                    onChange={(e) => handleNumericInput(e.target.value, setPetPower)}
                     placeholder="مثال: 3,000,000"
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    pattern="[\d,]+"
+                    title="يرجى إدخال أرقام فقط"
                     required
                   />
                 </div>
@@ -966,10 +1087,10 @@ const SellWOS = () => {
               <Button 
                 type="button"
                 variant="outline"
+                onClick={handleCancel}
                 className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
-                asChild
               >
-                <Link to="/my-listings">إلغاء</Link>
+                إلغاء
               </Button>
             </div>
           </form>
