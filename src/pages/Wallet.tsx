@@ -42,6 +42,22 @@ const Wallet = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [ibanError, setIbanError] = useState("");
 
+  // Memoize snow particles BEFORE any conditional returns
+  const snowParticles = useMemo(() => 
+    [...Array(Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6))].map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
+          animationDuration: `${ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN)}s`,
+          animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX}s`,
+        }}
+      />
+    )), []
+  );
+
   const { data: wallet, isLoading } = useQuery({
     queryKey: ['wallet'],
     queryFn: () => walletApi.get(),
@@ -225,20 +241,7 @@ const Wallet = () => {
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
       {/* Animated snow particles */}
       <div className="absolute inset-0 pointer-events-none">
-        {useMemo(() => 
-          [...Array(Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6))].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `-${Math.random() * 20}%`,
-                animationDuration: `${ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN)}s`,
-                animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX}s`,
-              }}
-            />
-          )), []
-        )}
+        {snowParticles}
       </div>
 
       <Navbar />
