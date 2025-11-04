@@ -42,7 +42,7 @@ const EditProfile = () => {
       toast.success("تم تحديث الملف الشخصي بنجاح");
       navigate("/profile");
     },
-    onError: (error: any) =>
+    onError: (error: any) => {
       toast.error(error.message || "فشل تحديث الملف الشخصي");
     },
   });
