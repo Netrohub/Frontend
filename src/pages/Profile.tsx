@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SEO } from "@/components/SEO";
 import { 
   User, 
   Mail, 
@@ -58,15 +59,15 @@ const Profile = () => {
     switch (type) {
       case "order_created":
       case "order_completed":
-        return <ShoppingCart className="h-5 w-5 text-[hsl(195,80%,70%)]" />;
+        return <ShoppingCart className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />;
       case "listing_created":
-        return <Package className="h-5 w-5 text-[hsl(195,80%,70%)]" />;
+        return <Package className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />;
       case "kyc_verified":
-        return <Shield className="h-5 w-5 text-green-400" />;
+        return <Shield className="h-5 w-5 text-green-400" aria-hidden="true" />;
       case "withdrawal_completed":
-        return <DollarSign className="h-5 w-5 text-green-400" />;
+        return <DollarSign className="h-5 w-5 text-green-400" aria-hidden="true" />;
       default:
-        return <Star className="h-5 w-5 text-[hsl(195,80%,70%)]" />;
+        return <Star className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />;
     }
   };
 
@@ -110,39 +111,58 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
-        <Navbar />
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+      <>
+        <SEO title="الملف الشخصي - NXOLand" />
+        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+          <Navbar />
+          <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex items-center justify-center min-h-[60vh]">
+            <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
-        <Navbar />
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
-          <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض الملف الشخصي</p>
-          <Button asChild>
-            <Link to="/auth">تسجيل الدخول</Link>
-          </Button>
+      <>
+        <SEO title="الملف الشخصي - NXOLand" />
+        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+          <Navbar />
+          <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
+            <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض الملف الشخصي</p>
+            <Button asChild>
+              <Link to="/auth">تسجيل الدخول</Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+    <>
+      <SEO 
+        title={`${user.name} - الملف الشخصي - NXOLand`}
+        description={`الملف الشخصي لـ ${user.name} على NXOLand. عرض الإحصائيات، النشاط الأخير، والإعدادات.`}
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
-      {/* Navigation */}
-      <Navbar />
+        {/* Skip link for keyboard navigation */}
+        <a 
+          href="#profile-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+        >
+          تخطي إلى المحتوى
+        </a>
 
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
+        {/* Navigation */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div id="profile-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">الملف الشخصي</h1>
@@ -154,11 +174,11 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row items-center gap-6 mb-6">
             <div className="relative">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                <User className="h-12 w-12 text-white" />
+                <User className="h-12 w-12 text-white" aria-hidden="true" />
               </div>
               {user.kyc_verification?.status === 'verified' && (
                 <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-green-500">
-                  <CheckCircle className="h-5 w-5 text-white" />
+                  <CheckCircle className="h-5 w-5 text-white" aria-label="موثق" />
                 </div>
               )}
             </div>
@@ -168,7 +188,7 @@ const Profile = () => {
               {/* Rating Display - Only show if reviews exist */}
               {statsLoading ? (
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                  <Loader2 className="h-4 w-4 animate-spin text-white/60" />
+                  <Loader2 className="h-4 w-4 animate-spin text-white/60" aria-hidden="true" />
                   <span className="text-sm text-white/60">جاري التحميل...</span>
                 </div>
               ) : userStats && userStats.average_rating && userStats.total_reviews > 0 ? (
@@ -176,13 +196,13 @@ const Profile = () => {
                   to={`/reviews/${user.id}`}
                   className="flex items-center justify-center md:justify-start gap-2 mb-3 hover:opacity-80 transition-opacity"
                 >
-                  <Star className="h-5 w-5 text-[hsl(40,90%,55%)] fill-current" />
+                  <Star className="h-5 w-5 text-[hsl(40,90%,55%)] fill-current" aria-hidden="true" />
                   <span className="text-lg font-bold text-white">{userStats.average_rating.toFixed(1)}</span>
                   <span className="text-white/60">({userStats.total_reviews} تقييم)</span>
                 </Link>
               ) : userStats && userStats.total_revenue > 0 ? (
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                  <TrendingUp className="h-5 w-5 text-green-400" />
+                  <TrendingUp className="h-5 w-5 text-green-400" aria-hidden="true" />
                   <span className="text-lg font-bold text-white">${userStats.total_revenue.toLocaleString('en-US')}</span>
                   <span className="text-white/60">إجمالي الأرباح</span>
                 </div>
@@ -205,8 +225,9 @@ const Profile = () => {
               variant="ghost"
               size="sm"
               className="gap-2 text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]"
+              aria-label="تحديث الإحصائيات"
             >
-              <RefreshCw className={`h-4 w-4 ${statsLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${statsLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
               تحديث
             </Button>
           </div>
@@ -243,7 +264,7 @@ const Profile = () => {
               {/* Wallet Balance Quick View */}
               <div className="text-center p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg">
                 <div className="flex items-center justify-center gap-2 mb-1">
-                  <Wallet className="h-5 w-5 text-green-400" />
+                  <Wallet className="h-5 w-5 text-green-400" aria-hidden="true" />
                   <div className="text-2xl font-black text-green-400">
                     ${userWallet?.available_balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                   </div>
@@ -264,7 +285,7 @@ const Profile = () => {
           {/* Contact Info with Verification Indicators */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-white/80">
-              <Mail className="h-5 w-5 text-[hsl(195,80%,70%)]" />
+              <Mail className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
               <span>{user.email}</span>
               {user.email_verified_at ? (
                 <StatusBadge status="success" label="موثق" className="text-xs" />
@@ -275,7 +296,7 @@ const Profile = () => {
             
             {user.phone && (
               <div className="flex items-center gap-3 text-white/80">
-                <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" />
+                <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
                 <span>{user.phone}</span>
                 {user.phone_verified_at ? (
                   <StatusBadge status="success" label="موثق" className="text-xs" />
@@ -297,8 +318,9 @@ const Profile = () => {
               onClick={handleRefreshActivity}
               disabled={activityLoading}
               className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]"
+              aria-label="تحديث النشاط"
             >
-              <RefreshCw className={`h-4 w-4 ${activityLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${activityLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
             </Button>
           </div>
           
@@ -325,7 +347,7 @@ const Profile = () => {
             </div>
           ) : (
             <div className="text-center py-8 text-white/60">
-              <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-30" />
+              <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-30" aria-hidden="true" />
               <p>لا توجد أنشطة حديثة</p>
             </div>
           )}
@@ -340,7 +362,7 @@ const Profile = () => {
                   <h3 className="text-lg font-bold text-white mb-1">توثيق الحساب</h3>
                   <p className="text-sm text-white/70">مطلوب للبيع على المنصة</p>
                 </div>
-                <Shield className="h-8 w-8 text-yellow-400" />
+                <Shield className="h-8 w-8 text-yellow-400" aria-hidden="true" />
               </div>
               <Button asChild className="w-full gap-2 bg-yellow-500 hover:bg-yellow-600 text-white border-0 min-h-[48px] text-sm md:text-base">
                 <Link to="/kyc">
@@ -356,7 +378,7 @@ const Profile = () => {
                 <h3 className="text-lg font-bold text-white mb-1">قوائمي</h3>
                 <p className="text-sm text-white/70">إدارة حساباتي المعروضة</p>
               </div>
-              <Package className="h-8 w-8 text-[hsl(195,80%,70%)]" />
+              <Package className="h-8 w-8 text-[hsl(195,80%,70%)]" aria-hidden="true" />
             </div>
             <Button asChild className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px] text-sm md:text-base">
               <Link to="/my-listings">
@@ -376,7 +398,7 @@ const Profile = () => {
               className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] text-sm md:text-base"
             >
               <Link to="/edit-profile">
-                <User className="h-5 w-5 flex-shrink-0" />
+                <User className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                 <span className="truncate">تعديل الملف الشخصي</span>
               </Link>
             </Button>
@@ -386,7 +408,7 @@ const Profile = () => {
               className="w-full justify-start gap-3 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] text-sm md:text-base"
             >
               <Link to="/security">
-                <Shield className="h-5 w-5 flex-shrink-0" />
+                <Shield className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
                 <span className="truncate">الأمان والخصوصية</span>
               </Link>
             </Button>
@@ -395,19 +417,20 @@ const Profile = () => {
               variant="outline" 
               className="w-full justify-start gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30 min-h-[48px] text-sm md:text-base"
             >
-              <LogOut className="h-5 w-5 flex-shrink-0" />
+              <LogOut className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span className="truncate">تسجيل الخروج</span>
             </Button>
           </div>
         </Card>
-      </div>
+        </div>
 
-      {/* Glow effects */}
-      <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
-      
-      {/* Bottom Navigation for Mobile */}
-      <BottomNav />
-    </div>
+        {/* Glow effects */}
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" />
+        
+        {/* Bottom Navigation for Mobile */}
+        <BottomNav />
+      </div>
+    </>
   );
 };
 
