@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
+import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/lib/api";
@@ -54,19 +55,32 @@ const EditProfile = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+    <>
+      <SEO 
+        title="تعديل الملف الشخصي - NXOLand"
+        description="قم بتحديث معلومات حسابك الشخصية على NXOLand. تعديل الاسم، البريد الإلكتروني، ورقم الهاتف."
+      />
+      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        {/* Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
-      {/* Navigation */}
-      <Navbar />
+        {/* Skip link for keyboard navigation */}
+        <a 
+          href="#edit-profile-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+        >
+          تخطي إلى النموذج
+        </a>
 
-      {/* Main Content */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-2xl pb-24 md:pb-8">
+        {/* Navigation */}
+        <Navbar />
+
+        {/* Main Content */}
+        <div id="edit-profile-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-2xl pb-24 md:pb-8">
         {/* Header */}
         <div className="mb-8">
           <Link to="/profile" className="inline-flex items-center gap-2 text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] transition-colors mb-4">
-            <ArrowRight className="h-5 w-5" />
+            <ArrowRight className="h-5 w-5" aria-hidden="true" />
             <span>العودة للملف الشخصي</span>
           </Link>
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">تعديل الملف الشخصي</h1>
@@ -79,7 +93,7 @@ const EditProfile = () => {
             {/* Avatar Section */}
             <div className="flex flex-col items-center gap-4 pb-6 border-b border-white/10">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                <User className="h-12 w-12 text-white" />
+                <User className="h-12 w-12 text-white" aria-hidden="true" />
               </div>
               <Button 
                 variant="outline" 
@@ -95,13 +109,14 @@ const EditProfile = () => {
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white">الاسم الكامل</Label>
               <div className="relative">
-                <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   disabled={updateProfileMutation.isPending}
+                  aria-label="الاسم الكامل"
                 />
               </div>
             </div>
@@ -110,7 +125,7 @@ const EditProfile = () => {
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white">البريد الإلكتروني</Label>
               <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                 <Input
                   id="email"
                   type="email"
@@ -118,6 +133,7 @@ const EditProfile = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   disabled={updateProfileMutation.isPending}
+                  aria-label="البريد الإلكتروني"
                 />
               </div>
             </div>
@@ -126,7 +142,7 @@ const EditProfile = () => {
             <div className="space-y-2">
               <Label htmlFor="phone" className="text-white">رقم الهاتف</Label>
               <div className="relative">
-                <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                <Phone className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                 <Input
                   id="phone"
                   type="tel"
@@ -134,6 +150,7 @@ const EditProfile = () => {
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   disabled={updateProfileMutation.isPending}
+                  aria-label="رقم الهاتف"
                 />
               </div>
             </div>
@@ -146,26 +163,27 @@ const EditProfile = () => {
             >
               {updateProfileMutation.isPending ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
                   جاري الحفظ...
                 </>
               ) : (
                 <>
-                  <Save className="h-5 w-5" />
+                  <Save className="h-5 w-5" aria-hidden="true" />
                   حفظ التغييرات
                 </>
               )}
             </Button>
           </div>
         </Card>
-      </div>
+        </div>
 
-      {/* Glow effects */}
-      <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" />
-      
-      {/* Bottom Navigation for Mobile */}
-      <BottomNav />
-    </div>
+        {/* Glow effects */}
+        <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" />
+        
+        {/* Bottom Navigation for Mobile */}
+        <BottomNav />
+      </div>
+    </>
   );
 };
 
