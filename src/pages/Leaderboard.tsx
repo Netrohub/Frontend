@@ -8,6 +8,7 @@ import { SEO } from "@/components/SEO";
 import { publicApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface LeaderboardUser {
   id: number;
@@ -18,6 +19,7 @@ interface LeaderboardUser {
 }
 
 const Leaderboard = () => {
+  const { t, language } = useLanguage();
   const { data, isLoading, error } = useQuery({
     queryKey: ['leaderboard'],
     queryFn: () => publicApi.leaderboard(),
@@ -32,7 +34,7 @@ const Leaderboard = () => {
     name: user.name,
     revenue: user.total_revenue.toLocaleString('en-US'),
     sales: user.total_sales,
-    badge: index === 0 ? "ذهبية" : index === 1 ? "فضية" : index === 2 ? "برونزية" : undefined,
+    badge: index === 0 ? t('leaderboard.gold') : index === 1 ? t('leaderboard.silver') : index === 2 ? t('leaderboard.bronze') : undefined,
     isVerified: true, // All leaderboard users are verified
   }));
 
@@ -62,10 +64,10 @@ const Leaderboard = () => {
   return (
     <>
       <SEO 
-        title="لوحة الصدارة - NXOLand"
-        description="تعرف على أفضل البائعين على منصة NXOLand. لوحة الصدارة تعرض أعلى المبيعات والأرباح للبائعين الموثوقين."
+        title={`${t('leaderboard.title')} - NXOLand`}
+        description={t('leaderboard.description')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
@@ -74,7 +76,7 @@ const Leaderboard = () => {
           href="#leaderboard-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى لوحة الصدارة
+          {t('leaderboard.skipToLeaderboard')}
         </a>
         
         {/* Snow particles */}
@@ -91,9 +93,9 @@ const Leaderboard = () => {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 mb-3">
               <Trophy className="h-8 w-8 text-[hsl(40,90%,55%)]" aria-hidden="true" />
-              <h1 className="text-3xl md:text-4xl font-black text-white">لوحة الصدارة</h1>
+              <h1 className="text-3xl md:text-4xl font-black text-white">{t('leaderboard.title')}</h1>
             </div>
-            <p className="text-lg text-white/60">أفضل البائعين على المنصة</p>
+            <p className="text-lg text-white/60">{t('leaderboard.subtitle')}</p>
           </div>
 
           {/* Loading State */}
@@ -106,8 +108,8 @@ const Leaderboard = () => {
           {/* Error State */}
           {error && (
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
-              <p className="text-red-400 mb-4">فشل تحميل لوحة الصدارة</p>
-              <p className="text-white/60">يرجى المحاولة مرة أخرى لاحقاً</p>
+              <p className="text-red-400 mb-4">{t('leaderboard.loadError')}</p>
+              <p className="text-white/60">{t('leaderboard.tryAgain')}</p>
             </Card>
           )}
 
@@ -115,7 +117,7 @@ const Leaderboard = () => {
           {!isLoading && !error && topSellers.length === 0 && (
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
               <Trophy className="h-16 w-16 mx-auto mb-4 text-white/20" aria-hidden="true" />
-              <p className="text-white/60">لا توجد بيانات لعرضها حالياً</p>
+              <p className="text-white/60">{t('leaderboard.noData')}</p>
             </Card>
           )}
 
@@ -146,7 +148,7 @@ const Leaderboard = () => {
               <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[1].revenue}</div>
               <div className="text-xs font-bold text-white/90 mb-2">USD</div>
               <div className="flex items-center justify-center gap-1">
-                <span className="font-bold text-white text-sm">{topSellers[1].sales} عملية</span>
+                <span className="font-bold text-white text-sm">{topSellers[1].sales} {t('leaderboard.deals')}</span>
               </div>
             </Card>
           </div>
@@ -165,7 +167,7 @@ const Leaderboard = () => {
                   </div>
                 </div>
                 <Badge className="mb-2 bg-[hsl(195,80%,30%)] text-white border-[hsl(195,80%,50%)] font-bold text-xs">
-                  البائع الأول
+                  {t('leaderboard.topSeller')}
                 </Badge>
                 <h3 className="font-black text-white text-xl mb-2 drop-shadow-lg flex items-center justify-center gap-2">
                   {topSellers[0].name}
@@ -176,7 +178,7 @@ const Leaderboard = () => {
               <div className="text-4xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[0].revenue}</div>
               <div className="text-sm font-bold text-white/90 mb-2">USD</div>
               <div className="flex items-center justify-center gap-1 text-[hsl(45,100%,60%)]">
-                <span className="font-bold text-lg text-white">{topSellers[0].sales} عملية</span>
+                <span className="font-bold text-lg text-white">{topSellers[0].sales} {t('leaderboard.deals')}</span>
               </div>
             </Card>
           </div>
@@ -203,7 +205,7 @@ const Leaderboard = () => {
               <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[2].revenue}</div>
               <div className="text-xs font-bold text-white/90 mb-2">USD</div>
               <div className="flex items-center justify-center gap-1">
-                <span className="font-bold text-white text-sm">{topSellers[2].sales} عملية</span>
+                <span className="font-bold text-white text-sm">{topSellers[2].sales} {t('leaderboard.deals')}</span>
               </div>
             </Card>
           </div>
@@ -212,7 +214,7 @@ const Leaderboard = () => {
 
           {/* Rest of Leaderboard */}
           <Card className="p-4 bg-white/10 border-2 border-white/20 backdrop-blur-sm shadow-lg">
-            <h2 className="text-xl font-bold text-white mb-4 drop-shadow-lg">تصنيف كامل</h2>
+            <h2 className="text-xl font-bold text-white mb-4 drop-shadow-lg">{t('leaderboard.fullRanking')}</h2>
             <div className="space-y-2">
               {topSellers.slice(3).map((seller) => (
                 <div 
@@ -230,7 +232,7 @@ const Leaderboard = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/80 font-medium">
-                      <span>{seller.sales} عملية</span>
+                      <span>{seller.sales} {t('leaderboard.deals')}</span>
                     </div>
                   </div>
                   <div className="text-left">
