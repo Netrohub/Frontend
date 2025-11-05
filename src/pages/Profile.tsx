@@ -26,12 +26,14 @@ import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { ErrorState } from "@/components/ErrorState";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
 import { authApi } from "@/lib/api";
 import { toast } from "sonner";
 
 const Profile = () => {
   const { user, loading, logout } = useAuth();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
 
   // Get user statistics from API
@@ -112,8 +114,8 @@ const Profile = () => {
   if (loading) {
     return (
       <>
-        <SEO title="الملف الشخصي - NXOLand" />
-        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+        <SEO title={`${t('profile.title')} - NXOLand`} />
+        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
           <Navbar />
           <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex items-center justify-center min-h-[60vh]">
             <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
@@ -126,8 +128,8 @@ const Profile = () => {
   if (!user) {
     return (
       <>
-        <SEO title="الملف الشخصي - NXOLand" />
-        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+        <SEO title={`${t('profile.title')} - NXOLand`} />
+        <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
           <Navbar />
           <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
             <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض الملف الشخصي</p>

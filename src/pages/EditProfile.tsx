@@ -9,12 +9,14 @@ import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/lib/api";
 import { toast } from "sonner";
 
 const EditProfile = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
@@ -39,11 +41,11 @@ const EditProfile = () => {
       authApi.updateProfile(data),
     onSuccess: (updatedUser) => {
       queryClient.invalidateQueries({ queryKey: ['user'] });
-      toast.success("تم تحديث الملف الشخصي بنجاح");
+      toast.success(t('editProfile.updateSuccess'));
       navigate("/profile");
     },
     onError: (error: any) => {
-      toast.error(error.message || "فشل تحديث الملف الشخصي");
+      toast.error(error.message || t('editProfile.updateError'));
     },
   });
 
@@ -53,23 +55,23 @@ const EditProfile = () => {
 
   const handleSave = () => {
     if (!formData.name.trim()) {
-      toast.error("الاسم مطلوب");
+      toast.error(t('editProfile.nameRequired'));
       return;
     }
     if (formData.name.trim().length < 3) {
-      toast.error("الاسم يجب أن يكون 3 أحرف على الأقل");
+      toast.error(t('editProfile.nameMinLength'));
       return;
     }
     if (formData.name.length > 100) {
-      toast.error("الاسم طويل جداً (الحد الأقصى 100 حرف)");
+      toast.error(t('editProfile.nameTooLong'));
       return;
     }
     if (!formData.email.trim()) {
-      toast.error("البريد الإلكتروني مطلوب");
+      toast.error(t('editProfile.emailRequired'));
       return;
     }
     if (!isValidEmail(formData.email)) {
-      toast.error("صيغة البريد الإلكتروني غير صحيحة");
+      toast.error(t('editProfile.invalidEmail'));
       return;
     }
 

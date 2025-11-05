@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "@/lib/api";
 import { toast } from "sonner";
@@ -34,8 +35,8 @@ const getPasswordStrength = (password: string): number => {
   return strength;
 };
 
-const getPasswordStrengthLabel = (strength: number): string => {
-  const labels = ['ضعيف جداً', 'ضعيف', 'متوسط', 'قوي', 'قوي جداً'];
+const getPasswordStrengthLabel = (strength: number, t: any): string => {
+  const labels = [t('security.veryWeak'), t('security.weak'), t('security.medium'), t('security.strong'), t('security.veryStrong')];
   return labels[Math.max(0, strength - 1)] || labels[0];
 };
 
@@ -46,6 +47,7 @@ const getPasswordStrengthColor = (strength: number): string => {
 
 const Security = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const [twoFactor, setTwoFactor] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -64,7 +66,7 @@ const Security = () => {
     mutationFn: (data: { current_password: string; password: string; password_confirmation: string }) =>
       authApi.updatePassword(data),
     onSuccess: () => {
-      toast.success("تم تحديث كلمة المرور بنجاح. تم تسجيل الخروج من جميع الأجهزة الأخرى");
+      toast.success(t('security.passwordUpdateSuccess'));
       setPasswordData({ current_password: "", password: "", password_confirmation: "" });
       setIsConfirmOpen(false);
     },
@@ -73,11 +75,11 @@ const Security = () => {
       
       if (errorData.error_code === 'TOO_MANY_ATTEMPTS') {
         const retryAfter = errorData.retry_after || 15;
-        toast.error(`محاولات كثيرة جداً. يرجى المحاولة مرة أخرى بعد ${retryAfter} دقيقة`, {
+        toast.error(t('security.tooManyAttempts', { minutes: retryAfter }), {
           duration: 8000,
         });
       } else if (errorData.error_code === 'INVALID_CURRENT_PASSWORD' && errorData.attempts_remaining !== undefined) {
-        toast.error(`${error.message || 'كلمة المرور الحالية غير صحيحة'}\nالمحاولات المتبقية: ${errorData.attempts_remaining}`, {
+        toast.error(`${error.message || t('security.invalidCurrentPassword')}\n${t('security.attemptsRemaining')}: ${errorData.attempts_remaining}`, {
           duration: 6000,
         });
       } else {
