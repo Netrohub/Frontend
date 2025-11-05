@@ -65,10 +65,11 @@ const translations: Record<Language, Record<string, string>> = {
 'nav.disputes': 'النزاعات',
 'nav.myListings': 'إعلاناتي',
 'nav.kyc': 'توثيق الهوية',
-'nav.notifications': 'الإشعارات',
-'nav.settings': 'الإعدادات',
-'nav.logout': 'تسجيل الخروج',
-'nav.login': 'تسجيل الدخول',
+    'nav.notifications': 'الإشعارات',
+    'nav.settings': 'الإعدادات',
+    'nav.logout': 'تسجيل الخروج',
+    'nav.login': 'تسجيل الدخول',
+    'nav.suggestions': 'الاقتراحات والتقييم',
 'nav.community': 'المجتمع',
 
 // Home
@@ -642,6 +643,7 @@ const translations: Record<Language, Record<string, string>> = {
 'nav.settings': 'Settings',
 'nav.logout': 'Log Out',
 'nav.login': 'Log In',
+'nav.suggestions': 'Suggestions & Feedback',
 'nav.community': 'Community',
 
 // Home
