@@ -9,9 +9,11 @@ import { useState } from "react";
 import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { User } from "@/types/api";
 
 const AdminUsers = () => {
+  const { t, language } = useLanguage();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");

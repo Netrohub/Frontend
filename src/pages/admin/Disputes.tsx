@@ -10,9 +10,11 @@ import { useState } from "react";
 import { adminApi, disputesApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { Dispute } from "@/types/api";
 
 const AdminDisputes = () => {
+  const { t, language } = useLanguage();
   const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showResolveDialog, setShowResolveDialog] = useState(false);

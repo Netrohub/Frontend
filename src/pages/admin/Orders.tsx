@@ -10,9 +10,11 @@ import { useState } from "react";
 import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { Order } from "@/types/api";
 
 const AdminOrders = () => {
+  const { t, language } = useLanguage();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");

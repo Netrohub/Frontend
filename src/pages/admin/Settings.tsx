@@ -21,8 +21,10 @@ import { useState, useEffect } from "react";
 import { settingsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AdminSettings = () => {
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   
   const { data: settingsResponse, isLoading } = useQuery({

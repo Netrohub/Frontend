@@ -35,8 +35,10 @@ import { toast } from "sonner";
 import { Bell, Plus, Loader2, Send, Users, CheckCircle, Calendar } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const AdminNotifications = () => {
+  const { t, language } = useLanguage();
   const [showDialog, setShowDialog] = useState(false);
   const [formData, setFormData] = useState({
     title: "",

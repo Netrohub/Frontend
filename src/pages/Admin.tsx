@@ -5,8 +5,10 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { AdminNavbar } from "@/components/AdminNavbar";
 import { adminApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Admin = () => {
+  const { t, language } = useLanguage();
   const location = useLocation();
   const isRootAdmin = location.pathname === "/admin";
 
@@ -39,7 +41,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Top Navigation */}
       <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-[hsl(200,70%,15%,0.95)] backdrop-blur-sm border-b border-white/10">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
