@@ -9,6 +9,7 @@ import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-reac
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { sanitizeString, isValidEmail, isValidPassword } from "@/lib/utils/validation";
 import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
@@ -18,6 +19,7 @@ import { Turnstile } from "@/components/Turnstile";
 const Auth = () => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
+  const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [loginData, setLoginData] = useState({ email: "", password: "" });
@@ -34,18 +36,18 @@ const Auth = () => {
     
     // Turnstile validation
     if (!turnstileToken) {
-      toast.error("يرجى إكمال التحقق الأمني");
+      toast.error(t('auth.securityVerification'));
       return;
     }
     
     // Client-side validation
     if (!isValidEmail(loginData.email)) {
-      toast.error("يرجى إدخال بريد إلكتروني صحيح");
+      toast.error(t('auth.invalidEmail'));
       return;
     }
     
     if (!isValidPassword(loginData.password)) {
-      toast.error(`كلمة المرور يجب أن تكون ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} أحرف على الأقل`);
+      toast.error(`${t('auth.passwordTooShort')} ${VALIDATION_RULES.PASSWORD_MIN_LENGTH}`);
       return;
     }
     
@@ -54,11 +56,11 @@ const Auth = () => {
       // Sanitize inputs
       const sanitizedEmail = sanitizeString(loginData.email);
       await login(sanitizedEmail, loginData.password, turnstileToken);
-      toast.success("تم تسجيل الدخول بنجاح");
+      toast.success(t('auth.loginSuccess'));
       navigate("/");
     } catch (error) {
       const apiError = error as Error & ApiError;
-      toast.error(apiError.message || "فشل تسجيل الدخول");
+      toast.error(apiError.message || t('auth.loginError'));
       setTurnstileToken(""); // Reset turnstile on error
     } finally {
       setLoading(false);
