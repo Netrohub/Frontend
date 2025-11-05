@@ -7,6 +7,7 @@ import { Plus, Edit, Trash2, Eye, Shield, Loader2, CheckCircle2, XCircle, Calend
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { listingsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -15,6 +16,7 @@ import { useState } from "react";
 
 const MyListings = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -86,9 +88,9 @@ const MyListings = () => {
       inactive: "bg-gray-500/20 text-gray-400 border-gray-500/30",
     };
     const labels = { 
-      active: "نشط", 
-      sold: "مباع",
-      inactive: "غير نشط"
+      active: t('myListings.active'), 
+      sold: t('myListings.sold'),
+      inactive: t('myListings.inactive')
     };
     return <Badge className={styles[status as keyof typeof styles] || styles.inactive}>{labels[status as keyof typeof labels] || status}</Badge>;
   };

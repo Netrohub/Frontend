@@ -14,11 +14,13 @@ import { BottomNav } from "@/components/BottomNav";
 import { disputesApi, ordersApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { Order, Dispute, ApiError } from "@/types/api";
 
 const Disputes = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const [searchParams] = useSearchParams();
   const orderIdParam = searchParams.get('order_id');
   const queryClient = useQueryClient();

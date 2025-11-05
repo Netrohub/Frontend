@@ -14,6 +14,7 @@ import { SEO } from "@/components/SEO";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { suggestionsApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Turnstile } from "@/components/Turnstile";
 
 interface Suggestion {
@@ -31,6 +32,7 @@ interface Suggestion {
 
 const Suggestions = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");

@@ -7,6 +7,7 @@ import { Navbar } from "@/components/Navbar";
 import { kycApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { SEO } from "@/components/SEO";
@@ -20,6 +21,7 @@ const debugLog = (message: string, data?: any) => {
 
 const KYC = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [personaLoaded, setPersonaLoaded] = useState(false);

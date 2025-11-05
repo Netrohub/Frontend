@@ -20,12 +20,14 @@ import { SEO } from "@/components/SEO";
 import { disputesApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { Dispute } from "@/types/api";
 
 const DisputeDetails = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   

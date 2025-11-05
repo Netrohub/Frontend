@@ -115,6 +115,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.footer.terms': 'الشروط والأحكام',
 'home.footer.privacy': 'سياسة الخصوصية',
 'home.footer.support': 'الدعم الفني',
+'home.footer.suggestions': 'الاقتراحات والتقييم',
 
     
     // Sell
@@ -596,6 +597,16 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.viewDetails': 'عرض التفاصيل',
     'admin.sendNotification': 'إرسال إشعار',
     'admin.broadcastMessage': 'رسالة عامة',
+    'admin.reviews': 'التقييمات',
+    'admin.financial': 'التقارير المالية',
+    'admin.activityLogs': 'سجل النشاط',
+    'admin.totalRevenue': 'إجمالي الإيرادات',
+    'admin.pendingWithdrawals': 'السحوبات المعلقة',
+    'admin.transactions': 'المعاملات',
+    'admin.filter': 'تصفية',
+    'admin.exportData': 'تصدير البيانات',
+    'admin.refresh': 'تحديث',
+    'admin.loading': 'جاري التحميل...',
     
     // Help & Support
     'help.title': 'المساعدة',
@@ -713,7 +724,8 @@ const translations: Record<Language, Record<string, string>> = {
 'home.footer.rights': '© All rights reserved to NXOLand',
 'home.footer.terms': 'Terms & Conditions',
 'home.footer.privacy': 'Privacy Policy',
-'home.footer.support': 'Support',
+'home.footer.support': 'support',
+'home.footer.suggestions': 'suggestions',
 
     
     // Sell
@@ -1146,6 +1158,30 @@ const translations: Record<Language, Record<string, string>> = {
     'suggestions.status.approved': 'Approved',
     'suggestions.status.implemented': 'Implemented',
     
+    // My Listings
+    'myListings.title': 'My Listings',
+    'myListings.subtitle': 'Manage your listings',
+    'myListings.createNew': 'Create New Listing',
+    'myListings.all': 'All',
+    'myListings.active': 'Active',
+    'myListings.inactive': 'Inactive',
+    'myListings.sold': 'Sold',
+    'myListings.noListings': 'No listings',
+    'myListings.noListingsMessage': 'You haven\'t created any listings yet',
+    'myListings.getStarted': 'Start Selling',
+    'myListings.edit': 'Edit',
+    'myListings.delete': 'Delete',
+    'myListings.markAsSold': 'Mark as Sold',
+    'myListings.reactivate': 'Reactivate',
+    'myListings.deactivate': 'Deactivate',
+    'myListings.deleteConfirm': 'Are you sure?',
+    'myListings.deleteMessage': 'This listing will be permanently deleted',
+    'myListings.soldConfirm': 'Mark as sold?',
+    'myListings.soldMessage': 'Do you want to mark this listing as sold?',
+    'myListings.stats': 'Statistics',
+    'myListings.views': 'Views',
+    'myListings.createdAt': 'Created At',
+    
     // Admin
     'admin.dashboard': 'Dashboard',
     'admin.users': 'Users',
@@ -1171,6 +1207,16 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.viewDetails': 'View Details',
     'admin.sendNotification': 'Send Notification',
     'admin.broadcastMessage': 'Broadcast Message',
+    'admin.reviews': 'Reviews',
+    'admin.financial': 'Financial Reports',
+    'admin.activityLogs': 'Activity Logs',
+    'admin.totalRevenue': 'Total Revenue',
+    'admin.pendingWithdrawals': 'Pending Withdrawals',
+    'admin.transactions': 'Transactions',
+    'admin.filter': 'Filter',
+    'admin.exportData': 'Export Data',
+    'admin.refresh': 'Refresh',
+    'admin.loading': 'Loading...',
     
     // Help & Support
     'help.title': 'Help',
