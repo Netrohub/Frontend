@@ -69,6 +69,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.settings': 'الإعدادات',
     'nav.logout': 'تسجيل الخروج',
     'nav.login': 'تسجيل الدخول',
+    'nav.community': 'المجتمع',
     
     // Home
     'home.hero.title': 'أفضل منصة لبيع وشراء حسابات الألعاب',
