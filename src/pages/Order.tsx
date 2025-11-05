@@ -9,6 +9,7 @@ import { Navbar } from "@/components/Navbar";
 import { ordersApi, listingsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 
@@ -16,6 +17,7 @@ const Order = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [showCredentials, setShowCredentials] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -80,18 +82,18 @@ const Order = () => {
   const confirmMutation = useMutation({
     mutationFn: () => ordersApi.confirm(orderId),
     onSuccess: () => {
-      toast.success("تم تأكيد الطلب بنجاح! شكراً لك على استخدام منصتنا");
+      toast.success(t('order.confirmSuccess'));
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setShowConfirmDialog(false);
     },
     onError: (error: any) => {
       if (error.error_code === 'ONLY_BUYER_CAN_CONFIRM') {
-        toast.error("فقط المشتري يمكنه تأكيد الطلب");
+        toast.error(t('order.onlyBuyerCanConfirm'));
       } else if (error.error_code === 'INVALID_ORDER_STATUS') {
-        toast.error("لا يمكن تأكيد هذا الطلب في حالته الحالية");
+        toast.error(t('order.cannotConfirmStatus'));
       } else {
-        toast.error(error.message || "فشل تأكيد الطلب");
+        toast.error(error.message || t('order.confirmError'));
       }
       setShowConfirmDialog(false);
     },
@@ -101,15 +103,15 @@ const Order = () => {
   const cancelMutation = useMutation({
     mutationFn: () => ordersApi.cancel(orderId),
     onSuccess: () => {
-      toast.success("تم إلغاء الطلب بنجاح");
+      toast.success(t('order.cancelSuccess'));
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
     onError: (error: any) => {
       if (error.error_code === 'CANNOT_CANCEL_COMPLETED') {
-        toast.error("لا يمكن إلغاء طلب مكتمل");
+        toast.error(t('order.cannotCancelCompleted'));
       } else {
-        toast.error(error.message || "فشل إلغاء الطلب");
+        toast.error(error.message || t('order.cancelError'));
       }
     },
   });
@@ -120,12 +122,12 @@ const Order = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { text: string; className: string }> = {
-      pending: { text: "قيد الانتظار", className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-      paid: { text: "تم الدفع", className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-      escrow_hold: { text: "قيد الضمان", className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]" },
-      completed: { text: "مكتمل", className: "bg-green-500/20 text-green-400 border-green-500/30" },
-      cancelled: { text: "ملغي", className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
-      disputed: { text: "قيد النزاع", className: "bg-red-500/20 text-red-400 border-red-500/30" },
+      pending: { text: t('order.statusPending'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+      paid: { text: t('order.statusPaid'), className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      escrow_hold: { text: t('order.statusEscrow'), className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]" },
+      completed: { text: t('order.statusCompleted'), className: "bg-green-500/20 text-green-400 border-green-500/30" },
+      cancelled: { text: t('order.statusCancelled'), className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
+      disputed: { text: t('order.statusDisputed'), className: "bg-red-500/20 text-red-400 border-red-500/30" },
     };
     const statusInfo = statusMap[status] || statusMap.pending;
     return <Badge className={statusInfo.className}>{statusInfo.text}</Badge>;
@@ -152,7 +154,7 @@ const Order = () => {
   const handleCopyCredential = (text: string, label: string) => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text);
-      toast.success(`تم نسخ ${label}`);
+      toast.success(t('order.copied', { label }));
     } else {
       // Fallback for browsers without clipboard API
       const textarea = document.createElement('textarea');
@@ -161,13 +163,13 @@ const Order = () => {
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      toast.success(`تم نسخ ${label}`);
+      toast.success(t('order.copied', { label }));
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar showDesktopLinks={false} />
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]">
@@ -179,16 +181,16 @@ const Order = () => {
 
   if (!order) {
     return (
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar showDesktopLinks={false} />
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
           <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
             <AlertTriangle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">الطلب غير موجود</h2>
-            <p className="text-white/60 mb-6">لم يتم العثور على الطلب المطلوب</p>
+            <h2 className="text-xl font-bold text-white mb-2">{t('order.notFound')}</h2>
+            <p className="text-white/60 mb-6">{t('order.notFoundMessage')}</p>
             <Button asChild className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
-              <Link to="/orders">العودة إلى الطلبات</Link>
+              <Link to="/orders">{t('order.backToOrders')}</Link>
             </Button>
           </Card>
         </div>

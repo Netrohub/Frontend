@@ -22,6 +22,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { walletApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { ANIMATION_CONFIG } from "@/config/constants";
 import { isValidNumber } from "@/lib/utils/validation";
@@ -35,6 +36,7 @@ const WITHDRAWAL_FEE = 2.50;
 
 const Wallet = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [bankAccount, setBankAccount] = useState("");
@@ -73,7 +75,7 @@ const Wallet = () => {
   const withdrawMutation = useMutation({
     mutationFn: (data: { amount: number; bank_account: string }) => walletApi.withdraw(data),
     onSuccess: () => {
-      toast.success("تم تقديم طلب السحب بنجاح. سيتم معالجة الطلب خلال 1-3 أيام عمل");
+      toast.success(t('wallet.withdrawSuccess'));
       queryClient.invalidateQueries({ queryKey: ['wallet'] });
       queryClient.invalidateQueries({ queryKey: ['withdrawals'] });
       setConfirmDialogOpen(false);
@@ -87,11 +89,11 @@ const Wallet = () => {
       const errorData = apiError.data || {};
       
       if (errorData.error_code === 'WITHDRAWAL_HOURLY_LIMIT_EXCEEDED') {
-        toast.error("لقد تجاوزت الحد الأقصى من طلبات السحب (3 في الساعة)");
+        toast.error(t('wallet.hourlyLimitExceeded'));
       } else if (errorData.error_code === 'DAILY_WITHDRAWAL_LIMIT_EXCEEDED') {
-        toast.error(`لقد تجاوزت الحد اليومي ($${errorData.daily_limit}). المتبقي: $${errorData.remaining}`);
+        toast.error(t('wallet.dailyLimitExceeded', { limit: errorData.daily_limit, remaining: errorData.remaining }));
       } else {
-        toast.error(apiError.message || "فشل طلب السحب");
+        toast.error(apiError.message || t('wallet.withdrawError'));
       }
     },
   });
@@ -99,7 +101,7 @@ const Wallet = () => {
   const validateIBAN = (value: string): boolean => {
     const cleaned = value.replace(/\s/g, '');
     if (!cleaned.match(/^SA\d{22}$/)) {
-      setIbanError("رقم الحساب البنكي يجب أن يكون بصيغة IBAN السعودي (SA + 22 رقم)");
+      setIbanError(t('wallet.invalidIBAN'));
       return false;
     }
     setIbanError("");
@@ -113,29 +115,29 @@ const Wallet = () => {
     const amount = parseFloat(withdrawAmount);
     
     if (!withdrawAmount || isNaN(amount)) {
-      toast.error("يرجى إدخال مبلغ صحيح");
+      toast.error(t('wallet.enterValidAmount'));
       return;
     }
     
     if (amount < MIN_WITHDRAWAL) {
-      toast.error(`الحد الأدنى للسحب هو $${MIN_WITHDRAWAL}`);
+      toast.error(t('wallet.minWithdrawal', { min: MIN_WITHDRAWAL }));
       return;
     }
     
     if (amount > MAX_WITHDRAWAL) {
-      toast.error(`الحد الأقصى للسحب هو $${MAX_WITHDRAWAL} لكل عملية`);
+      toast.error(t('wallet.maxWithdrawal', { max: MAX_WITHDRAWAL }));
       return;
     }
     
     if (amount > availableBalance) {
-      toast.error("المبلغ أكبر من الرصيد المتاح");
+      toast.error(t('wallet.exceedsBalance'));
       return;
     }
     
     // Validate bank account
     if (!bankAccount || !validateIBAN(bankAccount)) {
       if (!ibanError) {
-        toast.error("يرجى إدخال رقم IBAN صحيح");
+        toast.error(t('wallet.enterValidIBAN'));
       }
       return;
     }
