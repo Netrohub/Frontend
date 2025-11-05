@@ -22,13 +22,13 @@ const VerifyEmail = () => {
   const resendMutation = useMutation({
     mutationFn: () => authApi.resendVerificationEmail(),
     onSuccess: (data) => {
-      toast.success(data.message || "تم إرسال رسالة التحقق إلى بريدك الإلكتروني");
+      toast.success(data.message || t('verifyEmail.emailSent'));
     },
     onError: (error: any) => {
       if (error.message?.includes('already verified') || error.message?.includes('موثق بالفعل')) {
-        toast.info("البريد الإلكتروني موثق بالفعل");
+        toast.info(t('verifyEmail.alreadyVerified'));
       } else {
-        toast.error(error.message || "فشل إرسال رسالة التحقق");
+        toast.error(error.message || t('verifyEmail.sendFailed'));
       }
     },
   });
@@ -42,7 +42,7 @@ const VerifyEmail = () => {
 
       if (!id || !hash || !expires || !signature) {
         setStatus('error');
-        setMessage('رابط التحقق غير صالح أو منتهي الصلاحية');
+        setMessage(t('verifyEmail.invalidLink'));
         return;
       }
 
@@ -51,7 +51,7 @@ const VerifyEmail = () => {
       const timeoutId = setTimeout(() => {
         controller.abort();
         setStatus('timeout');
-        setMessage('انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.');
+        setMessage(t('verifyEmail.timeout'));
       }, 30000); // 30 second timeout
 
       try {
@@ -72,22 +72,22 @@ const VerifyEmail = () => {
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.message || 'فشل التحقق');
+          throw new Error(data.message || t('verifyEmail.verifyFailed'));
         }
 
         setStatus('success');
-        setMessage('تم توثيق بريدك الإلكتروني بنجاح! يمكنك الآن شراء الحسابات والتفاعل مع المنصة.');
+        setMessage(t('verifyEmail.successMessage'));
       } catch (error: any) {
         clearTimeout(timeoutId);
         
         if (error.name === 'AbortError') {
           setStatus('timeout');
-          setMessage('انتهت مهلة الطلب. يرجى المحاولة مرة أخرى.');
+          setMessage(t('verifyEmail.timeout'));
         } else {
           setStatus('error');
           setMessage(
             error.message || 
-            'فشل توثيق البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية.'
+            t('verifyEmail.errorMessage')
           );
         }
       }
@@ -117,18 +117,18 @@ const VerifyEmail = () => {
   return (
     <>
       <SEO 
-        title="توثيق البريد الإلكتروني - NXOLand"
-        description="توثيق عنوان البريد الإلكتروني لحسابك على منصة NXOLand"
+        title={`${t('verifyEmail.title')} - NXOLand`}
+        description={t('verifyEmail.description')}
       />
-      <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] pt-20 pb-12 px-4" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] pt-20 pb-12 px-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar />
         <div className="container mx-auto max-w-2xl">
           <Card className="p-8 bg-white/10 border-white/20 backdrop-blur-sm text-center">
             {status === 'loading' && (
               <>
                 <Loader2 className="h-16 w-16 text-[hsl(195,80%,70%)] mx-auto mb-4 animate-spin" />
-                <h2 className="text-2xl font-bold text-white mb-2">جاري التحقق من البريد الإلكتروني...</h2>
-                <p className="text-white/70">يرجى الانتظار</p>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('verifyEmail.verifying')}</h2>
+                <p className="text-white/70">{t('common.pleaseWait')}</p>
               </>
             )}
 
@@ -137,10 +137,10 @@ const VerifyEmail = () => {
                 <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 className="h-12 w-12 text-green-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">تم التوثيق بنجاح! ✅</h2>
+                <h2 className="text-2xl font-bold text-white mb-2">{t('verifyEmail.successTitle')}</h2>
                 <p className="text-white/80 mb-6">{message}</p>
                 <p className="text-sm text-white/60 mb-4">
-                  سيتم تحويلك إلى ملفك الشخصي خلال {countdown} {countdown === 1 ? 'ثانية' : 'ثواني'}...
+                  {t('verifyEmail.redirecting')} {countdown} {t('verifyEmail.seconds')}...
                 </p>
                 <div className="flex gap-3 justify-center">
                   <Button
@@ -148,7 +148,7 @@ const VerifyEmail = () => {
                     className="bg-green-500 hover:bg-green-600 text-white"
                   >
                     <Link to="/profile">
-                      انتقل الآن
+                      {t('verifyEmail.goNow')}
                       <ArrowRight className="h-4 w-4 mr-2" />
                     </Link>
                   </Button>
@@ -162,7 +162,7 @@ const VerifyEmail = () => {
                   <XCircle className="h-12 w-12 text-red-400" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">
-                  {status === 'timeout' ? 'انتهت المهلة ⏱️' : 'فشل التوثيق ❌'}
+                  {status === 'timeout' ? t('verifyEmail.timeoutTitle') : t('verifyEmail.errorTitle')}
                 </h2>
                 <p className="text-white/80 mb-6">{message}</p>
                 
@@ -175,12 +175,12 @@ const VerifyEmail = () => {
                     {resendMutation.isPending ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        جاري الإرسال...
+                        {t('common.sending')}
                       </>
                     ) : (
                       <>
                         <Mail className="h-4 w-4 mr-2" />
-                        إعادة إرسال رسالة التحقق
+                        {t('verifyEmail.resend')}
                       </>
                     )}
                   </Button>
@@ -189,15 +189,15 @@ const VerifyEmail = () => {
                     variant="outline"
                     className="border-white/20 text-white hover:bg-white/10 w-full"
                   >
-                    <Link to="/">العودة للرئيسية</Link>
+                    <Link to="/">{t('common.backToHome')}</Link>
                   </Button>
                 </div>
 
                 {status === 'timeout' && (
                   <Card className="p-4 bg-yellow-500/10 border-yellow-500/30 mt-6">
                     <div className="text-sm text-white/80 text-right">
-                      <p className="font-bold mb-1">⏱️ نصيحة:</p>
-                      <p>قد تكون المشكلة في اتصال الإنترنت. تأكد من الاتصال وحاول مرة أخرى.</p>
+                      <p className="font-bold mb-1">{t('verifyEmail.tip')}</p>
+                      <p>{t('verifyEmail.checkConnection')}</p>
                     </div>
                   </Card>
                 )}
