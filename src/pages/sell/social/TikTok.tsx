@@ -13,6 +13,9 @@ import { Video, Copy, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { z } from "zod";
+import { listingsApi } from "@/lib/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast as sonnerToast } from "sonner";
 
 const tiktokSchema = z.object({
   username: z.string().trim().min(1, "Username is required").max(100),
@@ -32,7 +35,34 @@ const TikTok = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, language } = useLanguage();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Create listing mutation
+  const createListingMutation = useMutation({
+    mutationFn: (data: {
+      title: string;
+      description: string;
+      price: number;
+      category: string;
+      account_email: string;
+      account_password: string;
+      account_metadata: any;
+    }) => listingsApi.create(data),
+    onSuccess: () => {
+      sonnerToast.success(t('listing.success'));
+      queryClient.invalidateQueries({ queryKey: ['my-listings'] });
+      navigate("/my-listings");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create listing",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    },
+  });
 
   const [formData, setFormData] = useState({
     username: "",
@@ -87,15 +117,22 @@ const TikTok = () => {
     try {
       setIsSubmitting(true);
 
-      // Simulate API call with all data
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      toast({
-        title: t('listing.success'),
-        description: t('listing.successDescription'),
+      // Create listing via API
+      createListingMutation.mutate({
+        title: `TikTok Account - @${formData.username}`,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        category: 'tiktok',
+        account_email: deliveryData.email,
+        account_password: deliveryData.password,
+        account_metadata: {
+          username: formData.username,
+          has_primary_email: formData.hasPrimaryEmail,
+          has_phone_number: formData.hasPhoneNumber,
+          verification_code: verificationCode,
+          delivery_instructions: deliveryData.instructions,
+        },
       });
-
-      navigate("/my-listings");
     } catch (error) {
       toast({
         title: "Error",
