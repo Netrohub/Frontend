@@ -41,14 +41,14 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                     "inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                     isActive("/") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
                   )}>
-                    الرئيسية
+                    {t('nav.home')}
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300">
-                  التداول
+                  {t('nav.marketplace')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%,0.95)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl z-50">
@@ -57,9 +57,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                         isActive("/marketplace") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                       )}>
-                        <div className="text-sm font-semibold leading-none">السوق</div>
+                        <div className="text-sm font-semibold leading-none">{t('nav.marketplace.browse')}</div>
                         <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                          تصفح جميع الحسابات المعروضة
+                          {t('nav.marketplace.browse.desc')}
                         </p>
                       </Link>
                     </li>
@@ -70,9 +70,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                             isActive("/sell") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                           )}>
-                            <div className="text-sm font-semibold leading-none">بيع حساب</div>
+                            <div className="text-sm font-semibold leading-none">{t('nav.marketplace.sell')}</div>
                             <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                              أضف حسابك للبيع
+                              {t('nav.marketplace.sell.desc')}
                             </p>
                           </Link>
                         </li>
@@ -81,9 +81,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                             isActive("/my-listings") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                           )}>
-                            <div className="text-sm font-semibold leading-none">إعلاناتي</div>
+                            <div className="text-sm font-semibold leading-none">{t('nav.marketplace.myListings')}</div>
                             <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                              إدارة إعلاناتك
+                              {t('nav.marketplace.myListings.desc')}
                             </p>
                           </Link>
                         </li>
@@ -95,7 +95,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
 
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300">
-                  المجتمع
+                  {t('nav.community')}
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%,0.95)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl z-50">
@@ -144,7 +144,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                         "inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                         isActive("/wallet") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
                       )}>
-                        المحفظة
+                        {t('nav.wallet')}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -155,7 +155,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                         "inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
                         isActive("/profile") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
                       )}>
-                        الملف الشخصي
+                        {t('nav.profile')}
                       </NavigationMenuLink>
                     </Link>
                   </NavigationMenuItem>
@@ -177,7 +177,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
             >
               <Link to="/auth">
                 <LogIn className="h-4 w-4 mr-2" />
-                تسجيل الدخول
+                {t('nav.login')}
               </Link>
             </Button>
           )}
