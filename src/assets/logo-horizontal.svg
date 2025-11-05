@@ -1,0 +1,48 @@
+<svg width="240" height="72" viewBox="0 0 240 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background for preview (remove if you want transparent) -->
+  <!-- <rect width="240" height="72" fill="#1a3a4a" rx="8"/> -->
+  
+  <!-- Snowflake Icon (Larger, centered vertically) -->
+  <g id="snowflake" transform="translate(16, 16)">
+    <!-- Center cross -->
+    <line x1="20" y1="10" x2="20" y2="30" stroke="#5FC5E1" stroke-width="2.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <line x1="10" y1="20" x2="30" y2="20" stroke="#5FC5E1" stroke-width="2.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </line>
+    
+    <!-- Diagonal cross -->
+    <line x1="14" y1="14" x2="26" y2="26" stroke="#5FC5E1" stroke-width="2.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <line x1="26" y1="14" x2="14" y2="26" stroke="#5FC5E1" stroke-width="2.5" stroke-linecap="round">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </line>
+    
+    <!-- Outer points (decorative) -->
+    <circle cx="20" cy="6" r="1.5" fill="#5FC5E1">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="20" cy="34" r="1.5" fill="#5FC5E1">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="6" cy="20" r="1.5" fill="#5FC5E1">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="34" cy="20" r="1.5" fill="#5FC5E1">
+      <animate attributeName="opacity" values="1;0.7;1" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- Text: NXO -->
+  <text x="68" y="46" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" fill="#FFFFFF" letter-spacing="-1">
+    NXO
+  </text>
+  
+  <!-- Text: Land -->
+  <text x="142" y="46" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="900" fill="#F59E0B" letter-spacing="-1">
+    Land
+  </text>
+</svg>
+

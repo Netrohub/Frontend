@@ -1,28 +1,23 @@
 import { Card } from "@/components/ui/card";
-import { Gamepad2, Users } from "lucide-react";
+import { Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { BackButton } from "@/components/BackButton";
 import { useLanguage } from "@/contexts/LanguageContext";
+import heroArctic from "@/assets/hero-arctic.jpg";
 
-const Sell = () => {
+const Gaming = () => {
   const { t, language } = useLanguage();
   
-  const categories = [
+  const games = [
     {
-      id: "gaming",
-      name: t('sell.gaming.title'),
-      icon: Gamepad2,
-      description: t('sell.gaming.description'),
-      path: "/sell/gaming",
+      id: "wos",
+      name: "Whiteout Survival",
+      icon: Snowflake,
+      description: t('sell.subtitle'),
+      path: "/sell/gaming/wos",
       gradient: "from-[hsl(195,80%,50%)] to-[hsl(220,70%,60%)]",
-    },
-    {
-      id: "social",
-      name: t('sell.social.title'),
-      icon: Users,
-      description: t('sell.social.description'),
-      path: "/sell/social",
-      gradient: "from-[hsl(280,70%,60%)] to-[hsl(320,70%,50%)]",
+      image: heroArctic,
     },
   ];
 
@@ -31,7 +26,7 @@ const Sell = () => {
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
-      {/* Particles */}
+      {/* Snow particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(30)].map((_, i) => (
           <div
@@ -52,31 +47,43 @@ const Sell = () => {
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-12 max-w-6xl">
-        <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-5xl font-black text-white mb-4">{t('sell.selectCategory')}</h1>
-          <p className="text-xl text-white/60">{t('sell.categorySubtitle')}</p>
+        <BackButton />
+        
+        <div className="text-center mb-12 mt-8">
+          <h1 className="text-3xl md:text-5xl font-black text-white mb-4">{t('sell.gaming.title')}</h1>
+          <p className="text-xl text-white/60">{t('sell.gaming.description')}</p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {categories.map((category) => {
-            const Icon = category.icon;
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {games.map((game) => {
+            const Icon = game.icon;
             return (
-              <Link key={category.id} to={category.path}>
-                <Card className="group relative overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] cursor-pointer h-full">
+              <Link key={game.id} to={game.path}>
+                <Card className="group relative overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] cursor-pointer">
+                  {/* Background Image */}
+                  <div className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity">
+                    <img 
+                      src={game.image} 
+                      alt={game.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${game.gradient} mix-blend-multiply`} />
+                  </div>
+
                   {/* Content */}
-                  <div className="relative p-8 flex flex-col items-center text-center space-y-6">
-                    <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${category.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                      <Icon className="h-12 w-12 text-white" />
+                  <div className="relative p-8 flex flex-col items-center text-center space-y-4">
+                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${game.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                      <Icon className="h-10 w-10 text-white" />
                     </div>
                     
                     <div>
-                      <h3 className="text-2xl font-bold text-white mb-2">{category.name}</h3>
-                      <p className="text-white/70">{category.description}</p>
+                      <h3 className="text-2xl font-bold text-white mb-2">{game.name}</h3>
+                      <p className="text-white/70">{game.description}</p>
                     </div>
 
                     <div className="pt-4">
                       <div className="inline-flex items-center gap-2 text-[hsl(195,80%,50%)] font-semibold group-hover:gap-4 transition-all">
-                        <span>{t('sell.explore')}</span>
+                        <span>{t('nav.sell')}</span>
                         <svg 
                           className="h-5 w-5" 
                           fill="none" 
@@ -98,9 +105,15 @@ const Sell = () => {
             );
           })}
         </div>
+
+        {/* Coming Soon Section */}
+        <div className="mt-12 text-center">
+          <p className="text-white/50 text-sm">{t('sell.comingSoon')}</p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Sell;
+export default Gaming;
+

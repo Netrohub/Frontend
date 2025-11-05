@@ -39,7 +39,11 @@ import Checkout from "./pages/Checkout";
 // Protected routes - lazy loaded
 const Order = lazy(() => import("./pages/Order"));
 const Sell = lazy(() => import("./pages/Sell"));
+const Gaming = lazy(() => import("./pages/sell/Gaming"));
+const Social = lazy(() => import("./pages/sell/Social"));
 const SellWOS = lazy(() => import("./pages/sell/SellWOS"));
+const TikTok = lazy(() => import("./pages/sell/social/TikTok"));
+const InstagramSell = lazy(() => import("./pages/sell/social/Instagram"));
 const MyListings = lazy(() => import("./pages/MyListings"));
 const Disputes = lazy(() => import("./pages/Disputes"));
 const DisputeDetails = lazy(() => import("./pages/DisputeDetails"));
@@ -54,6 +58,7 @@ const Wallet = lazy(() => import("./pages/Wallet"));
 // Public lazy routes
 const Suggestions = lazy(() => import("./pages/Suggestions"));
 const Reviews = lazy(() => import("./pages/Reviews"));
+const SocialProductExample = lazy(() => import("./pages/SocialProductExample"));
 
 // Admin routes - lazy loaded
 const Admin = lazy(() => import("./pages/Admin"));
@@ -63,6 +68,9 @@ const AdminOrders = lazy(() => import("./pages/admin/Orders"));
 const AdminDisputes = lazy(() => import("./pages/admin/Disputes"));
 const AdminSettings = lazy(() => import("./pages/admin/Settings"));
 const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
+const AdminReviews = lazy(() => import("./pages/admin/Reviews"));
+const AdminFinancial = lazy(() => import("./pages/admin/Financial"));
+const AdminActivity = lazy(() => import("./pages/admin/Activity"));
 const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
 
 // Loading component
@@ -113,6 +121,11 @@ const AppContent = () => {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/social-product-example" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <SocialProductExample />
+                  </Suspense>
+                } />
 
               {/* Protected Routes - Require Authentication */}
               <Route
@@ -162,11 +175,51 @@ const AppContent = () => {
                 }
               />
               <Route
-                path="/sell/wos"
+                path="/sell/gaming"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Gaming />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell/gaming/wos"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
                     <ProtectedRoute>
                       <SellWOS />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell/social"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Social />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell/social/tiktok"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <TikTok />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell/social/instagram"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <InstagramSell />
                     </ProtectedRoute>
                   </Suspense>
                 }
@@ -325,6 +378,30 @@ const AppContent = () => {
                   element={
                     <Suspense fallback={<LoadingFallback />}>
                       <AdminNotifications />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="reviews"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminReviews />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="financial"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminFinancial />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="activity"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminActivity />
                     </Suspense>
                   }
                 />

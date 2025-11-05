@@ -55,16 +55,33 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        gaming: {
-          dark: "hsl(var(--gaming-dark))",
-          accent: "hsl(var(--gaming-accent))",
-          gold: "hsl(var(--gaming-gold))",
-        },
-        trust: {
-          blue: "hsl(var(--trust-blue))",
-          green: "hsl(var(--trust-green))",
-        },
+      gaming: {
+        dark: "hsl(var(--gaming-dark))",
+        accent: "hsl(var(--gaming-accent))",
+        gold: "hsl(var(--gaming-gold))",
       },
+      trust: {
+        blue: "hsl(var(--trust-blue))",
+        green: "hsl(var(--trust-green))",
+      },
+      nav: {
+        background: "hsl(var(--nav-background))",
+        highlight: "hsl(var(--nav-highlight))",
+        accent: "hsl(var(--nav-accent))",
+      },
+      status: {
+        success: "hsl(var(--status-success))",
+        "success-foreground": "hsl(var(--status-success-foreground))",
+        warning: "hsl(var(--status-warning))",
+        "warning-foreground": "hsl(var(--status-warning-foreground))",
+        error: "hsl(var(--status-error))",
+        "error-foreground": "hsl(var(--status-error-foreground))",
+        info: "hsl(var(--status-info))",
+        "info-foreground": "hsl(var(--status-info-foreground))",
+        pending: "hsl(var(--status-pending))",
+        "pending-foreground": "hsl(var(--status-pending-foreground))",
+      },
+    },
       backgroundImage: {
         'gradient-arctic': 'var(--gradient-arctic)',
         'gradient-ice': 'var(--gradient-ice)',
