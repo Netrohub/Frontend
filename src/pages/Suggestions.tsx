@@ -72,13 +72,13 @@ const Suggestions = () => {
       queryClient.invalidateQueries({ queryKey: ['suggestions'] });
     },
     onError: () => {
-      toast.error("فشل التصويت. يرجى المحاولة مرة أخرى");
+      toast.error(t('suggestions.voteError'));
     },
   });
 
   const handleVote = (id: number, voteType: "up" | "down") => {
     if (!user) {
-      toast.error("يجب تسجيل الدخول للتصويت");
+      toast.error(t('suggestions.loginToVote'));
       return;
     }
     voteMutation.mutate({ id, voteType });
@@ -92,26 +92,26 @@ const Suggestions = () => {
       queryClient.invalidateQueries({ queryKey: ['suggestions'] });
       setNewTitle("");
       setNewDescription("");
-      toast.success("تم إرسال اقتراحك بنجاح");
+      toast.success(t('suggestions.createSuccess'));
     },
     onError: () => {
-      toast.error("فشل إرسال الاقتراح");
+      toast.error(t('suggestions.createError'));
     },
   });
 
   const handleSubmit = () => {
     if (!user) {
-      toast.error("يجب تسجيل الدخول لإضافة اقتراح");
+      toast.error(t('suggestions.loginToSuggest'));
       return;
     }
     
     if (!turnstileToken) {
-      toast.error("يرجى إكمال التحقق الأمني");
+      toast.error(t('suggestions.securityVerification'));
       return;
     }
     
     if (!newTitle.trim() || !newDescription.trim()) {
-      toast.error("يرجى ملء جميع الحقول");
+      toast.error(t('suggestions.fillAllFields'));
       return;
     }
 
@@ -131,30 +131,30 @@ const Suggestions = () => {
       queryClient.invalidateQueries({ queryKey: ['user-platform-review'] });
       setPlatformRating(0);
       setPlatformReview("");
-      toast.success("شكراً لتقييمك! تم إرسال رأيك بنجاح");
+      toast.success(t('suggestions.reviewSuccess'));
     },
     onError: () => {
-      toast.error("فشل إرسال التقييم");
+      toast.error(t('suggestions.reviewError'));
     },
   });
 
   const handlePlatformReviewSubmit = () => {
     if (!user) {
-      toast.error("يجب تسجيل الدخول لتقييم المنصة");
+      toast.error(t('suggestions.loginToReview'));
       return;
     }
     
     if (!turnstileToken) {
-      toast.error("يرجى إكمال التحقق الأمني");
+      toast.error(t('suggestions.securityVerification'));
       return;
     }
     
     if (platformRating === 0) {
-      toast.error("الرجاء اختيار تقييم");
+      toast.error(t('suggestions.selectRating'));
       return;
     }
     if (platformReview.trim().length < 10) {
-      toast.error("الرجاء كتابة تعليق لا يقل عن 10 أحرف");
+      toast.error(t('suggestions.minReviewLength'));
       return;
     }
 
@@ -179,9 +179,9 @@ const Suggestions = () => {
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { label: string; className: string }> = {
-      pending: { label: "قيد المراجعة", className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)]" },
-      approved: { label: "تمت الموافقة", className: "bg-green-500/20 text-green-400" },
-      implemented: { label: "تم التنفيذ", className: "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)]" },
+      pending: { label: t('suggestions.status.pending'), className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)]" },
+      approved: { label: t('suggestions.status.approved'), className: "bg-green-500/20 text-green-400" },
+      implemented: { label: t('suggestions.status.implemented'), className: "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)]" },
     };
     const variant = variants[status] || variants.pending;
     return <Badge className={variant.className}>{variant.label}</Badge>;
@@ -190,10 +190,10 @@ const Suggestions = () => {
   return (
     <>
       <SEO 
-        title="الاقتراحات والتقييمات - NXOLand"
-        description="شارك أفكارك لتطوير المنصة وقيّم تجربتك على NXOLand. ساعدنا في تحسين خدماتنا من خلال اقتراحاتك وآرائك."
+        title={`${t('suggestions.title')} - NXOLand`}
+        description={t('suggestions.subtitle')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
