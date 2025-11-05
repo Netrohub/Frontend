@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/StarRating";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function AdminReviews() {
+  const { t, language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
 
   const reviews = [

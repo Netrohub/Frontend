@@ -2,8 +2,10 @@ import { DollarSign, TrendingUp, TrendingDown, Download, Calendar } from "lucide
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function AdminFinancial() {
+  const { t, language } = useLanguage();
   const stats = [
     {
       title: "إجمالي الإيرادات",

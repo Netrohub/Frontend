@@ -30,6 +30,7 @@ const SellWOS = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const isVerified = user?.is_verified || false;
 
   // Form state

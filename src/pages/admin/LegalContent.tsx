@@ -7,8 +7,10 @@ import { FileText, Save, Eye, Code, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { siteSettingsApi } from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const LegalContent = () => {
+  const { t, language: currentLanguage } = useLanguage();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("terms");
   const [activeLanguage, setActiveLanguage] = useState<'ar' | 'en'>('ar');
