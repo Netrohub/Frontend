@@ -52,15 +52,15 @@ const MyListings = () => {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => listingsApi.delete(id),
     onSuccess: () => {
-      toast.success("تم حذف الإعلان بنجاح");
+      toast.success(t('myListings.deleteSuccess'));
       queryClient.invalidateQueries({ queryKey: ['my-listings'] });
       setDeleteId(null);
     },
     onError: (error: any) => {
       if (error.error_code === 'HAS_ACTIVE_ORDERS') {
-        toast.error("لا يمكن حذف الإعلان لأن لديه طلبات نشطة");
+        toast.error(t('myListings.hasActiveOrders'));
       } else {
-        toast.error(error.message || "فشل حذف الإعلان");
+        toast.error(error.message || t('myListings.deleteError'));
       }
       setDeleteId(null);
     },
@@ -71,12 +71,12 @@ const MyListings = () => {
     mutationFn: ({ id, status }: { id: number; status: string }) => 
       listingsApi.update(id, { status: status as 'active' | 'inactive' | 'sold' }),
     onSuccess: () => {
-      toast.success("تم تحديث حالة الإعلان");
+      toast.success(t('myListings.updateSuccess'));
       queryClient.invalidateQueries({ queryKey: ['my-listings'] });
       setMarkAsSoldId(null);
     },
     onError: (error: any) => {
-      toast.error(error.message || "فشل تحديث الإعلان");
+      toast.error(error.message || t('myListings.updateError'));
       setMarkAsSoldId(null);
     },
   });
@@ -106,14 +106,14 @@ const MyListings = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
           <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
-            <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض إعلاناتك</p>
+            <p className="text-white/60 mb-4">{t('myListings.loginRequired')}</p>
             <Button asChild className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white">
-              <Link to="/auth">تسجيل الدخول</Link>
+              <Link to="/auth">{t('myListings.loginButton')}</Link>
             </Button>
           </Card>
         </div>
@@ -123,7 +123,7 @@ const MyListings = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
@@ -136,7 +136,7 @@ const MyListings = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden pb-20" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden pb-20" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
 
@@ -147,13 +147,13 @@ const MyListings = () => {
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-black text-white mb-2">إعلاناتي</h1>
-            <p className="text-white/60">إدارة حساباتي المعروضة للبيع (يمكنك البيع والشراء بنفس الحساب)</p>
+            <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('myListings.title')}</h1>
+            <p className="text-white/60">{t('myListings.subtitle')}</p>
           </div>
           <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
             <Link to="/sell">
               <Plus className="h-5 w-5" />
-              إضافة حساب
+              {t('myListings.addAccount')}
             </Link>
           </Button>
         </div>
@@ -162,29 +162,29 @@ const MyListings = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-2xl font-black text-white mb-1">{stats.total}</div>
-            <div className="text-sm text-white/60">إجمالي الإعلانات</div>
+            <div className="text-sm text-white/60">{t('myListings.totalListings')}</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-2xl font-black text-green-400 mb-1">{stats.active}</div>
-            <div className="text-sm text-white/60">نشط</div>
+            <div className="text-sm text-white/60">{t('myListings.active')}</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-2xl font-black text-gray-400 mb-1">{stats.inactive}</div>
-            <div className="text-sm text-white/60">غير نشط</div>
+            <div className="text-sm text-white/60">{t('myListings.inactive')}</div>
           </Card>
           <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-2xl font-black text-blue-400 mb-1">{stats.sold}</div>
-            <div className="text-sm text-white/60">مباع</div>
+            <div className="text-sm text-white/60">{t('myListings.sold')}</div>
           </Card>
         </div>
 
         {/* Status Filter */}
         <Tabs value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setCurrentPage(1); }} className="mb-6">
           <TabsList className="bg-white/5 border border-white/10">
-            <TabsTrigger value="all" className="data-[state=active]:bg-[hsl(195,80%,50%)]">الكل</TabsTrigger>
-            <TabsTrigger value="active" className="data-[state=active]:bg-[hsl(195,80%,50%)]">نشط</TabsTrigger>
-            <TabsTrigger value="inactive" className="data-[state=active]:bg-[hsl(195,80%,50%)]">غير نشط</TabsTrigger>
-            <TabsTrigger value="sold" className="data-[state=active]:bg-[hsl(195,80%,50%)]">مباع</TabsTrigger>
+            <TabsTrigger value="all" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('myListings.all')}</TabsTrigger>
+            <TabsTrigger value="active" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('myListings.active')}</TabsTrigger>
+            <TabsTrigger value="inactive" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('myListings.inactive')}</TabsTrigger>
+            <TabsTrigger value="sold" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('myListings.sold')}</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -196,12 +196,12 @@ const MyListings = () => {
                 <Shield className="h-12 w-12 text-white/40" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white mb-2">لا توجد إعلانات</h3>
-                <p className="text-white/60 mb-6">ابدأ بإضافة حسابك الأول للبيع على المنصة</p>
+                <h3 className="text-xl font-bold text-white mb-2">{t('myListings.emptyStateTitle')}</h3>
+                <p className="text-white/60 mb-6">{t('myListings.emptyStateMessage')}</p>
                 <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
                   <Link to="/sell">
                     <Plus className="h-5 w-5" />
-                    إضافة حساب جديد
+                    {t('myListings.addNewAccount')}
                   </Link>
                 </Button>
               </div>
@@ -209,7 +209,7 @@ const MyListings = () => {
           </Card>
         ) : listings.length === 0 ? (
           <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
-            <p className="text-white/60">لا توجد إعلانات {statusFilter !== 'all' ? `بحالة "${statusFilter}"` : ''}</p>
+            <p className="text-white/60">{t('myListings.noListingsForFilter')}</p>
           </Card>
         ) : (
           <>
@@ -250,7 +250,7 @@ const MyListings = () => {
 
                       <div className="flex items-center gap-2 text-sm text-white/60">
                         <Eye className="h-4 w-4" />
-                        <span>{listing.views || 0} مشاهدة</span>
+                        <span>{listing.views || 0} {t('myListings.viewCount')}</span>
                       </div>
 
                       {/* Actions */}
@@ -265,7 +265,7 @@ const MyListings = () => {
                               disabled={updateStatusMutation.isPending}
                             >
                               <XCircle className="h-4 w-4" />
-                              إيقاف
+                              {t('myListings.deactivate')}
                             </Button>
                             <Button 
                               size="sm" 
@@ -275,7 +275,7 @@ const MyListings = () => {
                               disabled={updateStatusMutation.isPending}
                             >
                               <CheckCircle2 className="h-4 w-4" />
-                              مباع
+                              {t('myListings.markAsSold')}
                             </Button>
                           </>
                         )}
@@ -288,7 +288,7 @@ const MyListings = () => {
                             disabled={updateStatusMutation.isPending}
                           >
                             <CheckCircle2 className="h-4 w-4" />
-                            تنشيط
+                            {t('myListings.reactivate')}
                           </Button>
                         )}
                         <Button 
@@ -299,12 +299,12 @@ const MyListings = () => {
                           disabled={deleteMutation.isPending}
                         >
                           <Trash2 className="h-4 w-4" />
-                          حذف
+                          {t('myListings.delete')}
                         </Button>
                         <Button size="sm" asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 mr-auto">
                           <Link to={`/product/${listing.id}`}>
                             <Eye className="h-4 w-4" />
-                            معاينة
+                            {t('myListings.view')}
                           </Link>
                         </Button>
                       </div>
@@ -324,10 +324,10 @@ const MyListings = () => {
                   disabled={currentPage === 1}
                   className="bg-white/5 border-white/10 text-white hover:bg-white/10"
                 >
-                  السابق
+                  {t('myListings.previous')}
                 </Button>
                 <span className="text-white/60 px-4">
-                  صفحة {pagination.current_page} من {pagination.last_page}
+                  {t('myListings.page')} {pagination.current_page} {t('myListings.of')} {pagination.last_page}
                 </span>
                 <Button
                   variant="outline"
@@ -336,7 +336,7 @@ const MyListings = () => {
                   disabled={currentPage === pagination.last_page}
                   className="bg-white/5 border-white/10 text-white hover:bg-white/10"
                 >
-                  التالي
+                  {t('myListings.next')}
                 </Button>
               </div>
             )}
@@ -348,20 +348,20 @@ const MyListings = () => {
       <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle>تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogTitle>{t('myListings.deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">
-              هل أنت متأكد من حذف هذا الإعلان؟ لا يمكن التراجع عن هذا الإجراء.
+              {t('myListings.deleteDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-              إلغاء
+              {t('myListings.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteId && deleteMutation.mutate(deleteId)}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
-              حذف
+              {t('myListings.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -371,20 +371,20 @@ const MyListings = () => {
       <AlertDialog open={markAsSoldId !== null} onOpenChange={(open) => !open && setMarkAsSoldId(null)}>
         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle>تأكيد البيع</AlertDialogTitle>
+            <AlertDialogTitle>{t('myListings.soldTitle')}</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">
-              هل تم بيع هذا الحساب؟ سيتم تحديث حالة الإعلان إلى "مباع" وإخفاءه من القوائم العامة.
+              {t('myListings.soldDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-              إلغاء
+              {t('myListings.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => markAsSoldId && updateStatusMutation.mutate({ id: markAsSoldId, status: 'sold' })}
               className="bg-blue-500 hover:bg-blue-600 text-white"
             >
-              تأكيد البيع
+              {t('myListings.confirmSale')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
