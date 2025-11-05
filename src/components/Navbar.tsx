@@ -57,9 +57,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                         isActive("/marketplace") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                       )}>
-                        <div className="text-sm font-semibold leading-none">{t('nav.marketplace.browse')}</div>
+                        <div className="text-sm font-semibold leading-none">{t('nav.marketplace')}</div>
                         <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                          {t('nav.marketplace.browse.desc')}
+                          {t('home.hero.browseAccounts')}
                         </p>
                       </Link>
                     </li>
@@ -67,12 +67,12 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                       <>
                         <li>
                           <Link to="/sell" className={cn(
-                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
+                            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-all transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                             isActive("/sell") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                           )}>
-                            <div className="text-sm font-semibold leading-none">{t('nav.marketplace.sell')}</div>
+                            <div className="text-sm font-semibold leading-none">{t('nav.sell')}</div>
                             <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                              {t('nav.marketplace.sell.desc')}
+                              {t('sell.subtitle')}
                             </p>
                           </Link>
                         </li>
@@ -81,9 +81,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                             isActive("/my-listings") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                           )}>
-                            <div className="text-sm font-semibold leading-none">{t('nav.marketplace.myListings')}</div>
+                            <div className="text-sm font-semibold leading-none">{t('nav.myListings')}</div>
                             <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                              {t('nav.marketplace.myListings.desc')}
+                              {t('sell.subtitle')}
                             </p>
                           </Link>
                         </li>
