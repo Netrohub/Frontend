@@ -5,8 +5,10 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
+  const { t, language } = useLanguage();
   // Memoize snow particles for performance
   const snowParticles = useMemo(() => 
     [...Array(30)].map((_, i) => (
@@ -26,10 +28,10 @@ const About = () => {
   return (
     <>
       <SEO 
-        title="من نحن - NXOLand"
-        description="تعرف على قصة NXOLand - أول منصة عربية متخصصة في تداول حسابات الألعاب بنظام ضمان متكامل. رؤيتنا، قيمنا، وكيفية عمل المنصة."
+        title={`${t('about.title')} - NXOLand`}
+        description={t('about.description')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
@@ -38,7 +40,7 @@ const About = () => {
           href="#about-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى المحتوى
+          {t('about.skipToContent')}
         </a>
         
         {/* Snow particles */}
@@ -53,19 +55,18 @@ const About = () => {
         <div id="about-content" className="relative z-10 container mx-auto px-4 md:px-6 py-16 max-w-4xl pb-24 md:pb-16">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">من نحن</h1>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">{t('about.title')}</h1>
             <p className="text-xl text-white/70 max-w-2xl mx-auto">
-              منصة NXOLand هي أول منصة عربية متخصصة في تداول حسابات الألعاب بنظام ضمان متكامل
+              {t('about.subtitle')}
             </p>
           </div>
 
           {/* Mission */}
           <Card className="p-8 mb-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
             <Target className="h-12 w-12 text-[hsl(195,80%,70%)] mx-auto mb-4" aria-hidden="true" />
-          <h2 className="text-2xl font-bold text-white mb-4">رؤيتنا</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('about.vision')}</h2>
           <p className="text-white/80 text-lg leading-relaxed">
-            نسعى لتوفير بيئة آمنة وموثوقة لتداول حسابات الألعاب، حيث يمكن للاعبين شراء وبيع حساباتهم 
-            بكل ثقة واطمئنان. نؤمن بأن كل لاعب يستحق تجربة تداول عادلة ومحمية.
+            {t('about.visionText')}
           </p>
         </Card>
 
@@ -73,50 +74,42 @@ const About = () => {
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
               <Shield className="h-10 w-10 text-[hsl(195,80%,70%)] mx-auto mb-4" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-white mb-2">الأمان</h3>
-              <p className="text-white/70">حماية كاملة لجميع المعاملات</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t('about.security')}</h3>
+              <p className="text-white/70">{t('about.securityDesc')}</p>
             </Card>
 
             <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
               <Zap className="h-10 w-10 text-[hsl(40,90%,55%)] mx-auto mb-4" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-white mb-2">السرعة</h3>
-              <p className="text-white/70">معاملات فورية وسلسة</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t('about.speed')}</h3>
+              <p className="text-white/70">{t('about.speedDesc')}</p>
             </Card>
 
             <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all">
               <Heart className="h-10 w-10 text-red-400 mx-auto mb-4" aria-hidden="true" />
-              <h3 className="text-xl font-bold text-white mb-2">الثقة</h3>
-              <p className="text-white/70">مجتمع موثوق ومدعوم</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t('about.trust')}</h3>
+              <p className="text-white/70">{t('about.trustDesc')}</p>
             </Card>
           </div>
 
         {/* Story */}
         <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-8">
-          <h2 className="text-2xl font-bold text-white mb-4">قصتنا</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('about.story')}</h2>
           <div className="space-y-4 text-white/80 leading-relaxed">
-            <p>
-              بدأت NXOLand من فكرة بسيطة: كيف يمكننا جعل تداول حسابات الألعاب أكثر أماناً وسهولة؟
-            </p>
-            <p>
-              بعد تجارب شخصية مع عمليات احتيال في تداول الحسابات، قررنا بناء منصة تضع الأمان والثقة 
-              في المقام الأول. اليوم، نخدم آلاف اللاعبين في المنطقة العربية.
-            </p>
-            <p>
-              نستخدم أحدث تقنيات الأمان والتشفير، ونوفر نظام ضمان فريد يحمي حقوق المشتري والبائع على 
-              حد سواء. فريقنا متواجد على مدار الساعة لضمان تجربة سلسة لجميع المستخدمين.
-            </p>
+            <p>{t('about.storyPara1')}</p>
+            <p>{t('about.storyPara2')}</p>
+            <p>{t('about.storyPara3')}</p>
           </div>
         </Card>
 
           {/* How It Works */}
           <div className="mb-12">
-            <h2 className="text-3xl font-bold text-white mb-8 text-center">كيف تعمل المنصة</h2>
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">{t('about.howItWorks')}</h2>
             
             {/* Buyer Steps */}
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
               <div className="flex items-center gap-3 mb-6">
                 <ShoppingCart className="h-8 w-8 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-                <h3 className="text-2xl font-bold text-white">خطوات المشتري</h3>
+                <h3 className="text-2xl font-bold text-white">{t('about.buyerSteps')}</h3>
               </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex gap-4">
@@ -165,7 +158,7 @@ const About = () => {
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-6">
                 <TrendingUp className="h-8 w-8 text-[hsl(40,90%,55%)]" aria-hidden="true" />
-                <h3 className="text-2xl font-bold text-white">خطوات البائع</h3>
+                <h3 className="text-2xl font-bold text-white">{t('about.sellerSteps')}</h3>
               </div>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="flex gap-4">
@@ -215,22 +208,22 @@ const About = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-3xl font-black text-[hsl(195,80%,70%)] mb-2">1,200+</div>
-            <div className="text-sm text-white/60">مستخدم نشط</div>
+            <div className="text-sm text-white/60">{t('about.activeUsers')}</div>
           </Card>
           
           <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-3xl font-black text-[hsl(40,90%,55%)] mb-2">5,000+</div>
-            <div className="text-sm text-white/60">عملية ناجحة</div>
+            <div className="text-sm text-white/60">{t('about.successfulDeals')}</div>
           </Card>
           
           <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-3xl font-black text-green-400 mb-2">98%</div>
-            <div className="text-sm text-white/60">معدل الرضا</div>
+            <div className="text-sm text-white/60">{t('about.satisfactionRate')}</div>
           </Card>
           
           <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-3xl font-black text-white mb-2">24/7</div>
-            <div className="text-sm text-white/60">الدعم الفني</div>
+            <div className="text-sm text-white/60">{t('about.support')}</div>
           </Card>
         </div>
       </div>
@@ -238,7 +231,7 @@ const About = () => {
         {/* Footer */}
         <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
           <div className="container mx-auto px-4 text-center">
-            <p className="text-white/50">© 2025 NXOLand. جميع الحقوق محفوظة.</p>
+            <p className="text-white/50">{t('common.copyright')}</p>
           </div>
         </footer>
 
