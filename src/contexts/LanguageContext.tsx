@@ -515,6 +515,7 @@ const translations: Record<Language, Record<string, string>> = {
     'leaderboard.member': 'العضو',
     'leaderboard.sales': 'المبيعات',
     'leaderboard.rating': 'التقييم',
+    'leaderboard.topSeller': '#1',
     
     // Reviews
     'reviews.title': 'التقييمات',
@@ -545,6 +546,30 @@ const translations: Record<Language, Record<string, string>> = {
     'suggestions.status.pending': 'قيد المراجعة',
     'suggestions.status.approved': 'معتمد',
     'suggestions.status.implemented': 'تم التنفيذ',
+    
+    // My Listings
+    'myListings.title': 'إعلاناتي',
+    'myListings.subtitle': 'إدارة إعلاناتك',
+    'myListings.createNew': 'إنشاء إعلان جديد',
+    'myListings.all': 'الكل',
+    'myListings.active': 'نشط',
+    'myListings.inactive': 'غير نشط',
+    'myListings.sold': 'مباع',
+    'myListings.noListings': 'لا توجد إعلانات',
+    'myListings.noListingsMessage': 'لم تقم بإنشاء أي إعلانات بعد',
+    'myListings.getStarted': 'ابدأ البيع',
+    'myListings.edit': 'تعديل',
+    'myListings.delete': 'حذف',
+    'myListings.markAsSold': 'تحديد كمباع',
+    'myListings.reactivate': 'إعادة تفعيل',
+    'myListings.deactivate': 'إيقاف',
+    'myListings.deleteConfirm': 'هل أنت متأكد؟',
+    'myListings.deleteMessage': 'سيتم حذف هذا الإعلان نهائياً',
+    'myListings.soldConfirm': 'تحديد كمباع؟',
+    'myListings.soldMessage': 'هل تريد تحديد هذا الإعلان كمباع؟',
+    'myListings.stats': 'الإحصائيات',
+    'myListings.views': 'مشاهدات',
+    'myListings.createdAt': 'تاريخ الإنشاء',
     
     // Admin
     'admin.dashboard': 'لوحة المعلومات',
@@ -1089,6 +1114,7 @@ const translations: Record<Language, Record<string, string>> = {
     'leaderboard.member': 'Member',
     'leaderboard.sales': 'Sales',
     'leaderboard.rating': 'Rating',
+    'leaderboard.topSeller': '#1',
     
     // Reviews
     'reviews.title': 'Reviews',
