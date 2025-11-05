@@ -51,57 +51,70 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
 const translations: Record<Language, Record<string, string>> = {
   ar: {
-    // Navbar
-    'nav.home': 'الرئيسية',
-    'nav.marketplace': 'المتجر',
-    'nav.sell': 'بيع',
-    'nav.orders': 'الطلبات',
-    'nav.wallet': 'المحفظة',
-    'nav.profile': 'الملف الشخصي',
-    'nav.admin': 'لوحة التحكم',
-    'nav.members': 'الأعضاء',
-    'nav.leaderboard': 'المتصدرين',
-    'nav.help': 'المساعدة',
-    'nav.disputes': 'النزاعات',
-    'nav.myListings': 'إعلاناتي',
-    'nav.kyc': 'التحقق من الهوية',
-    'nav.notifications': 'الإشعارات',
-    'nav.settings': 'الإعدادات',
-    'nav.logout': 'تسجيل الخروج',
-    'nav.login': 'تسجيل الدخول',
-    'nav.community': 'المجتمع',
-    
-    // Home
-    'home.hero.title': 'أفضل منصة لبيع وشراء حسابات الألعاب',
-    'home.hero.subtitle': 'اشتر وبع حسابات ألعابك المفضلة بأمان وسرعة',
-    'home.hero.browseAccounts': 'تصفح الحسابات',
-    'home.hero.learnMore': 'اعرف المزيد',
-    'home.features.security': '🔒 آمن',
-    'home.features.fast': '⚡ سريع',
-    'home.features.support': '💬 دعم 24/7',
-    'home.whyChoose': 'لماذا تختار نكسولاند؟',
-    'home.feature1.title': 'معاملات آمنة',
-    'home.feature1.desc': 'نظام دفع آمن مع حماية المشتري والبائع',
-    'home.feature2.title': 'دعم على مدار الساعة',
-    'home.feature2.desc': 'فريق دعم متاح 24/7 لمساعدتك',
-    'home.feature3.title': 'أسعار تنافسية',
-    'home.feature3.desc': 'احصل على أفضل سعر لحساباتك',
-    'home.feature4.title': 'تحويل فوري',
-    'home.feature4.desc': 'احصل على أموالك فوراً بعد البيع',
-    'home.howItWorks': 'كيف يعمل؟',
-    'home.step1.title': 'اختر حساب',
-    'home.step1.desc': 'تصفح آلاف الحسابات المعروضة',
-    'home.step2.title': 'ادفع بأمان',
-    'home.step2.desc': 'استخدم نظام الدفع الآمن الخاص بنا',
-    'home.step3.title': 'احصل على حسابك',
-    'home.step3.desc': 'استلم حسابك فوراً بعد التأكيد',
-    'home.cta.title': 'ابدأ التداول الآن',
-    'home.cta.subtitle': 'انضم إلى آلاف المستخدمين الذين يثقون بنا',
-    'home.cta.getStarted': 'ابدأ الآن',
-    'home.footer.rights': 'جميع الحقوق محفوظة',
-    'home.footer.terms': 'الشروط والأحكام',
-    'home.footer.privacy': 'سياسة الخصوصية',
-    'home.footer.support': 'الدعم',
+   // Navbar
+'nav.home': 'الرئيسية',
+'nav.marketplace': 'المتجر',
+'nav.sell': 'بيع حساب',
+'nav.orders': 'طلباتي',
+'nav.wallet': 'المحفظة',
+'nav.profile': 'الملف الشخصي',
+'nav.admin': 'لوحة التحكم',
+'nav.members': 'الأعضاء',
+'nav.leaderboard': 'المتصدرين',
+'nav.help': 'المساعدة',
+'nav.disputes': 'النزاعات',
+'nav.myListings': 'إعلاناتي',
+'nav.kyc': 'توثيق الهوية',
+'nav.notifications': 'الإشعارات',
+'nav.settings': 'الإعدادات',
+'nav.logout': 'تسجيل الخروج',
+'nav.login': 'تسجيل الدخول',
+'nav.community': 'المجتمع',
+
+// Home
+'home.hero.title': 'NXOLand — منصتك الآمنة لتداول حسابات الألعاب',
+'home.hero.subtitle': 'بيع وشراء حساباتك المفضلة بسهولة، سرعة، وحماية تامة عبر نظام وساطة ذكي',
+'home.hero.browseAccounts': 'تصفح الحسابات',
+'home.hero.learnMore': 'اعرف المزيد',
+
+'home.features.security': '🔒 أمان مضمون',
+'home.features.fast': '⚡ معاملات سريعة',
+'home.features.support': '💬 دعم مباشر 24/7',
+
+'home.whyChoose': 'ليش تختار NXOLand؟',
+
+'home.feature1.title': 'نظام وساطة آمن',
+'home.feature1.desc': 'نحفظ حق البائع والمشتري من أول عملية حتى آخر خطوة',
+
+'home.feature2.title': 'دعم متواصل',
+'home.feature2.desc': 'فريق دعم متواجد دائمًا عبر ديسكورد لخدمتك في أي وقت',
+
+'home.feature3.title': 'أسعار عادلة وتنافسية',
+'home.feature3.desc': 'نقدم تجربة بيع وشراء بأسعار مميزة وبدون عمولات مبالغ فيها',
+
+'home.feature4.title': 'تحويل فوري وآمن',
+'home.feature4.desc': 'يتم التحويل للبائع فور تأكيد المشتري استلام الحساب',
+
+'home.howItWorks': 'طريقة العمل',
+
+'home.step1.title': 'اختر الحساب المناسب',
+'home.step1.desc': 'تصفح حسابات متعددة حسب اللعبة، السعر، والمستوى',
+
+'home.step2.title': 'ادفع بأمان تام',
+'home.step2.desc': 'استخدم نظام Tap للدفع الموثوق والمشفر بالكامل',
+
+'home.step3.title': 'استلم حسابك فورًا',
+'home.step3.desc': 'بعد الدفع يتم تسليم الحساب تلقائيًا مع ضمان الحقوق للطرفين',
+
+'home.cta.title': 'ابدأ الآن بثقة',
+'home.cta.subtitle': 'انضم لآلاف اللاعبين اللي يثقون في NXOLand لتداول حساباتهم بأمان',
+'home.cta.getStarted': 'ابدأ التداول',
+
+'home.footer.rights': '© جميع الحقوق محفوظة لـ NXOLand',
+'home.footer.terms': 'الشروط والأحكام',
+'home.footer.privacy': 'سياسة الخصوصية',
+'home.footer.support': 'الدعم الفني',
+
     
     // Sell
     'sell.title': 'اختر اللعبة',
@@ -611,56 +624,70 @@ const translations: Record<Language, Record<string, string>> = {
     'time.yearsAgo': 'منذ {n} سنة',
   },
   en: {
-    // Navbar
-    'nav.home': 'Home',
-    'nav.marketplace': 'Marketplace',
-    'nav.sell': 'Sell',
-    'nav.orders': 'Orders',
-    'nav.wallet': 'Wallet',
-    'nav.profile': 'Profile',
-    'nav.admin': 'Admin Panel',
-    'nav.members': 'Members',
-    'nav.leaderboard': 'Leaderboard',
-    'nav.help': 'Help',
-    'nav.disputes': 'Disputes',
-    'nav.myListings': 'My Listings',
-    'nav.kyc': 'KYC Verification',
-    'nav.notifications': 'Notifications',
-    'nav.settings': 'Settings',
-    'nav.logout': 'Logout',
-    'nav.login': 'Login',
-    
-    // Home
-    'home.hero.title': 'Best Platform for Buying and Selling Game Accounts',
-    'home.hero.subtitle': 'Buy and sell your favorite game accounts safely and quickly',
-    'home.hero.browseAccounts': 'Browse Accounts',
-    'home.hero.learnMore': 'Learn More',
-    'home.features.security': '🔒 Secure',
-    'home.features.fast': '⚡ Fast',
-    'home.features.support': '💬 24/7 Support',
-    'home.whyChoose': 'Why Choose NXOLand?',
-    'home.feature1.title': 'Secure Transactions',
-    'home.feature1.desc': 'Secure payment system with buyer and seller protection',
-    'home.feature2.title': '24/7 Support',
-    'home.feature2.desc': 'Support team available 24/7 to help you',
-    'home.feature3.title': 'Competitive Prices',
-    'home.feature3.desc': 'Get the best price for your accounts',
-    'home.feature4.title': 'Instant Transfer',
-    'home.feature4.desc': 'Get your money instantly after sale',
-    'home.howItWorks': 'How It Works?',
-    'home.step1.title': 'Choose Account',
-    'home.step1.desc': 'Browse thousands of listed accounts',
-    'home.step2.title': 'Pay Safely',
-    'home.step2.desc': 'Use our secure payment system',
-    'home.step3.title': 'Get Your Account',
-    'home.step3.desc': 'Receive your account instantly after confirmation',
-    'home.cta.title': 'Start Trading Now',
-    'home.cta.subtitle': 'Join thousands of users who trust us',
-    'home.cta.getStarted': 'Get Started',
-    'home.footer.rights': 'All Rights Reserved',
-    'home.footer.terms': 'Terms & Conditions',
-    'home.footer.privacy': 'Privacy Policy',
-    'home.footer.support': 'Support',
+ // Navbar
+'nav.home': 'Home',
+'nav.marketplace': 'Marketplace',
+'nav.sell': 'Sell Account',
+'nav.orders': 'My Orders',
+'nav.wallet': 'Wallet',
+'nav.profile': 'Profile',
+'nav.admin': 'Admin Panel',
+'nav.members': 'Members',
+'nav.leaderboard': 'Leaderboard',
+'nav.help': 'Help Center',
+'nav.disputes': 'Disputes',
+'nav.myListings': 'My Listings',
+'nav.kyc': 'Identity Verification',
+'nav.notifications': 'Notifications',
+'nav.settings': 'Settings',
+'nav.logout': 'Log Out',
+'nav.login': 'Log In',
+'nav.community': 'Community',
+
+// Home
+'home.hero.title': 'NXOLand — Your Trusted Platform for Game Account Trading',
+'home.hero.subtitle': 'Buy and sell your favorite game accounts easily, securely, and instantly through our smart escrow system.',
+'home.hero.browseAccounts': 'Browse Accounts',
+'home.hero.learnMore': 'Learn More',
+
+'home.features.security': '🔒 Secure',
+'home.features.fast': '⚡ Fast',
+'home.features.support': '💬 24/7 Support',
+
+'home.whyChoose': 'Why Choose NXOLand?',
+
+'home.feature1.title': 'Smart Escrow Protection',
+'home.feature1.desc': 'Every transaction is protected to ensure both the buyer and seller are fully secured.',
+
+'home.feature2.title': '24/7 Discord Support',
+'home.feature2.desc': 'Our dedicated support team is available anytime through Discord for quick assistance.',
+
+'home.feature3.title': 'Fair & Competitive Prices',
+'home.feature3.desc': 'Enjoy smooth trades with fair pricing and minimal fees for both sides.',
+
+'home.feature4.title': 'Instant Payouts',
+'home.feature4.desc': 'Sellers receive their funds instantly once the buyer confirms account delivery.',
+
+'home.howItWorks': 'How It Works',
+
+'home.step1.title': 'Choose Your Account',
+'home.step1.desc': 'Browse thousands of verified accounts across multiple games.',
+
+'home.step2.title': 'Pay Securely',
+'home.step2.desc': 'Complete your payment safely using Tap, our trusted payment partner.',
+
+'home.step3.title': 'Receive Instantly',
+'home.step3.desc': 'Once payment is confirmed, your game account is delivered instantly.',
+
+'home.cta.title': 'Start Trading with Confidence',
+'home.cta.subtitle': 'Join thousands of gamers who trust NXOLand for safe and seamless trading.',
+'home.cta.getStarted': 'Get Started',
+
+'home.footer.rights': '© All rights reserved to NXOLand',
+'home.footer.terms': 'Terms & Conditions',
+'home.footer.privacy': 'Privacy Policy',
+'home.footer.support': 'Support',
+
     
     // Sell
     'sell.title': 'Choose Game',
