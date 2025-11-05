@@ -13,10 +13,12 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { PRICE_THRESHOLDS } from "@/config/constants";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { Listing } from "@/types/api";
 
 const Marketplace = () => {
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const isAuthenticated = !!user;
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -60,10 +62,10 @@ const Marketplace = () => {
   return (
     <>
       <SEO 
-        title="سوق الحسابات - NXOLand"
-        description="تصفح واشتر حسابات الألعاب بأمان. مئات الحسابات المتاحة للشراء مع نظام ضمان متكامل."
+        title={`${t('marketplace.title')} - NXOLand`}
+        description={t('marketplace.description')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
@@ -72,7 +74,7 @@ const Marketplace = () => {
           href="#marketplace-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى السوق
+          {t('marketplace.skipToMarket')}
         </a>
 
         {/* Navigation */}
@@ -82,8 +84,8 @@ const Marketplace = () => {
         <div id="marketplace-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">سوق الحسابات</h1>
-            <p className="text-white/60">تصفح واختر الحساب المثالي لك</p>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">{t('marketplace.title')}</h1>
+            <p className="text-white/60">{t('marketplace.subtitle')}</p>
           </div>
 
         {/* Search and Filters */}
@@ -93,45 +95,45 @@ const Marketplace = () => {
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
               <Input 
-                placeholder="ابحث عن حساب..."
+                placeholder={t('marketplace.searchPlaceholder')}
                 className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[hsl(195,80%,70%,0.5)]"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                aria-label="بحث في الحسابات المتاحة"
+                aria-label={t('marketplace.searchAriaLabel')}
               />
             </div>
             
             {/* Filters */}
             <div className="flex gap-3">
               <Select value={category} onValueChange={setCategory}>
-                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" aria-label="تصفية حسب الفئة">
-                  <SelectValue placeholder="الفئة" />
+                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" aria-label={t('marketplace.categoryFilter')}>
+                  <SelectValue placeholder={t('marketplace.category')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">جميع الفئات</SelectItem>
-                  <SelectItem value="gaming">ألعاب</SelectItem>
-                  <SelectItem value="social">اجتماعي</SelectItem>
-                  <SelectItem value="trading">تداول</SelectItem>
-                  <SelectItem value="other">أخرى</SelectItem>
+                  <SelectItem value="all">{t('marketplace.allCategories')}</SelectItem>
+                  <SelectItem value="gaming">{t('marketplace.gaming')}</SelectItem>
+                  <SelectItem value="social">{t('marketplace.social')}</SelectItem>
+                  <SelectItem value="trading">{t('marketplace.trading')}</SelectItem>
+                  <SelectItem value="other">{t('marketplace.other')}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select value={priceFilter} onValueChange={setPriceFilter}>
-                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" aria-label="تصفية حسب السعر">
-                  <SelectValue placeholder="السعر" />
+                <SelectTrigger className="w-[180px] bg-white/5 border-white/10 text-white" aria-label={t('marketplace.priceFilter')}>
+                  <SelectValue placeholder={t('marketplace.price')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">جميع الأسعار</SelectItem>
-                  <SelectItem value="low">أقل من 500 ر.س</SelectItem>
-                  <SelectItem value="mid">500 - 1500 ر.س</SelectItem>
-                  <SelectItem value="high">أكثر من 1500 ر.س</SelectItem>
+                  <SelectItem value="all">{t('marketplace.allPrices')}</SelectItem>
+                  <SelectItem value="low">{t('marketplace.lowPrice')}</SelectItem>
+                  <SelectItem value="mid">{t('marketplace.midPrice')}</SelectItem>
+                  <SelectItem value="high">{t('marketplace.highPrice')}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Button 
                 size="icon" 
                 className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] border-0"
-                aria-label="خيارات تصفية إضافية"
+                aria-label={t('marketplace.moreFilters')}
               >
                 <Filter className="h-5 w-5" />
               </Button>
@@ -141,7 +143,7 @@ const Marketplace = () => {
           {/* Results Count */}
           {!isLoading && !error && listings.length > 0 && (
             <p className="text-white/60 mb-4 text-sm">
-              عرض {filteredListings.length} من أصل {listings.length} حساب
+              {t('marketplace.showing')} {filteredListings.length} {t('marketplace.outOf')} {listings.length} {t('marketplace.accounts')}
             </p>
           )}
         </div>
@@ -156,25 +158,25 @@ const Marketplace = () => {
         {/* Error State */}
         {error && (
           <div className="text-center py-20">
-            <p className="text-red-400 mb-4">حدث خطأ في تحميل البيانات</p>
-            <Button onClick={() => refetch()} variant="outline">إعادة المحاولة</Button>
+            <p className="text-red-400 mb-4">{t('common.errorLoading')}</p>
+            <Button onClick={() => refetch()} variant="outline">{t('common.retry')}</Button>
           </div>
         )}
 
         {/* Empty State */}
         {!isLoading && !error && filteredListings.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-white/60 text-lg mb-4">لا توجد حسابات متاحة حالياً</p>
+            <p className="text-white/60 text-lg mb-4">{t('marketplace.noListings')}</p>
             {isAuthenticated ? (
               <Link to="/sell">
                 <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
-                  بيع حسابك الآن
+                  {t('marketplace.sellNow')}
                 </Button>
               </Link>
             ) : (
               <Link to="/auth">
                 <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
-                  سجل الآن لتبدأ البيع
+                  {t('marketplace.registerToSell')}
                 </Button>
               </Link>
             )}
@@ -224,7 +226,7 @@ const Marketplace = () => {
                     <div className="flex items-center justify-between pt-3 border-t border-white/10">
                       <span className="text-2xl font-black text-[hsl(195,80%,70%)]">{formatPrice(account.price)}</span>
                       <Button size="sm" className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
-                        عرض التفاصيل
+                        {t('marketplace.viewDetails')}
                       </Button>
                     </div>
                   </div>

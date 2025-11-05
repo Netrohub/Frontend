@@ -20,6 +20,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { listingsApi, ordersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { SEO } from "@/components/SEO";
@@ -28,6 +29,7 @@ const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t, language } = useLanguage();
   const isAuthenticated = !!user;
   const listingId = id ? parseInt(id) : 0;
 
@@ -42,7 +44,7 @@ const ProductDetails = () => {
 
   const handleBuy = async () => {
     if (!user) {
-      toast.error("يجب تسجيل الدخول أولاً");
+      toast.error(t('product.loginRequired'));
       navigate("/auth");
       return;
     }
@@ -57,7 +59,7 @@ const ProductDetails = () => {
       navigate(`/checkout?order_id=${order.id}`);
     } catch (error) {
       const apiError = error as Error & ApiError;
-      toast.error(apiError.message || "فشل إنشاء الطلب");
+      toast.error(apiError.message || t('product.createOrderError'));
     } finally {
       setIsCreatingOrder(false);
     }
@@ -121,13 +123,13 @@ const ProductDetails = () => {
   if (isLoading) {
     return (
       <>
-        <SEO title="تحميل..." />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+        <SEO title={t('common.loading')} />
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
           <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]" role="status" aria-live="polite">
             <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
-            <span className="sr-only">جاري تحميل تفاصيل المنتج...</span>
+            <span className="sr-only">{t('product.loadingDetails')}</span>
           </div>
         </div>
       </>
@@ -136,13 +138,13 @@ const ProductDetails = () => {
 
   if (error || !listing) {
     return (
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
-          <p className="text-red-400 mb-4">حدث خطأ في تحميل البيانات</p>
+          <p className="text-red-400 mb-4">{t('common.errorLoading')}</p>
           <Link to="/marketplace">
-            <Button>العودة للسوق</Button>
+            <Button>{t('product.backToMarket')}</Button>
           </Link>
         </div>
       </div>
@@ -157,10 +159,10 @@ const ProductDetails = () => {
     <>
       <SEO 
         title={`${listing.title} - NXOLand`}
-        description={listing.description || `شراء ${listing.title} من ${listing.category}`}
+        description={listing.description || `${t('product.buy')} ${listing.title} ${t('common.from')} ${listing.category}`}
         url={`/product/${listing.id}`}
       />
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
       
@@ -169,7 +171,7 @@ const ProductDetails = () => {
         href="#product-content" 
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
       >
-        تخطي إلى تفاصيل المنتج
+        {t('product.skipToProduct')}
       </a>
       
       {/* Snow particles */}
@@ -184,7 +186,7 @@ const ProductDetails = () => {
       <div id="product-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
         <Link to="/marketplace" className="inline-flex items-center gap-2 text-white/60 hover:text-[hsl(195,80%,70%)] mb-6 transition-colors">
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          العودة للسوق
+          {t('product.backToMarket')}
         </Link>
 
         <div className="grid lg:grid-cols-2 gap-8">
@@ -218,7 +220,7 @@ const ProductDetails = () => {
                   >
                     <img 
                       src={img} 
-                      alt={`${listing.title} - صورة ${i + 2}`}
+                      alt={`${listing.title} - ${t('product.image')} ${i + 2}`}
                       loading="lazy"
                       className="w-full h-full object-cover"
                     />
@@ -239,11 +241,11 @@ const ProductDetails = () => {
                       ? "bg-red-500/20 text-red-400 border-red-500/30"
                       : "bg-gray-500/20 text-gray-400 border-gray-500/30"
                   }>
-                  {listing.status === 'active' ? 'متاح الآن' : listing.status === 'sold' ? 'تم البيع' : 'غير متاح'}
+                  {listing.status === 'active' ? t('product.available') : listing.status === 'sold' ? t('product.sold') : t('product.unavailable')}
                 </Badge>
                 {listing.user?.is_verified && (
                   <Badge className="bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]">
-                    حساب مميز
+                    {t('product.premiumAccount')}
                   </Badge>
                 )}
                 </div>

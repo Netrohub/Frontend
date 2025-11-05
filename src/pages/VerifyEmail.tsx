@@ -8,10 +8,12 @@ import { SEO } from '@/components/SEO';
 import { authApi } from '@/lib/api';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'timeout'>('loading');
   const [message, setMessage] = useState('');
   const [countdown, setCountdown] = useState(3);

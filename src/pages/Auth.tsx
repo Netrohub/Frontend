@@ -72,28 +72,28 @@ const Auth = () => {
     
     // Turnstile validation
     if (!turnstileToken) {
-      toast.error("يرجى إكمال التحقق الأمني");
+      toast.error(t('auth.securityVerification'));
       return;
     }
     
     // Client-side validation
     if (registerData.name.length < VALIDATION_RULES.NAME_MIN_LENGTH) {
-      toast.error(`الاسم يجب أن يكون ${VALIDATION_RULES.NAME_MIN_LENGTH} أحرف على الأقل`);
+      toast.error(`${t('auth.nameTooShort')} ${VALIDATION_RULES.NAME_MIN_LENGTH}`);
       return;
     }
     
     if (!isValidEmail(registerData.email)) {
-      toast.error("يرجى إدخال بريد إلكتروني صحيح");
+      toast.error(t('auth.invalidEmail'));
       return;
     }
     
     if (!isValidPassword(registerData.password)) {
-      toast.error(`كلمة المرور يجب أن تكون ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} أحرف على الأقل`);
+      toast.error(`${t('auth.passwordTooShort')} ${VALIDATION_RULES.PASSWORD_MIN_LENGTH}`);
       return;
     }
     
     if (registerData.password !== registerData.password_confirmation) {
-      toast.error("كلمات المرور غير متطابقة");
+      toast.error(t('auth.passwordMismatch'));
       return;
     }
     
@@ -110,11 +110,11 @@ const Auth = () => {
       };
       
       await register(sanitizedData);
-      toast.success("تم إنشاء الحساب بنجاح");
+      toast.success(t('auth.registerSuccess'));
       navigate("/");
     } catch (error) {
       const apiError = error as Error & ApiError;
-      toast.error(apiError.message || "فشل إنشاء الحساب");
+      toast.error(apiError.message || t('auth.registerError'));
       setTurnstileToken(""); // Reset turnstile on error
     } finally {
       setLoading(false);
@@ -124,10 +124,10 @@ const Auth = () => {
   return (
     <>
       <SEO 
-        title="تسجيل الدخول - NXOLand"
-        description="سجل دخولك إلى NXOLand لبدء تداول الحسابات بأمان. منصة موثوقة لشراء وبيع حسابات الألعاب."
+        title={`${t('auth.login')} - NXOLand`}
+        description={t('auth.pageDescription')}
       />
-      <div className="min-h-screen relative overflow-hidden flex items-center justify-center" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden flex items-center justify-center" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
@@ -136,7 +136,7 @@ const Auth = () => {
           href="#auth-form" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى نموذج التسجيل
+          {t('auth.skipToForm')}
         </a>
         
         {/* Snow particles */}
@@ -167,17 +167,17 @@ const Auth = () => {
                 NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
               </span>
             </Link>
-            <p className="text-white/60">تداول آمن وموثوق للحسابات</p>
+            <p className="text-white/60">{t('auth.tagline')}</p>
           </div>
 
           <Card id="auth-form" className="p-6 bg-white/5 border-white/10 backdrop-blur-md">
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/5">
               <TabsTrigger value="login" className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white">
-                تسجيل الدخول
+                {t('auth.login')}
               </TabsTrigger>
               <TabsTrigger value="register" className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white">
-                إنشاء حساب
+                {t('auth.register')}
               </TabsTrigger>
             </TabsList>
 
@@ -185,7 +185,7 @@ const Auth = () => {
             <TabsContent value="login">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-white">البريد الإلكتروني</Label>
+                  <Label htmlFor="email" className="text-white">{t('auth.email')}</Label>
                   <div className="relative">
                     <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                     <Input 
@@ -196,14 +196,14 @@ const Auth = () => {
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                       autoComplete="email"
-                      aria-label="البريد الإلكتروني"
+                      aria-label={t('auth.email')}
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-white">كلمة المرور</Label>
+                  <Label htmlFor="password" className="text-white">{t('auth.password')}</Label>
                   <div className="relative">
                     <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                     <Input 
@@ -217,7 +217,7 @@ const Auth = () => {
                       autoCapitalize="off"
                       autoCorrect="off"
                       spellCheck="false"
-                      aria-label="كلمة المرور"
+                      aria-label={t('auth.password')}
                       required
                     />
                   </div>
@@ -227,10 +227,10 @@ const Auth = () => {
                   <button
                     type="button"
                     className="text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 rounded px-1"
-                    aria-label="نسيت كلمة المرور"
-                    onClick={() => toast.info("ميزة استعادة كلمة المرور قريباً")}
+                    aria-label={t('auth.forgotPassword')}
+                    onClick={() => toast.info(t('auth.passwordResetSoon'))}
                   >
-                    نسيت كلمة المرور؟
+                    {t('auth.forgotPassword')}
                   </button>
                 </div>
 
@@ -244,7 +244,7 @@ const Auth = () => {
                   disabled={loading || !turnstileToken}
                   className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50"
                 >
-                  {loading ? "جاري المعالجة..." : "تسجيل الدخول"}
+                  {loading ? t('common.processing') : t('auth.login')}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
               </form>
@@ -254,24 +254,24 @@ const Auth = () => {
             <TabsContent value="register">
               <form onSubmit={handleRegister} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-white">الاسم الكامل</Label>
+                  <Label htmlFor="name" className="text-white">{t('auth.fullName')}</Label>
                   <div className="relative">
                     <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                     <Input 
                       id="name"
                       type="text"
-                      placeholder="الاسم الكامل"
+                      placeholder={t('auth.fullName')}
                       className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       value={registerData.name}
                       onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                      aria-label="الاسم الكامل"
+                      aria-label={t('auth.fullName')}
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email-register" className="text-white">البريد الإلكتروني</Label>
+                  <Label htmlFor="email-register" className="text-white">{t('auth.email')}</Label>
                   <div className="relative">
                     <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                     <Input 
@@ -282,14 +282,14 @@ const Auth = () => {
                       value={registerData.email}
                       onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
                       autoComplete="email"
-                      aria-label="البريد الإلكتروني"
+                      aria-label={t('auth.email')}
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-white">رقم الهاتف (اختياري)</Label>
+                  <Label htmlFor="phone" className="text-white">{t('auth.phone')}</Label>
                   <Input 
                     id="phone"
                     type="tel"
@@ -298,12 +298,12 @@ const Auth = () => {
                     value={registerData.phone}
                     onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
                     autoComplete="tel"
-                    aria-label="رقم الهاتف"
+                    aria-label={t('auth.phone')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password-register" className="text-white">كلمة المرور</Label>
+                  <Label htmlFor="password-register" className="text-white">{t('auth.password')}</Label>
                   <div className="relative">
                     <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                     <Input 
@@ -317,7 +317,7 @@ const Auth = () => {
                       autoCapitalize="off"
                       autoCorrect="off"
                       spellCheck="false"
-                      aria-label="كلمة المرور"
+                      aria-label={t('auth.password')}
                       required
                       minLength={8}
                     />
@@ -325,7 +325,7 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="password-confirm" className="text-white">تأكيد كلمة المرور</Label>
+                  <Label htmlFor="password-confirm" className="text-white">{t('auth.confirmPassword')}</Label>
                   <div className="relative">
                     <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                     <Input 
@@ -339,7 +339,7 @@ const Auth = () => {
                       autoCapitalize="off"
                       autoCorrect="off"
                       spellCheck="false"
-                      aria-label="تأكيد كلمة المرور"
+                      aria-label={t('auth.confirmPassword')}
                       required
                     />
                   </div>
@@ -355,15 +355,15 @@ const Auth = () => {
                   disabled={loading || !turnstileToken}
                   className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50"
                 >
-                  {loading ? "جاري المعالجة..." : "إنشاء حساب"}
+                  {loading ? t('common.processing') : t('auth.register')}
                   <ArrowRight className="h-5 w-5" />
                 </Button>
 
                 <p className="text-center text-sm text-white/60">
-                  بإنشاء حساب، أنت توافق على{" "}
-                  <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">الشروط والأحكام</Link>
-                  {" "}و{" "}
-                  <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">سياسة الخصوصية</Link>
+                  {t('auth.termsAgreement')}{" "}
+                  <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">{t('auth.terms')}</Link>
+                  {" "}{t('common.and')}{" "}
+                  <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">{t('auth.privacy')}</Link>
                 </p>
               </form>
             </TabsContent>
@@ -372,7 +372,7 @@ const Auth = () => {
 
         <div className="text-center mt-6">
           <Link to="/" className="text-sm text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-            العودة للصفحة الرئيسية
+            {t('common.backToHome')}
           </Link>
         </div>
       </div>
