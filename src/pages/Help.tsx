@@ -7,32 +7,35 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Help = () => {
+  const { t, language } = useLanguage();
+  
   const faqs = [
     {
-      q: "كيف أشتري حساباً على المنصة؟",
-      a: "تصفح السوق، اختر الحساب المناسب، وأكمل عملية الدفع. ستحصل على معلومات الحساب فوراً مع ضمان 12 ساعة للتحقق."
+      q: t('help.faq1Q'),
+      a: t('help.faq1A')
     },
     {
-      q: "ماذا يعني نظام الضمان؟",
-      a: "نظام الضمان يحفظ أموالك لمدة 12 ساعة بعد الشراء. خلال هذه الفترة، يمكنك فحص الحساب والتأكد من صحته. إذا وجدت مشكلة، يمكنك فتح نزاع واسترداد أموالك."
+      q: t('help.faq2Q'),
+      a: t('help.faq2A')
     },
     {
-      q: "كيف أبيع حساباً؟",
-      a: "اذهب لصفحة 'إضافة حساب'، أدخل تفاصيل الحساب وصوره، وحدد السعر. سنراجع إعلانك وننشره خلال 24 ساعة."
+      q: t('help.faq3Q'),
+      a: t('help.faq3A')
     },
     {
-      q: "هل المنصة آمنة؟",
-      a: "نعم، نستخدم تشفير من الدرجة البنكية ونظام ضمان متكامل. جميع البيانات محمية ومشفرة، ولا يتم مشاركة معلومات الحساب إلا بعد إتمام الدفع."
+      q: t('help.faq4Q'),
+      a: t('help.faq4A')
     },
     {
-      q: "ماذا أفعل إذا واجهت مشكلة؟",
-      a: "يمكنك فتح نزاع من صفحة الطلب خلال 12 ساعة من الشراء. فريقنا سيراجع القضية خلال 24 ساعة ويتخذ القرار المناسب."
+      q: t('help.faq5Q'),
+      a: t('help.faq5A')
     },
     {
-      q: "كيف أسحب أموالي؟",
-      a: "بعد إتمام البيع وتأكيد المشتري، يمكنك سحب أموالك عبر التحويل البنكي أو محافظ إلكترونية. عملية السحب تستغرق 1-3 أيام عمل."
+      q: t('help.faq6Q'),
+      a: t('help.faq6A')
     },
   ];
 
@@ -55,10 +58,10 @@ const Help = () => {
   return (
     <>
       <SEO 
-        title="مركز المساعدة - NXOLand"
-        description="إجابات على الأسئلة الشائعة حول NXOLand. تعرف على كيفية شراء وبيع الحسابات، نظام الضمان، والتواصل مع فريق الدعم."
+        title={`${t('help.title')} - NXOLand`}
+        description={t('help.description')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
@@ -67,7 +70,7 @@ const Help = () => {
           href="#help-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى المحتوى
+          {t('help.skipToContent')}
         </a>
         
         {/* Snow particles */}
@@ -82,13 +85,13 @@ const Help = () => {
         <div id="help-content" className="relative z-10 container mx-auto px-4 md:px-6 py-16 max-w-4xl pb-24 md:pb-16">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">مركز المساعدة</h1>
-            <p className="text-xl text-white/70">إجابات على الأسئلة الشائعة</p>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">{t('help.title')}</h1>
+            <p className="text-xl text-white/70">{t('help.subtitle')}</p>
           </div>
 
         {/* FAQs */}
         <Card className="p-6 mb-8 bg-white/5 border-white/10 backdrop-blur-sm">
-          <h2 className="text-2xl font-bold text-white mb-6">الأسئلة الشائعة</h2>
+          <h2 className="text-2xl font-bold text-white mb-6">{t('help.faqTitle')}</h2>
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, i) => (
               <AccordionItem key={i} value={`item-${i}`} className="border-white/10">
@@ -105,8 +108,8 @@ const Help = () => {
 
         {/* Contact */}
         <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">تواصل معنا</h2>
-          <p className="text-center text-white/70 mb-6">لم تجد إجابة؟ تواصل مع فريق الدعم عبر Discord</p>
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">{t('help.contactUs')}</h2>
+          <p className="text-center text-white/70 mb-6">{t('help.contactMessage')}</p>
           
           <div className="flex justify-center">
             <Button 

@@ -12,9 +12,11 @@ import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
 import { publicApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { useLanguage } from "@/contexts/LanguageContext";
 import type { User } from "@/types/api";
 
 const Members = () => {
+  const { t, language } = useLanguage();
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,10 +86,10 @@ const Members = () => {
   return (
     <>
       <SEO 
-        title="أعضاء المنصة - NXOLand"
-        description="تعرف على البائعين الموثوقين على منصة NXOLand. تصفح الأعضاء المعتمدين واطلع على تقييماتهم وإحصائياتهم."
+        title={`${t('members.title')} - NXOLand`}
+        description={t('members.description')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
@@ -96,7 +98,7 @@ const Members = () => {
           href="#members-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى قائمة الأعضاء
+          {t('members.skipToMembers')}
         </a>
         
         {/* Snow particles */}
@@ -111,8 +113,8 @@ const Members = () => {
         <div id="members-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">أعضاء المنصة</h1>
-            <p className="text-white/60">تعرف على البائعين الموثوقين ({members.length} عضو)</p>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">{t('members.title')}</h1>
+            <p className="text-white/60">{t('members.subtitle', { count: members.length })}</p>
           </div>
 
           {/* Search and Filters */}
@@ -122,35 +124,35 @@ const Members = () => {
               <div className="flex-1 relative">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                 <Input 
-                  placeholder="ابحث عن عضو..."
+                  placeholder={t('members.searchPlaceholder')}
                   className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[hsl(195,80%,70%,0.5)]"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  aria-label="البحث عن عضو"
+                  aria-label={t('members.searchLabel')}
                 />
               </div>
               
               {/* Filters */}
               <div className="flex gap-3">
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-[150px] bg-white/5 border-white/10 text-white" aria-label="تصفية حسب الدور">
-                    <SelectValue placeholder="الدور" />
+                  <SelectTrigger className="w-[150px] bg-white/5 border-white/10 text-white" aria-label={t('members.filterByRole')}>
+                    <SelectValue placeholder={t('members.role')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">الكل</SelectItem>
-                    <SelectItem value="seller">بائعين</SelectItem>
-                    <SelectItem value="buyer">مشترين</SelectItem>
+                    <SelectItem value="all">{t('common.all')}</SelectItem>
+                    <SelectItem value="seller">{t('members.sellers')}</SelectItem>
+                    <SelectItem value="buyer">{t('members.buyers')}</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Select value={ratingFilter} onValueChange={setRatingFilter}>
-                  <SelectTrigger className="w-[150px] bg-white/5 border-white/10 text-white" aria-label="تصفية حسب التقييم">
-                    <SelectValue placeholder="التقييم" />
+                  <SelectTrigger className="w-[150px] bg-white/5 border-white/10 text-white" aria-label={t('members.filterByRating')}>
+                    <SelectValue placeholder={t('members.rating')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">جميع التقييمات</SelectItem>
-                    <SelectItem value="5">5 نجوم</SelectItem>
-                    <SelectItem value="4">4+ نجوم</SelectItem>
+                    <SelectItem value="all">{t('members.allRatings')}</SelectItem>
+                    <SelectItem value="5">{t('members.5stars')}</SelectItem>
+                    <SelectItem value="4">{t('members.4plusStars')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -169,7 +171,7 @@ const Members = () => {
             <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm text-center">
               <Users className="h-16 w-16 mx-auto mb-4 text-white/20" aria-hidden="true" />
               <p className="text-white/60">
-                {searchQuery ? `لا توجد نتائج للبحث عن "${searchQuery}"` : 'لا توجد أعضاء لعرضهم حالياً'}
+                {searchQuery ? t('members.noResults', { query: searchQuery }) : t('members.noMembers')}
               </p>
             </Card>
           )}
@@ -202,7 +204,7 @@ const Members = () => {
                       </h3>
                       {member.kyc_verified && (
                         <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] text-xs">
-                          عضو موثوق
+                          {t('members.trustedMember')}
                         </Badge>
                       )}
                     </div>
@@ -218,7 +220,7 @@ const Members = () => {
 
               {/* Join Date */}
               <div className="text-sm text-white/60 mb-4">
-                عضو منذ {formatDate(member.created_at)}
+                {t('members.memberSince', { date: formatDate(member.created_at) })}
               </div>
 
                 {/* Action Button */}
@@ -226,7 +228,7 @@ const Members = () => {
                   onClick={() => handleViewProfile(member.id)}
                   className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
                 >
-                  عرض الملف الشخصي
+                  {t('members.viewProfile')}
                 </Button>
               </Card>
             ))}
@@ -239,7 +241,7 @@ const Members = () => {
           <DialogContent className="bg-[hsl(217,33%,17%)] border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-                الملف الشخصي
+                {t('members.profile')}
               </DialogTitle>
             </DialogHeader>
             {selectedMemberDetails && (
@@ -264,7 +266,7 @@ const Members = () => {
                     </h3>
                     {selectedMemberDetails.kyc_verified && (
                       <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                        عضو موثوق
+                        {t('members.trustedMember')}
                       </Badge>
                     )}
                   </div>
@@ -273,7 +275,7 @@ const Members = () => {
                 {/* Bio */}
                 {selectedMemberDetails.bio && (
                   <Card className="p-4 bg-white/5 border-white/10">
-                    <h4 className="font-bold text-white mb-2">عن العضو</h4>
+                    <h4 className="font-bold text-white mb-2">{t('members.aboutMember')}</h4>
                     <p className="text-white/70 text-sm">{selectedMemberDetails.bio}</p>
                   </Card>
                 )}
@@ -282,25 +284,25 @@ const Members = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <Card className="p-4 bg-white/5 border-white/10 text-center">
                     <div className="text-2xl font-bold text-[hsl(195,80%,70%)] mb-1">{selectedMemberDetails.listings_count || 0}</div>
-                    <div className="text-xs text-white/60">إعلانات منشورة</div>
+                    <div className="text-xs text-white/60">{t('members.listings')}</div>
                   </Card>
                   <Card className="p-4 bg-white/5 border-white/10 text-center">
                     <div className="text-2xl font-bold text-[hsl(40,90%,55%)] mb-1">{selectedMemberDetails.orders_as_seller_count || 0}</div>
-                    <div className="text-xs text-white/60">عمليات بيع</div>
+                    <div className="text-xs text-white/60">{t('members.sales')}</div>
                   </Card>
                 </div>
 
                 {/* Member Info */}
                 <Card className="p-4 bg-white/5 border-white/10">
-                  <h4 className="font-bold text-white mb-3">معلومات العضو</h4>
+                  <h4 className="font-bold text-white mb-3">{t('members.memberInfo')}</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-white/60">تاريخ الانضمام:</span>
+                      <span className="text-white/60">{t('members.joinDate')}</span>
                       <span className="text-[hsl(195,80%,80%)]">{formatDate(selectedMemberDetails.created_at)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-white/60">إجمالي الإعلانات:</span>
-                      <span className="text-[hsl(195,80%,80%)]">{selectedMemberDetails.listings_count || 0} إعلان</span>
+                      <span className="text-white/60">{t('members.totalListings')}</span>
+                      <span className="text-[hsl(195,80%,80%)]">{selectedMemberDetails.listings_count || 0} {t('members.listings')}</span>
                     </div>
                   </div>
                 </Card>
