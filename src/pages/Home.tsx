@@ -136,15 +136,15 @@ const Home = () => {
       {/* Features Grid */}
       <section id="features" className="relative z-10 container mx-auto px-4 md:px-6 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">لماذا منصتنا؟</h2>
-          <p className="text-xl text-white/60">حماية كاملة لحقوق المشتري والبائع</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">{t('home.whyChoose')}</h2>
+          <p className="text-xl text-white/60">{t('home.feature1.desc')}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { title: "نظام ضمان آمن", icon: Shield, desc: "الأموال محفوظة في حساب ضمان حتى تأكيد استلام الحساب" },
-            { title: "تحويل فوري", icon: Snowflake, desc: "دفع سريع وآمن عبر تاب - استلم معلومات الحساب فوراً" },
-            { title: "دعم متواصل", icon: Flame, desc: "فريق دعم عربي متوفر للمساعدة في حل أي مشكلة بسرعة" },
+            { title: t('home.feature1.title'), icon: Shield, desc: t('home.feature1.desc') },
+            { title: t('home.feature4.title'), icon: Snowflake, desc: t('home.feature4.desc') },
+            { title: t('home.feature2.title'), icon: Flame, desc: t('home.feature2.desc') },
           ].map((feature, i) => (
             <div 
               key={i}
@@ -188,15 +188,15 @@ const Home = () => {
       {!isAuthenticated && (
         <section className="relative z-10 container mx-auto px-4 md:px-6 py-20 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <h2 className="text-4xl md:text-5xl font-bold text-white">ابدأ التداول الآن</h2>
-            <p className="text-xl text-white/70">انضم لآلاف المستخدمين الذين يثقون بمنصتنا لتداول الحسابات بأمان</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-white">{t('home.cta.title')}</h2>
+            <p className="text-xl text-white/70">{t('home.cta.subtitle')}</p>
             <Button 
               asChild
               size="lg" 
               className="gap-2 text-lg px-12 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
             >
               <Link to="/auth">
-                إنشاء حساب مجاني
+                {t('home.cta.getStarted')}
                 <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
@@ -209,20 +209,20 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-white/50 text-sm md:text-base">
-              © 2025 NXOLand. جميع الحقوق محفوظة.
+              © 2025 NXOLand. {t('home.footer.rights')}
             </p>
             <div className="flex items-center gap-6 text-sm">
               <Link to="/suggestions" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                قيّم المنصة
+                {t('home.footer.support')}
               </Link>
               <Link to="/terms" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                الشروط والأحكام
+                {t('home.footer.terms')}
               </Link>
               <Link to="/privacy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                سياسة الخصوصية
+                {t('home.footer.privacy')}
               </Link>
               <Link to="/help" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                الدعم
+                {t('home.footer.support')}
               </Link>
             </div>
           </div>
