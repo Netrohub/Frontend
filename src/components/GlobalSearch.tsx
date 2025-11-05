@@ -26,13 +26,13 @@ export const GlobalSearch = () => {
         variant="ghost"
         size="sm"
         onClick={() => setOpen(true)}
-        className="hidden md:flex gap-2 text-white/80 hover:text-white hover:bg-white/10"
+        className="hidden md:flex gap-2 text-white/90 hover:text-white hover:bg-white/10 flex-row-reverse"
       >
-        <Search className="h-4 w-4" />
-        <span className="text-sm">بحث...</span>
-        <kbd className="pointer-events-none hidden md:inline-flex h-5 select-none items-center gap-1 rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px] font-medium text-white/60">
+        <kbd className="pointer-events-none hidden md:inline-flex h-5 select-none items-center gap-1 rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px] font-medium text-white/60 mr-2">
           /
         </kbd>
+        <span className="text-sm">بحث...</span>
+        <Search className="h-4 w-4" />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>

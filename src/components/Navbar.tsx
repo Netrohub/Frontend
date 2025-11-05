@@ -164,12 +164,11 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
             </NavigationMenuList>
           </NavigationMenu>
         )}
-        <div className="flex items-center gap-2">
-          <GlobalSearch />
+        <div className="flex items-center gap-3">
+          {isAuthenticated && <NotificationBell />}
           <LanguageSwitcher />
-          {isAuthenticated ? (
-            <NotificationBell />
-          ) : (
+          <GlobalSearch />
+          {!isAuthenticated && (
             <Button 
               asChild 
               variant="outline" 
