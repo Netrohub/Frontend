@@ -16,6 +16,7 @@ import { CACHE_TIMES } from "@/config/constants";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { QuickNav } from "@/components/QuickNav";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // Public routes - loaded immediately
 import Home from "./pages/Home";
@@ -349,15 +350,17 @@ const App = () => (
   <ErrorBoundary>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </TooltipProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </QueryClientProvider>
     </HelmetProvider>
   </ErrorBoundary>

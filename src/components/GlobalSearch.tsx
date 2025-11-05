@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,22 +10,6 @@ export const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
-
-  // Listen for "/" key to open search
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/' && !open && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
-        e.preventDefault();
-        setOpen(true);
-      }
-      if (e.key === 'Escape' && open) {
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

@@ -3,8 +3,10 @@ import { Snowflake, LogIn } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileNav } from "@/components/MobileNav";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -23,6 +25,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
   const location = useLocation();
   const { user } = useAuth();
   const isAuthenticated = !!user;
+  const { t } = useLanguage();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -163,6 +166,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         )}
         <div className="flex items-center gap-2">
           <GlobalSearch />
+          <LanguageSwitcher />
           {isAuthenticated ? (
             <NotificationBell />
           ) : (
