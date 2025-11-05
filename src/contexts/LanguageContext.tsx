@@ -53,13 +53,13 @@ const translations: Record<Language, Record<string, string>> = {
   ar: {
     // Navbar
     'nav.home': 'الرئيسية',
-    'nav.marketplace': 'التداول',
+    'nav.marketplace': 'المتجر',
     'nav.sell': 'بيع',
-    'nav.orders': 'طلباتي',
+    'nav.orders': 'الطلبات',
     'nav.wallet': 'المحفظة',
     'nav.profile': 'الملف الشخصي',
     'nav.admin': 'لوحة التحكم',
-    'nav.members': 'المجتمع',
+    'nav.members': 'الأعضاء',
     'nav.leaderboard': 'المتصدرين',
     'nav.help': 'المساعدة',
     'nav.disputes': 'النزاعات',
@@ -122,13 +122,13 @@ const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navbar
     'nav.home': 'Home',
-    'nav.marketplace': 'Trading',
+    'nav.marketplace': 'Marketplace',
     'nav.sell': 'Sell',
     'nav.orders': 'Orders',
     'nav.wallet': 'Wallet',
     'nav.profile': 'Profile',
     'nav.admin': 'Admin Panel',
-    'nav.members': 'Community',
+    'nav.members': 'Members',
     'nav.leaderboard': 'Leaderboard',
     'nav.help': 'Help',
     'nav.disputes': 'Disputes',
@@ -189,4 +189,3 @@ const translations: Record<Language, Record<string, string>> = {
     'common.back': 'Back',
   }
 };
-
