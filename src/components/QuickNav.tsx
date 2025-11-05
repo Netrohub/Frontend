@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { ShoppingBag, Package, MessageSquare, FileText, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const QuickNav = () => {
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
 
   const quickLinks = [
     { 

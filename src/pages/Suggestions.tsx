@@ -14,6 +14,7 @@ import { SEO } from "@/components/SEO";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { suggestionsApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { Turnstile } from "@/components/Turnstile";
 
 interface Suggestion {
   id: number;
@@ -34,6 +35,7 @@ const Suggestions = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [turnstileToken, setTurnstileToken] = useState("");
   
   // Platform rating state
   const [platformRating, setPlatformRating] = useState(0);
@@ -101,6 +103,11 @@ const Suggestions = () => {
       return;
     }
     
+    if (!turnstileToken) {
+      toast.error("يرجى إكمال التحقق الأمني");
+      return;
+    }
+    
     if (!newTitle.trim() || !newDescription.trim()) {
       toast.error("يرجى ملء جميع الحقول");
       return;
@@ -110,6 +117,7 @@ const Suggestions = () => {
       title: newTitle,
       description: newDescription,
     });
+    setTurnstileToken(""); // Reset after submission
   };
 
   // Submit platform review mutation
@@ -134,6 +142,11 @@ const Suggestions = () => {
       return;
     }
     
+    if (!turnstileToken) {
+      toast.error("يرجى إكمال التحقق الأمني");
+      return;
+    }
+    
     if (platformRating === 0) {
       toast.error("الرجاء اختيار تقييم");
       return;
@@ -147,6 +160,7 @@ const Suggestions = () => {
       rating: platformRating,
       review: platformReview,
     });
+    setTurnstileToken(""); // Reset after submission
   };
 
   const getRatingPercentage = (count: number) => {
@@ -303,10 +317,15 @@ const Suggestions = () => {
                 </div>
               </div>
 
+              <Turnstile 
+                onVerify={setTurnstileToken}
+                className="flex justify-center"
+              />
+
               <Button
                 onClick={handlePlatformReviewSubmit}
-                disabled={platformRating === 0 || platformReview.trim().length < 10}
-                className="w-full bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0"
+                disabled={platformRating === 0 || platformReview.trim().length < 10 || !turnstileToken}
+                className="w-full bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0 disabled:opacity-50"
               >
                 <Star className="h-4 w-4 ml-2" aria-hidden="true" />
                 إرسال التقييم
@@ -343,10 +362,16 @@ const Suggestions = () => {
                   aria-label="وصف الاقتراح"
                 />
               </div>
+            
+            <Turnstile 
+              onVerify={setTurnstileToken}
+              className="flex justify-center"
+            />
+
             <Button
               onClick={handleSubmit}
-              className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
-              disabled={!newTitle.trim() || !newDescription.trim()}
+              className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0 disabled:opacity-50"
+              disabled={!newTitle.trim() || !newDescription.trim() || !turnstileToken}
             >
               إرسال الاقتراح
             </Button>

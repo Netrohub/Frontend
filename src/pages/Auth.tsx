@@ -13,11 +13,13 @@ import { toast } from "sonner";
 import { sanitizeString, isValidEmail, isValidPassword } from "@/lib/utils/validation";
 import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
 import type { ApiError } from "@/types/api";
+import { Turnstile } from "@/components/Turnstile";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [loginData, setLoginData] = useState({ email: "", password: "" });
   const [registerData, setRegisterData] = useState({
     name: "",
@@ -29,6 +31,12 @@ const Auth = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Turnstile validation
+    if (!turnstileToken) {
+      toast.error("يرجى إكمال التحقق الأمني");
+      return;
+    }
     
     // Client-side validation
     if (!isValidEmail(loginData.email)) {
@@ -45,12 +53,13 @@ const Auth = () => {
     try {
       // Sanitize inputs
       const sanitizedEmail = sanitizeString(loginData.email);
-      await login(sanitizedEmail, loginData.password); // Password shouldn't be sanitized
+      await login(sanitizedEmail, loginData.password, turnstileToken);
       toast.success("تم تسجيل الدخول بنجاح");
       navigate("/");
     } catch (error) {
       const apiError = error as Error & ApiError;
       toast.error(apiError.message || "فشل تسجيل الدخول");
+      setTurnstileToken(""); // Reset turnstile on error
     } finally {
       setLoading(false);
     }
@@ -58,6 +67,12 @@ const Auth = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Turnstile validation
+    if (!turnstileToken) {
+      toast.error("يرجى إكمال التحقق الأمني");
+      return;
+    }
     
     // Client-side validation
     if (registerData.name.length < VALIDATION_RULES.NAME_MIN_LENGTH) {
@@ -89,6 +104,7 @@ const Auth = () => {
         password: registerData.password, // Don't sanitize passwords
         password_confirmation: registerData.password_confirmation,
         phone: registerData.phone ? sanitizeString(registerData.phone) : undefined,
+        turnstile_token: turnstileToken,
       };
       
       await register(sanitizedData);
@@ -97,6 +113,7 @@ const Auth = () => {
     } catch (error) {
       const apiError = error as Error & ApiError;
       toast.error(apiError.message || "فشل إنشاء الحساب");
+      setTurnstileToken(""); // Reset turnstile on error
     } finally {
       setLoading(false);
     }
@@ -215,10 +232,15 @@ const Auth = () => {
                   </button>
                 </div>
 
+                <Turnstile 
+                  onVerify={setTurnstileToken}
+                  className="flex justify-center"
+                />
+
                 <Button 
                   type="submit"
-                  disabled={loading}
-                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
+                  disabled={loading || !turnstileToken}
+                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50"
                 >
                   {loading ? "جاري المعالجة..." : "تسجيل الدخول"}
                   <ArrowRight className="h-5 w-5" />
@@ -321,10 +343,15 @@ const Auth = () => {
                   </div>
                 </div>
 
+                <Turnstile 
+                  onVerify={setTurnstileToken}
+                  className="flex justify-center"
+                />
+
                 <Button 
                   type="submit"
-                  disabled={loading}
-                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0"
+                  disabled={loading || !turnstileToken}
+                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50"
                 >
                   {loading ? "جاري المعالجة..." : "إنشاء حساب"}
                   <ArrowRight className="h-5 w-5" />
