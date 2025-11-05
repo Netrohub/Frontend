@@ -49,10 +49,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { reviewsApi } from "@/lib/api";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Reviews = () => {
   const { userId } = useParams();
   const { user: currentUser } = useAuth();
+  const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [activeFilter, setActiveFilter] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
