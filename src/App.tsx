@@ -63,6 +63,7 @@ const AdminOrders = lazy(() => import("./pages/admin/Orders"));
 const AdminDisputes = lazy(() => import("./pages/admin/Disputes"));
 const AdminSettings = lazy(() => import("./pages/admin/Settings"));
 const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
+const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -332,6 +333,14 @@ const AppContent = () => {
                   element={
                     <Suspense fallback={<LoadingFallback />}>
                       <AdminSettings />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="legal"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminLegalContent />
                     </Suspense>
                   }
                 />

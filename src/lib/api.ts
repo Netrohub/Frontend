@@ -649,3 +649,16 @@ export const suggestionsApi = {
     api.get<{ rating: number; review: string } | null>('/platform/review/user'),
 };
 
+// Site Settings API (Terms & Privacy)
+export const siteSettingsApi = {
+  get: (key: string) =>
+    api.get<{ data: { key: string; value_ar: string; value_en: string; type: string; updated_at: string } }>(`/site-settings/${key}`),
+  
+  // Admin only
+  getAll: () =>
+    api.get<{ data: Array<{ key: string; value_ar: string; value_en: string; type: string }> }>('/admin/site-settings'),
+  
+  update: (key: string, data: { value_ar?: string; value_en?: string }) =>
+    api.put<any>(`/admin/site-settings/${key}`, data),
+};
+

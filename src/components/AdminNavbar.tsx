@@ -1,4 +1,4 @@
-import { Home, Users, Package, ShoppingCart, AlertTriangle, ShieldCheck, Settings, Menu, Bell } from "lucide-react";
+import { Home, Users, Package, ShoppingCart, AlertTriangle, ShieldCheck, Settings, Menu, Bell, FileText } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 
@@ -9,6 +9,7 @@ const items = [
   { title: "الطلبات", url: "/admin/orders", icon: ShoppingCart },
   { title: "النزاعات", url: "/admin/disputes", icon: AlertTriangle },
   { title: "الإشعارات", url: "/admin/notifications", icon: Bell },
+  { title: "المحتوى القانوني", url: "/admin/legal", icon: FileText },
   { title: "الإعدادات", url: "/admin/settings", icon: Settings },
 ];
 

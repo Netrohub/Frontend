@@ -160,44 +160,56 @@ All colors MUST be HSL.
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold;
   }
-  
-  /* Accessibility: Skip link styles */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
+}
+
+/* Terms and Privacy content styling */
+.terms-content h1,
+.privacy-content h1 {
+  @apply text-3xl font-black text-white mb-6 mt-8 first:mt-0;
+}
+
+.terms-content h2,
+.privacy-content h2 {
+  @apply text-2xl font-bold text-white mb-4 mt-6;
+}
+
+.terms-content h3,
+.privacy-content h3 {
+  @apply text-xl font-bold text-[hsl(195,80%,70%)] mb-3 mt-4;
+}
+
+.terms-content p,
+.privacy-content p {
+  @apply text-white/80 leading-relaxed mb-4;
+}
+
+.terms-content ul,
+.privacy-content ul {
+  @apply list-disc list-inside space-y-2 text-white/80 mb-4 mr-4;
+}
+
+.terms-content strong,
+.privacy-content strong {
+  @apply text-white font-bold;
+}
+
+.terms-content hr,
+.privacy-content hr {
+  @apply border-white/20 my-8;
+}
+
+/* Animation for snow falling effect */
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
   }
-  
-  .focus\:not-sr-only:focus {
-    position: static;
-    width: auto;
-    height: auto;
-    padding: inherit;
-    margin: inherit;
-    overflow: visible;
-    clip: auto;
-    white-space: normal;
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.3;
   }
-  
-  /* Focus visible styles for better keyboard navigation */
-  *:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
-  
-  /* Ensure interactive elements are keyboard accessible */
-  button:focus-visible,
-  a:focus-visible,
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
 }
