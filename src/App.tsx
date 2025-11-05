@@ -104,7 +104,7 @@ const AppContent = () => {
     <>
       <SkipLink />
       <NotificationBanner />
-      <GlobalSearch />
+      {/* <GlobalSearch /> */}
       <QuickNav />
       <main id="main-content" tabIndex={-1}>
         <RouteErrorBoundary>
