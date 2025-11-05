@@ -5,17 +5,20 @@ import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Home = () => {
   const { user } = useAuth();
   const isAuthenticated = !!user;
+  const { t, language } = useLanguage();
+  
   return (
     <>
       <SEO 
         title="NXOLand - تداول آمن وموثوق للحسابات"
         description="منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان. بيع وشراء الحسابات بأمان تام."
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Icy background with gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
@@ -56,19 +59,17 @@ const Home = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[hsl(195,80%,70%,0.3)]">
             <Snowflake className="h-4 w-4 text-[hsl(195,80%,70%)] animate-pulse" />
             <span className="text-sm font-medium text-[hsl(195,80%,70%)]">
-            بيع وشراء بثقة تامة⚡
+              {t('home.features.security')} {t('home.features.fast')} {t('home.features.support')}
             </span>
           </div>
           
           {/* Main Heading */}
           <div className="space-y-6 max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-white drop-shadow-[0_0_30px_rgba(148,209,240,0.5)]">
-              اشتر وبِع{" "}
-              <span className="text-[hsl(195,80%,70%)]">بأمان</span>{" "}
-              تام
+              {t('home.hero.title')}
             </h1>
             <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            منصة تسهّل عليك بيع وشراء حسابات الألعاب بأمان كامل 🎮
+              {t('home.hero.subtitle')}
             </p>
           </div>
           
@@ -81,8 +82,7 @@ const Home = () => {
             >
               <Link to="/marketplace">
                 <Shield className="h-5 w-5 flex-shrink-0" />
-                <span className="hidden sm:inline">تصفح الحسابات</span>
-                <span className="sm:hidden">السوق</span>
+                <span>{t('home.hero.browseAccounts')}</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -93,8 +93,7 @@ const Home = () => {
                 className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
               >
                 <Link to="/auth">
-                  <span className="hidden sm:inline">ابدأ الآن</span>
-                  <span className="sm:hidden">ابدأ</span>
+                  <span>{t('home.hero.learnMore')}</span>
                 </Link>
               </Button>
             ) : (
@@ -116,19 +115,19 @@ const Home = () => {
               <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
                 <Shield className="h-4 w-4 text-[hsl(195,80%,70%)]" />
               </div>
-              <span>حماية المعاملات</span>
+              <span>{t('home.feature1.title')}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-white/70">
               <div className="p-2 rounded-lg bg-[hsl(40,90%,55%,0.15)] border border-[hsl(40,90%,55%,0.3)]">
                 <Flame className="h-4 w-4 text-[hsl(40,90%,55%)]" />
               </div>
-              <span>تسليم فوري</span>
+              <span>{t('home.feature4.title')}</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-white/70">
               <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
                 <Snowflake className="h-4 w-4 text-[hsl(195,80%,70%)]" />
               </div>
-              <span>دعم على مدار الساعة</span>
+              <span>{t('home.feature2.title')}</span>
             </div>
           </div>
         </div>

@@ -2,15 +2,18 @@ import { Card } from "@/components/ui/card";
 import { Gamepad2, Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { useLanguage } from "@/contexts/LanguageContext";
 import heroArctic from "@/assets/hero-arctic.jpg";
 
 const Sell = () => {
+  const { t, language } = useLanguage();
+  
   const games = [
     {
       id: "wos",
       name: "Whiteout Survival",
       icon: Snowflake,
-      description: "بيع حسابات Whiteout Survival",
+      description: t('sell.subtitle'),
       path: "/sell/wos",
       gradient: "from-[hsl(195,80%,50%)] to-[hsl(220,70%,60%)]",
       image: heroArctic,
@@ -19,7 +22,7 @@ const Sell = () => {
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
@@ -48,8 +51,8 @@ const Sell = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[hsl(195,80%,50%,0.2)] mb-4">
             <Gamepad2 className="h-8 w-8 text-[hsl(195,80%,50%)]" />
           </div>
-          <h1 className="text-3xl md:text-5xl font-black text-white mb-4">اختر اللعبة</h1>
-          <p className="text-xl text-white/60">اختر اللعبة التي تريد بيع حسابها</p>
+          <h1 className="text-3xl md:text-5xl font-black text-white mb-4">{t('sell.title')}</h1>
+          <p className="text-xl text-white/60">{t('sell.subtitle')}</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -106,7 +109,7 @@ const Sell = () => {
 
         {/* Coming Soon Section */}
         <div className="mt-12 text-center">
-          <p className="text-white/50 text-sm">المزيد من الألعاب قريباً...</p>
+          <p className="text-white/50 text-sm">{t('sell.comingSoon')}</p>
         </div>
       </div>
     </div>
