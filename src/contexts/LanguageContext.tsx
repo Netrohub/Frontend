@@ -340,6 +340,13 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Checkout
     'checkout.title': 'إتمام الشراء',
+    'checkout.description': 'إتمام الشراء الآمن عبر Tap Payment',
+    'checkout.loginRequired': 'يجب تسجيل الدخول لإتمام الشراء',
+    'checkout.orderNotFound': 'لم يتم العثور على الطلب',
+    'checkout.amountError': 'خطأ في المبلغ. يرجى المحاولة مرة أخرى',
+    'checkout.invalidOrder': 'طلب غير صحيح',
+    'checkout.cannotBuyOwn': 'لا يمكنك شراء إعلانك الخاص',
+    'checkout.paymentLinkError': 'فشل إنشاء رابط الدفع',
     'checkout.orderSummary': 'ملخص الطلب',
     'checkout.productDetails': 'تفاصيل المنتج',
     'checkout.subtotal': 'المجموع الفرعي',
@@ -1273,6 +1280,13 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Checkout
     'checkout.title': 'Checkout',
+    'checkout.description': 'Complete secure checkout via Tap Payment',
+    'checkout.loginRequired': 'Please log in to complete checkout',
+    'checkout.orderNotFound': 'Order not found',
+    'checkout.amountError': 'Amount error. Please try again',
+    'checkout.invalidOrder': 'Invalid order',
+    'checkout.cannotBuyOwn': 'You cannot buy your own listing',
+    'checkout.paymentLinkError': 'Failed to create payment link',
     'checkout.orderSummary': 'Order Summary',
     'checkout.productDetails': 'Product Details',
     'checkout.subtotal': 'Subtotal',
