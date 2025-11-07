@@ -117,8 +117,8 @@ const About = () => {
                   <span className="text-[hsl(195,80%,70%)] font-bold">1</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">تصفح الحسابات</h4>
-                  <p className="text-white/70 text-sm">ابحث عن الحساب المناسب من السوق</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.buyerStep1Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.buyerStep1Desc')}</p>
                 </div>
               </div>
 
@@ -127,8 +127,8 @@ const About = () => {
                   <span className="text-[hsl(195,80%,70%)] font-bold">2</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">الطلب والدفع</h4>
-                  <p className="text-white/70 text-sm">اطلب الحساب وادفع بأمان عبر المنصة</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.buyerStep2Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.buyerStep2Desc')}</p>
                 </div>
               </div>
 
@@ -137,8 +137,8 @@ const About = () => {
                   <span className="text-[hsl(195,80%,70%)] font-bold">3</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">استلام البيانات</h4>
-                  <p className="text-white/70 text-sm">احصل على بيانات الحساب بعد موافقة البائع</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.buyerStep3Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.buyerStep3Desc')}</p>
                 </div>
               </div>
 
@@ -147,8 +147,8 @@ const About = () => {
                   <span className="text-[hsl(195,80%,70%)] font-bold">4</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">التأكيد</h4>
-                  <p className="text-white/70 text-sm">راجع الحساب وأكد استلامه لإتمام العملية</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.buyerStep4Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.buyerStep4Desc')}</p>
                 </div>
               </div>
             </div>
@@ -166,8 +166,8 @@ const About = () => {
                   <span className="text-[hsl(40,90%,55%)] font-bold">1</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">إنشاء الإعلان</h4>
-                  <p className="text-white/70 text-sm">أضف تفاصيل حسابك والسعر المطلوب</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.sellerStep1Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.sellerStep1Desc')}</p>
                 </div>
               </div>
 
@@ -176,8 +176,8 @@ const About = () => {
                   <span className="text-[hsl(40,90%,55%)] font-bold">2</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">استقبال الطلبات</h4>
-                  <p className="text-white/70 text-sm">انتظر طلب المشتري وراجع التفاصيل</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.sellerStep2Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.sellerStep2Desc')}</p>
                 </div>
               </div>
 
@@ -186,8 +186,8 @@ const About = () => {
                   <span className="text-[hsl(40,90%,55%)] font-bold">3</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">تسليم الحساب</h4>
-                  <p className="text-white/70 text-sm">أرسل بيانات الحساب للمشتري عبر المنصة</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.sellerStep3Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.sellerStep3Desc')}</p>
                 </div>
               </div>
 
@@ -196,8 +196,8 @@ const About = () => {
                   <span className="text-[hsl(40,90%,55%)] font-bold">4</span>
                 </div>
                 <div>
-                  <h4 className="text-white font-bold mb-2">استلام المبلغ</h4>
-                  <p className="text-white/70 text-sm">احصل على أموالك بعد تأكيد المشتري</p>
+                  <h4 className="text-white font-bold mb-2">{t('about.sellerStep4Title')}</h4>
+                  <p className="text-white/70 text-sm">{t('about.sellerStep4Desc')}</p>
                 </div>
               </div>
             </div>

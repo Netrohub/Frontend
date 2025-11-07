@@ -117,26 +117,26 @@ const Help = () => {
               size="lg"
               className="flex-col h-auto py-8 px-12 bg-[#5865F2] hover:bg-[#4752C4] border-0 text-white gap-3 min-h-[120px]"
             >
-              <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" aria-label="انضم إلى Discord للحصول على الدعم">
+              <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" aria-label={t('help.discordJoin')}>
                 <MessageCircle className="h-12 w-12 mb-2" aria-hidden="true" />
-                <span className="font-bold text-xl">انضم إلى Discord</span>
-                <span className="text-sm text-white/90">قناة الدعم الرسمية - متاح 24/7</span>
+                <span className="font-bold text-xl">{t('help.discordJoin')}</span>
+                <span className="text-sm text-white/90">{t('help.discordSupport')}</span>
               </a>
             </Button>
           </div>
           
           <div className="mt-6 p-4 bg-[#5865F2]/10 rounded-lg border border-[#5865F2]/30">
             <p className="text-sm text-white/80 text-center">
-              💬 جميع استفساراتك وطلبات الدعم يتم التعامل معها عبر سيرفر Discord الرسمي
+              {t('help.discordMessage')}
             </p>
           </div>
         </Card>
 
           {/* Feedback Section */}
           <Card className="p-8 bg-gradient-to-br from-[hsl(40,90%,15%)] to-[hsl(40,80%,10%)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">ساعدنا في التحسين</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">{t('help.improvementTitle')}</h2>
             <p className="text-white/70 mb-6">
-              رأيك يهمنا! شارك تجربتك واقتراحاتك لتطوير المنصة
+              {t('help.improvementMessage')}
             </p>
             <Button 
               asChild
@@ -144,7 +144,7 @@ const Help = () => {
               className="gap-2 bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0"
             >
               <Link to="/suggestions">
-                قيّم المنصة وشارك اقتراحاتك
+                {t('help.ratePlatform')}
               </Link>
             </Button>
           </Card>
@@ -153,7 +153,7 @@ const Help = () => {
         {/* Footer */}
         <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
           <div className="container mx-auto px-4 text-center">
-            <p className="text-white/50">© 2025 NXOLand. جميع الحقوق محفوظة.</p>
+            <p className="text-white/50">{t('help.footerCopyright')}</p>
           </div>
         </footer>
 
