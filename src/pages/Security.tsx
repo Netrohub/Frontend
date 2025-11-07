@@ -83,7 +83,7 @@ const Security = () => {
           duration: 6000,
         });
       } else {
-        toast.error(error.message || "فشل تحديث كلمة المرور");
+        toast.error(error.message || t('security.passwordUpdateError'));
       }
     },
   });
@@ -91,20 +91,20 @@ const Security = () => {
   const handlePasswordChangeClick = () => {
     // Validate current password
     if (!passwordData.current_password) {
-      toast.error("يرجى إدخال كلمة المرور الحالية");
+      toast.error(t('security.currentPasswordRequired'));
       return;
     }
 
     // Validate new password length
     if (!passwordData.password || passwordData.password.length < 8) {
-      toast.error("كلمة المرور الجديدة يجب أن تكون 8 أحرف على الأقل");
+      toast.error(t('security.newPasswordTooShort'));
       return;
     }
 
     // Check password strength
     const strength = getPasswordStrength(passwordData.password);
     if (strength < 3) {
-      toast.error("كلمة المرور ضعيفة. يرجى استخدام أحرف كبيرة وصغيرة وأرقام ورموز خاصة", {
+      toast.error(t('security.passwordWeakMix'), {
         duration: 5000,
       });
       return;
@@ -112,31 +112,31 @@ const Security = () => {
 
     // Check for uppercase
     if (!/[A-Z]/.test(passwordData.password)) {
-      toast.error("كلمة المرور يجب أن تحتوي على حرف كبير واحد على الأقل (A-Z)");
+      toast.error(t('security.needUppercase'));
       return;
     }
 
     // Check for lowercase
     if (!/[a-z]/.test(passwordData.password)) {
-      toast.error("كلمة المرور يجب أن تحتوي على حرف صغير واحد على الأقل (a-z)");
+      toast.error(t('security.needLowercase'));
       return;
     }
 
     // Check for number
     if (!/[0-9]/.test(passwordData.password)) {
-      toast.error("كلمة المرور يجب أن تحتوي على رقم واحد على الأقل (0-9)");
+      toast.error(t('security.needNumber'));
       return;
     }
 
     // Check for special character
     if (!/[^a-zA-Z0-9]/.test(passwordData.password)) {
-      toast.error("كلمة المرور يجب أن تحتوي على رمز خاص واحد على الأقل (!@#$%^&*)");
+      toast.error(t('security.needSymbol'));
       return;
     }
 
     // Check password confirmation
     if (passwordData.password !== passwordData.password_confirmation) {
-      toast.error("كلمة المرور غير متطابقة");
+      toast.error(t('security.passwordsNotMatch'));
       return;
     }
 

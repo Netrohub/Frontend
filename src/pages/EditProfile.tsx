@@ -86,10 +86,10 @@ const EditProfile = () => {
   return (
     <>
       <SEO 
-        title="تعديل الملف الشخصي - NXOLand"
-        description="قم بتحديث معلومات حسابك الشخصية على NXOLand. تعديل الاسم، البريد الإلكتروني، ورقم الهاتف."
+        title={`${t('editProfile.title')} - NXOLand`}
+        description={t('editProfile.pageDescription')}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
@@ -98,7 +98,7 @@ const EditProfile = () => {
           href="#edit-profile-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى النموذج
+          {t('editProfile.skipToForm')}
         </a>
 
         {/* Navigation */}

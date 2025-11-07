@@ -81,24 +81,24 @@ const Profile = () => {
     const diffDays = Math.floor(diffHours / 24);
 
     if (diffHours < 1) {
-      return "منذ دقائق";
+      return t('profile.minutesAgo');
     } else if (diffHours < 24) {
-      return `منذ ${diffHours} ساعة`;
+      return t('profile.hoursAgo', { hours: diffHours });
     } else if (diffDays === 1) {
-      return "منذ يوم واحد";
+      return t('profile.oneDayAgo');
     } else {
-      return `منذ ${diffDays} يوم`;
+      return t('profile.daysAgo', { days: diffDays });
     }
   };
 
   const handleRefreshStats = () => {
     refetchStats();
-    toast.success("تم تحديث الإحصائيات");
+    toast.success(t('profile.statsRefreshed'));
   };
 
   const handleRefreshActivity = () => {
     refetchActivity();
-    toast.success("تم تحديث النشاط");
+    toast.success(t('profile.activityRefreshed'));
   };
 
   const handleLogout = async () => {
