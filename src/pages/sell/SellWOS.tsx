@@ -78,7 +78,7 @@ const SellWOS = () => {
     if (!files) return;
 
     if (images.length + files.length > 8) {
-      toast.error("يمكنك رفع حتى 8 صور فقط");
+      toast.error(t('listing.maxImages'));
       return;
     }
 
@@ -92,7 +92,7 @@ const SellWOS = () => {
       
       // Validate file size
       if (file.size > MAX_FILE_SIZE) {
-        toast.error(`الصورة ${file.name} كبيرة جداً. الحد الأقصى 5 ميجابايت (${(file.size / 1024 / 1024).toFixed(1)} ميجابايت)`);
+        toast.error(t('listing.imageTooLarge', { name: file.name, size: (file.size / 1024 / 1024).toFixed(1) }));
         continue; // Skip this file
       }
       
@@ -118,7 +118,7 @@ const SellWOS = () => {
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
-      toast.error(`الصورة كبيرة جداً. الحد الأقصى 5 ميجابايت (الحجم الحالي: ${(file.size / 1024 / 1024).toFixed(1)} ميجابايت)`);
+      toast.error(t('listing.imageTooLargeCurrent', { size: (file.size / 1024 / 1024).toFixed(1) }));
       return;
     }
 
@@ -200,7 +200,7 @@ const SellWOS = () => {
       account_metadata?: any;
     }) => listingsApi.create(data),
     onSuccess: () => {
-      toast.success("تم نشر الإعلان بنجاح!");
+      toast.success(t('listing.published'));
       queryClient.invalidateQueries({ queryKey: ['listings'] });
       navigate('/my-listings');
     },
@@ -212,16 +212,16 @@ const SellWOS = () => {
         const errorCode = (apiError as any).error_code;
         
         if (errorCode === 'PRICE_TOO_LOW') {
-          toast.error("السعر منخفض جداً. الحد الأدنى للسعر هو $10");
+          toast.error(t('listing.priceTooLow'));
         } else if (errorCode === 'DUPLICATE_LISTING_DETECTED') {
-          toast.error("يبدو أن لديك إعلان مماثل بالفعل");
+          toast.error(t('listing.duplicateDetected'));
         } else if (errorCode === 'MAX_ACTIVE_LISTINGS_REACHED') {
-          toast.error("لقد وصلت إلى الحد الأقصى من الإعلانات النشطة");
+          toast.error(t('listing.maxListingsReached'));
         } else {
-          toast.error(apiError.message || "فشل نشر الإعلان");
+          toast.error(apiError.message || t('listing.uploadFailed'));
         }
       } else {
-        toast.error(apiError.message || "فشل نشر الإعلان");
+        toast.error(apiError.message || t('listing.uploadFailed'));
       }
     },
   });
@@ -231,48 +231,48 @@ const SellWOS = () => {
     e.preventDefault();
 
     if (!isVerified) {
-      toast.error("يجب إكمال التحقق من الهوية أولاً");
+      toast.error(t('listing.verificationRequired'));
       return;
     }
 
     // Validation
     if (!title.trim()) {
-      toast.error("يرجى إدخال عنوان الإعلان");
+      toast.error(t('listing.titleRequired'));
       return;
     }
 
     if (!server) {
-      toast.error("يرجى اختيار السيرفر");
+      toast.error(t('listing.serverRequired'));
       return;
     }
 
     if (!price || parseFloat(price) <= 0) {
-      toast.error("يرجى إدخال سعر صحيح");
+      toast.error(t('listing.priceRequired'));
       return;
     }
 
     if (!stoveLevel) {
-      toast.error("يرجى اختيار حجرة الاحتراق");
+      toast.error(t('listing.stoveLevelRequired'));
       return;
     }
 
     if (!troops || !totalPower || !heroPower || !island || !expertPower || !heroTotalPower || !petPower) {
-      toast.error("يرجى إدخال جميع معلومات الحساب المطلوبة");
+      toast.error(t('listing.allFieldsRequired'));
       return;
     }
 
     if (images.length === 0) {
-      toast.error("يرجى رفع صورة واحدة على الأقل");
+      toast.error(t('listing.imagesRequired'));
       return;
     }
 
     if (!billImages.first || !billImages.three || !billImages.last) {
-      toast.error("يرجى رفع جميع صور الفواتير المطلوبة");
+      toast.error(t('listing.billImagesRequired'));
       return;
     }
 
     if (!accountEmail || !accountPassword) {
-      toast.error("يرجى إدخال البريد الإلكتروني وكلمة المرور");
+      toast.error(t('listing.accountCredentialsRequired'));
       return;
     }
 
@@ -289,11 +289,11 @@ const SellWOS = () => {
       if (billFiles.last) allFiles.push(billFiles.last);
 
       if (allFiles.length === 0) {
-        toast.error("يرجى رفع الصور");
+        toast.error(t('listing.imagesRequired'));
         return;
       }
 
-      toast.info("جاري رفع الصور...");
+      toast.info(t('listing.uploadingImages'));
       const uploadedUrls = await imagesApi.upload(allFiles);
 
       // Split images: first images are listing images, last 3 are bill images
@@ -359,7 +359,7 @@ const SellWOS = () => {
       });
     } catch (error) {
       console.error('Failed to upload images:', error);
-      toast.error("فشل رفع الصور. يرجى المحاولة مرة أخرى");
+      toast.error(t('listing.uploadFailed'));
     }
   };
 
@@ -482,7 +482,7 @@ const SellWOS = () => {
                   required
                 />
                 <p className="text-sm text-white/60 mt-1">
-                  الحد الأدنى: $10 | الحد الأقصى: $10,000
+                  {t('listing.priceRange')}
                 </p>
               </div>
 
@@ -805,8 +805,8 @@ const SellWOS = () => {
 
             {/* Images */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white">صور الحساب</h2>
-              <p className="text-sm text-white/60">قم بتحميل صور (سكرين شوت) من جوالك - يمكنك رفع حتى 8 صور</p>
+              <h2 className="text-xl font-bold text-white">{t('listing.accountImages')}</h2>
+              <p className="text-sm text-white/60">{t('listing.accountImagesDesc')}</p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {images.map((img, i) => (
