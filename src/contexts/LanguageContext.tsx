@@ -87,8 +87,8 @@ const translations: Record<Language, Record<string, string>> = {
 'home.hero.browseAccounts': 'تصفح الحسابات',
 'home.hero.learnMore': 'اعرف المزيد',
 
-'home.features.security': 'مرحبًا بك في NXOLand 👋',
-'home.badge': 'آمن • سريع • دعم 24/7',
+
+'home.badge': 'آمن • سريع • دعم مرحبًا بك في NXOLand 👋',
 
 'home.whyChoose': 'ليش تختار NXOLand؟',
 
@@ -1016,8 +1016,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.hero.browseAccounts': 'Browse Accounts',
 'home.hero.learnMore': 'Learn More',
 
-'home.features.security': 'Welcome to NXOLand 👋',
-'home.badge': 'Secure • Fast • 24/7 Support',
+'home.badge': 'مرحبًا بك في NXOLand 👋',
 
 
 'home.whyChoose': 'Why Choose NXOLand?',
