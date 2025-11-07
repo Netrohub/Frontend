@@ -40,22 +40,22 @@ const DisputeDetails = () => {
   const cancelMutation = useMutation({
     mutationFn: (disputeId: number) => disputesApi.cancel(disputeId),
     onSuccess: () => {
-      toast.success("تم إلغاء النزاع بنجاح");
+      toast.success(t('disputeDetails.cancelSuccess'));
       queryClient.invalidateQueries({ queryKey: ['disputes'] });
       queryClient.invalidateQueries({ queryKey: ['dispute', id] });
       navigate('/disputes');
     },
     onError: (error: any) => {
-      toast.error(error.message || "فشل إلغاء النزاع");
+      toast.error(error.message || t('disputeDetails.cancelError'));
     },
   });
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { text: string; className: string }> = {
-      open: { text: "مفتوح", className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-      under_review: { text: "قيد المراجعة", className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-      resolved: { text: "تم الحل", className: "bg-green-500/20 text-green-400 border-green-500/30" },
-      closed: { text: "مغلق", className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
+      open: { text: t('disputes.open'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+      under_review: { text: t('disputes.inReview'), className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      resolved: { text: t('disputes.resolved'), className: "bg-green-500/20 text-green-400 border-green-500/30" },
+      closed: { text: t('disputes.closed'), className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
     };
     const statusInfo = statusMap[status] || statusMap.open;
     return <Badge className={statusInfo.className}>{statusInfo.text}</Badge>;
@@ -63,12 +63,12 @@ const DisputeDetails = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 py-8 text-center">
-          <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض تفاصيل النزاع</p>
+          <p className="text-white/60 mb-4">{t('disputeDetails.loginRequired')}</p>
           <Link to="/auth">
-            <Button>تسجيل الدخول</Button>
+            <Button>{t('disputeDetails.loginButton')}</Button>
           </Link>
         </div>
       </div>
@@ -78,10 +78,10 @@ const DisputeDetails = () => {
   return (
     <>
       <SEO 
-        title={`تفاصيل النزاع - NXOLand`}
-        description="تفاصيل النزاع والحل المقترح"
+        title={`${t('disputeDetails.title')} - NXOLand`}
+        description={t('disputeDetails.description')}
       />
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
         
         <Navbar />
@@ -89,7 +89,7 @@ const DisputeDetails = () => {
         <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl">
           <Link to="/disputes" className="inline-flex items-center gap-2 text-white/60 hover:text-[hsl(195,80%,70%)] mb-6 transition-colors">
             <ArrowRight className="h-4 w-4" />
-            العودة إلى النزاعات
+            {t('disputeDetails.backToDisputes')}
           </Link>
 
           {isLoading ? (
@@ -99,9 +99,9 @@ const DisputeDetails = () => {
           ) : error ? (
             <Card className="p-12 text-center bg-white/5 border-white/10">
               <AlertTriangle className="h-16 w-16 text-red-400 mx-auto mb-4" />
-              <p className="text-white/60 text-lg mb-4">فشل تحميل تفاصيل النزاع</p>
+              <p className="text-white/60 text-lg mb-4">{t('disputeDetails.loadError')}</p>
               <Link to="/disputes">
-                <Button variant="outline">العودة إلى القائمة</Button>
+                <Button variant="outline">{t('disputeDetails.backToList')}</Button>
               </Link>
             </Card>
           ) : dispute ? (
@@ -111,7 +111,7 @@ const DisputeDetails = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h1 className="text-3xl font-black text-white mb-2">{dispute.reason}</h1>
-                    <p className="text-white/60">نزاع على طلب #{dispute.order_id}</p>
+                    <p className="text-white/60">{t('disputeDetails.disputeOn')} #{dispute.order_id}</p>
                   </div>
                   {getStatusBadge(dispute.status)}
                 </div>
@@ -121,11 +121,11 @@ const DisputeDetails = () => {
               <Card className="p-6 bg-white/5 border-white/10">
                 <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-[hsl(195,80%,70%)]" />
-                  تفاصيل النزاع
+                  {t('disputeDetails.details')}
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm text-white/60 mb-1 block">الوصف</label>
+                    <label className="text-sm text-white/60 mb-1 block">{t('disputeDetails.descriptionLabel')}</label>
                     <p className="text-white p-4 bg-white/5 rounded-lg border border-white/10">
                       {dispute.description}
                     </p>
@@ -133,19 +133,19 @@ const DisputeDetails = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm text-white/60 mb-1 block">المُبلّغ</label>
+                      <label className="text-sm text-white/60 mb-1 block">{t('disputeDetails.reporter')}</label>
                       <div className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10">
                         <User className="h-4 w-4 text-[hsl(195,80%,70%)]" />
-                        <span className="text-white">{dispute.party === 'buyer' ? 'المشتري' : 'البائع'}</span>
+                        <span className="text-white">{dispute.party === 'buyer' ? t('disputeDetails.buyer') : t('disputeDetails.seller')}</span>
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-sm text-white/60 mb-1 block">تاريخ الإنشاء</label>
+                      <label className="text-sm text-white/60 mb-1 block">{t('disputeDetails.createdAt')}</label>
                       <div className="flex items-center gap-2 p-3 bg-white/5 rounded-lg border border-white/10">
                         <Calendar className="h-4 w-4 text-[hsl(195,80%,70%)]" />
                         <span className="text-white">
-                          {dispute.created_at ? new Date(dispute.created_at).toLocaleDateString('ar-SA') : 'غير محدد'}
+                          {dispute.created_at ? new Date(dispute.created_at).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US') : t('disputeDetails.notSpecified')}
                         </span>
                       </div>
                     </div>
@@ -156,20 +156,20 @@ const DisputeDetails = () => {
               {/* Order Info */}
               {dispute.order && (
                 <Card className="p-6 bg-white/5 border-white/10">
-                  <h2 className="text-xl font-bold text-white mb-4">معلومات الطلب</h2>
+                  <h2 className="text-xl font-bold text-white mb-4">{t('disputeDetails.orderInfo')}</h2>
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-white/60">رقم الطلب</span>
+                      <span className="text-white/60">{t('disputeDetails.orderNumber')}</span>
                       <Link to={`/order/${dispute.order.id}`} className="text-[hsl(195,80%,70%)] hover:underline">
                         #{dispute.order.id}
                       </Link>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-white/60">المبلغ</span>
-                      <span className="text-white font-bold">{dispute.order.amount?.toLocaleString('ar-SA')} ر.س</span>
+                      <span className="text-white/60">{t('disputeDetails.amount')}</span>
+                      <span className="text-white font-bold">{dispute.order.amount?.toLocaleString(language === 'ar' ? 'ar-SA' : 'en-US')} ر.س</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-white/60">حالة الطلب</span>
+                      <span className="text-white/60">{t('disputeDetails.orderStatus')}</span>
                       <Badge>{dispute.order.status}</Badge>
                     </div>
                   </div>
@@ -181,12 +181,12 @@ const DisputeDetails = () => {
                 <Card className="p-6 bg-green-500/10 border-green-500/30">
                   <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-green-400" />
-                    الحل
+                    {t('disputeDetails.resolutionTitle')}
                   </h2>
                   <p className="text-white/80 mb-4">{dispute.resolution_notes}</p>
                   {dispute.resolved_at && (
                     <p className="text-sm text-white/60">
-                      تم الحل في: {new Date(dispute.resolved_at).toLocaleDateString('ar-SA')}
+                      {t('disputeDetails.resolvedAt')} {new Date(dispute.resolved_at).toLocaleDateString(language === 'ar' ? 'ar-SA' : 'en-US')}
                     </p>
                   )}
                 </Card>
@@ -198,7 +198,7 @@ const DisputeDetails = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 text-blue-400">
                       <AlertTriangle className="h-5 w-5" />
-                      <p>النزاع قيد المراجعة. سيتم التواصل معك خلال 24-48 ساعة.</p>
+                      <p>{t('disputeDetails.underReviewMessage')}</p>
                     </div>
                     {dispute.initiated_by === user.id && (
                       <AlertDialog>
@@ -209,25 +209,25 @@ const DisputeDetails = () => {
                             className="gap-2 bg-white/5 text-white border-white/20 hover:bg-white/10"
                           >
                             <XCircle className="h-4 w-4" />
-                            إلغاء النزاع
+                            {t('disputeDetails.cancelDispute')}
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
                           <AlertDialogHeader>
-                            <AlertDialogTitle className="text-white text-right">
-                              إلغاء النزاع
+                            <AlertDialogTitle className={`text-white ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                              {t('disputeDetails.cancelTitle')}
                             </AlertDialogTitle>
-                            <AlertDialogDescription className="text-white/80 text-right">
-                              هل أنت متأكد من إلغاء هذا النزاع؟
+                            <AlertDialogDescription className={`text-white/80 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                              {t('disputeDetails.cancelConfirm')}
                               <br /><br />
-                              سيتم إعادة الطلب إلى حالة الضمان ويمكنك متابعة المعاملة.
+                              {t('disputeDetails.cancelWarning1')}
                               <br /><br />
-                              ⚠️ لا يمكن إعادة فتح النزاع بعد إلغائه.
+                              {t('disputeDetails.cancelWarning2')}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter className="gap-2">
                             <AlertDialogCancel className="bg-white/10 text-white border-white/20">
-                              تراجع
+                              {t('disputeDetails.cancelButton')}
                             </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => cancelMutation.mutate(dispute.id)}
@@ -237,10 +237,10 @@ const DisputeDetails = () => {
                               {cancelMutation.isPending ? (
                                 <>
                                   <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                                  جاري الإلغاء...
+                                  {t('disputeDetails.cancelling')}
                                 </>
                               ) : (
-                                'إلغاء النزاع'
+                                t('disputeDetails.confirmCancel')
                               )}
                             </AlertDialogAction>
                           </AlertDialogFooter>
