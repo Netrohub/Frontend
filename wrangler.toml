@@ -5,7 +5,5 @@ compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
 
 [env.production]
-NODE_VERSION = "20"
 NPM_CONFIG_PRODUCTION = "false"
-NPM_CONFIG_USER_AGENT = "npm"
 
