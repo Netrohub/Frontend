@@ -46,7 +46,7 @@ const Home = () => {
         href="#main-content" 
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
       >
-        تخطي إلى المحتوى الرئيسي
+        {t('common.skipToContent')}
       </a>
       
       {/* Navigation */}
@@ -101,10 +101,10 @@ const Home = () => {
                 size="lg" 
                 className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-white/5 hover:bg-white/10 text-white font-bold backdrop-blur-sm border border-white/20 min-h-[56px]"
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                aria-label="التمرير إلى قسم الميزات"
+                aria-label={t('home.howPlatformWorks')}
               >
-                <span className="hidden sm:inline">كيف تعمل المنصة</span>
-                <span className="sm:hidden">كيف يعمل؟</span>
+                <span className="hidden sm:inline">{t('home.howPlatformWorks')}</span>
+                <span className="sm:hidden">{t('home.howDoesItWork')}</span>
               </Button>
             )}
           </div>
@@ -161,15 +161,15 @@ const Home = () => {
       {/* How It Works Section */}
       <section className="relative z-10 container mx-auto px-4 md:px-6 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">كيف تعمل المنصة</h2>
-          <p className="text-xl text-white/60">ثلاث خطوات بسيطة للشراء بأمان</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">{t('home.howItWorks')}</h2>
+          <p className="text-xl text-white/60">{t('home.howItWorksSubtitle')}</p>
         </div>
         
         <div className="max-w-4xl mx-auto space-y-8">
           {[
-            { step: "1", title: "اختر واشترِ", desc: "تصفح الحسابات المتاحة واختر الحساب المناسب" },
-            { step: "2", title: "فترة الضمان", desc: "استلم معلومات الحساب وتحقق منه خلال 12 ساعة" },
-            { step: "3", title: "تأكيد أو نزاع", desc: "إذا كان الحساب يعمل، أكّد الاستلام" },
+            { step: "1", title: t('home.step1.title'), desc: t('home.step1.desc') },
+            { step: "2", title: t('home.step2.title'), desc: t('home.step2.desc') },
+            { step: "3", title: t('home.step3.title'), desc: t('home.step3.desc') },
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-6 p-6 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:border-[hsl(195,80%,70%,0.3)] transition-all">
               <div className="flex-shrink-0 w-16 h-16 rounded-full bg-[hsl(195,80%,50%)] flex items-center justify-center text-2xl font-black text-white shadow-[0_0_20px_rgba(56,189,248,0.4)]">

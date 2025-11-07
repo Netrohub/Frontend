@@ -709,6 +709,19 @@ const translations: Record<Language, Record<string, string>> = {
     'time.weeksAgo': 'منذ {n} أسبوع',
     'time.monthsAgo': 'منذ {n} شهر',
     'time.yearsAgo': 'منذ {n} سنة',
+    
+    // How It Works Section
+    'home.howItWorks': 'كيف تعمل المنصة',
+    'home.howItWorksSubtitle': 'ثلاث خطوات بسيطة للشراء بأمان',
+    'home.howPlatformWorks': 'كيف تعمل المنصة',
+    'home.howDoesItWork': 'كيف يعمل؟',
+    'home.step1.title': 'اختر واشترِ',
+    'home.step1.desc': 'تصفح الحسابات المتاحة واختر الحساب المناسب',
+    'home.step2.title': 'فترة الضمان',
+    'home.step2.desc': 'استلم معلومات الحساب وتحقق منه خلال 12 ساعة',
+    'home.step3.title': 'تأكيد أو نزاع',
+    'home.step3.desc': 'إذا كان الحساب يعمل، أكّد الاستلام',
+    'common.skipToContent': 'تخطي إلى المحتوى الرئيسي',
   },
   en: {
  // Navbar
@@ -1369,5 +1382,18 @@ const translations: Record<Language, Record<string, string>> = {
     'time.weeksAgo': '{n} weeks ago',
     'time.monthsAgo': '{n} months ago',
     'time.yearsAgo': '{n} years ago',
+    
+    // How It Works Section
+    'home.howItWorks': 'How It Works',
+    'home.howItWorksSubtitle': 'Three simple steps to buy securely',
+    'home.howPlatformWorks': 'How the Platform Works',
+    'home.howDoesItWork': 'How does it work?',
+    'home.step1.title': 'Choose & Buy',
+    'home.step1.desc': 'Browse available accounts and choose the right one',
+    'home.step2.title': 'Escrow Period',
+    'home.step2.desc': 'Receive account credentials and verify within 12 hours',
+    'home.step3.title': 'Confirm or Dispute',
+    'home.step3.desc': 'If the account works, confirm receipt',
+    'common.skipToContent': 'Skip to main content',
   }
 };
