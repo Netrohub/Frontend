@@ -5,7 +5,7 @@ type Language = 'ar' | 'en';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -38,8 +38,17 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     setLanguageState(lang);
   };
 
-  const t = (key: string): string => {
-    return translations[language][key] || key;
+  const t = (key: string, params?: Record<string, string | number>): string => {
+    let translation = translations[language][key] || key;
+    
+    // Replace placeholders like {count}, {date}, {name}, etc.
+    if (params) {
+      Object.keys(params).forEach(param => {
+        translation = translation.replace(new RegExp(`\\{${param}\\}`, 'g'), String(params[param]));
+      });
+    }
+    
+    return translation;
   };
 
   return (
@@ -209,6 +218,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.search': 'بحث',
     'common.filter': 'تصفية',
     'common.sort': 'ترتيب',
+    'common.all': 'الكل',
     'common.save': 'حفظ',
     'common.cancel': 'إلغاء',
     'common.delete': 'حذف',
@@ -327,6 +337,8 @@ const translations: Record<Language, Record<string, string>> = {
     'product.available': 'متاح',
     'product.sold': 'مباع',
     'product.unavailable': 'غير متاح',
+    'product.premiumAccount': 'حساب مميز',
+    'product.backToMarket': 'العودة إلى السوق',
     'product.sellerInfo': 'معلومات البائع',
     'product.sellerRating': 'تقييم البائع',
     'product.totalSales': 'إجمالي المبيعات',
@@ -1149,6 +1161,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.search': 'Search',
     'common.filter': 'Filter',
     'common.sort': 'Sort',
+    'common.all': 'All',
     'common.save': 'Save',
     'common.cancel': 'Cancel',
     'common.delete': 'Delete',
@@ -1267,6 +1280,8 @@ const translations: Record<Language, Record<string, string>> = {
     'product.available': 'Available',
     'product.sold': 'Sold',
     'product.unavailable': 'Unavailable',
+    'product.premiumAccount': 'Premium Account',
+    'product.backToMarket': 'Back to Marketplace',
     'product.sellerInfo': 'Seller Information',
     'product.sellerRating': 'Seller Rating',
     'product.totalSales': 'Total Sales',
