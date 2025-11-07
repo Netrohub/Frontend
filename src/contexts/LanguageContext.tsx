@@ -1016,7 +1016,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.hero.browseAccounts': 'Browse Accounts',
 'home.hero.learnMore': 'Learn More',
 
-'home.badge': 'مرحبًا بك في NXOLand 👋',
+'home.badge': 'Welcome to NXOLand 👋',
 
 
 'home.whyChoose': 'Why Choose NXOLand?',
