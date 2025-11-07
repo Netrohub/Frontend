@@ -853,7 +853,7 @@ const SellWOS = () => {
                       className="aspect-square bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex flex-col items-center justify-center gap-2"
                     >
                       <Upload className="h-8 w-8 text-white/40" />
-                      <span className="text-sm text-white/60">رفع صورة</span>
+                      <span className="text-sm text-white/60">{t('listing.uploadImage')}</span>
                     </button>
                     <input
                       ref={imageInputRef}
@@ -868,7 +868,7 @@ const SellWOS = () => {
                 )}
               </div>
               
-              <p className="text-sm text-white/60">يمكنك رفع حتى 8 صور (تم رفع {images.length})</p>
+              <p className="text-sm text-white/60">{t('listing.imageCount', { count: images.length })}</p>
             </div>
 
             {/* Account Details */}
@@ -902,11 +902,11 @@ const SellWOS = () => {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-white mt-4">صور الفواتير (إلزامية)</h3>
-                <p className="text-sm text-white/60">قم بتحميل صور (سكرين شوت) الفواتير من جوالك - سيتم عرضها للمشتري بعد إتمام الدفع</p>
+                <h3 className="text-lg font-semibold text-white mt-4">{t('listing.billImagesTitle')}</h3>
+                <p className="text-sm text-white/60">{t('listing.billImagesDesc')}</p>
                 
                 <div>
-                  <Label className="text-white mb-2 block">صورة أول فاتورة شراء *</Label>
+                  <Label className="text-white mb-2 block">{t('listing.firstBillImage')}</Label>
                   {billImages.first ? (
                     <Dialog>
                       <div className="relative inline-block group">
@@ -944,7 +944,7 @@ const SellWOS = () => {
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">اختر صورة</span>
+                      <span className="text-sm text-white/60">{t('listing.chooseImage')}</span>
                     </button>
                   )}
                   <input
@@ -957,7 +957,7 @@ const SellWOS = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">صورة ثلاث فواتير مختلفة التوقيت *</Label>
+                  <Label className="text-white mb-2 block">{t('listing.threeBillImages')}</Label>
                   {billImages.three ? (
                     <Dialog>
                       <div className="relative inline-block group">
@@ -995,7 +995,7 @@ const SellWOS = () => {
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">اختر صورة</span>
+                      <span className="text-sm text-white/60">{t('listing.chooseImage')}</span>
                     </button>
                   )}
                   <input
@@ -1008,7 +1008,7 @@ const SellWOS = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">صورة آخر فاتورة شراء *</Label>
+                  <Label className="text-white mb-2 block">{t('listing.lastBillImage')}</Label>
                   {billImages.last ? (
                     <Dialog>
                       <div className="relative inline-block group">
@@ -1046,7 +1046,7 @@ const SellWOS = () => {
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">اختر صورة</span>
+                      <span className="text-sm text-white/60">{t('listing.chooseImage')}</span>
                     </button>
                   )}
                   <input
