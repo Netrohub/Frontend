@@ -377,6 +377,16 @@ const translations: Record<Language, Record<string, string>> = {
     'wallet.fee': 'رسوم',
     'wallet.noTransactions': 'لا توجد معاملات',
     'wallet.processingTime': 'مدة المعالجة: 1-4 أيام عمل',
+    'wallet.withdrawSuccess': 'تم طلب السحب بنجاح',
+    'wallet.hourlyLimitExceeded': 'تجاوزت الحد الأقصى للسحب في الساعة. حاول مرة أخرى لاحقاً',
+    'wallet.dailyLimitExceeded': 'تجاوزت الحد اليومي للسحب ({limit}). المتبقي: ${remaining}',
+    'wallet.withdrawError': 'فشل طلب السحب',
+    'wallet.invalidIBAN': 'رقم الآيبان غير صحيح. يجب أن يبدأ بـ SA ويتكون من 24 حرف',
+    'wallet.enterValidAmount': 'يرجى إدخال مبلغ صحيح',
+    'wallet.minWithdrawal': 'الحد الأدنى للسحب هو ${min}',
+    'wallet.maxWithdrawal': 'الحد الأقصى للسحب هو ${max}',
+    'wallet.exceedsBalance': 'المبلغ يتجاوز الرصيد المتاح',
+    'wallet.enterValidIBAN': 'يرجى إدخال رقم آيبان صحيح',
     
     // Profile
     'profile.title': 'الملف الشخصي',
@@ -1085,6 +1095,16 @@ const translations: Record<Language, Record<string, string>> = {
     'wallet.fee': 'Fee',
     'wallet.noTransactions': 'No transactions yet',
     'wallet.processingTime': 'Processing time: 1-4 business days',
+    'wallet.withdrawSuccess': 'Withdrawal requested successfully',
+    'wallet.hourlyLimitExceeded': 'Hourly withdrawal limit exceeded. Please try again later',
+    'wallet.dailyLimitExceeded': 'Daily withdrawal limit exceeded ({limit}). Remaining: ${remaining}',
+    'wallet.withdrawError': 'Withdrawal request failed',
+    'wallet.invalidIBAN': 'Invalid IBAN. Must start with SA and be 24 characters long',
+    'wallet.enterValidAmount': 'Please enter a valid amount',
+    'wallet.minWithdrawal': 'Minimum withdrawal is ${min}',
+    'wallet.maxWithdrawal': 'Maximum withdrawal is ${max}',
+    'wallet.exceedsBalance': 'Amount exceeds available balance',
+    'wallet.enterValidIBAN': 'Please enter a valid IBAN',
     
     // Profile
     'profile.title': 'Profile',
