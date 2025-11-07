@@ -59,7 +59,7 @@ const Home = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[hsl(195,80%,70%,0.3)]">
             <Snowflake className="h-4 w-4 text-[hsl(195,80%,70%)] animate-pulse" />
             <span className="text-sm font-medium text-[hsl(195,80%,70%)]">
-              {t('home.features.security')} {t('home.features.fast')} {t('home.features.support')}
+              {t('home.badge')}
             </span>
           </div>
           

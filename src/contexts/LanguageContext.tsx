@@ -88,6 +88,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.hero.learnMore': 'اعرف المزيد',
 
 'home.features.security': 'مرحبًا بك في NXOLand 👋',
+'home.badge': 'آمن • سريع • دعم 24/7',
 
 'home.whyChoose': 'ليش تختار NXOLand؟',
 
@@ -1016,6 +1017,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.hero.learnMore': 'Learn More',
 
 'home.features.security': 'Welcome to NXOLand 👋',
+'home.badge': 'Secure • Fast • 24/7 Support',
 
 
 'home.whyChoose': 'Why Choose NXOLand?',
