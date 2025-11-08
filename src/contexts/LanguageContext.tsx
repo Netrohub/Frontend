@@ -247,6 +247,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.info': 'معلومات',
     'common.errorLoading': 'حدث خطأ أثناء التحميل',
     'common.retry': 'إعادة المحاولة',
+    'common.skipToContent': 'تخطي إلى المحتوى الرئيسي',
     
     // Auth
     'auth.login': 'تسجيل الدخول',
@@ -1179,6 +1180,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.info': 'Info',
     'common.errorLoading': 'An error occurred while loading',
     'common.retry': 'Retry',
+    'common.skipToContent': 'Skip to main content',
     
     // Auth
     'auth.login': 'Login',
