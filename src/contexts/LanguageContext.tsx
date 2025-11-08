@@ -105,6 +105,9 @@ const translations: Record<Language, Record<string, string>> = {
 'home.feature4.desc': 'يتم التحويل للبائع فور تأكيد المشتري استلام الحساب',
 
 'home.howItWorks': 'طريقة العمل',
+'home.howPlatformWorks': 'كيف تعمل المنصة',
+'home.howDoesItWork': 'كيف يعمل؟',
+'home.howItWorksSubtitle': 'ثلاث خطوات بسيطة للشراء بأمان',
 
 'home.step1.title': 'اختر الحساب المناسب',
 'home.step1.desc': 'تصفح حسابات متعددة حسب اللعبة، السعر، والمستوى',
@@ -1034,6 +1037,9 @@ const translations: Record<Language, Record<string, string>> = {
 'home.feature4.desc': 'Sellers receive their funds instantly once the buyer confirms account delivery.',
 
 'home.howItWorks': 'How It Works',
+'home.howPlatformWorks': 'How the Platform Works',
+'home.howDoesItWork': 'How does it work?',
+'home.howItWorksSubtitle': 'Three simple steps to buy securely',
 
 'home.step1.title': 'Choose Your Account',
 'home.step1.desc': 'Browse thousands of verified accounts across multiple games.',
