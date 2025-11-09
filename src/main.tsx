@@ -4,6 +4,15 @@ import "./index.css";
 import { initGTM } from "./utils/gtm";
 import { isEnvConfigured } from "./config/env";
 
+// Handle chunk loading errors (happens when new deployment invalidates old chunks)
+window.addEventListener('error', (event) => {
+  if (event.message.includes('Failed to fetch dynamically imported module') || 
+      event.message.includes('Importing a module script failed')) {
+    console.warn('Chunk load error detected, reloading page...');
+    window.location.reload();
+  }
+});
+
 // Check environment configuration before loading app
 try {
   if (!isEnvConfigured()) {
