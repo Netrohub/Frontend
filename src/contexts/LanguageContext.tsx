@@ -802,18 +802,6 @@ const translations: Record<Language, Record<string, string>> = {
     'leaderboard.tryAgain': 'حاول مرة أخرى',
     'leaderboard.noData': 'لا توجد بيانات متاحة حالياً',
     
-    // Reviews
-    'reviews.title': 'التقييمات',
-    'reviews.writeReview': 'كتابة تقييم',
-    'reviews.yourRating': 'تقييمك',
-    'reviews.yourReview': 'تعليقك',
-    'reviews.submitReview': 'إرسال التقييم',
-    'reviews.helpful': 'مفيد',
-    'reviews.notHelpful': 'غير مفيد',
-    'reviews.report': 'إبلاغ',
-    'reviews.noReviews': 'لا توجد تقييمات بعد',
-    'reviews.verifiedPurchase': 'عملية شراء موثقة',
-    
     // Suggestions
     'suggestions.title': 'مركز الاقتراحات والتقييمات',
     'suggestions.subtitle': 'شارك أفكارك وقيّم تجربتك على المنصة',
@@ -1801,18 +1789,6 @@ const translations: Record<Language, Record<string, string>> = {
     'leaderboard.loadError': 'Failed to load leaderboard',
     'leaderboard.tryAgain': 'Please try again',
     'leaderboard.noData': 'No data available',
-    
-    // Reviews
-    'reviews.title': 'Reviews',
-    'reviews.writeReview': 'Write Review',
-    'reviews.yourRating': 'Your Rating',
-    'reviews.yourReview': 'Your Review',
-    'reviews.submitReview': 'Submit Review',
-    'reviews.helpful': 'Helpful',
-    'reviews.notHelpful': 'Not Helpful',
-    'reviews.report': 'Report',
-    'reviews.noReviews': 'No reviews yet',
-    'reviews.verifiedPurchase': 'Verified Purchase',
     
     // Suggestions
     'suggestions.title': 'Suggestions & Feedback Center',
