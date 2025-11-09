@@ -162,39 +162,58 @@ All colors MUST be HSL.
   }
 }
 
-/* Terms and Privacy content styling */
+/* Terms, Privacy, and Refund content styling */
 .terms-content h1,
-.privacy-content h1 {
+.privacy-content h1,
+.refund-content h1 {
   @apply text-3xl font-black text-white mb-6 mt-8 first:mt-0;
 }
 
 .terms-content h2,
-.privacy-content h2 {
+.privacy-content h2,
+.refund-content h2 {
   @apply text-2xl font-bold text-white mb-4 mt-6;
 }
 
 .terms-content h3,
-.privacy-content h3 {
+.privacy-content h3,
+.refund-content h3 {
   @apply text-xl font-bold text-[hsl(195,80%,70%)] mb-3 mt-4;
 }
 
 .terms-content p,
-.privacy-content p {
+.privacy-content p,
+.refund-content p {
   @apply text-white/80 leading-relaxed mb-4;
 }
 
 .terms-content ul,
-.privacy-content ul {
+.privacy-content ul,
+.refund-content ul {
   @apply list-disc list-inside space-y-2 text-white/80 mb-4 mr-4;
 }
 
+.terms-content ol,
+.privacy-content ol,
+.refund-content ol {
+  @apply list-decimal list-inside space-y-2 text-white/80 mb-4 mr-4;
+}
+
+.terms-content li,
+.privacy-content li,
+.refund-content li {
+  @apply text-white/80;
+}
+
 .terms-content strong,
-.privacy-content strong {
+.privacy-content strong,
+.refund-content strong {
   @apply text-white font-bold;
 }
 
 .terms-content hr,
-.privacy-content hr {
+.privacy-content hr,
+.refund-content hr {
   @apply border-white/20 my-8;
 }
 

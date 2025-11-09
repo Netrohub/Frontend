@@ -32,7 +32,7 @@ const RefundPolicy = () => {
         <Navbar />
 
         {/* Main Content */}
-        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
+        <div id="refund-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
               {language === 'ar' ? 'سياسة الاسترداد والإرجاع' : 'Refund & Return Policy'}
