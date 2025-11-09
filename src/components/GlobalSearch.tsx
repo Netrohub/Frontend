@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ export const GlobalSearch = () => {
         <kbd className="pointer-events-none hidden md:inline-flex h-5 select-none items-center gap-1 rounded border border-white/20 bg-white/10 px-1.5 font-mono text-[10px] font-medium text-white/60 mr-2">
           /
         </kbd>
-        <span className="text-sm">بحث...</span>
+        <span className="text-sm">{t('search.placeholder')}</span>
         <Search className="h-4 w-4" />
       </Button>
 
@@ -43,7 +45,7 @@ export const GlobalSearch = () => {
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="ابحث عن حسابات، أعضاء، أو مواضيع..."
+                placeholder={t('search.fullPlaceholder')}
                 className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 text-lg h-12"
                 autoFocus
               />
@@ -63,19 +65,19 @@ export const GlobalSearch = () => {
             <div className="flex gap-2">
               <Button type="submit" variant="arctic" className="flex-1">
                 <Search className="h-4 w-4 ml-2" />
-                بحث
+                {t('search.button')}
               </Button>
               <Button 
                 type="button" 
                 variant="arctic-ghost" 
                 onClick={() => setOpen(false)}
               >
-                إلغاء
+                {t('common.cancel')}
               </Button>
             </div>
 
             <div className="text-xs text-white/40 text-center">
-              اضغط ESC للإغلاق • اضغط / للبحث السريع
+              {t('search.keyboardShortcuts')}
             </div>
           </form>
         </DialogContent>

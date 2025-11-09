@@ -2,36 +2,38 @@ import { Link } from "react-router-dom";
 import { ShoppingBag, Package, MessageSquare, FileText, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const QuickNav = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const isAuthenticated = !!user;
 
   const quickLinks = [
     { 
       path: "/marketplace", 
-      label: "تصفح السوق", 
+      label: t('quickNav.browseMarket'), 
       icon: ShoppingBag,
       protected: false,
       color: "bg-[hsl(195,80%,50%,0.15)] border-[hsl(195,80%,70%,0.3)] text-[hsl(195,80%,70%)]"
     },
     { 
       path: "/orders", 
-      label: "طلباتي", 
+      label: t('quickNav.myOrders'), 
       icon: Package,
       protected: true,
       color: "bg-[hsl(195,80%,50%,0.15)] border-[hsl(195,80%,70%,0.3)] text-[hsl(195,80%,70%)]"
     },
     { 
       path: "/disputes", 
-      label: "النزاعات", 
+      label: t('quickNav.disputes'), 
       icon: MessageSquare,
       protected: true,
       color: "bg-[hsl(0,70%,60%,0.15)] border-[hsl(0,70%,60%,0.3)] text-[hsl(0,70%,60%)]"
     },
     { 
       path: "/help", 
-      label: "المساعدة", 
+      label: t('quickNav.help'), 
       icon: HelpCircle,
       protected: false,
       color: "bg-[hsl(40,90%,55%,0.15)] border-[hsl(40,90%,55%,0.3)] text-[hsl(40,90%,55%)]"

@@ -2,25 +2,27 @@ import { Link, useLocation } from "react-router-dom";
 import { Home, ShoppingBag, Wallet, Bell, User, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const BottomNav = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const isAuthenticated = !!user;
 
   const navItems = [
-    { path: "/", label: "الرئيسية", icon: Home, protected: false },
-    { path: "/marketplace", label: "السوق", icon: ShoppingBag, protected: false },
-    { path: "/wallet", label: "المحفظة", icon: Wallet, protected: true },
-    { path: "/notifications", label: "الإشعارات", icon: Bell, protected: true },
-    { path: "/profile", label: "حسابي", icon: User, protected: true },
+    { path: "/", label: t('nav.home'), icon: Home, protected: false },
+    { path: "/marketplace", label: t('nav.marketplace'), icon: ShoppingBag, protected: false },
+    { path: "/wallet", label: t('nav.wallet'), icon: Wallet, protected: true },
+    { path: "/notifications", label: t('nav.notifications'), icon: Bell, protected: true },
+    { path: "/profile", label: t('nav.myAccount'), icon: User, protected: true },
   ];
 
   const isActive = (path: string) => location.pathname === path;
   
   const visibleItems = isAuthenticated 
     ? navItems 
-    : [...navItems.filter(item => !item.protected), { path: "/auth", label: "دخول", icon: LogIn, protected: false }];
+    : [...navItems.filter(item => !item.protected), { path: "/auth", label: t('nav.signIn'), icon: LogIn, protected: false }];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[hsl(200,70%,15%)] border-t border-white/10 backdrop-blur-md pb-safe">

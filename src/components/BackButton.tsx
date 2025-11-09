@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BackButtonProps {
   fallbackPath?: string;
@@ -11,10 +12,11 @@ interface BackButtonProps {
 
 export const BackButton = ({ 
   fallbackPath = "/", 
-  label = "العودة",
+  label,
   className 
 }: BackButtonProps) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -34,7 +36,7 @@ export const BackButton = ({
       )}
     >
       <ArrowRight className="h-4 w-4" />
-      {label}
+      {label || t('common.back')}
     </Button>
   );
 };

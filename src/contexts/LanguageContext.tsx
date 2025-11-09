@@ -80,6 +80,15 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.login': 'تسجيل الدخول',
     'nav.suggestions': 'الاقتراحات والتقييم',
 'nav.community': 'المجتمع',
+'nav.myAccount': 'حسابي',
+'nav.signIn': 'دخول',
+'nav.openMenu': 'فتح القائمة',
+'nav.menu': 'القائمة',
+'nav.closeMenu': 'إغلاق القائمة',
+'nav.close': 'إغلاق',
+'nav.navigationLinks': 'روابط التنقل',
+'nav.termsAndConditions': 'الشروط والأحكام',
+'nav.privacyPolicy': 'سياسة الخصوصية',
 
 // Home
 'home.hero.title': 'منصة لبيع وشراء المنتجات الرقمية',
@@ -248,6 +257,49 @@ const translations: Record<Language, Record<string, string>> = {
     'common.errorLoading': 'حدث خطأ أثناء التحميل',
     'common.retry': 'إعادة المحاولة',
     'common.skipToContent': 'تخطي إلى المحتوى الرئيسي',
+    'common.sending': 'جاري الإرسال...',
+    'common.errorTryAgain': 'حدث خطأ، الرجاء المحاولة مرة أخرى',
+    
+    // Time
+    'time.now': 'الآن',
+    'time.minutesAgo': 'منذ {count} د',
+    'time.hoursAgo': 'منذ {count} س',
+    'time.daysAgo': 'منذ {count} ي',
+    
+    // Search
+    'search.placeholder': 'بحث...',
+    'search.fullPlaceholder': 'ابحث عن حسابات، أعضاء، أو مواضيع...',
+    'search.button': 'بحث',
+    'search.keyboardShortcuts': 'اضغط ESC للإغلاق • اضغط / للبحث السريع',
+    
+    // Quick Nav
+    'quickNav.browseMarket': 'تصفح السوق',
+    'quickNav.myOrders': 'طلباتي',
+    'quickNav.disputes': 'النزاعات',
+    'quickNav.help': 'المساعدة',
+    
+    // Reviews
+    'reviews.title': 'التقييمات',
+    'reviews.addReview': 'إضافة تقييم',
+    'reviews.editReview': 'تعديل التقييم',
+    'reviews.rating': 'التقييم *',
+    'reviews.comment': 'التعليق *',
+    'reviews.commentPlaceholder': 'شارك تجربتك مع هذا البائع... كيف كانت جودة الخدمة؟ هل كان التسليم سريعاً؟',
+    'reviews.minCharacters': '(10 أحرف على الأقل)',
+    'reviews.characterCount': '{count} / 1000 حرف',
+    'reviews.charactersRemaining': '{remaining} حرف متبقي',
+    'reviews.excellent': 'ممتاز',
+    'reviews.veryGood': 'جيد جداً',
+    'reviews.good': 'جيد',
+    'reviews.acceptable': 'مقبول',
+    'reviews.poor': 'ضعيف',
+    'reviews.pleaseSelectRating': 'الرجاء اختيار تقييم',
+    'reviews.commentMinLength': 'الرجاء كتابة تعليق لا يقل عن 10 أحرف',
+    'reviews.createSuccess': 'تم إضافة التقييم بنجاح',
+    'reviews.updateSuccess': 'تم تحديث التقييم بنجاح',
+    'reviews.updateButton': 'تحديث التقييم',
+    'reviews.publishButton': 'نشر التقييم',
+    'reviews.tip': '💡 نصيحة: التقييمات الصادقة والمفصلة تساعد المشترين الآخرين في اتخاذ قرارات أفضل',
     
     // Auth
     'auth.login': 'تسجيل الدخول',
@@ -678,6 +730,10 @@ const translations: Record<Language, Record<string, string>> = {
     'notifications.markAllRead': 'تعليم الكل كمقروء',
     'notifications.deleteAll': 'حذف الكل',
     'notifications.noNotifications': 'لا توجد إشعارات',
+    'notifications.empty': 'لا توجد إشعارات',
+    'notifications.viewAll': 'عرض الكل',
+    'notifications.viewAllNotifications': 'عرض جميع الإشعارات',
+    'notifications.unreadCount': '{count} إشعار غير مقروء',
     'notifications.newOrder': 'طلب جديد',
     'notifications.orderUpdate': 'تحديث الطلب',
     'notifications.disputeOpened': 'نزاع جديد',
@@ -1013,6 +1069,15 @@ const translations: Record<Language, Record<string, string>> = {
 'nav.login': 'Log In',
 'nav.suggestions': 'Suggestions & Feedback',
 'nav.community': 'Community',
+'nav.myAccount': 'My Account',
+'nav.signIn': 'Sign In',
+'nav.openMenu': 'Open menu',
+'nav.menu': 'Menu',
+'nav.closeMenu': 'Close menu',
+'nav.close': 'Close',
+'nav.navigationLinks': 'Navigation links',
+'nav.termsAndConditions': 'Terms and Conditions',
+'nav.privacyPolicy': 'Privacy Policy',
 
 // Home
 'home.hero.title': 'NXOLand — Your Trusted Platform for Game Account Trading',
@@ -1181,6 +1246,49 @@ const translations: Record<Language, Record<string, string>> = {
     'common.errorLoading': 'An error occurred while loading',
     'common.retry': 'Retry',
     'common.skipToContent': 'Skip to main content',
+    'common.sending': 'Sending...',
+    'common.errorTryAgain': 'An error occurred, please try again',
+    
+    // Time
+    'time.now': 'Now',
+    'time.minutesAgo': '{count}m ago',
+    'time.hoursAgo': '{count}h ago',
+    'time.daysAgo': '{count}d ago',
+    
+    // Search
+    'search.placeholder': 'Search...',
+    'search.fullPlaceholder': 'Search for accounts, members, or topics...',
+    'search.button': 'Search',
+    'search.keyboardShortcuts': 'Press ESC to close • Press / for quick search',
+    
+    // Quick Nav
+    'quickNav.browseMarket': 'Browse Market',
+    'quickNav.myOrders': 'My Orders',
+    'quickNav.disputes': 'Disputes',
+    'quickNav.help': 'Help',
+    
+    // Reviews
+    'reviews.title': 'Reviews',
+    'reviews.addReview': 'Add Review',
+    'reviews.editReview': 'Edit Review',
+    'reviews.rating': 'Rating *',
+    'reviews.comment': 'Comment *',
+    'reviews.commentPlaceholder': 'Share your experience with this seller... How was the service quality? Was the delivery fast?',
+    'reviews.minCharacters': '(at least 10 characters)',
+    'reviews.characterCount': '{count} / 1000 characters',
+    'reviews.charactersRemaining': '{remaining} characters remaining',
+    'reviews.excellent': 'Excellent',
+    'reviews.veryGood': 'Very Good',
+    'reviews.good': 'Good',
+    'reviews.acceptable': 'Acceptable',
+    'reviews.poor': 'Poor',
+    'reviews.pleaseSelectRating': 'Please select a rating',
+    'reviews.commentMinLength': 'Please write a comment with at least 10 characters',
+    'reviews.createSuccess': 'Review added successfully',
+    'reviews.updateSuccess': 'Review updated successfully',
+    'reviews.updateButton': 'Update Review',
+    'reviews.publishButton': 'Publish Review',
+    'reviews.tip': '💡 Tip: Honest and detailed reviews help other buyers make better decisions',
     
     // Auth
     'auth.login': 'Login',
@@ -1613,6 +1721,10 @@ const translations: Record<Language, Record<string, string>> = {
     'notifications.markAllRead': 'Mark All as Read',
     'notifications.deleteAll': 'Delete All',
     'notifications.noNotifications': 'No notifications',
+    'notifications.empty': 'No notifications',
+    'notifications.viewAll': 'View All',
+    'notifications.viewAllNotifications': 'View All Notifications',
+    'notifications.unreadCount': '{count} unread notification',
     'notifications.newOrder': 'New Order',
     'notifications.orderUpdate': 'Order Update',
     'notifications.disputeOpened': 'New Dispute',
