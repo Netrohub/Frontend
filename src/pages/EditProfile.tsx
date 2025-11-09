@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, Phone, ArrowRight, Save, Loader2 } from "lucide-react";
+import { User, Mail, Phone, ArrowRight, Save, Loader2, Camera, Upload } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
@@ -19,11 +19,14 @@ const EditProfile = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
+  const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -48,6 +51,58 @@ const EditProfile = () => {
       toast.error(error.message || t('editProfile.updateError'));
     },
   });
+
+  const uploadAvatarMutation = useMutation({
+    mutationFn: (file: File) => authApi.updateAvatar(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      toast.success(t('editProfile.avatarUpdateSuccess'));
+      setSelectedAvatar(null);
+      setAvatarPreview(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || t('editProfile.avatarUpdateError'));
+    },
+  });
+
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error(t('editProfile.invalidImageType'));
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t('editProfile.imageTooLarge'));
+      return;
+    }
+
+    setSelectedAvatar(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatarPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAvatarUpload = () => {
+    if (!selectedAvatar) return;
+    uploadAvatarMutation.mutate(selectedAvatar);
+  };
+
+  const handleAvatarCancel = () => {
+    setSelectedAvatar(null);
+    setAvatarPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const isValidEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -126,17 +181,89 @@ const EditProfile = () => {
           <div className="space-y-6">
             {/* Avatar Section */}
             <div className="flex flex-col items-center gap-4 pb-6 border-b border-white/10">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                <User className="h-12 w-12 text-white" aria-hidden="true" />
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center overflow-hidden">
+                  {avatarPreview ? (
+                    <img 
+                      src={avatarPreview} 
+                      alt={t('editProfile.avatarPreview')}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : user?.avatar ? (
+                    <img 
+                      src={user.avatar} 
+                      alt={user.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-12 w-12 text-white" aria-hidden="true" />
+                  )}
+                </div>
+                {!selectedAvatar && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] flex items-center justify-center transition-all shadow-lg"
+                    aria-label={t('editProfile.changeAvatar')}
+                  >
+                    <Camera className="h-4 w-4 text-white" />
+                  </button>
+                )}
               </div>
-              <Button 
-                variant="outline" 
-                className="bg-white/5 hover:bg-white/10 text-white/40 border-white/10 cursor-not-allowed"
-                disabled
-                title="قريباً"
-              >
-                تغيير الصورة (قريباً)
-              </Button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarSelect}
+                className="hidden"
+                aria-label={t('editProfile.selectImage')}
+              />
+
+              {selectedAvatar ? (
+                <div className="flex gap-2">
+                  <Button 
+                    type="button"
+                    onClick={handleAvatarUpload}
+                    disabled={uploadAvatarMutation.isPending}
+                    className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white"
+                  >
+                    {uploadAvatarMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('editProfile.uploading')}
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {t('editProfile.upload')}
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    onClick={handleAvatarCancel}
+                    disabled={uploadAvatarMutation.isPending}
+                    className="bg-white/5 hover:bg-white/10 text-white border-white/20"
+                  >
+                    {t('common.cancel')}
+                  </Button>
+                </div>
+              ) : (
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="bg-white/5 hover:bg-white/10 text-white border-white/20"
+                >
+                  <Camera className="h-4 w-4 mr-2" />
+                  {t('editProfile.changeAvatar')}
+                </Button>
+              )}
+              <p className="text-xs text-white/40 text-center">
+                {t('editProfile.avatarHint')}
+              </p>
             </div>
 
             {/* Name */}

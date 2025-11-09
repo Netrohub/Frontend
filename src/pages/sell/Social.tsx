@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BackButton } from "@/components/BackButton";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Lock } from "lucide-react";
 import tiktokLogo from "@/assets/tiktok-logo.png";
 import instagramLogo from "@/assets/instagram-logo.png";
 
@@ -32,6 +33,30 @@ const Social = () => {
     <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+      
+      {/* COMING SOON OVERLAY */}
+      <div className="absolute inset-0 z-50 bg-[hsl(200,70%,15%)]/95 backdrop-blur-md flex items-center justify-center">
+        <div className="text-center px-4 max-w-md">
+          <div className="mb-6 flex justify-center">
+            <div className="w-24 h-24 rounded-full bg-[hsl(195,80%,50%)]/10 border-2 border-[hsl(195,80%,50%)] flex items-center justify-center">
+              <Lock className="h-12 w-12 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+            </div>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
+            {language === 'ar' ? 'قريباً' : 'Coming Soon'}
+          </h2>
+          <p className="text-xl text-white/70 mb-8">
+            {language === 'ar' 
+              ? 'نعمل على إضافة هذه الميزة قريباً' 
+              : 'We are working on adding this feature soon'}
+          </p>
+          <BackButton 
+            fallbackPath="/sell" 
+            label={language === 'ar' ? 'العودة' : 'Go Back'}
+            className="mx-auto"
+          />
+        </div>
+      </div>
       
       {/* Snow particles */}
       <div className="absolute inset-0 pointer-events-none">

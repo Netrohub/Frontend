@@ -252,6 +252,16 @@ export const authApi = {
   updateProfile: (data: { name?: string; email?: string; phone?: string }) =>
     api.put<User>('/user/profile', data),
   
+  updateAvatar: async (file: File) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return api.post<{ user: User; avatar_url: string }>('/user/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+  
   updatePassword: (data: { current_password: string; password: string; password_confirmation: string }) =>
     api.put<{ message: string }>('/user/password', data),
 };
