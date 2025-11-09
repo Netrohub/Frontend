@@ -581,6 +581,13 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.accountStats': 'إحصائيات الحساب',
     'profile.refreshStats': 'تحديث الإحصائيات',
     'profile.refresh': 'تحديث',
+    'profile.seoTitle': 'الملف الشخصي',
+    'profile.seoDescription': 'الملف الشخصي لـ {name} على NXOLand. عرض الإحصائيات، النشاط الأخير، والإعدادات.',
+    'profile.pageTitle': 'الملف الشخصي',
+    'profile.manageInfo': 'إدارة معلوماتك وإعداداتك',
+    'profile.totalRevenue': 'إجمالي الأرباح',
+    'profile.editProfileLink': 'تعديل الملف الشخصي',
+    'profile.backToProfile': 'العودة للملف الشخصي',
     
     // Edit Profile
     'editProfile.title': 'تعديل الملف الشخصي',
@@ -611,6 +618,9 @@ const translations: Record<Language, Record<string, string>> = {
     'editProfile.nameTooLong': 'الاسم طويل جداً (الحد الأقصى 100 حرف)',
     'editProfile.emailRequired': 'يرجى إدخال البريد الإلكتروني',
     'editProfile.invalidEmail': 'البريد الإلكتروني غير صحيح',
+    'editProfile.backToProfile': 'العودة للملف الشخصي',
+    'editProfile.pageTitle': 'تعديل الملف الشخصي',
+    'editProfile.updateInfo': 'قم بتحديث معلوماتك الشخصية',
     
     // Security
     'security.title': 'الأمان',
@@ -660,6 +670,7 @@ const translations: Record<Language, Record<string, string>> = {
     'security.receiveEmailUpdates': 'تلقي التحديثات عبر البريد',
     'security.loginAlerts': 'تنبيهات تسجيل الدخول',
     'security.newLoginNotification': 'إشعار عند كل تسجيل دخول جديد',
+    'security.backToProfile': 'العودة للملف الشخصي',
     
     // KYC
     'kyc.title': 'التحقق من الهوية',
@@ -1581,6 +1592,13 @@ const translations: Record<Language, Record<string, string>> = {
     'profile.accountStats': 'Account Statistics',
     'profile.refreshStats': 'Refresh statistics',
     'profile.refresh': 'Refresh',
+    'profile.seoTitle': 'Profile',
+    'profile.seoDescription': '{name}\'s profile on NXOLand. View statistics, recent activity, and settings.',
+    'profile.pageTitle': 'Profile',
+    'profile.manageInfo': 'Manage your information and settings',
+    'profile.totalRevenue': 'Total Revenue',
+    'profile.editProfileLink': 'Edit Profile',
+    'profile.backToProfile': 'Back to Profile',
     
     // Edit Profile
     'editProfile.title': 'Edit Profile',
@@ -1611,6 +1629,9 @@ const translations: Record<Language, Record<string, string>> = {
     'editProfile.nameTooLong': 'Name is too long (max 100 characters)',
     'editProfile.emailRequired': 'Please enter email',
     'editProfile.invalidEmail': 'Invalid email address',
+    'editProfile.backToProfile': 'Back to Profile',
+    'editProfile.pageTitle': 'Edit Profile',
+    'editProfile.updateInfo': 'Update your personal information',
     
     // Security
     'security.title': 'Security',
@@ -1660,6 +1681,7 @@ const translations: Record<Language, Record<string, string>> = {
     'security.receiveEmailUpdates': 'Receive updates via email',
     'security.loginAlerts': 'Login Alerts',
     'security.newLoginNotification': 'Notify on each new login',
+    'security.backToProfile': 'Back to Profile',
     
     // KYC
     'kyc.title': 'KYC Verification',

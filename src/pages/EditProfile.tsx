@@ -165,10 +165,10 @@ const EditProfile = () => {
         <div className="mb-8">
           <Link to="/profile" className="inline-flex items-center gap-2 text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] transition-colors mb-4">
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
-            <span>العودة للملف الشخصي</span>
+            <span>{t('editProfile.backToProfile')}</span>
           </Link>
-          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">تعديل الملف الشخصي</h1>
-          <p className="text-white/60">قم بتحديث معلوماتك الشخصية</p>
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('editProfile.pageTitle')}</h1>
+          <p className="text-white/60">{t('editProfile.updateInfo')}</p>
         </div>
 
         {/* Edit Form */}

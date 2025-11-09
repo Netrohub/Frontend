@@ -145,8 +145,8 @@ const Profile = () => {
   return (
     <>
       <SEO 
-        title={`${user.name} - الملف الشخصي - NXOLand`}
-        description={`الملف الشخصي لـ ${user.name} على NXOLand. عرض الإحصائيات، النشاط الأخير، والإعدادات.`}
+        title={`${user.name} - ${t('profile.seoTitle')} - NXOLand`}
+        description={t('profile.seoDescription', { name: user.name })}
       />
       <div className="min-h-screen relative overflow-hidden" dir="rtl">
         {/* Background */}
@@ -167,8 +167,8 @@ const Profile = () => {
         <div id="profile-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">الملف الشخصي</h1>
-          <p className="text-white/60">إدارة معلوماتك وإعداداتك</p>
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('profile.pageTitle')}</h1>
+          <p className="text-white/60">{t('profile.manageInfo')}</p>
         </div>
 
         {/* Profile Card */}
@@ -206,7 +206,7 @@ const Profile = () => {
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
                   <TrendingUp className="h-5 w-5 text-green-400" aria-hidden="true" />
                   <span className="text-lg font-bold text-white">${userStats.total_revenue.toLocaleString('en-US')}</span>
-                  <span className="text-white/60">إجمالي الأرباح</span>
+                  <span className="text-white/60">{t('profile.totalRevenue')}</span>
                 </div>
               ) : null}
               
@@ -401,7 +401,7 @@ const Profile = () => {
             >
               <Link to="/edit-profile">
                 <User className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                <span className="truncate">تعديل الملف الشخصي</span>
+                <span className="truncate">{t('profile.editProfileLink')}</span>
               </Link>
             </Button>
             <Button 

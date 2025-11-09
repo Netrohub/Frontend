@@ -167,7 +167,7 @@ const Security = () => {
         <div className="mb-8">
           <Link to="/profile" className="inline-flex items-center gap-2 text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] transition-colors mb-4">
             <ArrowRight className="h-5 w-5" />
-            <span>العودة للملف الشخصي</span>
+            <span>{t('security.backToProfile')}</span>
           </Link>
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">الأمان والخصوصية</h1>
           <p className="text-white/60">إدارة إعدادات الأمان والخصوصية الخاصة بك</p>
