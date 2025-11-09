@@ -28,10 +28,18 @@ const LegalContent = () => {
     queryFn: () => siteSettingsApi.get('privacy_policy'),
   });
 
+  // Fetch refund policy
+  const { data: refundData, isLoading: refundLoading } = useQuery({
+    queryKey: ['admin-site-settings', 'refund_policy'],
+    queryFn: () => siteSettingsApi.get('refund_policy'),
+  });
+
   const [termsAr, setTermsAr] = useState("");
   const [termsEn, setTermsEn] = useState("");
   const [privacyAr, setPrivacyAr] = useState("");
   const [privacyEn, setPrivacyEn] = useState("");
+  const [refundAr, setRefundAr] = useState("");
+  const [refundEn, setRefundEn] = useState("");
 
   // Update local state when data is loaded
   useState(() => {
@@ -45,6 +53,13 @@ const LegalContent = () => {
     if (privacyData?.data) {
       setPrivacyAr(privacyData.data.value_ar || "");
       setPrivacyEn(privacyData.data.value_en || "");
+    }
+  });
+
+  useState(() => {
+    if (refundData?.data) {
+      setRefundAr(refundData.data.value_ar || "");
+      setRefundEn(refundData.data.value_en || "");
     }
   });
 
@@ -63,9 +78,14 @@ const LegalContent = () => {
   });
 
   const handleSave = () => {
-    const data = activeTab === 'terms' 
-      ? { key: 'terms_and_conditions', value_ar: termsAr, value_en: termsEn }
-      : { key: 'privacy_policy', value_ar: privacyAr, value_en: privacyEn };
+    let data;
+    if (activeTab === 'terms') {
+      data = { key: 'terms_and_conditions', value_ar: termsAr, value_en: termsEn };
+    } else if (activeTab === 'privacy') {
+      data = { key: 'privacy_policy', value_ar: privacyAr, value_en: privacyEn };
+    } else {
+      data = { key: 'refund_policy', value_ar: refundAr, value_en: refundEn };
+    }
 
     updateMutation.mutate(data);
   };
@@ -73,26 +93,30 @@ const LegalContent = () => {
   const getCurrentContent = () => {
     if (activeTab === 'terms') {
       return activeLanguage === 'ar' ? termsAr : termsEn;
+    } else if (activeTab === 'privacy') {
+      return activeLanguage === 'ar' ? privacyAr : privacyEn;
     }
-    return activeLanguage === 'ar' ? privacyAr : privacyEn;
+    return activeLanguage === 'ar' ? refundAr : refundEn;
   };
 
   const setCurrentContent = (value: string) => {
     if (activeTab === 'terms') {
       activeLanguage === 'ar' ? setTermsAr(value) : setTermsEn(value);
-    } else {
+    } else if (activeTab === 'privacy') {
       activeLanguage === 'ar' ? setPrivacyAr(value) : setPrivacyEn(value);
+    } else {
+      activeLanguage === 'ar' ? setRefundAr(value) : setRefundEn(value);
     }
   };
 
-  const isLoading = termsLoading || privacyLoading;
+  const isLoading = termsLoading || privacyLoading || refundLoading;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-black text-white mb-2">المحتوى القانوني</h1>
-          <p className="text-white/60">تحرير الشروط والأحكام وسياسة الخصوصية</p>
+          <p className="text-white/60">تحرير الشروط والأحكام، سياسة الخصوصية، وسياسة الاسترداد</p>
         </div>
       </div>
 
@@ -100,7 +124,7 @@ const LegalContent = () => {
         <div className="p-6">
           {/* Document Type Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="grid w-full max-w-md grid-cols-2 bg-white/5">
+            <TabsList className="grid w-full max-w-2xl grid-cols-3 bg-white/5">
               <TabsTrigger value="terms" className="data-[state=active]:bg-[hsl(195,80%,50%)]">
                 <FileText className="h-4 w-4 ml-2" />
                 الشروط والأحكام
@@ -108,6 +132,10 @@ const LegalContent = () => {
               <TabsTrigger value="privacy" className="data-[state=active]:bg-[hsl(195,80%,50%)]">
                 <FileText className="h-4 w-4 ml-2" />
                 سياسة الخصوصية
+              </TabsTrigger>
+              <TabsTrigger value="refund" className="data-[state=active]:bg-[hsl(195,80%,50%)]">
+                <FileText className="h-4 w-4 ml-2" />
+                سياسة الاسترداد
               </TabsTrigger>
             </TabsList>
           </Tabs>
