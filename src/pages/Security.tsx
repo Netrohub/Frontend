@@ -169,8 +169,8 @@ const Security = () => {
             <ArrowRight className="h-5 w-5" />
             <span>{t('security.backToProfile')}</span>
           </Link>
-          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">الأمان والخصوصية</h1>
-          <p className="text-white/60">إدارة إعدادات الأمان والخصوصية الخاصة بك</p>
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('security.securityAndPrivacy')}</h1>
+          <p className="text-white/60">{t('security.manageSettings')}</p>
         </div>
 
         <div className="space-y-6">

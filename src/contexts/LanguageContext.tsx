@@ -671,6 +671,8 @@ const translations: Record<Language, Record<string, string>> = {
     'security.loginAlerts': 'تنبيهات تسجيل الدخول',
     'security.newLoginNotification': 'إشعار عند كل تسجيل دخول جديد',
     'security.backToProfile': 'العودة للملف الشخصي',
+    'security.securityAndPrivacy': 'الأمان والخصوصية',
+    'security.manageSettings': 'إدارة إعدادات الأمان والخصوصية الخاصة بك',
     
     // KYC
     'kyc.title': 'التحقق من الهوية',
@@ -1682,6 +1684,8 @@ const translations: Record<Language, Record<string, string>> = {
     'security.loginAlerts': 'Login Alerts',
     'security.newLoginNotification': 'Notify on each new login',
     'security.backToProfile': 'Back to Profile',
+    'security.securityAndPrivacy': 'Security & Privacy',
+    'security.manageSettings': 'Manage your security and privacy settings',
     
     // KYC
     'kyc.title': 'KYC Verification',
