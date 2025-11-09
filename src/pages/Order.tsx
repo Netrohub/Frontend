@@ -327,7 +327,7 @@ const Order = () => {
                   {/* Bill Images */}
                   {credentials.account_metadata?.bill_images && (
                     <div className="space-y-3">
-                      <h4 className="text-sm font-semibold text-white">صور الفواتير</h4>
+                      <h4 className="text-sm font-semibold text-white">{t('order.billImagesTitle')}</h4>
                       <div className="grid grid-cols-3 gap-3">
                         {credentials.account_metadata.bill_images.first && (
                           <div className="bg-white/5 rounded-lg border border-white/10 p-2">

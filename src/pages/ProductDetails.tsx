@@ -483,7 +483,7 @@ const ProductDetails = () => {
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
               <h3 className="font-bold text-white mb-4 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                صور الفواتير
+                {t('product.billImages')}
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
@@ -510,7 +510,7 @@ const ProductDetails = () => {
               </div>
               <div className="mt-4 p-3 bg-[hsl(195,80%,50%,0.1)] rounded-lg border border-[hsl(195,80%,50%,0.3)]">
                 <p className="text-xs text-white/70">
-                  ℹ️ ستتمكن من مشاهدة صور الفواتير بعد إتمام عملية الشراء
+                  {t('product.billImagesInfo')}
                 </p>
               </div>
             </Card>

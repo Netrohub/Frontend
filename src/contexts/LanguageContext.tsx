@@ -404,6 +404,8 @@ const translations: Record<Language, Record<string, string>> = {
     'product.reportListing': 'الإبلاغ عن الإعلان',
     'product.share': 'مشاركة',
     'product.clickToEnlarge': 'اضغط للتكبير',
+    'product.billImages': 'صور الفواتير',
+    'product.billImagesInfo': 'ℹ️ ستتمكن من مشاهدة صور الفواتير بعد إتمام عملية الشراء',
     
     // Checkout
     'checkout.title': 'إتمام الشراء',
@@ -506,6 +508,7 @@ const translations: Record<Language, Record<string, string>> = {
     'order.minutes': 'دقيقة',
     'order.delivered': 'تم التسليم',
     'order.deliveredAt': 'تم التسليم في',
+    'order.billImagesTitle': 'صور الفواتير',
     
     // Wallet
     'wallet.title': 'المحفظة',
@@ -855,6 +858,7 @@ const translations: Record<Language, Record<string, string>> = {
     'leaderboard.title': 'لوحة المتصدرين',
     'leaderboard.subtitle': 'أفضل البائعين والمشترين',
     'leaderboard.description': 'تعرف على أفضل البائعين على منصة NXOLand',
+    'leaderboard.navDescription': 'أفضل البائعين والمشترين',
     'leaderboard.skipToLeaderboard': 'تخطي إلى لوحة المتصدرين',
     'leaderboard.rank': 'الترتيب',
     'leaderboard.member': 'العضو',
@@ -1452,6 +1456,8 @@ const translations: Record<Language, Record<string, string>> = {
     'product.reportListing': 'Report Listing',
     'product.share': 'Share',
     'product.clickToEnlarge': 'Click to enlarge',
+    'product.billImages': 'Bill Images',
+    'product.billImagesInfo': 'ℹ️ You will be able to view bill images after completing the purchase',
     
     // Checkout
     'checkout.title': 'Checkout',
@@ -1554,6 +1560,7 @@ const translations: Record<Language, Record<string, string>> = {
     'order.minutes': 'minutes',
     'order.delivered': 'Delivered',
     'order.deliveredAt': 'Delivered at',
+    'order.billImagesTitle': 'Bill Images',
     
     // Wallet
     'wallet.title': 'Wallet',
@@ -1905,6 +1912,7 @@ const translations: Record<Language, Record<string, string>> = {
     'leaderboard.title': 'Leaderboard',
     'leaderboard.subtitle': 'Top sellers and buyers',
     'leaderboard.description': 'Discover the top sellers on NXOLand platform',
+    'leaderboard.navDescription': 'Top sellers and buyers',
     'leaderboard.skipToLeaderboard': 'Skip to leaderboard',
     'leaderboard.rank': 'Rank',
     'leaderboard.member': 'Member',

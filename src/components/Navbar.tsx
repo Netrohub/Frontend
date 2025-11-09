@@ -106,7 +106,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                       )}>
                         <div className="text-sm font-semibold leading-none">{t('nav.leaderboard')}</div>
                         <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                          أفضل البائعين والمشترين
+                          {t('leaderboard.navDescription')}
                         </p>
                       </Link>
                     </li>
