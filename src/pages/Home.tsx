@@ -15,8 +15,8 @@ const Home = () => {
   return (
     <>
       <SEO 
-        title="NXOLand - تداول آمن وموثوق للحسابات"
-        description="منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان. بيع وشراء الحسابات بأمان تام."
+        title={language === 'ar' ? "NXOLand - تداول آمن وموثوق للحسابات" : "NXOLand - Secure Account Trading Platform"}
+        description={language === 'ar' ? "منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان. بيع وشراء الحسابات بأمان تام." : "NXOLand platform for secure account trading with escrow system. Buy and sell accounts with complete safety."}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Icy background with gradient */}

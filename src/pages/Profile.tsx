@@ -132,9 +132,9 @@ const Profile = () => {
         <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
           <Navbar />
           <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
-            <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض الملف الشخصي</p>
+            <p className="text-white/60 mb-4">{t('profile.loginRequired')}</p>
             <Button asChild>
-              <Link to="/auth">تسجيل الدخول</Link>
+              <Link to="/auth">{t('auth.login')}</Link>
             </Button>
           </div>
         </div>
@@ -211,26 +211,26 @@ const Profile = () => {
               ) : null}
               
               {user.kyc_verification?.status === 'verified' ? (
-                <StatusBadge status="success" label="حساب موثق" />
+                <StatusBadge status="success" label={t('profile.verifiedAccount')} />
               ) : (
-                <StatusBadge status="warning" label="يتطلب توثيق KYC" />
+                <StatusBadge status="warning" label={t('profile.requiresKYC')} />
               )}
             </div>
           </div>
 
           {/* Stats Section with Refresh Button */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-white">إحصائيات الحساب</h3>
+            <h3 className="text-lg font-bold text-white">{t('profile.accountStats')}</h3>
             <Button
               onClick={handleRefreshStats}
               disabled={statsLoading}
               variant="ghost"
               size="sm"
               className="gap-2 text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]"
-              aria-label="تحديث الإحصائيات"
+              aria-label={t('profile.refreshStats')}
             >
               <RefreshCw className={`h-4 w-4 ${statsLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
-              تحديث
+              {t('profile.refresh')}
             </Button>
           </div>
 

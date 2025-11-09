@@ -312,15 +312,15 @@ const Security = () => {
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-white text-right">تأكيد تغيير كلمة المرور</AlertDialogTitle>
                 <AlertDialogDescription className="text-white/80 text-right">
-                  هل أنت متأكد أنك تريد تغيير كلمة المرور؟
+                  {t('security.changePasswordConfirm')}
                   <br /><br />
-                  <strong className="text-yellow-400">⚠️ تنبيه أمني:</strong>
+                  <strong className="text-yellow-400">{t('security.securityWarning')}</strong>
                   <br />
-                  • سيتم تسجيل الخروج تلقائياً من جميع الأجهزة الأخرى
+                  {t('security.logoutOtherDevices')}
                   <br />
-                  • ستحتاج إلى تسجيل الدخول مرة أخرى على تلك الأجهزة
+                  {t('security.needRelogin')}
                   <br />
-                  • سيتم إرسال إشعار بالتغيير إلى بريدك الإلكتروني
+                  {t('security.emailNotification')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter className="gap-2">
@@ -328,7 +328,7 @@ const Security = () => {
                   className="bg-white/10 text-white border-white/20 hover:bg-white/20"
                   disabled={updatePasswordMutation.isPending}
                 >
-                  إلغاء
+                  {t('common.cancel')}
                 </AlertDialogCancel>
                 <AlertDialogAction 
                   onClick={handlePasswordChangeConfirm}
@@ -338,10 +338,10 @@ const Security = () => {
                   {updatePasswordMutation.isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                      جاري التحديث...
+                      {t('security.updating')}
                     </>
                   ) : (
-                    'تأكيد التغيير'
+                    t('security.confirmChange')
                   )}
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -355,8 +355,8 @@ const Security = () => {
                 <Shield className="h-6 w-6 text-green-400" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">المصادقة الثنائية (قريباً)</h2>
-                <p className="text-sm text-white/60">حماية إضافية لحسابك</p>
+                <h2 className="text-xl font-bold text-white">{t('security.twoFactorComingSoon')}</h2>
+                <p className="text-sm text-white/60">{t('security.twoFactorDesc')}</p>
               </div>
               <Switch
                 checked={twoFactor}
@@ -373,16 +373,16 @@ const Security = () => {
                 <Eye className="h-6 w-6 text-purple-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">الخصوصية (قريباً)</h2>
-                <p className="text-sm text-white/60">إدارة إعدادات الخصوصية</p>
+                <h2 className="text-xl font-bold text-white">{t('security.privacyComingSoon')}</h2>
+                <p className="text-sm text-white/60">{t('security.privacyDesc')}</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                 <div>
-                  <p className="text-white font-medium">إشعارات البريد الإلكتروني</p>
-                  <p className="text-sm text-white/60">تلقي التحديثات عبر البريد</p>
+                  <p className="text-white font-medium">{t('security.emailNotificationsSetting')}</p>
+                  <p className="text-sm text-white/60">{t('security.receiveEmailUpdates')}</p>
                 </div>
                 <Switch
                   checked={emailNotifications}
@@ -392,8 +392,8 @@ const Security = () => {
               </div>
               <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
                 <div>
-                  <p className="text-white font-medium">تنبيهات تسجيل الدخول</p>
-                  <p className="text-sm text-white/60">إشعار عند كل تسجيل دخول جديد</p>
+                  <p className="text-white font-medium">{t('security.loginAlerts')}</p>
+                  <p className="text-sm text-white/60">{t('security.newLoginNotification')}</p>
                 </div>
                 <Switch
                   checked={loginAlerts}
