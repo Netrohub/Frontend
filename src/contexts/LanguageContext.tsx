@@ -1035,15 +1035,6 @@ const translations: Record<Language, Record<string, string>> = {
     'status.pending': 'قيد الانتظار',
     'status.completed': 'مكتمل',
     'status.cancelled': 'ملغي',
-    
-    // Time & Date
-    'time.justNow': 'الآن',
-    'time.minutesAgo': 'منذ {n} دقيقة',
-    'time.hoursAgo': 'منذ {n} ساعة',
-    'time.daysAgo': 'منذ {n} يوم',
-    'time.weeksAgo': 'منذ {n} أسبوع',
-    'time.monthsAgo': 'منذ {n} شهر',
-    'time.yearsAgo': 'منذ {n} سنة',
   },
   en: {
  // Navbar
@@ -2023,14 +2014,5 @@ const translations: Record<Language, Record<string, string>> = {
     'status.pending': 'Pending',
     'status.completed': 'Completed',
     'status.cancelled': 'Cancelled',
-    
-    // Time & Date
-    'time.justNow': 'Just now',
-    'time.minutesAgo': '{n} minutes ago',
-    'time.hoursAgo': '{n} hours ago',
-    'time.daysAgo': '{n} days ago',
-    'time.weeksAgo': '{n} weeks ago',
-    'time.monthsAgo': '{n} months ago',
-    'time.yearsAgo': '{n} years ago',
   }
 };
