@@ -89,6 +89,7 @@ const translations: Record<Language, Record<string, string>> = {
 'nav.navigationLinks': 'روابط التنقل',
 'nav.termsAndConditions': 'الشروط والأحكام',
 'nav.privacyPolicy': 'سياسة الخصوصية',
+'nav.refundPolicy': 'سياسة الاسترداد',
 
 // Home
 'home.hero.title': 'منصة لبيع وشراء المنتجات الرقمية',
@@ -134,6 +135,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.footer.rights': '© جميع الحقوق محفوظة لـ NXOLand',
 'home.footer.terms': 'الشروط والأحكام',
 'home.footer.privacy': 'سياسة الخصوصية',
+'home.footer.refund': 'سياسة الاسترداد',
 'home.footer.support': 'الدعم الفني',
 'home.footer.suggestions': 'الاقتراحات والتقييم',
 
@@ -1141,6 +1143,7 @@ const translations: Record<Language, Record<string, string>> = {
 'nav.navigationLinks': 'Navigation links',
 'nav.termsAndConditions': 'Terms and Conditions',
 'nav.privacyPolicy': 'Privacy Policy',
+'nav.refundPolicy': 'Refund Policy',
 
 // Home
 'home.hero.title': 'NXOLand — Your Trusted Platform for Game Account Trading',
@@ -1186,6 +1189,7 @@ const translations: Record<Language, Record<string, string>> = {
 'home.footer.rights': '© All rights reserved to NXOLand',
 'home.footer.terms': 'Terms & Conditions',
 'home.footer.privacy': 'Privacy Policy',
+'home.footer.refund': 'Refund Policy',
 'home.footer.support': 'support',
 'home.footer.suggestions': 'suggestions',
 

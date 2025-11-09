@@ -221,6 +221,9 @@ const Home = () => {
               <Link to="/privacy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
                 {t('home.footer.privacy')}
               </Link>
+              <Link to="/refund-policy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                {t('home.footer.refund')}
+              </Link>
               <Link to="/help" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
                 {t('home.footer.support')}
               </Link>

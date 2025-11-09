@@ -114,6 +114,13 @@ export const MobileNav = () => {
           >
             {t('nav.privacyPolicy')}
           </Link>
+          <Link
+            to="/refund-policy"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2 text-sm text-white/60 hover:text-white transition-colors"
+          >
+            {t('nav.refundPolicy')}
+          </Link>
         </div>
       </SheetContent>
     </Sheet>
