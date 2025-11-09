@@ -54,7 +54,9 @@ const Notifications = () => {
       type: filterType !== 'all' ? filterType : undefined,
     }),
     enabled: !!user,
-    refetchInterval: 10000, // Poll every 10 seconds for real-time updates
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // Poll every 60 seconds (reduced from 10s)
+    refetchOnWindowFocus: false, // Don't refetch on tab switch
   });
 
   // Get fresh unread count
@@ -62,7 +64,9 @@ const Notifications = () => {
     queryKey: ['notifications-unread-count'],
     queryFn: () => notificationsApi.getUnreadCount(),
     enabled: !!user,
-    refetchInterval: 10000, // Poll every 10 seconds
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // Poll every 60 seconds (reduced from 10s)
+    refetchOnWindowFocus: false, // Don't refetch on tab switch
   });
 
   const notifications = notificationsResponse?.data || [];
