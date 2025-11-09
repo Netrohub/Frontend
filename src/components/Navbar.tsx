@@ -104,7 +104,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                         isActive("/leaderboard") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                       )}>
-                        <div className="text-sm font-semibold leading-none">لوحة المتصدرين</div>
+                        <div className="text-sm font-semibold leading-none">{t('nav.leaderboard')}</div>
                         <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
                           أفضل البائعين والمشترين
                         </p>
