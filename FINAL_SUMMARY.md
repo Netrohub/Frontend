@@ -355,7 +355,7 @@ src/assets/hero-arctic.jpg
 ## 🚦 الخطوة التالية - التطوير في Cursor
 
 ### Backend Integration
-1. ربط Supabase/Lovable Cloud
+1. ربط قاعدة البيانات السحابية
 2. Authentication system
 3. Database schema
 4. API endpoints
@@ -427,5 +427,5 @@ VITE_SUPABASE_ANON_KEY=xxx
 
 ---
 
-**تم بواسطة Lovable AI 💙**
+**تم بنجاح ✅**
 **جاهز للانطلاق! 🎉**
