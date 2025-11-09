@@ -40,6 +40,8 @@ const KYC = () => {
       }
     },
     enabled: !!user,
+    staleTime: 60000, // 1 minute - prevents excessive refetching
+    gcTime: 300000,
     refetchInterval: (query) => {
       const kycData = query.state.data as any;
       if (kycData === null || kycData === undefined) {
@@ -51,8 +53,6 @@ const KYC = () => {
     placeholderData: (previousData) => previousData ?? null,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
-    staleTime: 30000,
-    gcTime: 300000,
   });
 
   // Create KYC mutation

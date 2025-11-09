@@ -26,6 +26,8 @@ const Orders = () => {
     queryKey: ['orders', currentPage],
     queryFn: () => ordersApi.getAll({ page: currentPage }),
     enabled: !!user,
+    staleTime: 30000, // 30 seconds - prevents excessive refetching
+    refetchOnWindowFocus: false,
   });
 
   const orders = ordersResponse?.data || [];
