@@ -25,7 +25,9 @@ export function NotificationBell() {
     queryKey: ['notifications-unread-count'],
     queryFn: () => notificationsApi.getUnreadCount(),
     enabled: !!user,
-    refetchInterval: 10000, // Poll every 10 seconds
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // Poll every 60 seconds (reduced from 10s)
+    refetchOnWindowFocus: false, // Prevent refetch on tab switch
   });
 
   // Get recent notifications (last 5 for bell dropdown)
@@ -33,7 +35,9 @@ export function NotificationBell() {
     queryKey: ['notifications-recent'],
     queryFn: () => notificationsApi.getAll({ page: 1 }),
     enabled: !!user,
-    refetchInterval: 10000, // Poll every 10 seconds
+    staleTime: 30000, // 30 seconds
+    refetchInterval: 60000, // Poll every 60 seconds (reduced from 10s)
+    refetchOnWindowFocus: false, // Prevent refetch on tab switch
   });
 
   const unreadCount = unreadData?.count || 0;
