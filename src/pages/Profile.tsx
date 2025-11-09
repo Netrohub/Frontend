@@ -252,15 +252,15 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 pb-6 border-b border-white/10">
               <div className="text-center p-4 bg-white/5 rounded-lg">
                 <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.total_sales || 0}</div>
-                <div className="text-sm text-white/60">عدد المبيعات</div>
+                <div className="text-sm text-white/60">{t('profile.totalSales')}</div>
               </div>
               <div className="text-center p-4 bg-white/5 rounded-lg">
                 <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.total_purchases || 0}</div>
-                <div className="text-sm text-white/60">عدد المشتريات</div>
+                <div className="text-sm text-white/60">{t('profile.totalPurchases')}</div>
               </div>
               <div className="text-center p-4 bg-white/5 rounded-lg">
                 <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{memberSince}</div>
-                <div className="text-sm text-white/60">عضو منذ</div>
+                <div className="text-sm text-white/60">{t('profile.memberSinceLabel')}</div>
               </div>
               
               {/* Wallet Balance Quick View */}
@@ -271,14 +271,14 @@ const Profile = () => {
                     ${userWallet?.available_balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                   </div>
                 </div>
-                <div className="text-sm text-white/60 mb-2">الرصيد المتاح</div>
+                <div className="text-sm text-white/60 mb-2">{t('profile.availableBalance')}</div>
                 <Button 
                   asChild 
                   size="sm" 
                   variant="ghost"
                   className="h-auto py-1 text-xs text-green-400 hover:text-green-300 hover:bg-green-500/10"
                 >
-                  <Link to="/wallet">عرض المحفظة →</Link>
+                  <Link to="/wallet">{t('profile.viewWallet')}</Link>
                 </Button>
               </div>
             </div>
@@ -313,7 +313,7 @@ const Profile = () => {
         {/* Recent Activity Feed */}
         <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-white">النشاط الأخير</h3>
+            <h3 className="text-lg font-bold text-white">{t('profile.recentActivity')}</h3>
             <Button
               variant="ghost"
               size="sm"
@@ -350,7 +350,7 @@ const Profile = () => {
           ) : (
             <div className="text-center py-8 text-white/60">
               <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-30" aria-hidden="true" />
-              <p>لا توجد أنشطة حديثة</p>
+              <p>{t('profile.noRecentActivity')}</p>
             </div>
           )}
         </Card>
@@ -361,14 +361,14 @@ const Profile = () => {
             <Card className="p-6 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 backdrop-blur-sm group hover:border-yellow-500/50 transition-all">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-1">توثيق الحساب</h3>
-                  <p className="text-sm text-white/70">مطلوب للبيع على المنصة</p>
+                  <h3 className="text-lg font-bold text-white mb-1">{t('profile.accountVerification')}</h3>
+                  <p className="text-sm text-white/70">{t('profile.requiredForSelling')}</p>
                 </div>
                 <Shield className="h-8 w-8 text-yellow-400" aria-hidden="true" />
               </div>
               <Button asChild className="w-full gap-2 bg-yellow-500 hover:bg-yellow-600 text-white border-0 min-h-[48px] text-sm md:text-base">
                 <Link to="/kyc">
-                  بدء التوثيق
+                  {t('profile.startVerification')}
                 </Link>
               </Button>
             </Card>
@@ -377,14 +377,14 @@ const Profile = () => {
           <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm group hover:border-[hsl(195,80%,70%,0.5)] transition-all">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">قوائمي</h3>
-                <p className="text-sm text-white/70">إدارة حساباتي المعروضة</p>
+                <h3 className="text-lg font-bold text-white mb-1">{t('profile.myListings')}</h3>
+                <p className="text-sm text-white/70">{t('profile.manageListings')}</p>
               </div>
               <Package className="h-8 w-8 text-[hsl(195,80%,70%)]" aria-hidden="true" />
             </div>
             <Button asChild className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px] text-sm md:text-base">
               <Link to="/my-listings">
-                عرض قوائمي
+                {t('profile.viewMyListings')}
               </Link>
             </Button>
           </Card>
@@ -392,7 +392,7 @@ const Profile = () => {
 
         {/* Account Actions */}
         <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
-          <h3 className="text-lg font-bold text-white mb-4">إجراءات الحساب</h3>
+          <h3 className="text-lg font-bold text-white mb-4">{t('profile.accountActions')}</h3>
           <div className="space-y-3">
             <Button 
               asChild

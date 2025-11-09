@@ -214,7 +214,7 @@ const Suggestions = () => {
           <h1 className="text-4xl font-bold mb-2 text-white drop-shadow-[0_0_30px_rgba(148,209,240,0.5)]">
             مركز الاقتراحات والتقييمات
           </h1>
-          <p className="text-white/70">شارك أفكارك وقيّم تجربتك على المنصة</p>
+          <p className="text-white/70">{t('suggestions.pageSubtitle')}</p>
         </div>
 
           {/* Platform Rating Section */}
@@ -343,7 +343,7 @@ const Suggestions = () => {
                 <MessageSquare className="w-5 h-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
                 اقتراح لتطوير المنصة
               </CardTitle>
-              <CardDescription className="text-white/60">شاركنا أفكارك لإضافة ميزات جديدة</CardDescription>
+              <CardDescription className="text-white/60">{t('suggestions.shareIdeas')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -469,7 +469,7 @@ const Suggestions = () => {
             <Card className="border-dashed border-white/20 bg-white/5">
               <CardContent className="p-12 text-center">
                 <MessageSquare className="w-12 h-12 mx-auto mb-4 text-white/40" aria-hidden="true" />
-                <p className="text-white/60">لا توجد اقتراحات في هذه الفئة</p>
+                <p className="text-white/60">{t('suggestions.noSuggestionsInCategory')}</p>
               </CardContent>
             </Card>
           )}

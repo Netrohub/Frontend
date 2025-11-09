@@ -181,14 +181,14 @@ const Security = () => {
                 <Lock className="h-6 w-6 text-[hsl(195,80%,70%)]" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white">كلمة المرور</h2>
-                <p className="text-sm text-white/60">تغيير كلمة المرور الخاصة بك</p>
+                <h2 className="text-xl font-bold text-white">{t('security.passwordSection')}</h2>
+                <p className="text-sm text-white/60">{t('security.changeYourPassword')}</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="current-password" className="text-white">كلمة المرور الحالية</Label>
+                <Label htmlFor="current-password" className="text-white">{t('security.currentPasswordLabel')}</Label>
                 <div className="relative">
                   <Input
                     id="current-password"
@@ -211,7 +211,7 @@ const Security = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="new-password" className="text-white">كلمة المرور الجديدة</Label>
+                <Label htmlFor="new-password" className="text-white">{t('security.newPasswordLabel')}</Label>
                 <div className="relative">
                   <Input
                     id="new-password"
@@ -265,7 +265,7 @@ const Security = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confirm-password" className="text-white">تأكيد كلمة المرور</Label>
+                <Label htmlFor="confirm-password" className="text-white">{t('security.confirmPasswordLabel')}</Label>
                 <div className="relative">
                   <Input
                     id="confirm-password"
@@ -310,7 +310,7 @@ const Security = () => {
           <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
             <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
               <AlertDialogHeader>
-                <AlertDialogTitle className="text-white text-right">تأكيد تغيير كلمة المرور</AlertDialogTitle>
+                <AlertDialogTitle className="text-white text-right">{t('security.confirmPasswordChange')}</AlertDialogTitle>
                 <AlertDialogDescription className="text-white/80 text-right">
                   {t('security.changePasswordConfirm')}
                   <br /><br />
@@ -411,18 +411,18 @@ const Security = () => {
                 <Bell className="h-6 w-6 text-orange-400" />
               </div>
               <div className="flex-1">
-                <h2 className="text-xl font-bold text-white">الجلسات النشطة (قريباً)</h2>
-                <p className="text-sm text-white/60">إدارة الأجهزة المتصلة</p>
+                <h2 className="text-xl font-bold text-white">{t('security.activeSessionsComingSoon')}</h2>
+                <p className="text-sm text-white/60">{t('security.manageDevices')}</p>
               </div>
             </div>
 
             <div className="space-y-3">
               <div className="p-4 bg-white/5 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-white font-medium">الجهاز الحالي</p>
-                  <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">نشط الآن</span>
+                  <p className="text-white font-medium">{t('security.currentDevice')}</p>
+                  <span className="text-xs px-2 py-1 bg-green-500/20 text-green-400 rounded-full">{t('security.activeNow')}</span>
                 </div>
-                <p className="text-sm text-white/60">آخر نشاط: الآن</p>
+                <p className="text-sm text-white/60">{t('security.lastActivityNow')}</p>
               </div>
               <Button 
                 variant="outline"

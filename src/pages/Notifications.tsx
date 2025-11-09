@@ -147,7 +147,7 @@ const Notifications = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black text-white mb-2">الإشعارات</h1>
+              <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('notifications.pageTitle')}</h1>
               <p className="text-white/60">
                 {unreadCount > 0 ? `لديك ${unreadCount} إشعارات غير مقروءة` : "لا توجد إشعارات جديدة"}
               </p>
@@ -182,7 +182,7 @@ const Notifications = () => {
                       ) : (
                         <Trash2 className="h-4 w-4" />
                       )}
-                      <span className="hidden md:inline">مسح الكل</span>
+                      <span className="hidden md:inline">{t('notifications.clearAll')}</span>
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
@@ -256,11 +256,11 @@ const Notifications = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-[hsl(200,70%,20%)] border-white/10">
-                <SelectItem value="all" className="text-white">جميع الأنواع</SelectItem>
-                <SelectItem value="order" className="text-white">الطلبات</SelectItem>
-                <SelectItem value="dispute" className="text-white">النزاعات</SelectItem>
-                <SelectItem value="message" className="text-white">الرسائل</SelectItem>
-                <SelectItem value="system" className="text-white">النظام</SelectItem>
+                <SelectItem value="all" className="text-white">{t('notifications.allTypes')}</SelectItem>
+                <SelectItem value="order" className="text-white">{t('notifications.orderType')}</SelectItem>
+                <SelectItem value="dispute" className="text-white">{t('notifications.disputeType')}</SelectItem>
+                <SelectItem value="message" className="text-white">{t('notifications.messageType')}</SelectItem>
+                <SelectItem value="system" className="text-white">{t('notifications.systemType')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -412,7 +412,7 @@ const Notifications = () => {
                 <Bell className="h-12 w-12 text-white/40" />
               </div>
               <div>
-                <h3 className="text-xl font-bold text-white mb-2">لا توجد إشعارات</h3>
+                <h3 className="text-xl font-bold text-white mb-2">{t('notifications.noNotificationsTitle')}</h3>
                 <p className="text-white/60">
                   {filterStatus !== 'all' || filterType !== 'all' 
                     ? 'لا توجد إشعارات تطابق الفلاتر المحددة'
