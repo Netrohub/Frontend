@@ -210,9 +210,17 @@ const Home = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex flex-col items-center md:items-start gap-3">
               <img 
-                src="/nxoland-new-logo.png" 
+                src="/nxoland-official-logo.png" 
                 alt="NXOLand Logo" 
                 className="h-8 w-auto"
+                onError={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  if (img.src.includes('official')) {
+                    img.src = '/nxoland-new-logo.png';
+                  } else if (img.src.includes('new')) {
+                    img.src = '/nxoland-logo.png';
+                  }
+                }}
               />
               <p className="text-white/50 text-sm md:text-base">
                 © 2025 NXOLand. {t('home.footer.rights')}

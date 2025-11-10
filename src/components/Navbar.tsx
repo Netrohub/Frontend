@@ -187,9 +187,18 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
       
       <Link to="/" className="flex items-center hover:scale-105 transition-transform duration-300 order-1">
         <img 
-          src="/nxoland-new-logo.png" 
+          src="/nxoland-official-logo.png" 
           alt="NXOLand - Secure Game Account Trading Platform" 
           className="h-10 md:h-12 w-auto"
+          onError={(e) => {
+            // Fallback to new logo if official not found, or to old logo as last resort
+            const img = e.target as HTMLImageElement;
+            if (img.src.includes('official')) {
+              img.src = '/nxoland-new-logo.png';
+            } else if (img.src.includes('new')) {
+              img.src = '/nxoland-logo.png';
+            }
+          }}
         />
       </Link>
     </nav>
