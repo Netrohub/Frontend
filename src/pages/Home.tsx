@@ -207,10 +207,17 @@ const Home = () => {
       {/* Footer */}
       <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-white/50 text-sm md:text-base">
-              © 2025 NXOLand. {t('home.footer.rights')}
-            </p>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col items-center md:items-start gap-3">
+              <img 
+                src="/nxoland-new-logo.png" 
+                alt="NXOLand Logo" 
+                className="h-8 w-auto"
+              />
+              <p className="text-white/50 text-sm md:text-base">
+                © 2025 NXOLand. {t('home.footer.rights')}
+              </p>
+            </div>
             <div className="flex items-center gap-6 text-sm">
               <Link to="/suggestions" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
                 {t('home.footer.support')}

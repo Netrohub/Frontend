@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Snowflake, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MobileNav } from "@/components/MobileNav";
 import { GlobalSearch } from "@/components/GlobalSearch";
@@ -185,11 +185,12 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         </div>
       </div>
       
-      <Link to="/" className="flex items-center gap-2 hover:scale-105 transition-transform duration-300 order-1">
-        <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)] animate-pulse" />
-        <span className="text-xl md:text-2xl font-black text-white">
-          NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-        </span>
+      <Link to="/" className="flex items-center hover:scale-105 transition-transform duration-300 order-1">
+        <img 
+          src="/nxoland-new-logo.png" 
+          alt="NXOLand - Secure Game Account Trading Platform" 
+          className="h-10 md:h-12 w-auto"
+        />
       </Link>
     </nav>
   );
