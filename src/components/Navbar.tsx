@@ -185,11 +185,15 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         </div>
       </div>
       
-      <Link to="/" className="flex items-center hover:scale-110 transition-transform duration-300 order-1">
+      <Link 
+        to="/" 
+        className="flex items-center hover:scale-110 transition-transform duration-300 order-1 cursor-pointer"
+        aria-label="العودة للصفحة الرئيسية"
+      >
         <img 
           src="/nxoland-new-logo.png" 
           alt="NXOLand - Secure Game Account Trading Platform" 
-          className="h-14 md:h-16 w-auto scale-150"
+          className="h-16 md:h-20 w-auto scale-150"
           style={{ transformOrigin: 'center' }}
           onError={(e) => {
             // Fallback to old logo if new logo fails to load
