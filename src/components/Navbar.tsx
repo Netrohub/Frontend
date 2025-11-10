@@ -189,7 +189,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         <img 
           src="/nxoland-new-logo.png" 
           alt="NXOLand - Secure Game Account Trading Platform" 
-          className="h-12 md:h-14 w-auto scale-125"
+          className="h-14 md:h-16 w-auto scale-150"
           style={{ transformOrigin: 'center' }}
           onError={(e) => {
             // Fallback to old logo if new logo fails to load
