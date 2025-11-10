@@ -26,6 +26,7 @@ import {
 import { notificationsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -41,6 +42,7 @@ const iconMap: Record<string, any> = {
 
 const Notifications = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState<'all' | 'unread' | 'read'>('all');
