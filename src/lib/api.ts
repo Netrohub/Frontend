@@ -80,8 +80,12 @@ class ApiClient {
     options: RequestOptions = {}
   ): Promise<T> {
     const url = `${this.getBaseURL()}${endpoint}`;
+    
+    // Check if body is FormData - if so, don't set Content-Type (browser will set it with boundary)
+    const isFormData = options.body instanceof FormData;
+    
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      ...(!isFormData && { 'Content-Type': 'application/json' }),
       'Accept': 'application/json',
       ...options.headers,
     };
@@ -192,10 +196,13 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
+    // Check if data is FormData - if so, send it directly without JSON.stringify
+    const body = data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined);
+    
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
+      body,
     });
   }
 
@@ -255,11 +262,8 @@ export const authApi = {
   updateAvatar: async (file: File) => {
     const formData = new FormData();
     formData.append('avatar', file);
-    return api.post<{ user: User; avatar_url: string }>('/user/avatar', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // Don't set Content-Type - browser will set it automatically with boundary
+    return api.post<{ user: User; avatar_url: string }>('/user/avatar', formData);
   },
   
   updatePassword: (data: { current_password: string; password: string; password_confirmation: string }) =>
