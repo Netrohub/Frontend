@@ -212,7 +212,8 @@ const Home = () => {
               <img 
                 src="/nxoland-new-logo.png" 
                 alt="NXOLand Logo" 
-                className="h-8 w-auto"
+                className="h-16 md:h-20 w-auto scale-150"
+                style={{ transformOrigin: 'center' }}
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
                   if (img.src.includes('new')) {
