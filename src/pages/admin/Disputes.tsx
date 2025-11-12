@@ -18,7 +18,7 @@ const AdminDisputes = () => {
   const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showResolveDialog, setShowResolveDialog] = useState(false);
-  const [resolutionType, setResolutionType] = useState<'buyer' | 'seller' | null>(null);
+  const [resolutionType, setResolutionType] = useState<'refund_buyer' | 'release_to_seller' | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const queryClient = useQueryClient();
@@ -32,11 +32,11 @@ const AdminDisputes = () => {
   const disputes: Dispute[] = disputesResponse?.data || [];
 
   const resolveDisputeMutation = useMutation({
-    mutationFn: ({ id, resolution, notes }: { id: number; resolution: 'buyer' | 'seller'; notes: string }) =>
+    mutationFn: ({ id, resolution, notes }: { id: number; resolution: 'refund_buyer' | 'release_to_seller'; notes: string }) =>
       disputesApi.update(id, { 
         status: 'resolved',
-        resolution: resolution,
-        admin_notes: notes || `تم الحل لصالح ${resolution === 'buyer' ? 'المشتري' : 'البائع'} من قبل الإدارة`
+        resolution,
+        resolution_notes: notes || `تم الحل لصالح ${resolution === 'refund_buyer' ? 'المشتري' : 'البائع'} من قبل الإدارة`
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-disputes'] });
@@ -56,7 +56,7 @@ const AdminDisputes = () => {
     setIsDialogOpen(true);
   };
 
-  const handleResolveClick = (disputeId: number, resolution: 'buyer' | 'seller') => {
+  const handleResolveClick = (disputeId: number, resolution: 'refund_buyer' | 'release_to_seller') => {
     const dispute = disputes.find(d => d.id === disputeId);
     setSelectedDispute(dispute || null);
     setResolutionType(resolution);
@@ -202,7 +202,7 @@ const AdminDisputes = () => {
                     </Badge>
                     {dispute.resolution && (
                       <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                        لصالح {dispute.resolution === 'buyer' ? 'المشتري' : 'البائع'}
+                        لصالح {dispute.resolution === 'refund_buyer' ? 'المشتري' : 'البائع'}
                       </Badge>
                     )}
                   </div>
@@ -257,7 +257,7 @@ const AdminDisputes = () => {
                       size="sm" 
                       variant="outline" 
                       className="gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
-                      onClick={() => handleResolveClick(dispute.id, 'buyer')}
+                      onClick={() => handleResolveClick(dispute.id, 'refund_buyer')}
                       disabled={resolveDisputeMutation.isPending}
                     >
                       {resolveDisputeMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4" />}
@@ -267,7 +267,7 @@ const AdminDisputes = () => {
                       size="sm" 
                       variant="outline" 
                       className="gap-2 bg-[hsl(195,80%,50%,0.1)] hover:bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
-                      onClick={() => handleResolveClick(dispute.id, 'seller')}
+                      onClick={() => handleResolveClick(dispute.id, 'release_to_seller')}
                       disabled={resolveDisputeMutation.isPending}
                     >
                       {resolveDisputeMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <XCircle className="h-4 w-4" />}
@@ -301,7 +301,7 @@ const AdminDisputes = () => {
                   </Badge>
                   {selectedDispute.resolution && (
                     <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                      تم الحل لصالح {selectedDispute.resolution === 'buyer' ? 'المشتري' : 'البائع'}
+                      تم الحل لصالح {selectedDispute.resolution === 'refund_buyer' ? 'المشتري' : 'البائع'}
                     </Badge>
                   )}
                 </div>
@@ -405,7 +405,7 @@ const AdminDisputes = () => {
                     <div>
                       <span className="text-white/60">تم الحل لصالح:</span>
                       <p className="text-white font-medium mt-1">
-                        {selectedDispute.resolution === 'buyer' ? 'المشتري' : 'البائع'}
+                        {selectedDispute.resolution === 'refund_buyer' ? 'المشتري' : 'البائع'}
                       </p>
                     </div>
                     {selectedDispute.admin_notes && (
@@ -429,7 +429,7 @@ const AdminDisputes = () => {
                 <div className="flex gap-2 pt-4 border-t border-white/10">
                   <Button 
                     className="flex-1 gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
-                    onClick={() => handleResolveClick(selectedDispute.id, 'buyer')}
+                    onClick={() => handleResolveClick(selectedDispute.id, 'refund_buyer')}
                     disabled={resolveDisputeMutation.isPending}
                   >
                     <CheckCircle className="h-4 w-4" />
@@ -437,7 +437,7 @@ const AdminDisputes = () => {
                   </Button>
                   <Button 
                     className="flex-1 gap-2 bg-[hsl(195,80%,50%,0.1)] hover:bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
-                    onClick={() => handleResolveClick(selectedDispute.id, 'seller')}
+                    onClick={() => handleResolveClick(selectedDispute.id, 'release_to_seller')}
                     disabled={resolveDisputeMutation.isPending}
                   >
                     <XCircle className="h-4 w-4" />
@@ -455,7 +455,7 @@ const AdminDisputes = () => {
         <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-green-400">
-              حل النزاع لصالح {resolutionType === 'buyer' ? 'المشتري' : 'البائع'}
+              حل النزاع لصالح {resolutionType === 'refund_buyer' ? 'المشتري' : 'البائع'}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
