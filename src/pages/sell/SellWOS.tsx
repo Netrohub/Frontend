@@ -147,10 +147,28 @@ const SellWOS = () => {
   };
 
   // Helper function for numeric input validation
-  const handleNumericInput = (value: string, setter: (val: string) => void) => {
-    // Allow only numbers and commas
-    const cleaned = value.replace(/[^\d,]/g, '');
-    setter(cleaned);
+  const handleNumericInput = (
+    value: string,
+    setter: (val: string) => void,
+    options: { allowSuffix?: boolean } = {}
+  ) => {
+    const { allowSuffix = false } = options;
+    let processed = value.toUpperCase();
+
+    if (allowSuffix) {
+      processed = processed.replace(/\s+/g, '');
+      const suffixMatch = processed.match(/[KMB]$/);
+      let suffix = '';
+      if (suffixMatch) {
+        suffix = suffixMatch[0];
+        processed = processed.slice(0, -1);
+      }
+      const numericPart = processed.replace(/[^\d,]/g, '');
+      setter(numericPart + suffix);
+    } else {
+      const cleaned = processed.replace(/[^\d,]/g, '');
+      setter(cleaned);
+    }
   };
 
   // Cleanup object URLs on unmount to prevent memory leaks
@@ -638,11 +656,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={totalPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setTotalPower)}
-                      placeholder="مثال: 50,000,000"
+                      onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
+                      placeholder="مثال: 50M أو 50,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="[\d,]+"
-                      title="يرجى إدخال أرقام فقط"
+                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
+                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
                   </div>
@@ -657,11 +675,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={heroPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setHeroPower)}
-                      placeholder="مثال: 10,000,000"
+                      onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
+                      placeholder="مثال: 10M أو 10,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="[\d,]+"
-                      title="يرجى إدخال أرقام فقط"
+                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
+                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
                   </div>
@@ -693,11 +711,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={expertPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setExpertPower)}
-                      placeholder="مثال: 5,000,000"
+                      onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
+                      placeholder="مثال: 5M أو 5,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="[\d,]+"
-                      title="يرجى إدخال أرقام فقط"
+                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
+                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
                   </div>
@@ -710,11 +728,11 @@ const SellWOS = () => {
                     <Input 
                       type="text"
                       value={heroTotalPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower)}
-                      placeholder="مثال: 15,000,000"
+                      onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
+                      placeholder="مثال: 15M أو 15,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="[\d,]+"
-                      title="يرجى إدخال أرقام فقط"
+                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
+                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
                   </div>
@@ -728,11 +746,11 @@ const SellWOS = () => {
                   <Input 
                     type="text"
                     value={petPower}
-                    onChange={(e) => handleNumericInput(e.target.value, setPetPower)}
-                    placeholder="مثال: 3,000,000"
+                    onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
+                    placeholder="مثال: 3M أو 3,000,000"
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    pattern="[\d,]+"
-                    title="يرجى إدخال أرقام فقط"
+                    pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
+                    title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                     required
                   />
                 </div>
