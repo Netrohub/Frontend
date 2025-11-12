@@ -31,6 +31,12 @@ const SellWOS = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t, language } = useLanguage();
+  const billImagesInstructions = language === 'ar'
+    ? 'قم برفع لقطات من فواتير الشراء — ستُعرض للمشتري بعد الدفع.'
+    : 'Upload purchase receipts — visible to the buyer after payment confirmation.';
+  const billImagesSecurityNote = language === 'ar'
+    ? 'معلومات الحساب ستكون محمية ومشفرة. سيتم عرضها للمشتري فقط بعد إتمام عملية الدفع.'
+    : 'Account information is protected and encrypted. It will be visible to the buyer only after payment is completed.';
   const isVerified = user?.is_verified || false;
 
   // Form state
@@ -903,7 +909,7 @@ const SellWOS = () => {
 
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mt-4">{t('listing.billImagesTitle')}</h3>
-                <p className="text-sm text-white/60">{t('listing.billImagesDesc')}</p>
+                <p className="text-sm text-white/60">{billImagesInstructions}</p>
                 
                 <div>
                   <Label className="text-white mb-2 block">{t('listing.firstBillImage')}</Label>
@@ -1061,7 +1067,7 @@ const SellWOS = () => {
 
               <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
                 <p className="text-sm text-white/80">
-                  ⚠️ معلومات الحساب ستكون محمية ومشفرة. سيتم عرضها للمشتري فقط بعد إتمام عملية الدفع.
+                  ⚠️ {billImagesSecurityNote}
                 </p>
               </div>
             </div>

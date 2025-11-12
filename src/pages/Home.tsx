@@ -227,7 +227,7 @@ const Home = () => {
             </div>
             <div className="flex items-center gap-6 text-sm">
               <Link to="/suggestions" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                {t('home.footer.support')}
+                {t('home.footer.suggestions')}
               </Link>
               <Link to="/terms" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
                 {t('home.footer.terms')}

@@ -24,6 +24,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { SEO } from "@/components/SEO";
+import { formatCurrency } from "@/utils/currency";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -63,13 +64,6 @@ const ProductDetails = () => {
     } finally {
       setIsCreatingOrder(false);
     }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(price);
   };
 
   // Memoize snow particles for performance
@@ -260,8 +254,7 @@ const ProductDetails = () => {
               </div>
 
               <div className="flex items-baseline gap-2 mb-6">
-                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">{formatPrice(listing.price)}</span>
-                <span className="text-2xl text-white/60">ر.س</span>
+                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">{formatCurrency(listing.price)}</span>
               </div>
             </div>
 

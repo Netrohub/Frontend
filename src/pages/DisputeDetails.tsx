@@ -23,6 +23,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import type { Dispute } from "@/types/api";
+import { formatCurrency } from "@/utils/currency";
 
 const DisputeDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -166,7 +167,7 @@ const DisputeDetails = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/60">{t('disputeDetails.amount')}</span>
-                      <span className="text-white font-bold">{dispute.order.amount?.toLocaleString(language === 'ar' ? 'ar-SA' : 'en-US')} ر.س</span>
+                      <span className="text-white font-bold">{typeof dispute.order.amount === 'number' ? formatCurrency(dispute.order.amount) : '--'}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-white/60">{t('disputeDetails.orderStatus')}</span>

@@ -6,7 +6,7 @@
 // API Configuration
 export const API_TIMEOUT = 30000; // 30 seconds in milliseconds
 
-// Price Filter Thresholds (SAR)
+// Price Filter Thresholds (USD)
 export const PRICE_THRESHOLDS = {
   LOW_MAX: 500,
   MID_MIN: 500,

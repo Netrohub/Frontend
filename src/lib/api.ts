@@ -327,6 +327,7 @@ export const listingsApi = {
       account_email: string;
       account_password: string;
       account_metadata: any;
+      bill_images_unlocked: boolean;
     }>(`/listings/${id}/credentials`),
 };
 

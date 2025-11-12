@@ -85,6 +85,9 @@ const Order = () => {
       toast.success(t('order.confirmSuccess'));
       queryClient.invalidateQueries({ queryKey: ['order', orderId] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      if (order?.listing_id) {
+        queryClient.invalidateQueries({ queryKey: ['listing-credentials', order.listing_id] });
+      }
       setShowConfirmDialog(false);
     },
     onError: (error: any) => {
@@ -325,7 +328,7 @@ const Order = () => {
                   )}
 
                   {/* Bill Images */}
-                  {credentials.account_metadata?.bill_images && (
+                  {credentials.bill_images_unlocked && credentials.account_metadata?.bill_images ? (
                     <div className="space-y-3">
                       <h4 className="text-sm font-semibold text-white">{t('order.billImagesTitle')}</h4>
                       <div className="grid grid-cols-3 gap-3">
@@ -349,6 +352,12 @@ const Order = () => {
                         )}
                       </div>
                     </div>
+                  ) : (
+                    order?.status === 'escrow_hold' && (
+                      <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                        <p className="text-sm text-white/70">{t('product.billImagesInfo')}</p>
+                      </div>
+                    )
                   )}
 
                   <div className="p-4 bg-[hsl(40,90%,55%,0.1)] rounded-lg border border-[hsl(40,90%,55%,0.3)]">
