@@ -623,6 +623,20 @@ export const adminApi = {
     return api.get<AdminKycResponse>(`/admin/kyc?${query.toString()}`);
   },
   
+  // Reviews
+  reviews: (params?: { page?: number; search?: string; status?: string; rating?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.search) query.append('search', params.search);
+    if (params?.status) query.append('status', params.status);
+    if (params?.rating) query.append('rating', params.rating);
+    return api.get<any>(`/admin/reviews?${query.toString()}`);
+  },
+  
+  // Suggestions
+  updateSuggestion: (id: number, status: 'pending' | 'approved' | 'implemented') =>
+    api.put<any>(`/admin/suggestions/${id}`, { status }),
+  
   // Notifications
   createNotification: (data: { 
     user_id?: number; 

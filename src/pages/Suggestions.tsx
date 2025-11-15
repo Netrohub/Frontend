@@ -12,7 +12,7 @@ import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { suggestionsApi } from "@/lib/api";
+import { suggestionsApi, adminApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Turnstile } from "@/components/Turnstile";
@@ -34,6 +34,7 @@ interface Suggestion {
 const Suggestions = () => {
   const { user } = useAuth();
   const { t, language } = useLanguage();
+  const isAdmin = user?.role === 'admin';
   const locale = language === 'ar' ? 'ar-EG' : 'en-US';
   const numberFormatter = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const queryClient = useQueryClient();
@@ -85,6 +86,23 @@ const Suggestions = () => {
       return;
     }
     voteMutation.mutate({ id, voteType });
+  };
+
+  // Admin mutation to update suggestion status
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: 'pending' | 'approved' | 'implemented' }) =>
+      adminApi.updateSuggestion(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suggestions'] });
+      toast.success(t('suggestions.statusUpdated'));
+    },
+    onError: () => {
+      toast.error(t('suggestions.statusUpdateError'));
+    },
+  });
+
+  const handleStatusUpdate = (id: number, status: 'pending' | 'approved' | 'implemented') => {
+    updateStatusMutation.mutate({ id, status });
   };
 
   // Create suggestion mutation
@@ -457,7 +475,7 @@ const Suggestions = () => {
                       {getStatusBadge(suggestion.status)}
                     </div>
                     <p className="text-white/60 mb-4">{suggestion.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-white/50">
+                      <div className="flex items-center gap-4 text-sm text-white/50 flex-wrap">
                         <span>{suggestion.user?.name || t('suggestions.anonymousUser')}</span>
                         <span>•</span>
                         <span>{suggestion.created_at ? formatLocalizedDate(suggestion.created_at, language) : ''}</span>
@@ -467,6 +485,40 @@ const Suggestions = () => {
                           {t('suggestions.commentCount', { count: numberFormatter.format(suggestion.comments ?? 0) })}
                         </div>
                       </div>
+                      {/* Admin Controls */}
+                      {isAdmin && suggestion.status !== 'implemented' && (
+                        <div className="mt-4 pt-4 border-t border-white/10 flex gap-2 flex-wrap">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-green-400 border-green-500/30 hover:bg-green-500/10"
+                            onClick={() => handleStatusUpdate(suggestion.id, 'approved')}
+                            disabled={updateStatusMutation.isPending || suggestion.status === 'approved'}
+                          >
+                            {language === 'ar' ? 'موافقة' : 'Approve'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,70%,0.1)]"
+                            onClick={() => handleStatusUpdate(suggestion.id, 'implemented')}
+                            disabled={updateStatusMutation.isPending}
+                          >
+                            {language === 'ar' ? 'تم التنفيذ' : 'Mark as Implemented'}
+                          </Button>
+                          {suggestion.status === 'approved' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/10"
+                              onClick={() => handleStatusUpdate(suggestion.id, 'pending')}
+                              disabled={updateStatusMutation.isPending}
+                            >
+                              {language === 'ar' ? 'إرجاع للمراجعة' : 'Back to Pending'}
+                            </Button>
+                          )}
+                        </div>
+                      )}
                   </div>
                 </div>
               </CardContent>
