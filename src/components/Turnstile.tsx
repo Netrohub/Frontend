@@ -11,6 +11,7 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   const [isExpired, setIsExpired] = useState(false);
   const [widgetKey, setWidgetKey] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null);
   
   // Get site key from environment variable
   const envVar = import.meta.env.VITE_TURNSTILE_SITE_KEY;
@@ -59,17 +60,41 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
       const readyTimeout = requestAnimationFrame(() => {
         setTimeout(() => {
           setIsReady(true);
+          // Set a timeout to detect if verification is stuck (30 seconds)
+          // If widget doesn't verify within 30s, reset it
+          const timeout = setTimeout(() => {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn('[Turnstile] Verification timeout - widget may be stuck. Resetting...');
+            }
+            setWidgetKey(prev => prev < 3 ? prev + 1 : prev);
+            setIsReady(false);
+            // Retry after a short delay
+            setTimeout(() => {
+              setIsReady(true);
+            }, 500);
+          }, 30000); // 30 second timeout
+          setVerificationTimeout(timeout);
         }, 100); // Small delay to ensure DOM is ready
       });
-      return () => cancelAnimationFrame(readyTimeout);
+      return () => {
+        cancelAnimationFrame(readyTimeout);
+        if (verificationTimeout) {
+          clearTimeout(verificationTimeout);
+        }
+      };
     }
   }, [siteKey, widgetKey]);
   
   // Memoize callbacks to prevent unnecessary re-renders
   const handleVerify = useCallback((token: string) => {
     setIsExpired(false);
+    // Clear any pending timeout
+    if (verificationTimeout) {
+      clearTimeout(verificationTimeout);
+      setVerificationTimeout(null);
+    }
     onVerify(token);
-  }, [onVerify]);
+  }, [onVerify, verificationTimeout]);
 
   const handleExpire = useCallback(() => {
     setIsExpired(true);
