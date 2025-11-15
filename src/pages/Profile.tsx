@@ -176,8 +176,28 @@ const Profile = () => {
         <Card className="p-6 md:p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
           <div className="flex flex-col md:flex-row items-center gap-6 mb-6">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
-                <User className="h-12 w-12 text-white" aria-hidden="true" />
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center overflow-hidden relative">
+                {user.avatar ? (
+                  <>
+                    <img 
+                      src={user.avatar} 
+                      alt={user.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Hide broken image and show fallback
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) {
+                          fallback.style.display = 'flex';
+                        }
+                      }}
+                    />
+                    <User className="h-12 w-12 text-white hidden" aria-hidden="true" />
+                  </>
+                ) : (
+                  <User className="h-12 w-12 text-white" aria-hidden="true" />
+                )}
               </div>
               {user.kyc_verification?.status === 'verified' && (
                 <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-green-500">
