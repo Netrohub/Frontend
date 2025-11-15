@@ -238,7 +238,9 @@ const AppContent = () => {
                 path="/orders/:id/payment/callback"
                 element={
                   <ProtectedRoute>
-                    <PaymentCallback />
+                    <Suspense fallback={<LoadingFallback />}>
+                      <PaymentCallback />
+                    </Suspense>
                   </ProtectedRoute>
                 }
               />
