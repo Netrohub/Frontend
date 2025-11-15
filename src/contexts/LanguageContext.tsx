@@ -484,7 +484,7 @@ const translations: Record<Language, Record<string, string>> = {
     
 // Checkout
 'checkout.title': 'إتمام الشراء',
-'checkout.description': 'أكمل عملية الشراء بأمان عبر Tap Payment.',
+'checkout.description': 'أكمل عملية الشراء بأمان عبر بوابة دفع آمنة.',
 'checkout.loginRequired': 'يجب تسجيل الدخول لإتمام عملية الشراء.',
 'checkout.orderNotFound': 'لم يتم العثور على الطلب.',
 'checkout.amountError': 'حدث خطأ في المبلغ، يرجى المحاولة مرة أخرى.',
@@ -511,7 +511,7 @@ const translations: Record<Language, Record<string, string>> = {
 'checkout.protectedByEscrow': 'محمي بنظام الضمان',
 'checkout.escrowDescription': 'سيتم الاحتفاظ بالأموال في الضمان لمدة {hours} ساعة لضمان حمايتك.',
 'checkout.backToListing': 'العودة إلى الإعلان',
-'checkout.tapPayment': 'Tap Payment',
+'checkout.tapPayment': 'دفع آمن',
 'checkout.recommended': 'موصى به',
 'checkout.orderCompleted': 'تم إكمال الطلب',
 'checkout.orderCancelled': 'تم إلغاء الطلب',
@@ -1192,7 +1192,7 @@ const translations: Record<Language, Record<string, string>> = {
 'help.faq1Q': 'كيف أشتري حسابًا؟',
 'help.faq1A': 'تصفح المتجر، اختر الحساب المناسب، ثم اضغط "شراء" وأكمل الدفع. يتم تسليم الحساب خلال 12 ساعة.',
 'help.faq2Q': 'هل عملية الدفع آمنة؟',
-'help.faq2A': 'نعم، نستخدم Tap Payment وهي بوابة دفع موثوقة ومشفرة بالكامل. جميع العمليات محمية.',
+'help.faq2A': 'نعم، نستخدم بوابة دفع موثوقة ومشفرة بالكامل. جميع العمليات محمية.',
 'help.faq3Q': 'كم تستغرق عملية التسليم؟',
 'help.faq3A': 'بعد الدفع مباشرة، يتم تسليم الحساب تلقائيًا، وتتاح لك 12 ساعة لمراجعته وتأكيد الاستلام.',
 'help.faq4Q': 'ماذا أفعل إذا كان الحساب غير مطابق للوصف؟',
@@ -1717,7 +1717,7 @@ const translations: Record<Language, Record<string, string>> = {
 
 // Checkout
 'checkout.title': 'Checkout',
-'checkout.description': 'Complete your secure payment through Tap.',
+'checkout.description': 'Complete your secure payment through our trusted payment gateway.',
 'checkout.loginRequired': 'Please log in to continue.',
 'checkout.orderNotFound': 'Order not found.',
 'checkout.amountError': 'Amount error. Please try again.',
@@ -1744,7 +1744,7 @@ const translations: Record<Language, Record<string, string>> = {
 'checkout.protectedByEscrow': 'Protected by Escrow',
 'checkout.escrowDescription': 'Funds will be held in escrow for {hours} hours to ensure your protection.',
 'checkout.backToListing': 'Back to Listing',
-'checkout.tapPayment': 'Tap Payment',
+'checkout.tapPayment': 'Secure Payment',
 'checkout.recommended': 'Recommended',
 'checkout.orderCompleted': 'Order Completed',
 'checkout.orderCancelled': 'Order Cancelled',
@@ -2420,7 +2420,7 @@ const translations: Record<Language, Record<string, string>> = {
 'help.faq1Q': 'How do I buy an account?',
 'help.faq1A': 'Browse the marketplace, choose the right account, click Buy, and pay securely. The account will be delivered within 12 hours.',
 'help.faq2Q': 'Is payment secure?',
-'help.faq2A': 'Yes. We use Tap Payment, a trusted and fully encrypted payment system. All transactions are protected.',
+'help.faq2A': 'Yes. We use a trusted and fully encrypted payment system. All transactions are protected.',
 'help.faq3Q': 'How long does delivery take?',
 'help.faq3A': 'After payment, credentials are delivered instantly. You have 12 hours to review and confirm receipt.',
 'help.faq4Q': 'What if the account doesn\'t match the description?',
