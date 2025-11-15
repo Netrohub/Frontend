@@ -103,6 +103,7 @@ const PaymentCallback = () => {
       <SEO 
         title={`${t('paymentCallback.title')} - NXOLand`}
         description={t('paymentCallback.description')}
+        noIndex={true}
       />
       <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] pt-20 pb-12 px-4" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar />

@@ -81,6 +81,7 @@ const DisputeDetails = () => {
       <SEO 
         title={`${t('disputeDetails.title')} - NXOLand`}
         description={t('disputeDetails.description')}
+        noIndex={true}
       />
       <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />

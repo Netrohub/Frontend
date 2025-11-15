@@ -114,7 +114,7 @@ const Profile = () => {
   if (loading) {
     return (
       <>
-        <SEO title={`${t('profile.title')} - NXOLand`} />
+        <SEO title={`${t('profile.title')} - NXOLand`} noIndex={true} />
         <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
           <Navbar />
           <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex items-center justify-center min-h-[60vh]">
@@ -128,7 +128,7 @@ const Profile = () => {
   if (!user) {
     return (
       <>
-        <SEO title={`${t('profile.title')} - NXOLand`} />
+        <SEO title={`${t('profile.title')} - NXOLand`} noIndex={true} />
         <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
           <Navbar />
           <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
@@ -147,6 +147,7 @@ const Profile = () => {
       <SEO 
         title={`${user.name} - ${t('profile.seoTitle')} - NXOLand`}
         description={t('profile.seoDescription', { name: user.name })}
+        noIndex={true}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

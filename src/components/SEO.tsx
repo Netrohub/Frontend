@@ -6,6 +6,7 @@ interface SEOProps {
   image?: string;
   url?: string;
   type?: string;
+  noIndex?: boolean;
 }
 
 /**
@@ -18,6 +19,7 @@ export function SEO({
   image = "/nxoland-new-logo.png",
   url = "",
   type = "website",
+  noIndex = false,
 }: SEOProps) {
   const fullUrl = url ? `https://nxoland.com${url}` : "https://nxoland.com";
   const fullImage = image.startsWith("http") ? image : `https://nxoland.com${image}`;
@@ -46,7 +48,7 @@ export function SEO({
       <meta name="twitter:image" content={fullImage} />
 
       {/* Additional Meta Tags */}
-      <meta name="robots" content="index, follow" />
+      <meta name="robots" content={noIndex ? "noindex, nofollow" : "index, follow"} />
       <meta name="language" content="Arabic" />
       <meta name="author" content="NXOLand" />
     </Helmet>

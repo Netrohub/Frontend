@@ -341,6 +341,7 @@ const KYC = () => {
         <SEO 
           title="التحقق من الهوية - NXOLand"
           description="قم بتحقق من هويتك للبدء في بيع الحسابات على منصة NXOLand"
+          noIndex={true}
         />
         <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
           <Navbar />
@@ -391,6 +392,7 @@ const KYC = () => {
         <SEO 
           title="التحقق من الهوية - NXOLand"
           description="قم بتحقق من هويتك للبدء في بيع الحسابات على منصة NXOLand"
+          noIndex={true}
           url="/kyc"
         />
 

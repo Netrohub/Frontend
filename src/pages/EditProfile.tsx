@@ -143,6 +143,7 @@ const EditProfile = () => {
       <SEO 
         title={`${t('editProfile.title')} - NXOLand`}
         description={t('editProfile.pageDescription')}
+        noIndex={true}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

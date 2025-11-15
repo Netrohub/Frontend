@@ -154,6 +154,7 @@ const Auth = () => {
       <SEO 
         title="تسجيل الدخول - NXOLand"
         description="سجل دخولك إلى منصة NXOLand لتداول الحسابات بأمان"
+        noIndex={true}
       />
       <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
         <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">

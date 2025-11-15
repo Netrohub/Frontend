@@ -1,14 +1,21 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Disallow private/user-specific pages
+Disallow: /auth
+Disallow: /checkout
+Disallow: /orders
+Disallow: /order/
+Disallow: /profile
+Disallow: /edit-profile
+Disallow: /wallet
+Disallow: /my-listings
+Disallow: /disputes
+Disallow: /disputes/
+Disallow: /kyc
+Disallow: /notifications
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /orders/*/payment/callback
+Disallow: /admin
+Disallow: /admin/

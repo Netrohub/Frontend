@@ -80,6 +80,7 @@ const ResetPassword = () => {
       <SEO
         title={`${t("auth.setNewPasswordTitle")} - NXOLand`}
         description={t("auth.setNewPasswordDescription")}
+        noIndex={true}
       />
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center" dir={language === "ar" ? "rtl" : "ltr"}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />

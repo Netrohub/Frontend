@@ -172,6 +172,7 @@ const AdminSettings = () => {
       <SEO 
         title="إعدادات المنصة - NXOLand Admin"
         description="إدارة الإعدادات العامة للمنصة"
+        noIndex={true}
       />
       <div>
         <div className="mb-8 flex items-start justify-between">

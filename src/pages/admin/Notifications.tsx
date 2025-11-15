@@ -143,6 +143,7 @@ const AdminNotifications = () => {
       <SEO 
         title="إدارة الإشعارات - NXOLand Admin"
         description="إرسال إشعارات للمستخدمين عبر المنصة"
+        noIndex={true}
       />
       <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
         <div className="container mx-auto px-4 py-8">
