@@ -10,6 +10,7 @@ import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDate } from "@/utils/date";
 import type { Listing } from "@/types/api";
 
 const AdminListings = () => {
@@ -79,13 +80,7 @@ const AdminListings = () => {
     // Search is automatic via queryKey dependency
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  const formatDate = (dateString: string) => formatLocalizedDate(dateString, language);
 
   const formatPrice = (price: number) => {
     return `$${price.toLocaleString('en-US', {

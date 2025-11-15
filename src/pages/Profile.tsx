@@ -108,8 +108,8 @@ const Profile = () => {
 
   // Format member since date (Gregorian/English format)
   const memberSince = user?.created_at 
-    ? new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })
-    : 'غير محدد';
+    ? new Date(user.created_at).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long' })
+    : t('common.notSpecified');
 
   if (loading) {
     return (
@@ -148,7 +148,7 @@ const Profile = () => {
         title={`${user.name} - ${t('profile.seoTitle')} - NXOLand`}
         description={t('profile.seoDescription', { name: user.name })}
       />
-      <div className="min-h-screen relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
 
@@ -157,7 +157,7 @@ const Profile = () => {
           href="#profile-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى المحتوى
+          {t('common.skipToContent')}
         </a>
 
         {/* Navigation */}
@@ -180,7 +180,7 @@ const Profile = () => {
               </div>
               {user.kyc_verification?.status === 'verified' && (
                 <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-green-500">
-                  <CheckCircle className="h-5 w-5 text-white" aria-label="موثق" />
+                  <CheckCircle className="h-5 w-5 text-white" aria-label={t('profile.verified')} />
                 </div>
               )}
             </div>
@@ -191,7 +191,7 @@ const Profile = () => {
               {statsLoading ? (
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
                   <Loader2 className="h-4 w-4 animate-spin text-white/60" aria-hidden="true" />
-                  <span className="text-sm text-white/60">جاري التحميل...</span>
+                  <span className="text-sm text-white/60">{t('common.loading')}</span>
                 </div>
               ) : userStats && userStats.average_rating && userStats.total_reviews > 0 ? (
                 <Link 
@@ -200,7 +200,7 @@ const Profile = () => {
                 >
                   <Star className="h-5 w-5 text-[hsl(40,90%,55%)] fill-current" aria-hidden="true" />
                   <span className="text-lg font-bold text-white">{userStats.average_rating.toFixed(1)}</span>
-                  <span className="text-white/60">({userStats.total_reviews} تقييم)</span>
+                  <span className="text-white/60">{t('profile.reviewsWithCount', { count: userStats.total_reviews })}</span>
                 </Link>
               ) : userStats && userStats.total_revenue > 0 ? (
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
@@ -245,7 +245,7 @@ const Profile = () => {
             </div>
           ) : statsError ? (
             <ErrorState 
-              message="فشل تحميل الإحصائيات" 
+              message={t('profile.statsError')} 
               onRetry={() => refetchStats()}
             />
           ) : (
@@ -290,9 +290,9 @@ const Profile = () => {
               <Mail className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
               <span>{user.email}</span>
               {user.email_verified_at ? (
-                <StatusBadge status="success" label="موثق" className="text-xs" />
+                <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
               ) : (
-                <StatusBadge status="warning" label="غير موثق" className="text-xs" />
+                <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
               )}
             </div>
             
@@ -301,9 +301,9 @@ const Profile = () => {
                 <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
                 <span>{user.phone}</span>
                 {user.phone_verified_at ? (
-                  <StatusBadge status="success" label="موثق" className="text-xs" />
+                  <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
                 ) : (
-                  <StatusBadge status="warning" label="غير موثق" className="text-xs" />
+                  <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
                 )}
               </div>
             )}
@@ -320,7 +320,7 @@ const Profile = () => {
               onClick={handleRefreshActivity}
               disabled={activityLoading}
               className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)]"
-              aria-label="تحديث النشاط"
+              aria-label={t('profile.refreshActivity')}
             >
               <RefreshCw className={`h-4 w-4 ${activityLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
             </Button>
@@ -332,7 +332,7 @@ const Profile = () => {
             </div>
           ) : activityError ? (
             <ErrorState 
-              message="فشل تحميل النشاط" 
+              message={t('profile.activityError')} 
               onRetry={() => refetchActivity()}
             />
           ) : activities && activities.length > 0 ? (
@@ -411,7 +411,7 @@ const Profile = () => {
             >
               <Link to="/security">
                 <Shield className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-                <span className="truncate">الأمان والخصوصية</span>
+                <span className="truncate">{t('profile.securityAndPrivacy')}</span>
               </Link>
             </Button>
             <Button 
@@ -420,7 +420,7 @@ const Profile = () => {
               className="w-full justify-start gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30 min-h-[48px] text-sm md:text-base"
             >
               <LogOut className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
-              <span className="truncate">تسجيل الخروج</span>
+              <span className="truncate">{t('nav.logout')}</span>
             </Button>
           </div>
         </Card>

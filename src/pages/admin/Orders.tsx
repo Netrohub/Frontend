@@ -11,6 +11,7 @@ import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDateTime } from "@/utils/date";
 import type { Order } from "@/types/api";
 
 const AdminOrders = () => {
@@ -71,15 +72,14 @@ const AdminOrders = () => {
     // Search is automatic via queryKey dependency
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+  const formatDate = (dateString: string) =>
+    formatLocalizedDateTime(dateString, language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
 
   const formatPrice = (amount: number) => {
     return `$${amount.toLocaleString('en-US', {

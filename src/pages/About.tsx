@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { Shield, Zap, Users, Target, Heart, ShoppingCart, Package, CheckCircle, TrendingUp } from "lucide-react";
+import { Shield, Zap, Users, Target, Heart, ShoppingCart, Package, CheckCircle, TrendingUp, Phone, Mail, MessageCircle, FileText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -205,7 +205,7 @@ const About = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           <Card className="p-6 text-center bg-white/5 border-white/10 backdrop-blur-sm">
             <div className="text-3xl font-black text-[hsl(195,80%,70%)] mb-2">1,200+</div>
             <div className="text-sm text-white/60">{t('about.activeUsers')}</div>
@@ -226,6 +226,89 @@ const About = () => {
             <div className="text-sm text-white/60">{t('about.support')}</div>
           </Card>
         </div>
+
+        {/* Contact Information & Compliance */}
+        <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-8">
+          <h2 className="text-2xl font-bold text-white mb-6">{t('about.contactInfo')}</h2>
+          
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            {/* Commercial Registration */}
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
+                <FileText className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">{t('about.commercialRegistration')}</h3>
+                <p className="text-white/80">NXO Establishment</p>
+                <p className="text-white/70 text-sm">7052368375</p>
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
+                <Mail className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">{t('about.email')}</h3>
+                <a href="mailto:info@nxoland.com" className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors">
+                  info@nxoland.com
+                </a>
+              </div>
+            </div>
+
+            {/* WhatsApp */}
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
+                <Phone className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">{t('about.whatsapp')}</h3>
+                <a 
+                  href="https://wa.me/966536784471" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors"
+                >
+                  +966 53 678 4471
+                </a>
+              </div>
+            </div>
+
+            {/* Live Chat (Discord) */}
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
+                <MessageCircle className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">{t('about.liveChat')}</h3>
+                <a 
+                  href="https://discord.gg/R72dmfCX" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors"
+                >
+                  {t('about.discordLiveChat')}
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Response & Processing Times */}
+          <div className="mt-6 pt-6 border-t border-white/10">
+            <h3 className="text-lg font-bold text-white mb-4">{t('about.responseTimes')}</h3>
+            <div className="space-y-3 text-white/80">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0" aria-hidden="true" />
+                <span>{t('about.responseTime')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0" aria-hidden="true" />
+                <span>{t('about.processingTime')}</span>
+              </div>
+            </div>
+          </div>
+        </Card>
       </div>
 
         {/* Footer */}

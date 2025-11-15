@@ -16,6 +16,7 @@ import { suggestionsApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Turnstile } from "@/components/Turnstile";
+import { formatLocalizedDate } from "@/utils/date";
 
 interface Suggestion {
   id: number;
@@ -33,6 +34,8 @@ interface Suggestion {
 const Suggestions = () => {
   const { user } = useAuth();
   const { t, language } = useLanguage();
+  const locale = language === 'ar' ? 'ar-EG' : 'en-US';
+  const numberFormatter = useMemo(() => new Intl.NumberFormat(locale), [locale]);
   const queryClient = useQueryClient();
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -202,7 +205,7 @@ const Suggestions = () => {
           href="#suggestions-content" 
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
         >
-          تخطي إلى المحتوى
+          {t('common.skipToContent')}
         </a>
         
         {/* Navigation */}
@@ -212,7 +215,7 @@ const Suggestions = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2 text-white drop-shadow-[0_0_30px_rgba(148,209,240,0.5)]">
-            مركز الاقتراحات والتقييمات
+            {t('suggestions.title')}
           </h1>
           <p className="text-white/70">{t('suggestions.pageSubtitle')}</p>
         </div>
@@ -222,10 +225,10 @@ const Suggestions = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <Sparkles className="w-6 h-6 text-[hsl(40,90%,55%)]" aria-hidden="true" />
-                قيّم تجربتك على المنصة
+                {t('suggestions.platformRating')}
               </CardTitle>
               <CardDescription className="text-white/70">
-                رأيك يهمنا - ساعدنا في تحسين تجربة المستخدمين
+                {t('suggestions.platformRatingSubtitle')}
               </CardDescription>
             </CardHeader>
           <CardContent>
@@ -240,14 +243,14 @@ const Suggestions = () => {
                     <div>
                       <StarRating rating={platformStats.average_rating} readonly size="lg" />
                       <p className="text-white/60 text-sm mt-1">
-                        {platformStats.total_reviews.toLocaleString('en-US')} تقييم
+                        {t('suggestions.totalReviewsCount', { count: numberFormatter.format(platformStats.total_reviews) })}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center justify-center md:justify-start gap-2">
                     <TrendingUp className="h-5 w-5 text-green-400" aria-hidden="true" />
                     <span className="text-green-400 font-bold">
-                      {positiveRatingsPercentage}% تقييمات إيجابية
+                      {t('suggestions.positiveRatings', { percentage: positiveRatingsPercentage })}
                     </span>
                   </div>
                 </div>
@@ -280,7 +283,9 @@ const Suggestions = () => {
             {/* Rating Form */}
             <div className="space-y-4 p-6 bg-white/5 rounded-lg border border-white/10">
               <div>
-                <label className="text-white text-sm font-bold mb-2 block">تقييمك للمنصة *</label>
+                <label className="text-white text-sm font-bold mb-2 block">
+                  {t('suggestions.yourRating')} *
+                </label>
                 <div className="flex items-center gap-3">
                   <StarRating 
                     rating={platformRating} 
@@ -290,11 +295,11 @@ const Suggestions = () => {
                   />
                   {platformRating > 0 && (
                     <span className="text-white/60 text-sm">
-                      {platformRating === 5 && "ممتاز! 🎉"}
-                      {platformRating === 4 && "جيد جداً 👍"}
-                      {platformRating === 3 && "جيد ✓"}
-                      {platformRating === 2 && "يحتاج تحسين"}
-                      {platformRating === 1 && "ضعيف"}
+                      {platformRating === 5 && t('suggestions.ratingFeedback5')}
+                      {platformRating === 4 && t('suggestions.ratingFeedback4')}
+                      {platformRating === 3 && t('suggestions.ratingFeedback3')}
+                      {platformRating === 2 && t('suggestions.ratingFeedback2')}
+                      {platformRating === 1 && t('suggestions.ratingFeedback1')}
                     </span>
                   )}
                 </div>
@@ -302,20 +307,24 @@ const Suggestions = () => {
 
               <div>
                 <label htmlFor="platform-review-text" className="text-white text-sm font-bold mb-2 block">
-                  أخبرنا عن تجربتك <span className="text-white/60 font-normal">(10 أحرف على الأقل)</span>
+                  {t('suggestions.feedbackFieldLabel')} <span className="text-white/60 font-normal">{t('suggestions.feedbackHint')}</span>
                 </label>
                 <Textarea
                   id="platform-review-text"
                   value={platformReview}
                   onChange={(e) => setPlatformReview(e.target.value)}
-                  placeholder="ما هي الميزات التي أعجبتك؟ وما الذي يمكننا تحسينه؟"
+                  placeholder={t('suggestions.feedbackPlaceholder')}
                   className="min-h-[100px] bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   maxLength={500}
-                  aria-label="تعليق عن تجربتك على المنصة"
+                  aria-label={t('suggestions.feedbackFieldLabel')}
                 />
                 <div className="flex justify-between text-xs text-white/60 mt-1">
-                  <span>{platformReview.length} / 500 حرف</span>
-                  <span>{platformReview.trim().length < 10 ? `${10 - platformReview.trim().length} حرف متبقي` : "✓"}</span>
+                  <span>{t('suggestions.characterCount', { count: platformReview.length, max: 500 })}</span>
+                  <span>
+                    {platformReview.trim().length < 10
+                      ? t('suggestions.charactersRemaining', { count: 10 - platformReview.trim().length })
+                      : t('suggestions.ready')}
+                  </span>
                 </div>
               </div>
 
@@ -330,7 +339,7 @@ const Suggestions = () => {
                 className="w-full bg-[hsl(40,90%,55%)] hover:bg-[hsl(40,90%,65%)] text-white font-bold shadow-[0_0_30px_rgba(234,179,8,0.4)] border-0 disabled:opacity-50"
               >
                 <Star className="h-4 w-4 ml-2" aria-hidden="true" />
-                إرسال التقييم
+                {t('suggestions.submitRating')}
               </Button>
             </div>
           </CardContent>
@@ -341,27 +350,27 @@ const Suggestions = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-white">
                 <MessageSquare className="w-5 h-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-                اقتراح لتطوير المنصة
+                {t('suggestions.newSuggestion')}
               </CardTitle>
               <CardDescription className="text-white/60">{t('suggestions.shareIdeas')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Input
-                  placeholder="عنوان الاقتراح"
+                  placeholder={t('suggestions.suggestionPlaceholder')}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="bg-white/5 border-white/20 text-white placeholder:text-white/40"
-                  aria-label="عنوان الاقتراح"
+                  aria-label={t('suggestions.suggestionPlaceholder')}
                 />
               </div>
               <div>
                 <Textarea
-                  placeholder="وصف الاقتراح بالتفصيل..."
+                  placeholder={t('suggestions.descriptionPlaceholder')}
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   className="min-h-[100px] bg-white/5 border-white/20 text-white placeholder:text-white/40"
-                  aria-label="وصف الاقتراح"
+                  aria-label={t('suggestions.descriptionPlaceholder')}
                 />
               </div>
             
@@ -375,7 +384,7 @@ const Suggestions = () => {
               className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0 disabled:opacity-50"
               disabled={!newTitle.trim() || !newDescription.trim() || !turnstileToken}
             >
-              إرسال الاقتراح
+              {t('suggestions.submitSuggestion')}
             </Button>
           </CardContent>
         </Card>
@@ -387,13 +396,13 @@ const Suggestions = () => {
               value="all"
               className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
             >
-              الكل ({suggestions.length})
+              {t('suggestions.all')} ({numberFormatter.format(suggestions.length)})
             </TabsTrigger>
             <TabsTrigger 
               value="implemented"
               className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70"
             >
-              منفذة ({suggestions.filter((s) => s.status === "implemented").length})
+              {t('suggestions.implemented')} ({numberFormatter.format(suggestions.filter((s) => s.status === "implemented").length)})
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -418,7 +427,7 @@ const Suggestions = () => {
                             ? "bg-[hsl(160,60%,45%,0.2)] text-[hsl(160,60%,50%)]"
                             : "text-white/60"
                         }`}
-                        aria-label="تصويت إيجابي"
+                        aria-label={t('suggestions.voteUpAria')}
                       >
                         <ThumbsUp className="w-5 h-5" aria-hidden="true" />
                       </Button>
@@ -435,7 +444,7 @@ const Suggestions = () => {
                             ? "bg-[hsl(0,70%,55%,0.2)] text-[hsl(0,70%,60%)]"
                             : "text-white/60"
                         }`}
-                        aria-label="تصويت سلبي"
+                        aria-label={t('suggestions.voteDownAria')}
                       >
                         <ThumbsDown className="w-5 h-5" aria-hidden="true" />
                       </Button>
@@ -449,13 +458,13 @@ const Suggestions = () => {
                     </div>
                     <p className="text-white/60 mb-4">{suggestion.description}</p>
                       <div className="flex items-center gap-4 text-sm text-white/50">
-                        <span>{suggestion.user?.name || 'مستخدم'}</span>
+                        <span>{suggestion.user?.name || t('suggestions.anonymousUser')}</span>
                         <span>•</span>
-                        <span>{suggestion.created_at ? new Date(suggestion.created_at).toLocaleDateString('ar-SA') : ''}</span>
+                        <span>{suggestion.created_at ? formatLocalizedDate(suggestion.created_at, language) : ''}</span>
                         <span>•</span>
                         <div className="flex items-center gap-1">
                           <MessageSquare className="w-4 h-4" aria-hidden="true" />
-                          {suggestion.comments} تعليق
+                          {t('suggestions.commentCount', { count: numberFormatter.format(suggestion.comments ?? 0) })}
                         </div>
                       </div>
                   </div>

@@ -60,6 +60,7 @@ const Wallet = lazy(() => import("./pages/Wallet"));
 const Suggestions = lazy(() => import("./pages/Suggestions"));
 const Reviews = lazy(() => import("./pages/Reviews"));
 const SocialProductExample = lazy(() => import("./pages/SocialProductExample"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 // Admin routes - lazy loaded
 const Admin = lazy(() => import("./pages/Admin"));
@@ -123,6 +124,14 @@ const AppContent = () => {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route
+                  path="/reset-password"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <ResetPassword />
+                    </Suspense>
+                  }
+                />
                 <Route path="/social-product-example" element={
                   <Suspense fallback={<LoadingFallback />}>
                     <SocialProductExample />

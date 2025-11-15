@@ -11,6 +11,7 @@ import { ordersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDateTime } from "@/utils/date";
 import type { Order } from "@/types/api";
 import { useState } from "react";
 
@@ -91,16 +92,14 @@ const Orders = () => {
     })}`;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ar-SA', { 
-      year: 'numeric', 
-      month: 'short', 
+  const formatDate = (dateString: string) =>
+    formatLocalizedDateTime(dateString, language, {
+      year: 'numeric',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
+      minute: '2-digit',
+    });
 
   if (!user) {
     return (

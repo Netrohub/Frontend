@@ -230,6 +230,12 @@ export const authApi = {
   
   login: (data: { email: string; password: string }) =>
     api.post<AuthResponse>('/login', data),
+
+  requestPasswordReset: (email: string) =>
+    api.post<{ message: string }>('/password/forgot', { email }),
+
+  resetPassword: (data: { email: string; password: string; password_confirmation: string; token: string }) =>
+    api.post<{ message: string }>('/password/reset', data),
   
   logout: () =>
     api.post<LogoutResponse>('/logout'),

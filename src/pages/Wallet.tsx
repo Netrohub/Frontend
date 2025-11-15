@@ -23,6 +23,7 @@ import { walletApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDateTime } from "@/utils/date";
 import { toast } from "sonner";
 import { ANIMATION_CONFIG } from "@/config/constants";
 import { isValidNumber } from "@/lib/utils/validation";
@@ -158,41 +159,39 @@ const Wallet = () => {
     }).format(price);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', {
+  const formatDate = (dateString: string) =>
+    formatLocalizedDateTime(dateString, language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { label: string; className: string; icon: any }> = {
       pending: {
-        label: 'قيد الانتظار',
+        label: t('wallet.pending'),
         className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
         icon: Clock,
       },
       processing: {
-        label: 'قيد المعالجة',
+        label: t('wallet.withdrawalPending'),
         className: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
         icon: Loader2,
       },
       completed: {
-        label: 'مكتمل',
+        label: t('wallet.withdrawalCompleted'),
         className: 'bg-green-500/20 text-green-400 border-green-500/30',
         icon: CheckCircle2,
       },
       failed: {
-        label: 'فشل',
+        label: t('wallet.withdrawalFailed'),
         className: 'bg-red-500/20 text-red-400 border-red-500/30',
         icon: XCircle,
       },
       cancelled: {
-        label: 'ملغي',
+        label: t('wallet.cancelled'),
         className: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
         icon: XCircle,
       },
@@ -211,12 +210,12 @@ const Wallet = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 py-8 text-center">
-          <p className="text-white/60 mb-4">يجب تسجيل الدخول لعرض المحفظة</p>
+          <p className="text-white/60 mb-4">{t('wallet.loginRequired')}</p>
           <Button asChild>
-            <Link to="/auth">تسجيل الدخول</Link>
+            <Link to="/auth">{t('auth.login')}</Link>
           </Button>
         </div>
       </div>
@@ -230,7 +229,7 @@ const Wallet = () => {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 py-8 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="h-8 w-8 animate-spin text-white/60" />
@@ -240,7 +239,7 @@ const Wallet = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Animated snow particles */}
       <div className="absolute inset-0 pointer-events-none">
         {snowParticles}
@@ -249,7 +248,7 @@ const Wallet = () => {
       <Navbar />
 
       <div className="relative z-10 container mx-auto px-4 py-8 pb-24">
-        <h1 className="text-3xl md:text-4xl font-black text-white mb-8">المحفظة</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-white mb-8">{t('wallet.title')}</h1>
 
         {/* Balance Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
@@ -259,7 +258,7 @@ const Wallet = () => {
                     <WalletIcon className="h-6 w-6 text-green-400" />
                   </div>
                 </div>
-                <p className="text-white/60 text-sm mb-2">الرصيد المتاح</p>
+                <p className="text-white/60 text-sm mb-2">{t('wallet.balance')}</p>
                 <p className="text-3xl font-black text-white">{formatPrice(availableBalance)}</p>
               </Card>
 
@@ -269,7 +268,7 @@ const Wallet = () => {
                     <Clock className="h-6 w-6 text-yellow-400" />
                   </div>
                 </div>
-                <p className="text-white/60 text-sm mb-2">قيد الانتظار</p>
+                <p className="text-white/60 text-sm mb-2">{t('wallet.onHold')}</p>
                 <p className="text-3xl font-black text-white">{formatPrice(onHoldBalance)}</p>
               </Card>
 
@@ -279,7 +278,7 @@ const Wallet = () => {
                     <ArrowDownToLine className="h-6 w-6 text-blue-400" />
                   </div>
                 </div>
-                <p className="text-white/60 text-sm mb-2">إجمالي المسحوب</p>
+                <p className="text-white/60 text-sm mb-2">{t('wallet.withdrawnTotalLabel')}</p>
                 <p className="text-3xl font-black text-white">{formatPrice(withdrawnTotal)}</p>
               </Card>
             </div>
@@ -289,27 +288,27 @@ const Wallet = () => {
           <DialogTrigger asChild>
             <Button className="w-full md:w-auto mb-8 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
               <ArrowDownToLine className="mr-2 h-5 w-5" />
-              سحب الأموال
+              {t('wallet.withdraw')}
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
             <DialogHeader>
-              <DialogTitle>سحب الأموال</DialogTitle>
+              <DialogTitle>{t('wallet.withdraw')}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleWithdrawClick} className="space-y-4">
               {/* Withdrawal Limits Info */}
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                <p className="text-blue-400 text-sm font-semibold mb-1">💰 حدود السحب</p>
+                <p className="text-blue-400 text-sm font-semibold mb-1">{`💰 ${t('wallet.withdrawalLimitsTitle')}`}</p>
                 <div className="text-white/70 text-xs space-y-1">
-                  <p>• الحد الأدنى: ${MIN_WITHDRAWAL}</p>
-                  <p>• الحد الأقصى: ${MAX_WITHDRAWAL} لكل عملية</p>
-                  <p>• الحد اليومي: ${DAILY_LIMIT}</p>
-                  <p>• رسوم السحب: ${WITHDRAWAL_FEE} لكل عملية</p>
+                  <p>{t('wallet.withdrawalMin', { amount: `$${MIN_WITHDRAWAL}` })}</p>
+                  <p>{t('wallet.withdrawalMax', { amount: `$${MAX_WITHDRAWAL}` })}</p>
+                  <p>{t('wallet.withdrawalDaily', { amount: `$${DAILY_LIMIT}` })}</p>
+                  <p>{t('wallet.withdrawalFeeInfo', { amount: `$${WITHDRAWAL_FEE.toFixed(2)}` })}</p>
                 </div>
               </div>
 
               <div>
-                <Label>المبلغ</Label>
+                <Label>{t('wallet.amount')}</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -318,11 +317,11 @@ const Wallet = () => {
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
-                  placeholder={`الحد الأدنى: $${MIN_WITHDRAWAL}`}
+                  placeholder={t('wallet.amountPlaceholder', { amount: MIN_WITHDRAWAL })}
                   required
                 />
                 <p className="text-sm text-white/60 mt-1">
-                  الرصيد المتاح: {formatPrice(availableBalance)}
+                  {t('wallet.availableBalanceLabel', { amount: formatPrice(availableBalance) })}
                 </p>
               </div>
 
@@ -330,16 +329,16 @@ const Wallet = () => {
               {withdrawAmount && parseFloat(withdrawAmount) >= MIN_WITHDRAWAL && (
                 <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white/60">المبلغ المطلوب:</span>
+                    <span className="text-white/60">{t('wallet.requestedAmount')}</span>
                     <span className="text-white">${parseFloat(withdrawAmount).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white/60">رسوم السحب:</span>
+                    <span className="text-white/60">{t('wallet.withdrawalFeeLabel')}</span>
                     <span className="text-red-400">-${WITHDRAWAL_FEE.toFixed(2)}</span>
                   </div>
                   <div className="border-t border-white/10 my-2"></div>
                   <div className="flex justify-between font-bold">
-                    <span className="text-white">المبلغ الصافي:</span>
+                    <span className="text-white">{t('wallet.netAmount')}</span>
                     <span className="text-green-400">
                       ${(parseFloat(withdrawAmount) - WITHDRAWAL_FEE).toFixed(2)}
                     </span>
@@ -348,7 +347,7 @@ const Wallet = () => {
               )}
 
               <div>
-                <Label>رقم الحساب البنكي (IBAN)</Label>
+                <Label>{t('wallet.bankAccount')}</Label>
                 <Input
                   type="text"
                   value={bankAccount}
@@ -368,7 +367,7 @@ const Wallet = () => {
                   <p className="text-red-400 text-xs mt-1">{ibanError}</p>
                 )}
                 <p className="text-xs text-white/60 mt-1">
-                  يجب أن يبدأ بـ SA ويتبعه 22 رقماً
+                  {t('wallet.ibanHint')}
                 </p>
               </div>
 
@@ -377,7 +376,7 @@ const Wallet = () => {
                 disabled={withdrawMutation.isPending || !!ibanError}
                 className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]"
               >
-                متابعة
+                {t('wallet.continue')}
               </Button>
             </form>
           </DialogContent>
@@ -390,8 +389,8 @@ const Wallet = () => {
               <History className="h-6 w-6 text-purple-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">سجل السحوبات</h2>
-              <p className="text-sm text-white/60">آخر 50 عملية سحب</p>
+              <h2 className="text-xl font-bold text-white">{t('wallet.withdrawalHistory')}</h2>
+              <p className="text-sm text-white/60">{t('wallet.withdrawalHistorySubtitle', { count: 50 })}</p>
             </div>
           </div>
 
@@ -402,7 +401,7 @@ const Wallet = () => {
           ) : !withdrawals || withdrawals.length === 0 ? (
             <div className="text-center py-12">
               <History className="h-12 w-12 mx-auto mb-4 text-white/30" />
-              <p className="text-white/60">لا توجد عمليات سحب بعد</p>
+              <p className="text-white/60">{t('wallet.noWithdrawals')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -425,12 +424,12 @@ const Wallet = () => {
                   <div className="space-y-1 text-xs text-white/60">
                     <p>📅 {formatDate(withdrawal.created_at)}</p>
                     {withdrawal.tap_transfer_id && (
-                      <p>🔖 معرف التحويل: {withdrawal.tap_transfer_id}</p>
+                      <p>{t('wallet.transferId', { id: withdrawal.tap_transfer_id })}</p>
                     )}
                     {withdrawal.failure_reason && (
                       <div className="bg-red-500/10 border border-red-500/20 rounded p-2 mt-2">
                         <p className="text-red-400 text-sm">
-                          ❌ سبب الفشل: {withdrawal.failure_reason}
+                          {t('wallet.failureReason', { reason: withdrawal.failure_reason })}
                         </p>
                       </div>
                     )}
@@ -449,38 +448,38 @@ const Wallet = () => {
         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white text-right">
-              تأكيد طلب السحب
+              {t('wallet.confirmWithdrawalTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/80 text-right">
-              يرجى مراجعة تفاصيل السحب بعناية:
+              {t('wallet.confirmReviewMessage')}
               <br /><br />
               <div className="bg-white/5 rounded-lg p-4 space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-white/60">المبلغ المطلوب:</span>
+                  <span className="text-white/60">{t('wallet.requestedAmount')}</span>
                   <span className="text-white font-bold">${parseFloat(withdrawAmount || "0").toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/60">رسوم السحب:</span>
+                  <span className="text-white/60">{t('wallet.withdrawalFeeLabel')}</span>
                   <span className="text-red-400">-${WITHDRAWAL_FEE.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-white/20 pt-2 flex justify-between">
-                  <span className="text-white font-bold">المبلغ الصافي:</span>
+                  <span className="text-white font-bold">{t('wallet.netAmount')}</span>
                   <span className="text-green-400 font-bold">
                     ${(parseFloat(withdrawAmount || "0") - WITHDRAWAL_FEE).toFixed(2)}
                   </span>
                 </div>
                 <div className="border-t border-white/20 pt-2">
-                  <span className="text-white/60">الحساب البنكي:</span>
+                  <span className="text-white/60">{t('wallet.bankAccountLabel')}</span>
                   <p className="text-white font-mono text-xs mt-1">{bankAccount}</p>
                 </div>
               </div>
               <br />
-              <strong className="text-yellow-400">⚠️ تنبيهات مهمة:</strong>
+              <strong className="text-yellow-400">{t('wallet.warningTitle')}</strong>
               <ul className="list-disc list-inside text-sm mt-2 space-y-1">
-                <li>لا يمكن إلغاء الطلب بعد التأكيد</li>
-                <li>قد تستغرق المعالجة من 1-3 أيام عمل</li>
-                <li>تأكد من صحة رقم الحساب البنكي</li>
-                <li>سيتم خصم الرسوم من المبلغ المسحوب</li>
+                <li>{t('wallet.warningNoCancel')}</li>
+                <li>{t('wallet.warningProcessingTime')}</li>
+                <li>{t('wallet.warningCheckIban')}</li>
+                <li>{t('wallet.warningFeeDeducted')}</li>
               </ul>
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -489,7 +488,7 @@ const Wallet = () => {
               className="bg-white/10 text-white border-white/20 hover:bg-white/20"
               disabled={withdrawMutation.isPending}
             >
-              إلغاء
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleWithdrawConfirm}
@@ -499,10 +498,10 @@ const Wallet = () => {
               {withdrawMutation.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                  جاري المعالجة...
+                  {t('common.processing')}
                 </>
               ) : (
-                'تأكيد السحب'
+                t('wallet.confirmWithdrawalButton')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -11,6 +11,7 @@ import { adminApi, disputesApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDate } from "@/utils/date";
 import type { Dispute } from "@/types/api";
 
 const AdminDisputes = () => {
@@ -81,15 +82,13 @@ const AdminDisputes = () => {
     // Search is automatic via queryKey dependency
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const formatDate = (dateString: string) => formatLocalizedDate(dateString, language, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
   const formatPrice = (amount: number) => {
     return `$${amount.toLocaleString('en-US', {

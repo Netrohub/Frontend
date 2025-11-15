@@ -17,6 +17,20 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import type { Listing } from "@/types/api";
 import { formatCurrency } from "@/utils/currency";
 
+const extractDetailValue = (description: string | undefined, key: string): string | undefined => {
+  if (!description) return undefined;
+  const lines = description.split('\n');
+  for (const line of lines) {
+    const [detailKey, rawValue] = line.split(':');
+    if (!detailKey || !rawValue) continue;
+    if (detailKey.trim() === key) {
+      const value = rawValue.trim();
+      return value.length > 0 ? value : undefined;
+    }
+  }
+  return undefined;
+};
+
 const Marketplace = () => {
   const { user } = useAuth();
   const { t, language } = useLanguage();
@@ -105,8 +119,6 @@ const Marketplace = () => {
                   <SelectItem value="all">{t('marketplace.allCategories')}</SelectItem>
                   <SelectItem value="gaming">{t('marketplace.gaming')}</SelectItem>
                   <SelectItem value="social">{t('marketplace.social')}</SelectItem>
-                  <SelectItem value="trading">{t('marketplace.trading')}</SelectItem>
-                  <SelectItem value="other">{t('marketplace.other')}</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -205,7 +217,17 @@ const Marketplace = () => {
                     
                     <div className="flex items-center gap-2 text-sm text-white/60">
                       <MapPin className="h-4 w-4" />
-                      <span>{account.category}</span>
+                      <span>
+                        {t('product.server')}:{" "}
+                        {(
+                          account.account_metadata &&
+                          typeof account.account_metadata === 'object' &&
+                          (account.account_metadata as Record<string, unknown>)?.server &&
+                          String((account.account_metadata as Record<string, unknown>).server).trim()
+                        ) ||
+                          extractDetailValue(account.description, 'السيرفر') ||
+                          t('common.notSpecified')}
+                      </span>
                     </div>
 
                     {account.user?.average_rating > 0 && (

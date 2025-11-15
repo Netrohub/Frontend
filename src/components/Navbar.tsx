@@ -115,9 +115,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
                         isActive("/members") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                       )}>
-                        <div className="text-sm font-semibold leading-none">الأعضاء</div>
+                        <div className="text-sm font-semibold leading-none">{t('nav.members')}</div>
                         <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                          تصفح جميع الأعضاء
+                          {t('nav.membersDescription')}
                         </p>
                       </Link>
                     </li>
@@ -128,7 +128,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                       )}>
                         <div className="text-sm font-semibold leading-none">{t('nav.suggestions')}</div>
                         <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">
-                          شارك أفكارك لتحسين المنصة
+                          {t('nav.suggestionsDescription')}
                         </p>
                       </Link>
                     </li>
@@ -188,7 +188,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
       <Link 
         to="/" 
         className="flex items-center hover:scale-110 transition-transform duration-300 order-1 cursor-pointer"
-        aria-label="العودة للصفحة الرئيسية"
+        aria-label={t('nav.homeAriaLabel')}
       >
         <img 
           src="/nxoland-new-logo.png" 

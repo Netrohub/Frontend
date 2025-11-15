@@ -13,6 +13,7 @@ import { SEO } from "@/components/SEO";
 import { publicApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDate } from "@/utils/date";
 import type { User } from "@/types/api";
 
 const Members = () => {
@@ -75,13 +76,7 @@ const Members = () => {
     setIsDialogOpen(true);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  const formatDate = (dateString: string) => formatLocalizedDate(dateString, language);
 
   return (
     <>

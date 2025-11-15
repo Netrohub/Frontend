@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight } from "lucide-react";
+import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight, Zap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
 import { ordersApi, paymentsApi } from "@/lib/api";
@@ -206,6 +206,19 @@ const Checkout = () => {
                 </div>
               </div>
             </Card>
+
+            {/* Delivery Time Notice */}
+            <Card className="p-5 bg-[hsl(40,90%,55%,0.1)] border-[hsl(40,90%,55%,0.3)] backdrop-blur-sm">
+              <div className="flex gap-4">
+                <CheckCircle2 className="h-6 w-6 text-[hsl(40,90%,55%)] flex-shrink-0 mt-1" />
+                <div className="space-y-2">
+                  <h3 className="font-bold text-white">{t('checkout.deliveryTime')}</h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    {t('checkout.deliveryTimeDescription')}
+                  </p>
+                </div>
+              </div>
+            </Card>
           </div>
 
           {/* Order Summary */}
@@ -225,6 +238,11 @@ const Checkout = () => {
                         <span>{order.listing.category}</span>
                       </div>
                     )}
+                    {/* Delivery Time */}
+                    <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+                      <Zap className="h-4 w-4 text-[hsl(40,90%,55%)]" aria-hidden="true" />
+                      <span className="text-sm text-white/70">{t('checkout.deliveryTimeLabel')}</span>
+                    </div>
                   </>
                 )}
               </div>

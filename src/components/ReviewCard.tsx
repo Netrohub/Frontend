@@ -3,6 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { StarRating } from "@/components/StarRating";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDate } from "@/utils/date";
 import { User, ThumbsUp, ThumbsDown, Flag, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,13 +43,10 @@ export function ReviewCard({
   onDelete,
   isOwnReview = false 
 }: ReviewCardProps) {
+  const { language } = useLanguage();
+
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
+    return formatLocalizedDate(dateString, language);
   };
 
   return (

@@ -123,8 +123,24 @@ const Disputes = () => {
 
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-4xl pb-24 md:pb-8">
         <div className="mb-8">
+          {/* Response & Processing Times Notice */}
+          <Card className="p-4 mb-6 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)] backdrop-blur-sm">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.2)]">
+                <AlertTriangle className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-bold text-white mb-2">{t('disputes.responseTimes')}</h3>
+                <div className="space-y-1 text-sm text-white/80">
+                  <p>{t('disputes.responseTime')}</p>
+                  <p>{t('disputes.processingTime')}</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl md:text-4xl font-black text-white">النزاعات</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-white">{t('disputes.title')}</h1>
             {availableOrders.length > 0 && (
             <Dialog open={showNewDispute} onOpenChange={setShowNewDispute}>
               <DialogTrigger asChild>

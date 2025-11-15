@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { SEO } from "@/components/SEO";
 import { formatCurrency } from "@/utils/currency";
+import { formatCompactNumber } from "@/utils/numberFormat";
 
 const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -100,6 +101,19 @@ const ProductDetails = () => {
   };
 
   // Parse description to extract account details
+  const numericDetailKeys = useMemo(
+    () => new Set([
+      'القوة الشخصية',
+      'عدد الجنود',
+      'قوة البطل',
+      'الجزيرة',
+      'قوة الخبير',
+      'قوة البطل الإجمالية',
+      'قوة الحيوانات',
+    ]),
+    []
+  );
+
   const parseAccountDetails = (description: string) => {
     const lines = description.split('\n');
     const details: Record<string, string> = {};
@@ -107,7 +121,7 @@ const ProductDetails = () => {
     lines.forEach(line => {
       const [key, value] = line.split(':').map(s => s.trim());
       if (key && value) {
-        details[key] = value;
+        details[key] = numericDetailKeys.has(key) ? formatCompactNumber(value) : value;
       }
     });
     
@@ -148,6 +162,9 @@ const ProductDetails = () => {
   const images = listing.images || [];
   const isOwner = user?.id === listing.user_id;
   const accountDetails = parseAccountDetails(listing.description || '');
+  const notSpecifiedLabel = t('common.notSpecified');
+
+  const isLinked = (value?: string) => value === 'نعم';
 
   return (
     <>
@@ -249,7 +266,7 @@ const ProductDetails = () => {
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center gap-2 text-white/60">
                   <MapPin className="h-4 w-4" aria-hidden="true" />
-                  <span>السيرفر: {accountDetails['السيرفر'] || 'غير محدد'}</span>
+                  <span>{t('product.server')}: {accountDetails['السيرفر'] || notSpecifiedLabel}</span>
                 </div>
               </div>
 
@@ -272,7 +289,7 @@ const ProductDetails = () => {
                         <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                       )}
                     </div>
-                    <div className="text-sm text-white/60">{listing.user.is_verified ? 'بائع موثوق' : 'بائع'}</div>
+                    <div className="text-sm text-white/60">{listing.user.is_verified ? t('product.verifiedSeller') : t('product.seller')}</div>
                   </div>
                 </div>
               </Card>
@@ -282,17 +299,17 @@ const ProductDetails = () => {
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
               <h3 className="font-bold text-white mb-4 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                تفاصيل الحساب
+                {t('product.details')}
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.15)] to-[hsl(195,80%,30%,0.1)] rounded-lg border border-[hsl(195,80%,70%,0.2)]">
-                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1">السيرفر</div>
-                  <div className="font-bold text-white text-lg">{accountDetails['السيرفر'] || 'غير محدد'}</div>
+                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1">{t('product.server')}</div>
+                  <div className="font-bold text-white text-lg">{accountDetails['السيرفر'] || notSpecifiedLabel}</div>
                 </div>
                 
                 {accountDetails['حجرة الاحتراق'] && (
                   <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
-                    <div className="text-xs text-[hsl(280,70%,70%)] mb-1">حجرة الاحتراق</div>
+                    <div className="text-xs text-[hsl(280,70%,70%)] mb-1">{t('product.stoveLevel')}</div>
                     <div className="flex items-center gap-2">
                       <img src={getStoveImage(accountDetails['حجرة الاحتراق'])} alt={accountDetails['حجرة الاحتراق']} className="w-8 h-8" />
                       <span className="font-bold text-white text-lg">{accountDetails['حجرة الاحتراق']}</span>
@@ -302,7 +319,7 @@ const ProductDetails = () => {
                 
                 {accountDetails['هيليوس'] && (
                   <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
-                    <div className="text-xs text-[hsl(40,90%,70%)] mb-1">هيليوس</div>
+                    <div className="text-xs text-[hsl(40,90%,70%)] mb-1">{t('product.helios')}</div>
                     <div className="font-bold text-white">{accountDetails['هيليوس']}</div>
                   </div>
                 )}
@@ -311,7 +328,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(160,60%,50%,0.15)] to-[hsl(160,60%,30%,0.1)] rounded-lg border border-[hsl(160,60%,70%,0.2)]">
                     <div className="text-xs text-[hsl(160,60%,70%)] mb-1 flex items-center gap-1">
                       <Users className="h-3 w-3" />
-                      عدد الجنود
+                      {t('product.troops')}
                     </div>
                     <div className="font-bold text-white">{accountDetails['عدد الجنود']}</div>
                   </div>
@@ -321,7 +338,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.2)] to-[hsl(195,80%,30%,0.15)] rounded-lg border-2 border-[hsl(195,80%,70%,0.4)] shadow-[0_0_20px_rgba(56,189,248,0.2)]">
                     <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold flex items-center gap-1">
                       <Zap className="h-3 w-3" />
-                      القوة الشخصية
+                      {t('product.personalPower')}
                     </div>
                     <div className="font-black text-[hsl(195,80%,70%)] text-xl">{accountDetails['القوة الشخصية']}</div>
                   </div>
@@ -331,7 +348,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(340,70%,50%,0.15)] to-[hsl(340,70%,30%,0.1)] rounded-lg border border-[hsl(340,70%,70%,0.2)]">
                     <div className="text-xs text-[hsl(340,70%,70%)] mb-1 flex items-center gap-1">
                       <Swords className="h-3 w-3" />
-                      قوة البطل
+                      {t('product.heroPower')}
                     </div>
                     <div className="font-bold text-white">{accountDetails['قوة البطل']}</div>
                   </div>
@@ -341,7 +358,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(220,70%,50%,0.15)] to-[hsl(220,70%,30%,0.1)] rounded-lg border border-[hsl(220,70%,70%,0.2)]">
                     <div className="text-xs text-[hsl(220,70%,70%)] mb-1 flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
-                      الجزيرة
+                      {t('product.island')}
                     </div>
                     <div className="font-bold text-white text-lg">{accountDetails['الجزيرة']}</div>
                   </div>
@@ -351,7 +368,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)]">
                     <div className="text-xs text-[hsl(120,60%,70%)] mb-1 flex items-center gap-1">
                       <GraduationCap className="h-3 w-3" />
-                      قوة الخبير
+                      {t('product.expertPower')}
                     </div>
                     <div className="font-bold text-white">{accountDetails['قوة الخبير']}</div>
                   </div>
@@ -361,7 +378,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
                     <div className="text-xs text-[hsl(40,90%,70%)] mb-1 flex items-center gap-1">
                       <Crown className="h-3 w-3" />
-                      قوة البطل الإجمالية
+                      {t('product.heroTotalPower')}
                     </div>
                     <div className="font-bold text-white">{accountDetails['قوة البطل الإجمالية']}</div>
                   </div>
@@ -371,7 +388,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
                     <div className="text-xs text-[hsl(280,70%,70%)] mb-1 flex items-center gap-1">
                       <PawPrint className="h-3 w-3" />
-                      قوة الحيوانات
+                      {t('product.petPower')}
                     </div>
                     <div className="font-bold text-white">{accountDetails['قوة الحيوانات']}</div>
                   </div>
@@ -379,17 +396,17 @@ const ProductDetails = () => {
                 
                 {accountDetails['مع البريد الإلكتروني الأساسي'] && (
                   <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)] col-span-2">
-                    <div className="text-xs text-[hsl(120,60%,70%)] mb-1">مع البريد الإلكتروني الأساسي</div>
+                    <div className="text-xs text-[hsl(120,60%,70%)] mb-1">{t('product.primaryEmailIncluded')}</div>
                     <div className="flex items-center gap-2">
-                      {accountDetails['مع البريد الإلكتروني الأساسي'] === 'نعم' ? (
+                      {isLinked(accountDetails['مع البريد الإلكتروني الأساسي']) ? (
                         <>
                           <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                          <span className="font-bold text-[hsl(120,70%,50%)] text-lg">نعم</span>
+                          <span className="font-bold text-[hsl(120,70%,50%)] text-lg">{t('product.yes')}</span>
                         </>
                       ) : (
                         <>
                           <X className="h-5 w-5 text-red-400" />
-                          <span className="font-bold text-red-400 text-lg">لا</span>
+                          <span className="font-bold text-red-400 text-lg">{t('product.no')}</span>
                         </>
                       )}
                     </div>
@@ -402,69 +419,69 @@ const ProductDetails = () => {
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
               <h3 className="font-bold text-white mb-4 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                ربط الحساب
+                {t('product.accountBindings')}
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">أبل</div>
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.apple')}</div>
                   <div className="flex items-center gap-2">
-                    {accountDetails['مربوط في أبل'] === 'نعم' ? (
+                    {isLinked(accountDetails['مربوط في أبل']) ? (
                       <>
                         <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                        <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
                       </>
                     ) : (
                       <>
                         <X className="h-5 w-5 text-red-400" />
-                        <span className="font-bold text-red-400">غير مربوط</span>
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
                       </>
                     )}
                   </div>
                 </div>
                 <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">قوقل</div>
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.google')}</div>
                   <div className="flex items-center gap-2">
-                    {accountDetails['مربوط في قوقل'] === 'نعم' ? (
+                    {isLinked(accountDetails['مربوط في قوقل']) ? (
                       <>
                         <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                        <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
                       </>
                     ) : (
                       <>
                         <X className="h-5 w-5 text-red-400" />
-                        <span className="font-bold text-red-400">غير مربوط</span>
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
                       </>
                     )}
                   </div>
                 </div>
                 <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">فيسبوك</div>
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.facebook')}</div>
                   <div className="flex items-center gap-2">
-                    {accountDetails['مربوط في فيسبوك'] === 'نعم' ? (
+                    {isLinked(accountDetails['مربوط في فيسبوك']) ? (
                       <>
                         <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                        <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
                       </>
                     ) : (
                       <>
                         <X className="h-5 w-5 text-red-400" />
-                        <span className="font-bold text-red-400">غير مربوط</span>
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
                       </>
                     )}
                   </div>
                 </div>
                 <div className="p-3 bg-white/5 rounded-lg border border-white/10">
-                  <div className="text-xs text-white/60 mb-2">قيم سنتر</div>
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.gameCenter')}</div>
                   <div className="flex items-center gap-2">
-                    {accountDetails['مربوط في قيم سنتر'] === 'نعم' ? (
+                    {isLinked(accountDetails['مربوط في قيم سنتر']) ? (
                       <>
                         <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                        <span className="font-bold text-[hsl(120,70%,50%)]">مربوط</span>
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
                       </>
                     ) : (
                       <>
                         <X className="h-5 w-5 text-red-400" />
-                        <span className="font-bold text-red-400">غير مربوط</span>
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
                       </>
               )}
             </div>
@@ -480,24 +497,24 @@ const ProductDetails = () => {
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <span className="text-white/80 text-sm">أول فاتورة شراء</span>
+                  <span className="text-white/80 text-sm">{t('product.invoiceFirst')}</span>
                   <div className="flex items-center gap-2">
                     <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">{t('product.invoiceAttached')}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <span className="text-white/80 text-sm">ثلاث فواتير مختلفة</span>
+                  <span className="text-white/80 text-sm">{t('product.invoiceMultiple')}</span>
                   <div className="flex items-center gap-2">
                     <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">{t('product.invoiceAttached')}</span>
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                  <span className="text-white/80 text-sm">آخر فاتورة شراء</span>
+                  <span className="text-white/80 text-sm">{t('product.invoiceLast')}</span>
                   <div className="flex items-center gap-2">
                     <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
-                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">مرفقة</span>
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">{t('product.invoiceAttached')}</span>
                   </div>
                 </div>
               </div>
@@ -522,12 +539,12 @@ const ProductDetails = () => {
                       {isCreatingOrder ? (
                         <>
                           <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
-                          جاري المعالجة...
+                          {t('common.processing')}
                         </>
                       ) : (
                         <>
                           <Shield className="h-5 w-5" aria-hidden="true" />
-                          شراء الآن بأمان
+                          {t('product.buyNowSecure')}
                           <ArrowRight className="h-5 w-5" aria-hidden="true" />
                         </>
                       )}
@@ -540,7 +557,7 @@ const ProductDetails = () => {
                     >
                       <Link to="/auth">
                         <Shield className="h-5 w-5" />
-                        تسجيل الدخول للشراء
+                        {t('product.loginToBuy')}
                         <ArrowRight className="h-5 w-5" />
                       </Link>
               </Button>
@@ -548,23 +565,23 @@ const ProductDetails = () => {
                   
                   <div className="flex items-center justify-center gap-2 text-sm text-white/60">
                     <Shield className="h-4 w-4 text-[hsl(195,80%,70%)]" />
-                    <span>محمي بنظام الضمان لمدة 12 ساعة</span>
+                    <span>{t('product.escrowProtection')}</span>
                   </div>
                 </>
             )}
 
             {isOwner && (
               <div className="space-y-2">
-                <p className="text-white/60 text-center">هذا حسابك</p>
+                <p className="text-white/60 text-center">{t('product.accountOwnerNotice')}</p>
                 <Link to={`/my-listings`}>
-                  <Button variant="outline" className="w-full">إدارة قوائمي</Button>
+                  <Button variant="outline" className="w-full">{t('product.manageMyListings')}</Button>
                 </Link>
               </div>
             )}
 
             {listing.status !== 'active' && !isOwner && (
               <Badge className="w-full justify-center py-3 text-lg bg-red-500/20 text-red-400 border-red-500/30">
-                {listing.status === 'sold' ? '🔒 تم البيع' : 'غير متاح'}
+                {listing.status === 'sold' ? `🔒 ${t('product.sold')}` : t('product.unavailable')}
               </Badge>
             )}
           </div>

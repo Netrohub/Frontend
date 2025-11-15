@@ -36,6 +36,7 @@ import { Bell, Plus, Loader2, Send, Users, CheckCircle, Calendar } from "lucide-
 import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDateTime } from "@/utils/date";
 
 const AdminNotifications = () => {
   const { t, language } = useLanguage();
@@ -128,15 +129,14 @@ const AdminNotifications = () => {
     return labels[audience] || audience;
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
+  const formatDate = (dateString: string) =>
+    formatLocalizedDateTime(dateString, language, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
 
   return (
     <>

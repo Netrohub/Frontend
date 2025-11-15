@@ -10,6 +10,7 @@ import { ordersApi, listingsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDateTime } from "@/utils/date";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 
@@ -143,16 +144,14 @@ const Order = () => {
     })}`;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ar-SA', { 
-      year: 'numeric', 
-      month: 'long', 
+  const formatDate = (dateString: string) =>
+    formatLocalizedDateTime(dateString, language, {
+      year: 'numeric',
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
+      minute: '2-digit',
+    });
 
   const handleCopyCredential = (text: string, label: string) => {
     if (navigator.clipboard && navigator.clipboard.writeText) {

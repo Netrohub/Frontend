@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -15,6 +16,7 @@ import { sanitizeString, isValidEmail, isValidPassword } from "@/lib/utils/valid
 import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
 import type { ApiError } from "@/types/api";
 import { Turnstile } from "@/components/Turnstile";
+import { authApi } from "@/lib/api";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -30,6 +32,9 @@ const Auth = () => {
     password_confirmation: "",
     phone: "",
   });
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +52,7 @@ const Auth = () => {
     }
     
     if (!isValidPassword(loginData.password)) {
-      toast.error(`${t('auth.passwordTooShort')} ${VALIDATION_RULES.PASSWORD_MIN_LENGTH}`);
+      toast.error(t('auth.passwordTooShort', { count: VALIDATION_RULES.PASSWORD_MIN_LENGTH }));
       return;
     }
     
@@ -78,7 +83,7 @@ const Auth = () => {
     
     // Client-side validation
     if (registerData.name.length < VALIDATION_RULES.NAME_MIN_LENGTH) {
-      toast.error(`${t('auth.nameTooShort')} ${VALIDATION_RULES.NAME_MIN_LENGTH}`);
+      toast.error(t('auth.nameTooShort', { count: VALIDATION_RULES.NAME_MIN_LENGTH }));
       return;
     }
     
@@ -88,7 +93,7 @@ const Auth = () => {
     }
     
     if (!isValidPassword(registerData.password)) {
-      toast.error(`${t('auth.passwordTooShort')} ${VALIDATION_RULES.PASSWORD_MIN_LENGTH}`);
+      toast.error(t('auth.passwordTooShort', { count: VALIDATION_RULES.PASSWORD_MIN_LENGTH }));
       return;
     }
     
@@ -121,12 +126,80 @@ const Auth = () => {
     }
   };
 
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isValidEmail(resetEmail)) {
+      toast.error(t('auth.invalidEmail'));
+      return;
+    }
+
+    setResetLoading(true);
+
+    try {
+      await authApi.requestPasswordReset(resetEmail);
+      toast.success(t('auth.passwordResetSuccess'));
+      setResetDialogOpen(false);
+      setResetEmail("");
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || t('auth.passwordResetError'));
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   return (
     <>
       <SEO 
         title={`${t('auth.login')} - NXOLand`}
         description={t('auth.pageDescription')}
       />
+      <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+        <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle>{t('auth.passwordResetTitle')}</DialogTitle>
+            <DialogDescription className="text-white/70">
+              {t('auth.passwordResetDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handlePasswordReset} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="reset-email" className="text-sm font-medium text-white">
+                {t('auth.email')}
+              </Label>
+              <Input
+                id="reset-email"
+                type="email"
+                value={resetEmail}
+                onChange={(e) => setResetEmail(e.target.value)}
+                placeholder="example@email.com"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                autoComplete="email"
+                required
+              />
+            </div>
+            <DialogFooter className="sm:space-x-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setResetDialogOpen(false)}
+                disabled={resetLoading}
+                className="border-white/20 text-white hover:bg-white/10"
+              >
+                {t('auth.passwordResetCancel')}
+              </Button>
+              <Button
+                type="submit"
+                disabled={resetLoading}
+                className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+              >
+                {resetLoading ? t('common.processing') : t('auth.passwordResetSubmit')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
@@ -228,7 +301,10 @@ const Auth = () => {
                     type="button"
                     className="text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 rounded px-1"
                     aria-label={t('auth.forgotPassword')}
-                    onClick={() => toast.info(t('auth.passwordResetSoon'))}
+                    onClick={() => {
+                      setResetEmail(loginData.email);
+                      setResetDialogOpen(true);
+                    }}
                   >
                     {t('auth.forgotPassword')}
                   </button>

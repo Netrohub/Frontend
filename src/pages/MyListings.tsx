@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDate } from "@/utils/date";
 import { listingsApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -95,14 +96,7 @@ const MyListings = () => {
     return <Badge className={styles[status as keyof typeof styles] || styles.inactive}>{labels[status as keyof typeof labels] || status}</Badge>;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ar-SA', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    }).format(date);
-  };
+  const formatDate = (dateString: string) => formatLocalizedDate(dateString, language);
 
   if (!user) {
     return (

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Phone, Mail, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -107,11 +107,51 @@ const Help = () => {
         </Card>
 
         {/* Contact */}
-        <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm">
+        <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-8">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">{t('help.contactUs')}</h2>
-          <p className="text-center text-white/70 mb-6">{t('help.contactMessage')}</p>
           
-          <div className="flex justify-center">
+          {/* Contact Methods */}
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            {/* Email */}
+            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg border border-white/10">
+              <Mail className="h-8 w-8 text-[hsl(195,80%,70%)] mb-3" aria-hidden="true" />
+              <h3 className="text-sm font-bold text-white mb-2">{t('help.email')}</h3>
+              <a href="mailto:info@nxoland.com" className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors text-sm">
+                info@nxoland.com
+              </a>
+            </div>
+
+            {/* WhatsApp */}
+            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg border border-white/10">
+              <Phone className="h-8 w-8 text-[hsl(195,80%,70%)] mb-3" aria-hidden="true" />
+              <h3 className="text-sm font-bold text-white mb-2">{t('help.whatsapp')}</h3>
+              <a 
+                href="https://wa.me/966536784471" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors text-sm"
+              >
+                +966 53 678 4471
+              </a>
+            </div>
+
+            {/* Live Chat (Discord) */}
+            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg border border-white/10">
+              <MessageCircle className="h-8 w-8 text-[hsl(195,80%,70%)] mb-3" aria-hidden="true" />
+              <h3 className="text-sm font-bold text-white mb-2">{t('help.liveChat')}</h3>
+              <a 
+                href="https://discord.gg/R72dmfCX" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors text-sm"
+              >
+                {t('help.discordLiveChat')}
+              </a>
+            </div>
+          </div>
+
+          {/* Discord Button */}
+          <div className="flex justify-center mb-6">
             <Button 
               asChild
               size="lg"
@@ -129,6 +169,21 @@ const Help = () => {
             <p className="text-sm text-white/80 text-center">
               {t('help.discordMessage')}
             </p>
+          </div>
+
+          {/* Response & Processing Times */}
+          <div className="mt-6 pt-6 border-t border-white/10">
+            <h3 className="text-lg font-bold text-white mb-4 text-center">{t('help.responseTimes')}</h3>
+            <div className="space-y-3 text-white/80">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0" aria-hidden="true" />
+                <span>{t('help.responseTime')}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-[hsl(195,80%,70%)] flex-shrink-0" aria-hidden="true" />
+                <span>{t('help.processingTime')}</span>
+              </div>
+            </div>
           </div>
         </Card>
 

@@ -207,7 +207,8 @@ const Home = () => {
       {/* Footer */}
       <footer className="relative z-10 py-12 border-t border-white/10 backdrop-blur-sm bg-[hsl(200,70%,15%,0.5)]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {/* Company Info */}
             <div className="flex flex-col items-center md:items-start gap-3">
               <img 
                 src="/nxoland-new-logo.png" 
@@ -224,23 +225,47 @@ const Home = () => {
               <p className="text-white/50 text-sm md:text-base">
                 © 2025 NXOLand. {t('home.footer.rights')}
               </p>
+              <p className="text-white/60 text-xs">
+                {t('home.footer.commercialRegistration')}: NXO Establishment / 7052368375
+              </p>
             </div>
-            <div className="flex items-center gap-6 text-sm">
-              <Link to="/suggestions" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                {t('home.footer.suggestions')}
-              </Link>
-              <Link to="/terms" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                {t('home.footer.terms')}
-              </Link>
-              <Link to="/privacy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                {t('home.footer.privacy')}
-              </Link>
-              <Link to="/refund-policy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                {t('home.footer.refund')}
-              </Link>
-              <Link to="/help" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
-                {t('home.footer.support')}
-              </Link>
+
+            {/* Links */}
+            <div className="flex flex-col items-center md:items-start gap-3">
+              <h3 className="text-white font-bold mb-2">{t('home.footer.quickLinks')}</h3>
+              <div className="flex flex-col gap-2 text-sm">
+                <Link to="/suggestions" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {t('home.footer.suggestions')}
+                </Link>
+                <Link to="/terms" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {t('home.footer.terms')}
+                </Link>
+                <Link to="/privacy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {t('home.footer.privacy')}
+                </Link>
+                <Link to="/refund-policy" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {t('home.footer.refund')}
+                </Link>
+                <Link to="/help" className="text-white/60 hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {t('home.footer.support')}
+                </Link>
+              </div>
+            </div>
+
+            {/* Contact */}
+            <div className="flex flex-col items-center md:items-start gap-3">
+              <h3 className="text-white font-bold mb-2">{t('home.footer.contact')}</h3>
+              <div className="flex flex-col gap-2 text-sm text-white/60">
+                <a href="mailto:info@nxoland.com" className="hover:text-[hsl(195,80%,70%)] transition-colors">
+                  info@nxoland.com
+                </a>
+                <a href="https://wa.me/966536784471" target="_blank" rel="noopener noreferrer" className="hover:text-[hsl(195,80%,70%)] transition-colors">
+                  +966 53 678 4471
+                </a>
+                <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" className="hover:text-[hsl(195,80%,70%)] transition-colors">
+                  {t('home.footer.discordLiveChat')}
+                </a>
+              </div>
             </div>
           </div>
         </div>

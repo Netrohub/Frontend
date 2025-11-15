@@ -10,6 +10,7 @@ import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { formatLocalizedDate } from "@/utils/date";
 import type { User } from "@/types/api";
 
 const AdminUsers = () => {
@@ -62,13 +63,7 @@ const AdminUsers = () => {
     // This function exists for the button click
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
+  const formatDate = (dateString: string) => formatLocalizedDate(dateString, language);
 
   const getUserStatus = (user: User) => {
     // Check if user is soft deleted

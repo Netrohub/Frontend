@@ -64,11 +64,12 @@ export interface Listing {
   price: number;
   category: string;
   images: string[];
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'sold';
   views: number;
   created_at: string;
   updated_at: string;
   user?: User;
+  account_metadata?: Record<string, unknown> | null;
 }
 
 export interface ListingResponse {
