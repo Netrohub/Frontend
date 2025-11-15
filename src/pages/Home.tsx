@@ -282,7 +282,7 @@ const Home = () => {
 
                 {/* Discord */}
                 <a 
-                  href="https://discord.gg/R72dmfCX"
+                  href="https://discord.gg/wMnKRSCUVz"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/40 hover:scale-110 transition-all duration-300 group"

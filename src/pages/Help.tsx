@@ -140,7 +140,7 @@ const Help = () => {
 
             {/* Discord */}
             <a 
-              href="https://discord.gg/R72dmfCX"
+              href="https://discord.gg/wMnKRSCUVz"
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[#5865F2]/15 border-2 border-[#5865F2]/30 hover:bg-[#5865F2]/25 hover:border-[#5865F2]/50 hover:scale-110 transition-all duration-300 group"
@@ -159,7 +159,7 @@ const Help = () => {
               size="lg"
               className="flex-col h-auto py-8 px-12 bg-[#5865F2] hover:bg-[#4752C4] border-0 text-white gap-3 min-h-[120px]"
             >
-              <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" aria-label={t('help.discordJoin')}>
+              <a href="https://discord.gg/wMnKRSCUVz" target="_blank" rel="noopener noreferrer" aria-label={t('help.discordJoin')}>
                 <DiscordIcon size={48} className="mb-2" />
                 <span className="font-bold text-xl">{t('help.discordJoin')}</span>
                 <span className="text-sm text-white/90">{t('help.discordSupport')}</span>
