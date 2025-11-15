@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ThumbsUp, ThumbsDown, MessageSquare, TrendingUp, Star, Sparkles } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageSquare, TrendingUp, Star, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -103,6 +103,24 @@ const Suggestions = () => {
 
   const handleMarkAsImplemented = (id: number) => {
     updateStatusMutation.mutate({ id, status: 'implemented' });
+  };
+
+  // Admin mutation to delete suggestion
+  const deleteSuggestionMutation = useMutation({
+    mutationFn: (id: number) => adminApi.deleteSuggestion(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['suggestions'] });
+      toast.success(t('suggestions.deleteSuccess'));
+    },
+    onError: () => {
+      toast.error(t('suggestions.deleteError'));
+    },
+  });
+
+  const handleDeleteSuggestion = (id: number) => {
+    if (window.confirm(language === 'ar' ? 'هل أنت متأكد من حذف هذا الاقتراح؟' : 'Are you sure you want to delete this suggestion?')) {
+      deleteSuggestionMutation.mutate(id);
+    }
   };
 
   // Create suggestion mutation
@@ -485,16 +503,28 @@ const Suggestions = () => {
                         </div>
                       </div>
                       {/* Admin Controls */}
-                      {isAdmin && suggestion.status === 'pending' && (
-                        <div className="mt-4 pt-4 border-t border-white/10">
+                      {isAdmin && (
+                        <div className="mt-4 pt-4 border-t border-white/10 flex gap-2 flex-wrap">
+                          {suggestion.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,70%,0.1)]"
+                              onClick={() => handleMarkAsImplemented(suggestion.id)}
+                              disabled={updateStatusMutation.isPending}
+                            >
+                              {language === 'ar' ? 'تم التنفيذ' : 'Mark as Implemented'}
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,70%,0.1)]"
-                            onClick={() => handleMarkAsImplemented(suggestion.id)}
-                            disabled={updateStatusMutation.isPending}
+                            className="text-red-400 border-red-500/30 hover:bg-red-500/10"
+                            onClick={() => handleDeleteSuggestion(suggestion.id)}
+                            disabled={deleteSuggestionMutation.isPending}
                           >
-                            {language === 'ar' ? 'تم التنفيذ' : 'Mark as Implemented'}
+                            <Trash2 className="h-4 w-4 mr-1" />
+                            {language === 'ar' ? 'حذف' : 'Delete'}
                           </Button>
                         </div>
                       )}

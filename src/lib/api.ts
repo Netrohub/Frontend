@@ -637,6 +637,9 @@ export const adminApi = {
   updateSuggestion: (id: number, status: 'pending' | 'implemented') =>
     api.put<any>(`/admin/suggestions/${id}`, { status }),
   
+  deleteSuggestion: (id: number) =>
+    api.delete<{ message: string }>(`/admin/suggestions/${id}`),
+  
   // Notifications
   createNotification: (data: { 
     user_id?: number; 
