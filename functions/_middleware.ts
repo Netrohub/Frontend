@@ -17,10 +17,20 @@ export const onRequest: PagesFunction<{ VITE_TURNSTILE_SITE_KEY?: string }> = as
 
   // Get the Turnstile site key from environment
   // Note: In Cloudflare Pages, env vars are available at runtime
-  const turnstileKey = env.VITE_TURNSTILE_SITE_KEY;
+  // Try both with and without VITE_ prefix (Cloudflare may strip it)
+  const turnstileKey = env.VITE_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY;
+  
+  // Debug: Log to console (will appear in Cloudflare Pages Function logs)
+  console.log('[Turnstile Middleware]', {
+    hasViteKey: !!env.VITE_TURNSTILE_SITE_KEY,
+    hasPlainKey: !!env.TURNSTILE_SITE_KEY,
+    allEnvKeys: Object.keys(env).filter(k => k.includes('TURNSTILE') || k.includes('VITE')),
+    url: request.url,
+  });
   
   if (!turnstileKey) {
     // If key is not set, return response as-is
+    console.warn('[Turnstile Middleware] No Turnstile key found in environment');
     return response;
   }
 
@@ -29,13 +39,8 @@ export const onRequest: PagesFunction<{ VITE_TURNSTILE_SITE_KEY?: string }> = as
   
   // Inject the key into window object before React loads
   // This script will execute before React, making the key available immediately
-  const script = `
-    <script>
-      (function() {
-        window.__TURNSTILE_SITE_KEY__ = ${JSON.stringify(turnstileKey)};
-      })();
-    </script>
-  `;
+  // Use non-blocking script injection
+  const script = `<script>window.__TURNSTILE_SITE_KEY__=${JSON.stringify(turnstileKey)};</script>`;
   
   // Insert before closing </head> tag (preferred location)
   // Fallback to beginning of <body> if </head> not found
@@ -43,12 +48,14 @@ export const onRequest: PagesFunction<{ VITE_TURNSTILE_SITE_KEY?: string }> = as
   
   if (html.includes('</head>')) {
     modifiedHtml = html.replace('</head>', `${script}</head>`);
-  } else if (html.includes('<body')) {
+  } else if (html.match(/<body[^>]*>/i)) {
     modifiedHtml = html.replace(/(<body[^>]*>)/i, `$1${script}`);
   } else {
     // If neither found, prepend to HTML
     modifiedHtml = script + html;
   }
+
+  console.log('[Turnstile Middleware] Injected key into HTML');
 
   // Return modified response with same headers
   return new Response(modifiedHtml, {
