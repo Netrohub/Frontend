@@ -25,7 +25,7 @@ interface Suggestion {
   upvotes: number;
   downvotes: number;
   comments?: number;
-  status: "pending" | "approved" | "implemented";
+  status: "pending" | "implemented";
   user?: { name: string };
   created_at?: string;
   user_vote?: "up" | "down" | null;
@@ -90,7 +90,7 @@ const Suggestions = () => {
 
   // Admin mutation to update suggestion status
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: 'pending' | 'approved' | 'implemented' }) =>
+    mutationFn: ({ id, status }: { id: number; status: 'pending' | 'implemented' }) =>
       adminApi.updateSuggestion(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['suggestions'] });
@@ -101,8 +101,8 @@ const Suggestions = () => {
     },
   });
 
-  const handleStatusUpdate = (id: number, status: 'pending' | 'approved' | 'implemented') => {
-    updateStatusMutation.mutate({ id, status });
+  const handleMarkAsImplemented = (id: number) => {
+    updateStatusMutation.mutate({ id, status: 'implemented' });
   };
 
   // Create suggestion mutation
@@ -201,7 +201,6 @@ const Suggestions = () => {
   const getStatusBadge = (status: string) => {
     const variants: Record<string, { label: string; className: string }> = {
       pending: { label: t('suggestions.status.pending'), className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)]" },
-      approved: { label: t('suggestions.status.approved'), className: "bg-green-500/20 text-green-400" },
       implemented: { label: t('suggestions.status.implemented'), className: "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)]" },
     };
     const variant = variants[status] || variants.pending;
@@ -486,37 +485,17 @@ const Suggestions = () => {
                         </div>
                       </div>
                       {/* Admin Controls */}
-                      {isAdmin && suggestion.status !== 'implemented' && (
-                        <div className="mt-4 pt-4 border-t border-white/10 flex gap-2 flex-wrap">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-400 border-green-500/30 hover:bg-green-500/10"
-                            onClick={() => handleStatusUpdate(suggestion.id, 'approved')}
-                            disabled={updateStatusMutation.isPending || suggestion.status === 'approved'}
-                          >
-                            {language === 'ar' ? 'موافقة' : 'Approve'}
-                          </Button>
+                      {isAdmin && suggestion.status === 'pending' && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
                           <Button
                             size="sm"
                             variant="outline"
                             className="text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,70%,0.1)]"
-                            onClick={() => handleStatusUpdate(suggestion.id, 'implemented')}
+                            onClick={() => handleMarkAsImplemented(suggestion.id)}
                             disabled={updateStatusMutation.isPending}
                           >
                             {language === 'ar' ? 'تم التنفيذ' : 'Mark as Implemented'}
                           </Button>
-                          {suggestion.status === 'approved' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-yellow-400 border-yellow-500/30 hover:bg-yellow-500/10"
-                              onClick={() => handleStatusUpdate(suggestion.id, 'pending')}
-                              disabled={updateStatusMutation.isPending}
-                            >
-                              {language === 'ar' ? 'إرجاع للمراجعة' : 'Back to Pending'}
-                            </Button>
-                          )}
                         </div>
                       )}
                   </div>

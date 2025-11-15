@@ -634,7 +634,7 @@ export const adminApi = {
   },
   
   // Suggestions
-  updateSuggestion: (id: number, status: 'pending' | 'approved' | 'implemented') =>
+  updateSuggestion: (id: number, status: 'pending' | 'implemented') =>
     api.put<any>(`/admin/suggestions/${id}`, { status }),
   
   // Notifications
