@@ -77,11 +77,27 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   }, [onVerify]);
 
   const handleError = useCallback((error?: any) => {
-    // Only log in development to reduce console noise
+    // Log error details for debugging
+    const errorCode = error?.code || error?.error || error;
     if (process.env.NODE_ENV !== 'production') {
-      console.error('[Turnstile] Widget error:', error);
+      console.error('[Turnstile] Widget error:', errorCode, error);
     }
-    // Reset widget on error, but limit resets to prevent infinite loops
+    
+    // Error 300030 is a generic client execution error, often CSP-related
+    // Don't reset immediately - wait a bit to avoid rapid resets
+    if (errorCode === '300030' || errorCode === 300030) {
+      // CSP violation - don't reset, just log
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[Turnstile] Error 300030 detected - may be CSP related. Check CSP headers.');
+      }
+      // Still call onError to notify parent component
+      if (onError) {
+        onError();
+      }
+      return;
+    }
+    
+    // For other errors, reset widget but limit resets to prevent infinite loops
     setWidgetKey(prev => prev < 3 ? prev + 1 : prev);
     if (onError) {
       onError();
