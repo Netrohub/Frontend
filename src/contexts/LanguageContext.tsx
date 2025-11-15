@@ -77,6 +77,8 @@ const translations: Record<Language, Record<string, string>> = {
   ar: {
 // Common
 'common.backToHome': 'العودة إلى الصفحة الرئيسية',
+'common.pageNotFound': 'الصفحة غير موجودة',
+'common.pageNotFoundDesc': 'عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.',
 'common.and': 'و',
 'common.notSpecified': 'غير محدد',
 
@@ -1311,6 +1313,8 @@ const translations: Record<Language, Record<string, string>> = {
   en: {
 // Common
 'common.backToHome': 'Back to Home',
+'common.pageNotFound': 'Page Not Found',
+'common.pageNotFoundDesc': 'Sorry, the page you are looking for does not exist or has been moved.',
 'common.and': 'and',
 'common.notSpecified': 'Not specified',
 
