@@ -78,9 +78,13 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
       });
       return () => {
         cancelAnimationFrame(readyTimeout);
-        if (verificationTimeout) {
-          clearTimeout(verificationTimeout);
-        }
+        // Cleanup timeout on unmount or when dependencies change
+        setVerificationTimeout(prev => {
+          if (prev) {
+            clearTimeout(prev);
+          }
+          return null;
+        });
       };
     }
   }, [siteKey, widgetKey]);
