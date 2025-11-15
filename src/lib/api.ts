@@ -479,6 +479,9 @@ export const publicApi = {
   
   member: (id: number) =>
     api.get<User>(`/members/${id}`),
+  
+  checkMaintenance: () =>
+    api.get<{ maintenance_mode: boolean }>('/public/maintenance-status'),
 };
 
 // Notifications API
@@ -698,11 +701,5 @@ export const siteSettingsApi = {
   
   update: (key: string, data: { value_ar?: string; value_en?: string }) =>
     api.put<any>(`/admin/site-settings/${key}`, data),
-};
-
-// Public API - Check maintenance mode
-export const publicApi = {
-  checkMaintenance: () =>
-    api.get<{ maintenance_mode: boolean }>('/public/maintenance-status'),
 };
 
