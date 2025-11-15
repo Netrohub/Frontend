@@ -7,6 +7,14 @@
     <meta name="description" content="منصة آمنة لشراء وبيع حسابات الألعاب الرقمية مع نظام ضمان متكامل" />
     <meta name="author" content="NXOLand" />
     
+    <!-- Preconnect to critical origins FIRST (before any scripts) -->
+    <!-- Critical: Backend API (300ms LCP savings) -->
+    <link rel="preconnect" href="https://backend-piz0.onrender.com" crossorigin>
+    <link rel="dns-prefetch" href="https://backend-piz0.onrender.com">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
     <!-- Favicon - IMPORTANT: Only declare ONE favicon to avoid conflicts with search engines -->
     <!-- Do NOT add multiple favicon links. This is the single source of truth for the site favicon. -->
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -14,23 +22,41 @@
     
     <!-- Google Tag Manager - Required for Google Search Console verification -->
     <!-- GTM Container ID: GTM-THXQ6Q9V (configured via VITE_GTM_ID environment variable) -->
-    <!-- Deferred loading to reduce render blocking -->
+    <!-- Deferred loading to reduce render blocking and long main-thread tasks -->
     <script>
-      // Defer GTM loading until after page load to improve LCP
-      window.addEventListener('load', function() {
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-THXQ6Q9V');
-      });
+      // Defer GTM loading until after page is fully interactive to avoid blocking
+      // Use requestIdleCallback for better performance, fallback to setTimeout
+      (function() {
+        function loadGTM() {
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-THXQ6Q9V');
+        }
+        
+        // Wait for page to be fully loaded and interactive
+        if (document.readyState === 'complete') {
+          // Use requestIdleCallback to load during idle time (better for performance)
+          if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadGTM, { timeout: 2000 });
+          } else {
+            setTimeout(loadGTM, 2000);
+          }
+        } else {
+          window.addEventListener('load', function() {
+            if ('requestIdleCallback' in window) {
+              requestIdleCallback(loadGTM, { timeout: 2000 });
+            } else {
+              setTimeout(loadGTM, 2000);
+            }
+          });
+        }
+      })();
     </script>
     <!-- End Google Tag Manager -->
     
-    <!-- Preconnect to external domains for faster resource loading -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://backend-piz0.onrender.com" crossorigin>
+    <!-- GTM DNS prefetch (non-critical, but helps when it loads) -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     
     <!-- Load fonts asynchronously to prevent render blocking -->

@@ -50,6 +50,8 @@ export default defineConfig({
     minify: 'esbuild',
     // Chunk size warning limit (moved to correct location)
     chunkSizeWarningLimit: 1000,
+    // CSS code splitting - separate CSS for better caching
+    cssCodeSplit: true,
   },
   // Ensure environment variables are available during build
   envPrefix: 'VITE_',
