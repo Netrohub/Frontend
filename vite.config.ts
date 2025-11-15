@@ -34,6 +34,14 @@ export default defineConfig({
           if (id.includes('react-helmet')) {
             return 'helmet-vendor';
           }
+          // Recharts (only used in admin charts, large library)
+          if (id.includes('recharts')) {
+            return 'charts-vendor';
+          }
+          // Sonner (toast library, can be deferred)
+          if (id.includes('sonner')) {
+            return 'toast-vendor';
+          }
           // Admin pages (large, rarely accessed)
           if (id.includes('/admin/')) {
             return 'admin-pages';

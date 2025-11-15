@@ -1,7 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
-import "./index.css";
 import { isEnvConfigured } from "./config/env";
+
+// Import CSS normally - Vite will handle it during build
+// For production, CSS is extracted and can be deferred via HTML
+import "./index.css";
 
 // Handle chunk loading errors (happens when new deployment invalidates old chunks)
 window.addEventListener('error', (event) => {

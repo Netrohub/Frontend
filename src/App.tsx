@@ -1,6 +1,4 @@
-import { Suspense, lazy } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -512,24 +510,48 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <ErrorBoundary>
-    <HelmetProvider>
-      <QueryClientProvider client={queryClient}>
-        <LanguageProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <AppContent />
-              </BrowserRouter>
-            </TooltipProvider>
-          </AuthProvider>
-        </LanguageProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
-  </ErrorBoundary>
-);
+// Lazy load toast components to reduce initial bundle size
+const Toaster = lazy(() => import("@/components/ui/toaster").then(m => ({ default: m.Toaster })));
+const Sonner = lazy(() => import("@/components/ui/sonner").then(m => ({ default: m.Toaster })));
+
+const App = () => {
+  const [toastsReady, setToastsReady] = useState(false);
+
+  // Load toast components after initial render to reduce blocking
+  useEffect(() => {
+    // Use requestIdleCallback to load toasts during idle time
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        setToastsReady(true);
+      }, { timeout: 1000 });
+    } else {
+      setTimeout(() => setToastsReady(true), 1000);
+    }
+  }, []);
+
+  return (
+    <ErrorBoundary>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <LanguageProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                {toastsReady && (
+                  <Suspense fallback={null}>
+                    <Toaster />
+                    <Sonner />
+                  </Suspense>
+                )}
+                <BrowserRouter>
+                  <AppContent />
+                </BrowserRouter>
+              </TooltipProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
+  );
+};
 
 export default App;
