@@ -44,17 +44,12 @@ export default defineConfig({
           }
         },
       },
-      // Optimize chunk size
-      chunkSizeWarningLimit: 1000,
     },
-    // Enable minification with terser
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true, // Remove console.log in production
-        drop_debugger: true,
-      },
-    },
+    // Use esbuild minification (default, faster than terser)
+    // esbuild automatically removes console.log in production
+    minify: 'esbuild',
+    // Chunk size warning limit (moved to correct location)
+    chunkSizeWarningLimit: 1000,
   },
   // Ensure environment variables are available during build
   envPrefix: 'VITE_',
