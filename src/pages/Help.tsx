@@ -114,15 +114,17 @@ const Help = () => {
           
           {/* Contact Icons */}
           <div className="flex items-center justify-center gap-6 mb-6">
-            {/* Email */}
+            {/* Discord */}
             <a 
-              href="mailto:info@nxoland.com"
-              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[hsl(195,80%,50%,0.15)] border-2 border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,50%,0.25)] hover:border-[hsl(195,80%,70%,0.5)] hover:scale-110 transition-all duration-300 group"
-              aria-label={t('help.email')}
-              title={t('help.email')}
+              href="https://discord.gg/wMnKRSCUVz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[#5865F2]/15 border-2 border-[#5865F2]/30 hover:bg-[#5865F2]/25 hover:border-[#5865F2]/50 hover:scale-110 transition-all duration-300 group"
+              aria-label={t('help.liveChat')}
+              title={t('help.discordLiveChat')}
             >
-              <Mail className="h-8 w-8 text-[hsl(195,80%,70%)] group-hover:text-[hsl(195,80%,60%)] transition-colors mb-1" />
-              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.email')}</span>
+              <DiscordIcon size={32} className="text-[#5865F2] group-hover:text-[#4752C4] transition-colors mb-1" />
+              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.liveChat')}</span>
             </a>
 
             {/* WhatsApp */}
@@ -138,39 +140,16 @@ const Help = () => {
               <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.whatsapp')}</span>
             </a>
 
-            {/* Discord */}
+            {/* Email */}
             <a 
-              href="https://discord.gg/wMnKRSCUVz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[#5865F2]/15 border-2 border-[#5865F2]/30 hover:bg-[#5865F2]/25 hover:border-[#5865F2]/50 hover:scale-110 transition-all duration-300 group"
-              aria-label={t('help.liveChat')}
-              title={t('help.discordLiveChat')}
+              href="mailto:info@nxoland.com"
+              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[hsl(195,80%,50%,0.15)] border-2 border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,50%,0.25)] hover:border-[hsl(195,80%,70%,0.5)] hover:scale-110 transition-all duration-300 group"
+              aria-label={t('help.email')}
+              title={t('help.email')}
             >
-              <DiscordIcon size={32} className="text-[#5865F2] group-hover:text-[#4752C4] transition-colors mb-1" />
-              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.liveChat')}</span>
+              <Mail className="h-8 w-8 text-[hsl(195,80%,70%)] group-hover:text-[hsl(195,80%,60%)] transition-colors mb-1" />
+              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.email')}</span>
             </a>
-          </div>
-
-          {/* Discord Button */}
-          <div className="flex justify-center mb-6">
-            <Button 
-              asChild
-              size="lg"
-              className="flex-col h-auto py-8 px-12 bg-[#5865F2] hover:bg-[#4752C4] border-0 text-white gap-3 min-h-[120px]"
-            >
-              <a href="https://discord.gg/wMnKRSCUVz" target="_blank" rel="noopener noreferrer" aria-label={t('help.discordJoin')}>
-                <DiscordIcon size={48} className="mb-2" />
-                <span className="font-bold text-xl">{t('help.discordJoin')}</span>
-                <span className="text-sm text-white/90">{t('help.discordSupport')}</span>
-              </a>
-            </Button>
-          </div>
-          
-          <div className="mt-6 p-4 bg-[#5865F2]/10 rounded-lg border border-[#5865F2]/30">
-            <p className="text-sm text-white/80 text-center">
-              {t('help.discordMessage')}
-            </p>
           </div>
 
           {/* Response & Processing Times */}
