@@ -64,38 +64,6 @@
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     </noscript>
-    
-    <!-- Defer CSS loading to reduce render blocking -->
-    <!-- Vite will inject the CSS link here, but we can defer it via script -->
-    <script>
-      // Defer CSS loading after critical rendering
-      (function() {
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', deferCSS);
-        } else {
-          deferCSS();
-        }
-        
-        function deferCSS() {
-          // Find all stylesheet links and defer non-critical ones
-          const links = document.querySelectorAll('link[rel="stylesheet"]');
-          links.forEach(function(link) {
-            // Skip fonts (already deferred) and critical CSS
-            if (link.href.includes('fonts.googleapis.com') || link.href.includes('fonts.gstatic.com')) {
-              return;
-            }
-            // For production builds, Vite injects CSS - defer it
-            if (link.href.includes('/assets/') && link.href.endsWith('.css')) {
-              link.media = 'print';
-              link.onload = function() {
-                this.media = 'all';
-              };
-            }
-          });
-        }
-      })();
-    </script>
 
     <meta property="og:title" content="NXOLand - منصة تداول حسابات الألعاب" />
     <meta property="og:description" content="منصة آمنة لشراء وبيع حسابات الألعاب الرقمية مع نظام ضمان متكامل" />

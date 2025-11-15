@@ -221,10 +221,10 @@ const Home = () => {
               <img 
                 src="/nxoland-new-logo.png" 
                 alt="NXOLand Logo" 
-                width="200"
-                height="80"
-                className="h-16 md:h-20 w-auto scale-150"
-                style={{ transformOrigin: 'center' }}
+                width="64"
+                height="64"
+                className="h-16 md:h-20 w-16 md:w-20"
+                style={{ objectFit: 'contain', aspectRatio: '1/1' }}
                 loading="lazy"
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
