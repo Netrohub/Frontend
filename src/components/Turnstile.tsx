@@ -9,14 +9,13 @@ interface TurnstileProps {
 
 export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   const [isExpired, setIsExpired] = useState(false);
+  const [widgetKey, setWidgetKey] = useState(0); // Force re-render when key changes
   
   // Get site key from environment variable
-  // Try multiple ways to access the variable (for debugging)
   const envVar = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   
   // Workaround: Try to get from window object (for runtime injection if needed)
   // This allows setting it via Cloudflare Pages Functions or Workers if build-time fails
-  // Check immediately and also use useEffect to catch it if injected after component mount
   const [runtimeKey, setRuntimeKey] = useState<string | undefined>(
     typeof window !== 'undefined' 
       ? (window as any).__TURNSTILE_SITE_KEY__ 
@@ -32,7 +31,6 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
         setRuntimeKey(key);
       } else {
         // Only check once more after a short delay if not found immediately
-        // This handles edge cases where script injection is slightly delayed
         const timeout = setTimeout(() => {
           const delayedKey = (window as any).__TURNSTILE_SITE_KEY__;
           if (delayedKey) {
@@ -47,6 +45,13 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   }, []); // Only run once on mount
   
   const siteKey = envVar || runtimeKey || '1x00000000000000000000AA';
+  
+  // Initialize widget key when we get a valid key (only once)
+  useEffect(() => {
+    if (siteKey && siteKey !== '1x00000000000000000000AA' && widgetKey === 0) {
+      setWidgetKey(1);
+    }
+  }, [siteKey, widgetKey]);
   
   // Warn if using test key in production (only warn, no debug spam)
   if (import.meta.env.PROD && siteKey.startsWith('1x')) {
@@ -63,14 +68,22 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
     onVerify(''); // Clear the token
   };
 
-  const handleError = () => {
+  const handleError = (error?: any) => {
+    console.error('[Turnstile] Widget error:', error);
+    // Reset widget on error to prevent hung state
+    setWidgetKey(prev => prev + 1);
     if (onError) {
       onError();
     }
   };
 
+  // Don't render widget if we don't have a valid key yet
+  if (!siteKey || siteKey === '1x00000000000000000000AA') {
+    return null;
+  }
+
   return (
-    <div className={className}>
+    <div className={className} key={widgetKey}>
       <CloudflareTurnstile
         siteKey={siteKey}
         onSuccess={handleVerify}
