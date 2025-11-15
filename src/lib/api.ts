@@ -700,3 +700,9 @@ export const siteSettingsApi = {
     api.put<any>(`/admin/site-settings/${key}`, data),
 };
 
+// Public API - Check maintenance mode
+export const publicApi = {
+  checkMaintenance: () =>
+    api.get<{ maintenance_mode: boolean }>('/public/maintenance-status'),
+};
+

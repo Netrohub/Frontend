@@ -2,10 +2,10 @@ import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { NotificationBanner } from "@/components/NotificationBanner";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SkipLink } from "@/components/SkipLink";
@@ -17,6 +17,8 @@ import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { QuickNav } from "@/components/QuickNav";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { publicApi } from "@/lib/api";
+import Maintenance from "./pages/Maintenance";
 
 // Public routes - loaded immediately
 import Home from "./pages/Home";
@@ -98,12 +100,43 @@ const queryClient = new QueryClient({
   },
 });
 
+// Maintenance check component
+const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  
+  // Check maintenance mode (skip if admin)
+  const { data: maintenanceStatus, isLoading } = useQuery({
+    queryKey: ['maintenance-status'],
+    queryFn: () => publicApi.checkMaintenance(),
+    enabled: !isAdmin, // Skip check for admins
+    refetchInterval: 30000, // Check every 30 seconds
+    retry: 1,
+  });
+
+  // Show loading while checking (only for non-admins)
+  if (!isAdmin && isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]">
+        <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+      </div>
+    );
+  }
+
+  // Show maintenance page if enabled (but allow admins to bypass)
+  if (!isAdmin && maintenanceStatus?.maintenance_mode) {
+    return <Maintenance />;
+  }
+
+  return <>{children}</>;
+};
+
 // App content with keyboard shortcuts
 const AppContent = () => {
   useKeyboardShortcuts();
   
   return (
-    <>
+    <MaintenanceCheck>
       <SkipLink />
       <NotificationBanner />
       {/* <GlobalSearch /> */}
