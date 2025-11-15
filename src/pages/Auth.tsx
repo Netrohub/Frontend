@@ -152,8 +152,8 @@ const Auth = () => {
   return (
     <>
       <SEO 
-        title={`${t('auth.login')} - NXOLand`}
-        description={t('auth.pageDescription')}
+        title="تسجيل الدخول - NXOLand"
+        description="سجل دخولك إلى منصة NXOLand لتداول الحسابات بأمان"
       />
       <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
         <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">

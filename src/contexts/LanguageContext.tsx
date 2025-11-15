@@ -6,6 +6,7 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string, params?: Record<string, string | number>) => string;
+  tAr: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -51,8 +52,22 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     return translation;
   };
 
+  // Always return Arabic translations (for SEO consistency)
+  const tAr = (key: string, params?: Record<string, string | number>): string => {
+    let translation = translations.ar[key] || key;
+    
+    // Replace placeholders like {count}, {date}, {name}, etc.
+    if (params) {
+      Object.keys(params).forEach(param => {
+        translation = translation.replace(new RegExp(`\\{${param}\\}`, 'g'), String(params[param]));
+      });
+    }
+    
+    return translation;
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, tAr }}>
       {children}
     </LanguageContext.Provider>
   );

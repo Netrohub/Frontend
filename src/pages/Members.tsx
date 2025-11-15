@@ -17,7 +17,7 @@ import { formatLocalizedDate } from "@/utils/date";
 import type { User } from "@/types/api";
 
 const Members = () => {
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,8 +81,8 @@ const Members = () => {
   return (
     <>
       <SEO 
-        title={`${t('members.title')} - NXOLand`}
-        description={t('members.description')}
+        title={`${tAr('members.title')} - NXOLand`}
+        description={tAr('members.description')}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

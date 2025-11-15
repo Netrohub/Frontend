@@ -33,7 +33,7 @@ const extractDetailValue = (description: string | undefined, key: string): strin
 
 const Marketplace = () => {
   const { user } = useAuth();
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   const isAuthenticated = !!user;
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -68,8 +68,8 @@ const Marketplace = () => {
   return (
     <>
       <SEO 
-        title={`${t('marketplace.title')} - NXOLand`}
-        description={t('marketplace.description')}
+        title={`${tAr('marketplace.title')} - NXOLand`}
+        description={tAr('marketplace.description')}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

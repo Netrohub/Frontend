@@ -33,7 +33,7 @@ interface Suggestion {
 
 const Suggestions = () => {
   const { user } = useAuth();
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   const isAdmin = user?.role === 'admin';
   const locale = language === 'ar' ? 'ar-EG' : 'en-US';
   const numberFormatter = useMemo(() => new Intl.NumberFormat(locale), [locale]);
@@ -228,8 +228,8 @@ const Suggestions = () => {
   return (
     <>
       <SEO 
-        title={`${t('suggestions.title')} - NXOLand`}
-        description={t('suggestions.subtitle')}
+        title={`${tAr('suggestions.title')} - NXOLand`}
+        description={tAr('suggestions.subtitle')}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

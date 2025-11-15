@@ -22,8 +22,8 @@ const Privacy = () => {
   return (
     <>
       <SEO 
-        title={language === 'ar' ? "سياسة الخصوصية - NXOLand" : "Privacy Policy - NXOLand"}
-        description={language === 'ar' ? "اقرأ سياسة الخصوصية الخاصة بمنصة NXOLand" : "Read NXOLand's Privacy Policy"}
+        title="سياسة الخصوصية - NXOLand"
+        description="اقرأ سياسة الخصوصية الخاصة بمنصة NXOLand"
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

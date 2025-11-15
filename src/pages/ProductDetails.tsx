@@ -31,7 +31,7 @@ const ProductDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   const isAuthenticated = !!user;
   const listingId = id ? parseInt(id) : 0;
 
@@ -131,7 +131,7 @@ const ProductDetails = () => {
   if (isLoading) {
     return (
       <>
-        <SEO title={t('common.loading')} />
+        <SEO title="جاري التحميل..." />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
@@ -170,7 +170,7 @@ const ProductDetails = () => {
     <>
       <SEO 
         title={`${listing.title} - NXOLand`}
-        description={listing.description || `${t('product.buy')} ${listing.title} ${t('common.from')} ${listing.category}`}
+        description={listing.description || `${tAr('product.buy')} ${listing.title} ${tAr('common.from')} ${listing.category}`}
         url={`/product/${listing.id}`}
       />
     <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>

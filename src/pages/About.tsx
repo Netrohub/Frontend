@@ -10,7 +10,7 @@ import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   // Memoize snow particles for performance
   const snowParticles = useMemo(() => 
     [...Array(30)].map((_, i) => (
@@ -30,8 +30,8 @@ const About = () => {
   return (
     <>
       <SEO 
-        title={`${t('about.title')} - NXOLand`}
-        description={t('about.description')}
+        title={`${tAr('about.title')} - NXOLand`}
+        description={tAr('about.description')}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

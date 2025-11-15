@@ -15,7 +15,7 @@ interface SEOProps {
 export function SEO({
   title = "NXOLand - تداول آمن وموثوق للحسابات",
   description = "منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان",
-  image = "/placeholder.svg",
+  image = "/nxoland-new-logo.png",
   url = "",
   type = "website",
 }: SEOProps) {

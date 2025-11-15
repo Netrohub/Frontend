@@ -22,8 +22,8 @@ const RefundPolicy = () => {
   return (
     <>
       <SEO 
-        title={language === 'ar' ? "سياسة الاسترداد - NXOLand" : "Refund Policy - NXOLand"}
-        description={language === 'ar' ? "اقرأ سياسة الاسترداد والإرجاع الخاصة بمنصة NXOLand" : "Read NXOLand's Refund and Return Policy"}
+        title="سياسة الاسترداد - NXOLand"
+        description="اقرأ سياسة الاسترداد والإرجاع الخاصة بمنصة NXOLand"
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

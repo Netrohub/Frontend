@@ -12,7 +12,7 @@ import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const Help = () => {
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   
   const faqs = [
     {
@@ -60,8 +60,8 @@ const Help = () => {
   return (
     <>
       <SEO 
-        title={`${t('help.title')} - NXOLand`}
-        description={t('help.description')}
+        title={`${tAr('help.title')} - NXOLand`}
+        description={tAr('help.description')}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

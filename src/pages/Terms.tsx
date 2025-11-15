@@ -22,8 +22,8 @@ const Terms = () => {
   return (
     <>
       <SEO 
-        title={language === 'ar' ? "الشروط والأحكام - NXOLand" : "Terms & Conditions - NXOLand"}
-        description={language === 'ar' ? "اقرأ الشروط والأحكام الخاصة باستخدام منصة NXOLand" : "Read the Terms & Conditions for using NXOLand platform"}
+        title="الشروط والأحكام - NXOLand"
+        description="اقرأ الشروط والأحكام الخاصة باستخدام منصة NXOLand"
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}

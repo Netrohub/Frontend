@@ -19,7 +19,7 @@ interface LeaderboardUser {
 }
 
 const Leaderboard = () => {
-  const { t, language } = useLanguage();
+  const { t, tAr, language } = useLanguage();
   const { data, isLoading, error } = useQuery({
     queryKey: ['leaderboard'],
     queryFn: () => publicApi.leaderboard(),
@@ -64,8 +64,8 @@ const Leaderboard = () => {
   return (
     <>
       <SEO 
-        title={`${t('leaderboard.title')} - NXOLand`}
-        description={t('leaderboard.description')}
+        title={`${tAr('leaderboard.title')} - NXOLand`}
+        description={tAr('leaderboard.description')}
       />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {/* Background */}
