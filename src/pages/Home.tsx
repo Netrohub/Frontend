@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Snowflake, Shield, Flame, Mail } from "lucide-react";
 import { DiscordIcon } from "@/components/icons/DiscordIcon";
@@ -14,6 +15,22 @@ const Home = () => {
   const isAuthenticated = !!user;
   const { t, language } = useLanguage();
   
+  // Memoize snow particles to prevent recreation on every render (performance optimization)
+  const snowParticles = useMemo(() => {
+    return [...Array(30)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-white/60 rounded-full animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+          animationDelay: `${Math.random() * 5}s`,
+        }}
+      />
+    ));
+  }, []); // Empty deps - particles should be static
+  
   return (
     <>
       <SEO 
@@ -24,20 +41,9 @@ const Home = () => {
       {/* Icy background with gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
-      {/* Animated snow particles */}
+      {/* Animated snow particles - memoized to prevent re-renders */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-white/60 rounded-full animate-fall"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `-${Math.random() * 20}%`,
-              animationDuration: `${10 + Math.random() * 20}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          />
-        ))}
+        {snowParticles}
       </div>
       
       {/* Frost overlay effect */}
