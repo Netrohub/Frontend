@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { initGTM } from "./utils/gtm";
 import { isEnvConfigured } from "./config/env";
 
 // Handle chunk loading errors (happens when new deployment invalidates old chunks)
@@ -37,8 +36,8 @@ try {
       `;
     }
   } else {
-    // Initialize Google Tag Manager
-    initGTM();
+    // GTM is already loaded via index.html for Google Search Console verification
+    // initGTM() is skipped to avoid duplicate loading and reduce main-thread tasks
 
     const rootElement = document.getElementById("root");
     if (!rootElement) {
