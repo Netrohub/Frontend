@@ -21,4 +21,6 @@ export default defineConfig({
       },
     },
   },
+  // Ensure environment variables are available during build
+  envPrefix: 'VITE_',
 });
