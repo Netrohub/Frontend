@@ -26,25 +26,25 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   // Check for runtime key after mount (in case function injects it after React loads)
   useEffect(() => {
     if (typeof window !== 'undefined' && !runtimeKey) {
-      // Check again after a short delay
-      const checkKey = () => {
-        const key = (window as any).__TURNSTILE_SITE_KEY__;
-        if (key && key !== runtimeKey) {
-          setRuntimeKey(key);
-        }
-      };
-      // Check immediately
-      checkKey();
-      // Also check after a delay in case script loads later
-      const timeout1 = setTimeout(checkKey, 100);
-      const timeout2 = setTimeout(checkKey, 500);
-      
-      return () => {
-        clearTimeout(timeout1);
-        clearTimeout(timeout2);
-      };
+      // Check immediately - the function injects before React loads, so this should be sufficient
+      const key = (window as any).__TURNSTILE_SITE_KEY__;
+      if (key) {
+        setRuntimeKey(key);
+      } else {
+        // Only check once more after a short delay if not found immediately
+        // This handles edge cases where script injection is slightly delayed
+        const timeout = setTimeout(() => {
+          const delayedKey = (window as any).__TURNSTILE_SITE_KEY__;
+          if (delayedKey) {
+            setRuntimeKey(delayedKey);
+          }
+        }, 100);
+        
+        return () => clearTimeout(timeout);
+      }
     }
-  }, [runtimeKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
   
   const siteKey = envVar || runtimeKey || '1x00000000000000000000AA';
   
