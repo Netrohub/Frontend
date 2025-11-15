@@ -20,24 +20,26 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { publicApi } from "@/lib/api";
 import Maintenance from "./pages/Maintenance";
 
-// Public routes - loaded immediately
+// Critical routes - loaded immediately (above the fold)
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import ProductDetails from "./pages/ProductDetails";
-import Members from "./pages/Members";
-import Leaderboard from "./pages/Leaderboard";
 import Auth from "./pages/Auth";
-import About from "./pages/About";
-import Help from "./pages/Help";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import RefundPolicy from "./pages/RefundPolicy";
-import VerifyEmail from "./pages/VerifyEmail";
-import PaymentCallback from "./pages/PaymentCallback";
 import NotFound from "./pages/NotFound";
 
 // Protected routes - critical pages loaded immediately
 import Checkout from "./pages/Checkout";
+
+// Public routes - lazy loaded (below the fold or less critical)
+const Members = lazy(() => import("./pages/Members"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+const About = lazy(() => import("./pages/About"));
+const Help = lazy(() => import("./pages/Help"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const PaymentCallback = lazy(() => import("./pages/PaymentCallback"));
 
 // Protected routes - lazy loaded
 const Order = lazy(() => import("./pages/Order"));
@@ -148,15 +150,47 @@ const AppContent = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/members" element={<Members />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/auth" element={<Auth />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/help" element={<Help />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/refund-policy" element={<RefundPolicy />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/members" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Members />
+                  </Suspense>
+                } />
+                <Route path="/leaderboard" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Leaderboard />
+                  </Suspense>
+                } />
+                <Route path="/about" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <About />
+                  </Suspense>
+                } />
+                <Route path="/help" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Help />
+                  </Suspense>
+                } />
+                <Route path="/terms" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Terms />
+                  </Suspense>
+                } />
+                <Route path="/privacy" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Privacy />
+                  </Suspense>
+                } />
+                <Route path="/refund-policy" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <RefundPolicy />
+                  </Suspense>
+                } />
+                <Route path="/verify-email" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <VerifyEmail />
+                  </Suspense>
+                } />
                 <Route
                   path="/reset-password"
                   element={
