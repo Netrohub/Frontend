@@ -11,21 +11,28 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   const [isExpired, setIsExpired] = useState(false);
   
   // Get site key from environment variable
-  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+  // Try multiple ways to access the variable (for debugging)
+  const envVar = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const siteKey = envVar || '1x00000000000000000000AA';
   
   // Debug: Log key info (temporary - remove after verification)
   console.log('🔍 Turnstile Debug:', {
-    hasEnvVar: !!import.meta.env.VITE_TURNSTILE_SITE_KEY,
+    hasEnvVar: !!envVar,
+    envVarType: typeof envVar,
+    envVarValue: envVar ? `${envVar.substring(0, 10)}...` : 'undefined',
     keyPrefix: siteKey.substring(0, 4),
     keyLength: siteKey.length,
     isTestKey: siteKey.startsWith('1x') || siteKey.startsWith('2x') || siteKey.startsWith('3x'),
     isRealKey: siteKey.startsWith('0x'),
     environment: import.meta.env.MODE || import.meta.env.NODE_ENV,
+    isProd: import.meta.env.PROD,
+    allEnvKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')),
   });
   
   // Warn if using test key in production
   if (import.meta.env.PROD && siteKey.startsWith('1x')) {
     console.warn('⚠️ Turnstile: Using test key. Set VITE_TURNSTILE_SITE_KEY in environment variables.');
+    console.warn('Available VITE_ env vars:', Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
   }
 
   const handleVerify = (token: string) => {
