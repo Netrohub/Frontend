@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { siteSettingsApi } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
+import DOMPurify from "dompurify";
 
 const LegalContent = () => {
   const { t, language: currentLanguage } = useLanguage();
@@ -186,7 +187,7 @@ const LegalContent = () => {
             <Card className="p-6 bg-[hsl(200,70%,20%)] border-white/10">
               <div 
                 className="prose prose-invert max-w-none terms-content privacy-content"
-                dangerouslySetInnerHTML={{ __html: getCurrentContent() }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(getCurrentContent()) }}
               />
             </Card>
           ) : (

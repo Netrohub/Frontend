@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { siteSettingsApi } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Loader2 } from "lucide-react";
+import DOMPurify from "dompurify";
 
 const RefundPolicy = () => {
   const { language } = useLanguage();
@@ -52,7 +53,7 @@ const RefundPolicy = () => {
             ) : content ? (
               <div 
                 className="prose prose-invert max-w-none refund-content"
-                dangerouslySetInnerHTML={{ __html: content }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
               />
             ) : (
               <p className="text-white/60 text-center py-8">
