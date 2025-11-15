@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { Shield, Zap, Users, Target, Heart, ShoppingCart, Package, CheckCircle, TrendingUp, Phone, Mail, MessageCircle, FileText } from "lucide-react";
+import { Shield, Zap, Users, Target, Heart, ShoppingCart, Package, CheckCircle, TrendingUp, Mail, FileText } from "lucide-react";
+import { DiscordIcon } from "@/components/icons/DiscordIcon";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -244,53 +246,41 @@ const About = () => {
               </div>
             </div>
 
-            {/* Email */}
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
-                <Mail className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1">{t('about.email')}</h3>
-                <a href="mailto:info@nxoland.com" className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors">
-                  info@nxoland.com
-                </a>
-              </div>
-            </div>
+            {/* Contact Icons */}
+            <div className="flex items-center gap-4">
+              {/* Email */}
+              <a 
+                href="mailto:info@nxoland.com"
+                className="flex items-center justify-center w-14 h-14 rounded-full bg-[hsl(195,80%,50%,0.15)] border-2 border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,50%,0.25)] hover:border-[hsl(195,80%,70%,0.5)] hover:scale-110 transition-all duration-300 group"
+                aria-label={t('about.email')}
+                title={t('about.email')}
+              >
+                <Mail className="h-6 w-6 text-[hsl(195,80%,70%)] group-hover:text-[hsl(195,80%,60%)] transition-colors" />
+              </a>
 
-            {/* WhatsApp */}
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
-                <Phone className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1">{t('about.whatsapp')}</h3>
-                <a 
-                  href="https://wa.me/966536784471" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors"
-                >
-                  +966 53 678 4471
-                </a>
-              </div>
-            </div>
+              {/* WhatsApp */}
+              <a 
+                href="https://wa.me/966536784471"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-14 h-14 rounded-full bg-[hsl(142,71%,45%,0.15)] border-2 border-[hsl(142,71%,45%,0.3)] hover:bg-[hsl(142,71%,45%,0.25)] hover:border-[hsl(142,71%,45%,0.5)] hover:scale-110 transition-all duration-300 group"
+                aria-label={t('about.whatsapp')}
+                title={t('about.whatsapp')}
+              >
+                <WhatsAppIcon size={24} className="text-[hsl(142,71%,45%)] group-hover:text-[hsl(142,71%,35%)] transition-colors" />
+              </a>
 
-            {/* Live Chat (Discord) */}
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
-                <MessageCircle className="h-6 w-6 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1">{t('about.liveChat')}</h3>
-                <a 
-                  href="https://discord.gg/R72dmfCX" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors"
-                >
-                  {t('about.discordLiveChat')}
-                </a>
-              </div>
+              {/* Discord */}
+              <a 
+                href="https://discord.gg/R72dmfCX"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-14 h-14 rounded-full bg-[#5865F2]/15 border-2 border-[#5865F2]/30 hover:bg-[#5865F2]/25 hover:border-[#5865F2]/50 hover:scale-110 transition-all duration-300 group"
+                aria-label={t('about.liveChat')}
+                title={t('about.discordLiveChat')}
+              >
+                <DiscordIcon size={24} className="text-[#5865F2] group-hover:text-[#4752C4] transition-colors" />
+              </a>
             </div>
           </div>
 

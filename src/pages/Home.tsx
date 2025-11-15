@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Snowflake, Shield, Flame } from "lucide-react";
+import { ArrowRight, Snowflake, Shield, Flame, Mail } from "lucide-react";
+import { DiscordIcon } from "@/components/icons/DiscordIcon";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -255,15 +257,39 @@ const Home = () => {
             {/* Contact */}
             <div className="flex flex-col items-center md:items-start gap-3">
               <h3 className="text-white font-bold mb-2">{t('home.footer.contact')}</h3>
-              <div className="flex flex-col gap-2 text-sm text-white/60">
-                <a href="mailto:info@nxoland.com" className="hover:text-[hsl(195,80%,70%)] transition-colors">
-                  info@nxoland.com
+              <div className="flex items-center gap-3">
+                {/* Email */}
+                <a 
+                  href="mailto:info@nxoland.com"
+                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 hover:scale-110 transition-all duration-300 group"
+                  aria-label={t('help.email')}
+                  title={t('help.email')}
+                >
+                  <Mail className="h-5 w-5 text-white/60 group-hover:text-[hsl(195,80%,70%)] transition-colors" />
                 </a>
-                <a href="https://wa.me/966536784471" target="_blank" rel="noopener noreferrer" className="hover:text-[hsl(195,80%,70%)] transition-colors">
-                  +966 53 678 4471
+
+                {/* WhatsApp */}
+                <a 
+                  href="https://wa.me/966536784471"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-[hsl(142,71%,45%,0.2)] hover:border-[hsl(142,71%,45%,0.4)] hover:scale-110 transition-all duration-300 group"
+                  aria-label={t('help.whatsapp')}
+                  title={t('help.whatsapp')}
+                >
+                  <WhatsAppIcon size={20} className="text-white/60 group-hover:text-[hsl(142,71%,45%)] transition-colors" />
                 </a>
-                <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" className="hover:text-[hsl(195,80%,70%)] transition-colors">
-                  {t('home.footer.discordLiveChat')}
+
+                {/* Discord */}
+                <a 
+                  href="https://discord.gg/R72dmfCX"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/40 hover:scale-110 transition-all duration-300 group"
+                  aria-label={t('help.liveChat')}
+                  title={t('home.footer.discordLiveChat')}
+                >
+                  <DiscordIcon size={20} className="text-white/60 group-hover:text-[#5865F2] transition-colors" />
                 </a>
               </div>
             </div>

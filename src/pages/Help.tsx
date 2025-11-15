@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Phone, Mail, CheckCircle } from "lucide-react";
+import { Mail, CheckCircle } from "lucide-react";
+import { DiscordIcon } from "@/components/icons/DiscordIcon";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -110,44 +112,44 @@ const Help = () => {
         <Card className="p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-8">
           <h2 className="text-2xl font-bold text-white mb-6 text-center">{t('help.contactUs')}</h2>
           
-          {/* Contact Methods */}
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
+          {/* Contact Icons */}
+          <div className="flex items-center justify-center gap-6 mb-6">
             {/* Email */}
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg border border-white/10">
-              <Mail className="h-8 w-8 text-[hsl(195,80%,70%)] mb-3" aria-hidden="true" />
-              <h3 className="text-sm font-bold text-white mb-2">{t('help.email')}</h3>
-              <a href="mailto:info@nxoland.com" className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors text-sm">
-                info@nxoland.com
-              </a>
-            </div>
+            <a 
+              href="mailto:info@nxoland.com"
+              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[hsl(195,80%,50%,0.15)] border-2 border-[hsl(195,80%,70%,0.3)] hover:bg-[hsl(195,80%,50%,0.25)] hover:border-[hsl(195,80%,70%,0.5)] hover:scale-110 transition-all duration-300 group"
+              aria-label={t('help.email')}
+              title={t('help.email')}
+            >
+              <Mail className="h-8 w-8 text-[hsl(195,80%,70%)] group-hover:text-[hsl(195,80%,60%)] transition-colors mb-1" />
+              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.email')}</span>
+            </a>
 
             {/* WhatsApp */}
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg border border-white/10">
-              <Phone className="h-8 w-8 text-[hsl(195,80%,70%)] mb-3" aria-hidden="true" />
-              <h3 className="text-sm font-bold text-white mb-2">{t('help.whatsapp')}</h3>
-              <a 
-                href="https://wa.me/966536784471" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors text-sm"
-              >
-                +966 53 678 4471
-              </a>
-            </div>
+            <a 
+              href="https://wa.me/966536784471"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[hsl(142,71%,45%,0.15)] border-2 border-[hsl(142,71%,45%,0.3)] hover:bg-[hsl(142,71%,45%,0.25)] hover:border-[hsl(142,71%,45%,0.5)] hover:scale-110 transition-all duration-300 group"
+              aria-label={t('help.whatsapp')}
+              title={t('help.whatsapp')}
+            >
+              <WhatsAppIcon size={32} className="text-[hsl(142,71%,45%)] group-hover:text-[hsl(142,71%,35%)] transition-colors mb-1" />
+              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.whatsapp')}</span>
+            </a>
 
-            {/* Live Chat (Discord) */}
-            <div className="flex flex-col items-center p-4 bg-white/5 rounded-lg border border-white/10">
-              <MessageCircle className="h-8 w-8 text-[hsl(195,80%,70%)] mb-3" aria-hidden="true" />
-              <h3 className="text-sm font-bold text-white mb-2">{t('help.liveChat')}</h3>
-              <a 
-                href="https://discord.gg/R72dmfCX" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,60%)] transition-colors text-sm"
-              >
-                {t('help.discordLiveChat')}
-              </a>
-            </div>
+            {/* Discord */}
+            <a 
+              href="https://discord.gg/R72dmfCX"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center w-20 h-20 rounded-full bg-[#5865F2]/15 border-2 border-[#5865F2]/30 hover:bg-[#5865F2]/25 hover:border-[#5865F2]/50 hover:scale-110 transition-all duration-300 group"
+              aria-label={t('help.liveChat')}
+              title={t('help.discordLiveChat')}
+            >
+              <DiscordIcon size={32} className="text-[#5865F2] group-hover:text-[#4752C4] transition-colors mb-1" />
+              <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.liveChat')}</span>
+            </a>
           </div>
 
           {/* Discord Button */}
@@ -158,7 +160,7 @@ const Help = () => {
               className="flex-col h-auto py-8 px-12 bg-[#5865F2] hover:bg-[#4752C4] border-0 text-white gap-3 min-h-[120px]"
             >
               <a href="https://discord.gg/R72dmfCX" target="_blank" rel="noopener noreferrer" aria-label={t('help.discordJoin')}>
-                <MessageCircle className="h-12 w-12 mb-2" aria-hidden="true" />
+                <DiscordIcon size={48} className="mb-2" />
                 <span className="font-bold text-xl">{t('help.discordJoin')}</span>
                 <span className="text-sm text-white/90">{t('help.discordSupport')}</span>
               </a>
