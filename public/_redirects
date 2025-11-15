@@ -1,5 +1,5 @@
 # Exclude assets from SPA fallback - they should return 404 if missing
 /assets/* 404
 
-# SPA fallback for all other routes (static files in public/ are served automatically)
+# SPA fallback for all other routes
 /* /index.html 200

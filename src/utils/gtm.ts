@@ -3,18 +3,24 @@
  */
 import { getGTMId } from '@/config/env';
 
+/**
+ * Google Tag Manager initialization
+ * Note: GTM is now initialized directly in index.html for Google Search Console verification.
+ * This function is kept for backwards compatibility but will skip if GTM is already initialized.
+ */
 export function initGTM() {
-  // Skip if GTM ID is not configured
+  // Skip if GTM is already initialized (from index.html)
+  if (window.dataLayer && window.dataLayer.length > 0) {
+    return;
+  }
+  
+  // Fallback: Initialize via JavaScript if not already in HTML
+  // This is a safety net, but GTM should already be loaded from index.html
   const gtmId = getGTMId();
   if (!gtmId) {
     if (import.meta.env.DEV) {
       console.warn('GTM_ID not configured. Google Tag Manager will not be initialized.');
     }
-    return;
-  }
-  
-  // Skip if already initialized
-  if (window.dataLayer) {
     return;
   }
   
@@ -35,16 +41,18 @@ export function initGTM() {
     }
   })(window, document, 'script', 'dataLayer', gtmId);
   
-  // Add noscript iframe
-  const noscript = document.createElement('noscript');
-  const iframe = document.createElement('iframe');
-  iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
-  iframe.height = '0';
-  iframe.width = '0';
-  iframe.style.display = 'none';
-  iframe.style.visibility = 'hidden';
-  noscript.appendChild(iframe);
-  document.body.insertBefore(noscript, document.body.firstChild);
+  // Add noscript iframe (only if not already present)
+  if (!document.querySelector('noscript iframe[src*="googletagmanager.com"]')) {
+    const noscript = document.createElement('noscript');
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
+    iframe.height = '0';
+    iframe.width = '0';
+    iframe.style.display = 'none';
+    iframe.style.visibility = 'hidden';
+    noscript.appendChild(iframe);
+    document.body.insertBefore(noscript, document.body.firstChild);
+  }
 }
 
 // Extend Window interface
