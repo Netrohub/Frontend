@@ -1,5 +1,5 @@
 import { Turnstile as CloudflareTurnstile } from '@marsidev/react-turnstile';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 interface TurnstileProps {
   onVerify: (token: string) => void;
@@ -9,76 +9,87 @@ interface TurnstileProps {
 
 export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   const [isExpired, setIsExpired] = useState(false);
-  const [widgetKey, setWidgetKey] = useState(0); // Force re-render when key changes
+  const [widgetKey, setWidgetKey] = useState(0);
+  const [isReady, setIsReady] = useState(false);
   
   // Get site key from environment variable
   const envVar = import.meta.env.VITE_TURNSTILE_SITE_KEY;
   
   // Workaround: Try to get from window object (for runtime injection if needed)
-  // This allows setting it via Cloudflare Pages Functions or Workers if build-time fails
   const [runtimeKey, setRuntimeKey] = useState<string | undefined>(
     typeof window !== 'undefined' 
       ? (window as any).__TURNSTILE_SITE_KEY__ 
       : undefined
   );
   
-  // Check for runtime key after mount (in case function injects it after React loads)
+  // Check for runtime key after mount (only once)
   useEffect(() => {
     if (typeof window !== 'undefined' && !runtimeKey) {
-      // Check immediately - the function injects before React loads, so this should be sufficient
       const key = (window as any).__TURNSTILE_SITE_KEY__;
       if (key) {
         setRuntimeKey(key);
       } else {
-        // Only check once more after a short delay if not found immediately
+        // Single delayed check
         const timeout = setTimeout(() => {
           const delayedKey = (window as any).__TURNSTILE_SITE_KEY__;
           if (delayedKey) {
             setRuntimeKey(delayedKey);
           }
         }, 100);
-        
         return () => clearTimeout(timeout);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
+  }, []);
   
-  const siteKey = envVar || runtimeKey || '1x00000000000000000000AA';
+  // Memoize site key to prevent unnecessary recalculations
+  const siteKey = useMemo(() => {
+    return envVar || runtimeKey || '1x00000000000000000000AA';
+  }, [envVar, runtimeKey]);
   
-  // Initialize widget key when we get a valid key (only once)
+  // Initialize widget only when we have a valid key
+  // Defer initialization to avoid blocking the main thread
   useEffect(() => {
-    if (siteKey && siteKey !== '1x00000000000000000000AA' && widgetKey === 0) {
-      setWidgetKey(1);
+    if (siteKey && siteKey !== '1x00000000000000000000AA') {
+      if (widgetKey === 0) {
+        setWidgetKey(1);
+      }
+      // Defer rendering to next frame to avoid blocking main thread
+      // This prevents performance violations from synchronous initialization
+      const readyTimeout = requestAnimationFrame(() => {
+        setTimeout(() => {
+          setIsReady(true);
+        }, 100); // Small delay to ensure DOM is ready
+      });
+      return () => cancelAnimationFrame(readyTimeout);
     }
   }, [siteKey, widgetKey]);
   
-  // Warn if using test key in production (only warn, no debug spam)
-  if (import.meta.env.PROD && siteKey.startsWith('1x')) {
-    console.warn('⚠️ Turnstile: Using test key. Set TURNSTILE_SITE_KEY in Cloudflare Pages environment variables.');
-  }
-
-  const handleVerify = (token: string) => {
+  // Memoize callbacks to prevent unnecessary re-renders
+  const handleVerify = useCallback((token: string) => {
     setIsExpired(false);
     onVerify(token);
-  };
+  }, [onVerify]);
 
-  const handleExpire = () => {
+  const handleExpire = useCallback(() => {
     setIsExpired(true);
     onVerify(''); // Clear the token
-  };
+  }, [onVerify]);
 
-  const handleError = (error?: any) => {
-    console.error('[Turnstile] Widget error:', error);
-    // Reset widget on error to prevent hung state
-    setWidgetKey(prev => prev + 1);
+  const handleError = useCallback((error?: any) => {
+    // Only log in development to reduce console noise
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[Turnstile] Widget error:', error);
+    }
+    // Reset widget on error, but limit resets to prevent infinite loops
+    setWidgetKey(prev => prev < 3 ? prev + 1 : prev);
     if (onError) {
       onError();
     }
-  };
+  }, [onError]);
 
-  // Don't render widget if we don't have a valid key yet
-  if (!siteKey || siteKey === '1x00000000000000000000AA') {
+  // Don't render widget if we don't have a valid key or aren't ready
+  if (!siteKey || siteKey === '1x00000000000000000000AA' || !isReady) {
     return null;
   }
 
