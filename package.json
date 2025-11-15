@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node -e \"console.log('🔍 Build-time env check:', { TURNSTILE_KEY: process.env.VITE_TURNSTILE_SITE_KEY ? process.env.VITE_TURNSTILE_SITE_KEY.substring(0, 10) + '...' : 'NOT SET', NODE_ENV: process.env.NODE_ENV })\"",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",

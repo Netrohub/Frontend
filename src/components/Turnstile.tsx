@@ -48,26 +48,9 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   
   const siteKey = envVar || runtimeKey || '1x00000000000000000000AA';
   
-  // Debug: Log key info (temporary - remove after verification)
-  console.log('🔍 Turnstile Debug:', {
-    hasEnvVar: !!envVar,
-    hasRuntimeKey: !!runtimeKey,
-    envVarType: typeof envVar,
-    envVarValue: envVar ? `${envVar.substring(0, 10)}...` : 'undefined',
-    runtimeKeyValue: runtimeKey ? `${runtimeKey.substring(0, 10)}...` : 'undefined',
-    keyPrefix: siteKey.substring(0, 4),
-    keyLength: siteKey.length,
-    isTestKey: siteKey.startsWith('1x') || siteKey.startsWith('2x') || siteKey.startsWith('3x'),
-    isRealKey: siteKey.startsWith('0x'),
-    environment: import.meta.env.MODE || import.meta.env.NODE_ENV,
-    isProd: import.meta.env.PROD,
-    allEnvKeys: Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')),
-  });
-  
-  // Warn if using test key in production
+  // Warn if using test key in production (only warn, no debug spam)
   if (import.meta.env.PROD && siteKey.startsWith('1x')) {
-    console.warn('⚠️ Turnstile: Using test key. Set VITE_TURNSTILE_SITE_KEY in environment variables.');
-    console.warn('Available VITE_ env vars:', Object.keys(import.meta.env).filter(k => k.startsWith('VITE_')));
+    console.warn('⚠️ Turnstile: Using test key. Set TURNSTILE_SITE_KEY in Cloudflare Pages environment variables.');
   }
 
   const handleVerify = (token: string) => {

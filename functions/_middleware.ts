@@ -20,17 +20,11 @@ export const onRequest: PagesFunction<{ VITE_TURNSTILE_SITE_KEY?: string }> = as
   // Try both with and without VITE_ prefix (Cloudflare may strip it)
   const turnstileKey = env.VITE_TURNSTILE_SITE_KEY || env.TURNSTILE_SITE_KEY;
   
-  // Debug: Log to console (will appear in Cloudflare Pages Function logs)
-  console.log('[Turnstile Middleware]', {
-    hasViteKey: !!env.VITE_TURNSTILE_SITE_KEY,
-    hasPlainKey: !!env.TURNSTILE_SITE_KEY,
-    allEnvKeys: Object.keys(env).filter(k => k.includes('TURNSTILE') || k.includes('VITE')),
-    url: request.url,
-  });
-  
   if (!turnstileKey) {
-    // If key is not set, return response as-is
-    console.warn('[Turnstile Middleware] No Turnstile key found in environment');
+    // If key is not set, return response as-is (silently fail in production)
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[Turnstile Middleware] No Turnstile key found in environment');
+    }
     return response;
   }
 
@@ -55,7 +49,6 @@ export const onRequest: PagesFunction<{ VITE_TURNSTILE_SITE_KEY?: string }> = as
     modifiedHtml = script + html;
   }
 
-  console.log('[Turnstile Middleware] Injected key into HTML');
 
   // Return modified response with same headers
   return new Response(modifiedHtml, {
