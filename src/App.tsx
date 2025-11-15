@@ -472,7 +472,7 @@ const AppContent = () => {
           </Routes>
         </RouteErrorBoundary>
       </main>
-    </>
+    </MaintenanceCheck>
   );
 };
 
