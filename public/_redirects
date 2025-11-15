@@ -1,5 +1,8 @@
 # Exclude assets from SPA fallback - they should return 404 if missing
 /assets/* 404
 
+# Google Search Console verification file - must be accessible directly
+/googleecd93c99c2f5a413.html 200
+
 # SPA fallback for all other routes
 /* /index.html 200
