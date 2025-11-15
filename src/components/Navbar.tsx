@@ -206,6 +206,8 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
           height="80"
           className="h-16 md:h-20 w-auto scale-150"
           style={{ transformOrigin: 'center' }}
+          loading="eager"
+          fetchPriority="high"
           onError={(e) => {
             // Fallback to old logo if new logo fails to load
             const img = e.target as HTMLImageElement;

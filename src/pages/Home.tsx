@@ -219,6 +219,7 @@ const Home = () => {
                 height="80"
                 className="h-16 md:h-20 w-auto scale-150"
                 style={{ transformOrigin: 'center' }}
+                loading="lazy"
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
                   if (img.src.includes('new')) {
