@@ -217,7 +217,10 @@ const MyListings = () => {
                         <img 
                           src={listing.images[0]} 
                           alt={listing.title}
+                          width="128"
+                          height="128"
                           className="w-full h-full object-cover"
+                          style={{ aspectRatio: '1/1' }}
                         />
                       ) : (
                         <Shield className="h-12 w-12 text-white/20" />

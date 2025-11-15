@@ -215,6 +215,8 @@ const Home = () => {
               <img 
                 src="/nxoland-new-logo.png" 
                 alt="NXOLand Logo" 
+                width="200"
+                height="80"
                 className="h-16 md:h-20 w-auto scale-150"
                 style={{ transformOrigin: 'center' }}
                 onError={(e) => {

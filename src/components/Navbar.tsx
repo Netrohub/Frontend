@@ -193,6 +193,8 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         <img 
           src="/nxoland-new-logo.png" 
           alt="NXOLand - Secure Game Account Trading Platform" 
+          width="200"
+          height="80"
           className="h-16 md:h-20 w-auto scale-150"
           style={{ transformOrigin: 'center' }}
           onError={(e) => {

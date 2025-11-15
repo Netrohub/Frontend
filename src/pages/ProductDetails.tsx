@@ -212,8 +212,11 @@ const ProductDetails = () => {
                   <img 
                     src={images[0]} 
                     alt={listing.title}
+                    width="800"
+                    height="450"
                     loading="eager"
                     className="w-full h-full object-cover"
+                    style={{ aspectRatio: '16/9' }}
                   />
                 ) : (
                   <Shield className="h-32 w-32 text-white/20" aria-hidden="true" />
@@ -232,8 +235,11 @@ const ProductDetails = () => {
                     <img 
                       src={img} 
                       alt={`${listing.title} - ${t('product.image')} ${i + 2}`}
+                      width="200"
+                      height="200"
                       loading="lazy"
                       className="w-full h-full object-cover"
+                      style={{ aspectRatio: '1/1' }}
                     />
                   </Card>
                 ))}

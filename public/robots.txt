@@ -11,11 +11,11 @@ Disallow: /edit-profile
 Disallow: /wallet
 Disallow: /my-listings
 Disallow: /disputes
-Disallow: /disputes/
 Disallow: /kyc
 Disallow: /notifications
 Disallow: /reset-password
 Disallow: /verify-email
-Disallow: /orders/*/payment/callback
 Disallow: /admin
-Disallow: /admin/
+
+# Sitemap (if available)
+# Sitemap: https://www.nxoland.com/sitemap.xml

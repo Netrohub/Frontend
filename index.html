@@ -23,9 +23,17 @@
     </script>
     <!-- End Google Tag Manager -->
     
+    <!-- Preconnect to external domains for faster resource loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://backend-piz0.onrender.com">
+    
+    <!-- Load fonts asynchronously to prevent render blocking -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    </noscript>
 
     <meta property="og:title" content="NXOLand - منصة تداول حسابات الألعاب" />
     <meta property="og:description" content="منصة آمنة لشراء وبيع حسابات الألعاب الرقمية مع نظام ضمان متكامل" />
