@@ -13,13 +13,22 @@ export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
   // Get site key from environment variable
   // Try multiple ways to access the variable (for debugging)
   const envVar = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-  const siteKey = envVar || '1x00000000000000000000AA';
+  
+  // Workaround: Try to get from window object (for runtime injection if needed)
+  // This allows setting it via Cloudflare Pages Functions or Workers if build-time fails
+  const runtimeKey = typeof window !== 'undefined' 
+    ? (window as any).__TURNSTILE_SITE_KEY__ 
+    : undefined;
+  
+  const siteKey = envVar || runtimeKey || '1x00000000000000000000AA';
   
   // Debug: Log key info (temporary - remove after verification)
   console.log('🔍 Turnstile Debug:', {
     hasEnvVar: !!envVar,
+    hasRuntimeKey: !!runtimeKey,
     envVarType: typeof envVar,
     envVarValue: envVar ? `${envVar.substring(0, 10)}...` : 'undefined',
+    runtimeKeyValue: runtimeKey ? `${runtimeKey.substring(0, 10)}...` : 'undefined',
     keyPrefix: siteKey.substring(0, 4),
     keyLength: siteKey.length,
     isTestKey: siteKey.startsWith('1x') || siteKey.startsWith('2x') || siteKey.startsWith('3x'),
