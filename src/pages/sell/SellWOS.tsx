@@ -147,6 +147,16 @@ const SellWOS = () => {
     }
   };
 
+  // Common attributes for numeric inputs to prevent iOS autofill bar
+  const numericInputProps = {
+    inputMode: "numeric" as const,
+    pattern: "[0-9]*",
+    autoComplete: "one-time-code",
+    autoCapitalize: "off" as const,
+    autoCorrect: "off" as const,
+    spellCheck: false as const,
+  };
+
   // Helper function for numeric input validation
   const handleNumericInput = (
     value: string,
@@ -456,21 +466,35 @@ const SellWOS = () => {
           </Card>
         )}
 
-        <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
+            <form
+              id="game-details-form"
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              noValidate
+              autoComplete="off"
+              data-form-type="other"
+            >
+              <input
+                type="text"
+                name="fake-username"
+                autoComplete="username"
+                aria-hidden="true"
+                tabIndex={-1}
+                style={{ position: "absolute", opacity: 0, height: 0, width: 0, pointerEvents: "none" }}
+              />
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white">المعلومات الأساسية</h2>
               
               <div>
                 <Label className="text-white mb-2 block">عنوان الإعلان *</Label>
-                <Input 
+                  <Input 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="مثال: حساب قوي - المستوى 45"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                   maxLength={255}
-                  required
                 />
                 <p className="text-sm text-white/60 mt-1">
                   {title.length}/255 حرف
@@ -480,7 +504,7 @@ const SellWOS = () => {
               <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white mb-2 block">السيرفر *</Label>
-                    <Select value={server} onValueChange={setServer} required>
+                      <Select value={server} onValueChange={setServer}>
                       <SelectTrigger className="bg-white/5 border-white/10 text-white">
                         <SelectValue placeholder="اختر السيرفر" />
                       </SelectTrigger>
@@ -501,18 +525,15 @@ const SellWOS = () => {
                   </div>
               </div>
 
-              <div>
+                <div>
                 <Label className="text-white mb-2 block">السعر ($) *</Label>
-                <Input 
-                  type="number"
+                  <Input 
+                    type="text"
+                    {...numericInputProps}
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="100"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  min="10"
-                  max="10000"
-                  step="0.01"
-                  required
                 />
                 <p className="text-sm text-white/60 mt-1">
                   {t('listing.priceRange')}
@@ -524,7 +545,7 @@ const SellWOS = () => {
                 
                 <div>
                   <Label className="text-white mb-2 block">حجرة الاحتراق *</Label>
-                  <Select value={stoveLevel} onValueChange={setStoveLevel} required>
+                    <Select value={stoveLevel} onValueChange={setStoveLevel}>
                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
                       <SelectValue placeholder="اختر حجرة الاحتراق" />
                     </SelectTrigger>
@@ -645,16 +666,14 @@ const SellWOS = () => {
                       <Users className="h-4 w-4 text-[hsl(195,80%,70%)]" />
                       عدد الجنود *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={troops}
-                      onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
-                      placeholder="مثال: 1M أو 1,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        {...numericInputProps}
+                        value={troops}
+                        onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
+                        placeholder="مثال: 1M أو 1,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      />
                   </div>
 
                   <div>
@@ -662,16 +681,14 @@ const SellWOS = () => {
                       <Zap className="h-4 w-4 text-[hsl(40,90%,55%)]" />
                       القوة الشخصية (Total Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={totalPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
-                      placeholder="مثال: 50M أو 50,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        {...numericInputProps}
+                        value={totalPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
+                        placeholder="مثال: 50M أو 50,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      />
                   </div>
                 </div>
 
@@ -681,16 +698,14 @@ const SellWOS = () => {
                       <Swords className="h-4 w-4 text-[hsl(340,70%,70%)]" />
                       قوة البطل (Hero Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={heroPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
-                      placeholder="مثال: 10M أو 10,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        {...numericInputProps}
+                        value={heroPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
+                        placeholder="مثال: 10M أو 10,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      />
                   </div>
 
                   <div>
@@ -698,16 +713,14 @@ const SellWOS = () => {
                       <MapPin className="h-4 w-4 text-[hsl(220,70%,70%)]" />
                       الجزيرة (Island) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={island}
-                      onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
-                      placeholder="مثال: 7 أو 1K"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        {...numericInputProps}
+                        value={island}
+                        onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
+                        placeholder="مثال: 7 أو 1K"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      />
                   </div>
                 </div>
 
@@ -717,16 +730,14 @@ const SellWOS = () => {
                       <GraduationCap className="h-4 w-4 text-[hsl(120,60%,70%)]" />
                       قوة الخبير (Expert Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={expertPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
-                      placeholder="مثال: 5M أو 5,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        {...numericInputProps}
+                        value={expertPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
+                        placeholder="مثال: 5M أو 5,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      />
                   </div>
 
                   <div>
@@ -734,16 +745,14 @@ const SellWOS = () => {
                       <Crown className="h-4 w-4 text-[hsl(40,90%,55%)]" />
                       قوة البطل الإجمالية (Hero's total Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={heroTotalPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
-                      placeholder="مثال: 15M أو 15,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        {...numericInputProps}
+                        value={heroTotalPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
+                        placeholder="مثال: 15M أو 15,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      />
                   </div>
                 </div>
 
@@ -752,16 +761,14 @@ const SellWOS = () => {
                     <PawPrint className="h-4 w-4 text-[hsl(280,70%,70%)]" />
                     قوة الحيوانات (Pet Power) *
                   </Label>
-                  <Input 
-                    type="text"
-                    value={petPower}
-                    onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
-                    placeholder="مثال: 3M أو 3,000,000"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                    title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                    required
-                  />
+                    <Input 
+                      type="text"
+                      {...numericInputProps}
+                      value={petPower}
+                      onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
+                      placeholder="مثال: 3M أو 3,000,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    />
                 </div>
 
                 <div>
@@ -905,36 +912,10 @@ const SellWOS = () => {
             </div>
 
             {/* Account Details */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
-              
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
-                  <Input 
-                    type="email"
-                    value={accountEmail}
-                    onChange={(e) => setAccountEmail(e.target.value)}
-                    placeholder="account@example.com"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <Label className="text-white mb-2 block">كلمة المرور *</Label>
-                  <Input 
-                    type="password"
-                    value={accountPassword}
-                    onChange={(e) => setAccountPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    required
-                  />
-                </div>
-              </div>
-
               <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
+                
+                <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mt-4">{t('listing.billImagesTitle')}</h3>
                 <p className="text-sm text-white/60">{billImagesInstructions}</p>
                 
@@ -1099,37 +1080,73 @@ const SellWOS = () => {
               </div>
             </div>
 
-            {/* Submit */}
-            <div className="flex gap-4 pt-4">
-              <Button 
-                type="submit"
-                disabled={createListingMutation.isPending || !isVerified}
-                className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {createListingMutation.isPending ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    جاري النشر...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-5 w-5" />
-                    نشر الإعلان
-                  </>
-                )}
-              </Button>
-              
-              <Button 
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
-              >
-                إلغاء
-              </Button>
+            </form>
+
+            <div className="space-y-6 mt-8">
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white">بيانات تسجيل الدخول</h2>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
+                    <Input 
+                      type="email"
+                      value={accountEmail}
+                      onChange={(e) => setAccountEmail(e.target.value)}
+                      placeholder="account@example.com"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      autoComplete="off"
+                      data-form-type="other"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-white mb-2 block">كلمة المرور *</Label>
+                    <Input 
+                      type="password"
+                      value={accountPassword}
+                      onChange={(e) => setAccountPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      autoComplete="new-password"
+                      data-form-type="other"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-2">
+                <Button 
+                  type="submit"
+                  form="game-details-form"
+                  disabled={createListingMutation.isPending || !isVerified}
+                  className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {createListingMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      جاري النشر...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-5 w-5" />
+                      نشر الإعلان
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
+                >
+                  إلغاء
+                </Button>
+              </div>
             </div>
-          </form>
-        </Card>
+          </Card>
       </div>
     </div>
   );
