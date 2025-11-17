@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2 } from "lucide-react";
+import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import stoveLv1 from "@/assets/stove_lv_1.png";
 import stoveLv2 from "@/assets/stove_lv_2.png";
 import stoveLv3 from "@/assets/stove_lv_3.png";
@@ -43,6 +43,9 @@ const ProductDetails = () => {
 
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const handleBuy = async () => {
     if (!user) {
@@ -209,7 +212,12 @@ const ProductDetails = () => {
                   ? 'opacity-60 cursor-not-allowed' 
                   : 'cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all'
               }`}
-              onClick={() => listing.status !== 'sold' && images.length > 0 && setEnlargedImage(images[0])}
+              onClick={() => {
+                if (listing.status !== 'sold' && images.length > 0) {
+                  setCurrentImageIndex(0);
+                  setEnlargedImage(images[0]);
+                }
+              }}
             >
               <div className="relative aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
                 {images.length > 0 ? (
@@ -247,7 +255,13 @@ const ProductDetails = () => {
                         ? 'opacity-60 cursor-not-allowed' 
                         : 'cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all'
                     }`}
-                    onClick={() => listing.status !== 'sold' && setEnlargedImage(img)}
+                    onClick={() => {
+                      if (listing.status !== 'sold') {
+                        const index = images.findIndex(image => image === img);
+                        setCurrentImageIndex(index);
+                        setEnlargedImage(img);
+                      }
+                    }}
                   >
                     <img 
                       src={img} 
@@ -625,15 +639,138 @@ const ProductDetails = () => {
       {/* Glow effects */}
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" />
       
-      {/* Image Enlarge Dialog */}
-      <Dialog open={!!enlargedImage} onOpenChange={() => setEnlargedImage(null)}>
-        <DialogContent className="max-w-4xl w-full bg-background/95 backdrop-blur-sm border-white/10">
-          {enlargedImage ? (
-            <img 
-              src={enlargedImage} 
-              alt="Enlarged view"
-              className="w-full h-auto object-contain max-h-[85vh] rounded-lg"
-            />
+      {/* Image Enlarge Dialog with Swipe Support */}
+      <Dialog 
+        open={!!enlargedImage} 
+        onOpenChange={() => {
+          setEnlargedImage(null);
+          setCurrentImageIndex(0);
+        }}
+      >
+        <DialogContent className="max-w-4xl w-full bg-background/95 backdrop-blur-sm border-white/10 p-0 md:p-6">
+          {enlargedImage && images.length > 0 ? (
+            <div className="relative">
+              {/* Image Container with Swipe Support */}
+              <div
+                className="relative w-full"
+                onTouchStart={(e) => {
+                  touchStartX.current = e.touches[0].clientX;
+                }}
+                onTouchMove={(e) => {
+                  touchEndX.current = e.touches[0].clientX;
+                }}
+                onTouchEnd={() => {
+                  if (!touchStartX.current || !touchEndX.current) return;
+                  
+                  const distance = touchStartX.current - touchEndX.current;
+                  const minSwipeDistance = 50; // Minimum distance for swipe
+                  
+                  if (Math.abs(distance) > minSwipeDistance) {
+                    if (distance > 0 && currentImageIndex < images.length - 1) {
+                      // Swipe left - next image
+                      const nextIndex = currentImageIndex + 1;
+                      setCurrentImageIndex(nextIndex);
+                      setEnlargedImage(images[nextIndex]);
+                    } else if (distance < 0 && currentImageIndex > 0) {
+                      // Swipe right - previous image
+                      const prevIndex = currentImageIndex - 1;
+                      setCurrentImageIndex(prevIndex);
+                      setEnlargedImage(images[prevIndex]);
+                    }
+                  }
+                  
+                  touchStartX.current = null;
+                  touchEndX.current = null;
+                }}
+              >
+                <img 
+                  src={images[currentImageIndex]} 
+                  alt={`${listing.title} - ${t('product.image')} ${currentImageIndex + 1}`}
+                  className="w-full h-auto object-contain max-h-[85vh] rounded-lg"
+                  loading="eager"
+                />
+                
+                {/* Image Counter */}
+                {images.length > 1 && (
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-medium">
+                    {currentImageIndex + 1} / {images.length}
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Buttons - Desktop Only */}
+              {images.length > 1 && (
+                <>
+                  {/* Previous Button */}
+                  {currentImageIndex > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full h-12 w-12 hidden md:flex"
+                      onClick={() => {
+                        const prevIndex = currentImageIndex - 1;
+                        setCurrentImageIndex(prevIndex);
+                        setEnlargedImage(images[prevIndex]);
+                      }}
+                      aria-label={t('product.previousImage') || 'Previous image'}
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                  )}
+
+                  {/* Next Button */}
+                  {currentImageIndex < images.length - 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full h-12 w-12 hidden md:flex"
+                      onClick={() => {
+                        const nextIndex = currentImageIndex + 1;
+                        setCurrentImageIndex(nextIndex);
+                        setEnlargedImage(images[nextIndex]);
+                      }}
+                      aria-label={t('product.nextImage') || 'Next image'}
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </Button>
+                  )}
+
+                  {/* Mobile Swipe Indicator */}
+                  <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs">
+                    {t('product.swipeToNavigate') || 'Swipe to navigate'}
+                  </div>
+                </>
+              )}
+
+              {/* Thumbnail Strip - Desktop Only */}
+              {images.length > 1 && (
+                <div className="hidden md:flex gap-2 mt-4 overflow-x-auto pb-2 px-2">
+                  {images.map((img, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setCurrentImageIndex(index);
+                        setEnlargedImage(img);
+                      }}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        index === currentImageIndex
+                          ? 'border-[hsl(195,80%,70%)] ring-2 ring-[hsl(195,80%,70%,0.3)]'
+                          : 'border-white/20 hover:border-white/40'
+                      }`}
+                      aria-label={`${t('product.image')} ${index + 1}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`${t('product.thumbnail')} ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           ) : (
             <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center rounded-lg">
               <Shield className="h-64 w-64 text-white/20" aria-hidden="true" />
