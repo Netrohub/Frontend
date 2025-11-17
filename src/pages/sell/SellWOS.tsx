@@ -27,9 +27,6 @@ import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { formatCompactNumber } from "@/utils/numberFormat";
 
-const COMPACT_NUMBER_PATTERN =
-  "^(?:[0-9\\u0660-\\u0669]{1,3}(?:,[0-9\\u0660-\\u0669]{3})*|[0-9\\u0660-\\u0669]+)(?:\\.[0-9\\u0660-\\u0669]+)?(?:[KMB])?$";
-
 const SellWOS = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -654,8 +651,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
                         placeholder="مثال: 1M أو 1,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        pattern={COMPACT_NUMBER_PATTERN}
-                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                         required
                       />
                   </div>
@@ -671,8 +666,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
                         placeholder="مثال: 50M أو 50,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        pattern={COMPACT_NUMBER_PATTERN}
-                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                         required
                       />
                   </div>
@@ -690,8 +683,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
                         placeholder="مثال: 10M أو 10,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        pattern={COMPACT_NUMBER_PATTERN}
-                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                         required
                       />
                   </div>
@@ -707,8 +698,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
                         placeholder="مثال: 7 أو 1K"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        pattern={COMPACT_NUMBER_PATTERN}
-                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                         required
                       />
                   </div>
@@ -726,8 +715,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
                         placeholder="مثال: 5M أو 5,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        pattern={COMPACT_NUMBER_PATTERN}
-                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                         required
                       />
                   </div>
@@ -743,8 +730,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
                         placeholder="مثال: 15M أو 15,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        pattern={COMPACT_NUMBER_PATTERN}
-                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                         required
                       />
                   </div>
@@ -761,8 +746,6 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
                       placeholder="مثال: 3M أو 3,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern={COMPACT_NUMBER_PATTERN}
-                      title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
                 </div>
