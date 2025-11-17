@@ -86,20 +86,25 @@ const Checkout = () => {
     }).format(price);
   };
 
-  // Memoize snow particles to prevent re-renders
-  const snowParticles = useMemo(() => 
-    [...Array(Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6))].map((_, i) => (
+  // Optimize snow particles: reduce on mobile, add will-change for better performance
+  const snowParticles = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const baseCount = Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6);
+    const particleCount = isMobile ? Math.floor(baseCount * 0.5) : baseCount;
+    return [...Array(particleCount)].map((_, i) => (
       <div
         key={i}
         className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
         style={{
           left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
           animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_ANIMATION_DELAY}s`,
           animationDuration: `${ANIMATION_CONFIG.SNOW_ANIMATION_DURATION}s`,
+          willChange: 'transform, opacity',
         }}
       />
-    ))
-  , []);
+    ));
+  }, []);
 
   if (!user) {
     return null; // Will redirect

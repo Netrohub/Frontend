@@ -45,9 +45,12 @@ const Wallet = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [ibanError, setIbanError] = useState("");
 
-  // Memoize snow particles BEFORE any conditional returns
-  const snowParticles = useMemo(() => 
-    [...Array(Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6))].map((_, i) => (
+  // Optimize snow particles: reduce on mobile, add will-change for better performance
+  const snowParticles = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const baseCount = Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6);
+    const particleCount = isMobile ? Math.floor(baseCount * 0.5) : baseCount;
+    return [...Array(particleCount)].map((_, i) => (
       <div
         key={i}
         className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
@@ -56,10 +59,11 @@ const Wallet = () => {
           top: `-${Math.random() * 20}%`,
           animationDuration: `${ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN)}s`,
           animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX}s`,
+          willChange: 'transform, opacity',
         }}
       />
-    )), []
-  );
+    ));
+  }, []);
 
   const { data: wallet, isLoading } = useQuery({
     queryKey: ['wallet'],

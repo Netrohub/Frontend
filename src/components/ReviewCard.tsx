@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -35,7 +36,7 @@ interface ReviewCardProps {
   isOwnReview?: boolean;
 }
 
-export function ReviewCard({ 
+function ReviewCardComponent({ 
   review, 
   onHelpful, 
   onReport, 
@@ -142,3 +143,6 @@ export function ReviewCard({
 function cn(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
+
+// Memoize ReviewCard to prevent unnecessary re-renders
+export const ReviewCard = memo(ReviewCardComponent);

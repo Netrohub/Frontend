@@ -16,8 +16,11 @@ const Home = () => {
   const { t, language } = useLanguage();
   
   // Memoize snow particles to prevent recreation on every render (performance optimization)
+  // Optimize snow particles: reduce on mobile, add will-change for better performance
   const snowParticles = useMemo(() => {
-    return [...Array(30)].map((_, i) => (
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const particleCount = isMobile ? 15 : 30;
+    return [...Array(particleCount)].map((_, i) => (
       <div
         key={i}
         className="absolute w-1 h-1 bg-white/60 rounded-full animate-fall"
@@ -26,6 +29,7 @@ const Home = () => {
           top: `-${Math.random() * 20}%`,
           animationDuration: `${10 + Math.random() * 20}s`,
           animationDelay: `${Math.random() * 5}s`,
+          willChange: 'transform, opacity',
         }}
       />
     ));

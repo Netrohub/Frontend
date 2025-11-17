@@ -268,7 +268,7 @@ All colors MUST be HSL.
   @apply border-white/20 my-8;
 }
 
-/* Animation for snow falling effect */
+/* Animation for snow falling effect - optimized for performance */
 @keyframes fall {
   0% {
     transform: translateY(-100vh) rotate(0deg);
@@ -282,4 +282,9 @@ All colors MUST be HSL.
 
 .animate-fall {
   animation: fall linear infinite;
+  will-change: transform, opacity;
+  /* Use GPU acceleration for better performance */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }

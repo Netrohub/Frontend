@@ -11,9 +11,11 @@ import { useLanguage } from "@/contexts/LanguageContext";
 
 const About = () => {
   const { t, tAr, language } = useLanguage();
-  // Memoize snow particles for performance
-  const snowParticles = useMemo(() => 
-    [...Array(30)].map((_, i) => (
+  // Optimize snow particles: reduce on mobile, add will-change for better performance
+  const snowParticles = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const particleCount = isMobile ? 15 : 30;
+    return [...Array(particleCount)].map((_, i) => (
       <div
         key={i}
         className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
@@ -22,10 +24,11 @@ const About = () => {
           top: `-${Math.random() * 20}%`,
           animationDuration: `${10 + Math.random() * 20}s`,
           animationDelay: `${Math.random() * 5}s`,
+          willChange: 'transform, opacity',
         }}
       />
-    )), []
-  );
+    ));
+  }, []);
 
   return (
     <>
