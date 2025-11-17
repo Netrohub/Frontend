@@ -175,6 +175,32 @@ All colors MUST be HSL.
     @apply font-bold;
   }
 
+  /* Typography Scale - Standardized */
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  /* Focus states for all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-[hsl(195,80%,70%)] ring-offset-2 ring-offset-[hsl(200,70%,15%)];
+  }
+
   /* Utility class for safe bottom padding (for bottom nav) */
   .pb-safe-bottom {
     padding-bottom: calc(6rem + env(safe-area-inset-bottom));

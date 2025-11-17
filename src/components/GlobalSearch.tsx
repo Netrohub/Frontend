@@ -43,6 +43,9 @@ export const GlobalSearch = () => {
             <div className="relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-[hsl(195,80%,70%)]" />
               <Input
+                type="search"
+                inputMode="search"
+                autoComplete="off"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t('search.fullPlaceholder')}

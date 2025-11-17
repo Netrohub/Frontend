@@ -107,7 +107,7 @@ const Orders = () => {
       <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 py-8 text-center">
-          <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
+          <Card className="p-6 md:p-12 bg-white/5 border-white/10 backdrop-blur-sm">
             <p className="text-white/70 mb-4">{t('orders.loginRequired')}</p>
             <Link to="/auth">
               <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">{t('auth.login')}</Button>
@@ -137,7 +137,7 @@ const Orders = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 md:gap-4 mb-8">
             <Card className="p-3 md:p-4 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="text-xl md:text-2xl font-black text-white mb-1">{stats.total}</div>
               <div className="text-xs md:text-sm text-white/70">{t('orders.total')}</div>
@@ -199,7 +199,7 @@ const Orders = () => {
               <Loader2 className="h-8 w-8 animate-spin text-white/60" />
             </div>
           ) : filteredOrders.length === 0 ? (
-            <Card className="p-12 text-center bg-white/5 border-white/10">
+            <Card className="p-6 md:p-12 text-center bg-white/5 border-white/10">
               <Package className="h-16 w-16 text-white/20 mx-auto mb-4" />
               <p className="text-white/60 text-lg mb-4">
                 {statusFilter !== 'all' || roleFilter !== 'all' 

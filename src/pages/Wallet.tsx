@@ -252,7 +252,7 @@ const Wallet = () => {
 
         {/* Balance Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+              <Card className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 rounded-lg bg-green-500/20">
                     <WalletIcon className="h-6 w-6 text-green-400" />
@@ -262,7 +262,7 @@ const Wallet = () => {
                 <p className="text-3xl font-black text-white">{formatPrice(availableBalance)}</p>
               </Card>
 
-              <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+              <Card className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 rounded-lg bg-yellow-500/20">
                     <Clock className="h-6 w-6 text-yellow-400" />
@@ -272,7 +272,7 @@ const Wallet = () => {
                 <p className="text-3xl font-black text-white">{formatPrice(onHoldBalance)}</p>
               </Card>
 
-              <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+              <Card className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 rounded-lg bg-blue-500/20">
                     <ArrowDownToLine className="h-6 w-6 text-blue-400" />

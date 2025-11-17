@@ -119,6 +119,9 @@ const Members = () => {
               <div className="flex-1 relative">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                 <Input 
+                  type="search"
+                  inputMode="search"
+                  autoComplete="off"
                   placeholder={t('members.searchPlaceholder')}
                   className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[hsl(195,80%,70%,0.5)]"
                   value={searchQuery}

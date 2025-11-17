@@ -36,7 +36,7 @@ export const BottomNav = () => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[60px] min-h-[56px]",
+                "flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[60px] min-h-[56px] focus:outline-none focus:ring-2 focus:ring-[hsl(195,80%,70%)] focus:ring-offset-2 focus:ring-offset-[hsl(200,70%,15%)]",
                 active
                   ? "bg-[hsl(195,80%,50%)] text-white"
                   : "text-white/70 hover:text-white hover:bg-white/5"

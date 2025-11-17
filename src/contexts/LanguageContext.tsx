@@ -83,8 +83,8 @@ const translations: Record<Language, Record<string, string>> = {
 'common.notSpecified': 'غير محدد',
 
 // Navbar
-'nav.home': 'الصفحة الرئيسية',
-'nav.marketplace': 'المتجر الرقمي',
+'nav.home': 'الرئيسية',
+'nav.marketplace': 'المتجر',
 'nav.sell': 'اعرض حسابك للبيع',
 'nav.orders': 'الطلبات',
 'nav.wallet': 'رصيدي',

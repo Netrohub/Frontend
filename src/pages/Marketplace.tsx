@@ -102,6 +102,9 @@ const Marketplace = () => {
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
               <Input 
+                type="search"
+                inputMode="search"
+                autoComplete="off"
                 placeholder={t('marketplace.searchPlaceholder')}
                 className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40 focus:border-[hsl(195,80%,70%,0.5)]"
                 value={searchInput}
@@ -203,7 +206,9 @@ const Marketplace = () => {
                   <div className="relative h-48 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] overflow-hidden">
                     {account.images && account.images.length > 0 ? (
                       <img 
-                        src={account.images[0]} 
+                        src={account.images[0]}
+                        loading="lazy"
+                        decoding="async" 
                         alt={`${account.title} - ${account.category}`}
                         loading="lazy"
                         className={`w-full h-full object-cover ${isSold ? 'grayscale' : ''}`}
