@@ -467,7 +467,14 @@ const SellWOS = () => {
         )}
 
           <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
-            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            <form
+              id="game-details-form"
+              onSubmit={handleSubmit}
+              className="space-y-6"
+              noValidate
+              autoComplete="off"
+              data-form-type="other"
+            >
               <input
                 type="text"
                 name="fake-username"
@@ -905,34 +912,10 @@ const SellWOS = () => {
             </div>
 
             {/* Account Details */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
-              
-              <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
-                    <Input 
-                      type="email"
-                      value={accountEmail}
-                      onChange={(e) => setAccountEmail(e.target.value)}
-                      placeholder="account@example.com"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    />
-                  </div>
-
-                  <div>
-                    <Label className="text-white mb-2 block">كلمة المرور *</Label>
-                    <Input 
-                      type="password"
-                      value={accountPassword}
-                      onChange={(e) => setAccountPassword(e.target.value)}
-                      placeholder="••••••••"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    />
-                  </div>
-              </div>
-
               <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
+                
+                <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mt-4">{t('listing.billImagesTitle')}</h3>
                 <p className="text-sm text-white/60">{billImagesInstructions}</p>
                 
@@ -1097,37 +1080,73 @@ const SellWOS = () => {
               </div>
             </div>
 
-            {/* Submit */}
-            <div className="flex gap-4 pt-4">
-              <Button 
-                type="submit"
-                disabled={createListingMutation.isPending || !isVerified}
-                className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {createListingMutation.isPending ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    جاري النشر...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-5 w-5" />
-                    نشر الإعلان
-                  </>
-                )}
-              </Button>
-              
-              <Button 
-                type="button"
-                variant="outline"
-                onClick={handleCancel}
-                className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
-              >
-                إلغاء
-              </Button>
+            </form>
+
+            <div className="space-y-6 mt-8">
+              <div className="space-y-4">
+                <h2 className="text-xl font-bold text-white">بيانات تسجيل الدخول</h2>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
+                    <Input 
+                      type="email"
+                      value={accountEmail}
+                      onChange={(e) => setAccountEmail(e.target.value)}
+                      placeholder="account@example.com"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      autoComplete="off"
+                      data-form-type="other"
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-white mb-2 block">كلمة المرور *</Label>
+                    <Input 
+                      type="password"
+                      value={accountPassword}
+                      onChange={(e) => setAccountPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      autoComplete="new-password"
+                      data-form-type="other"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-4 pt-2">
+                <Button 
+                  type="submit"
+                  form="game-details-form"
+                  disabled={createListingMutation.isPending || !isVerified}
+                  className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {createListingMutation.isPending ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      جاري النشر...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-5 w-5" />
+                      نشر الإعلان
+                    </>
+                  )}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
+                >
+                  إلغاء
+                </Button>
+              </div>
             </div>
-          </form>
-        </Card>
+          </Card>
       </div>
     </div>
   );
