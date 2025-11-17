@@ -464,13 +464,12 @@ const SellWOS = () => {
               
               <div>
                 <Label className="text-white mb-2 block">عنوان الإعلان *</Label>
-                <Input 
+                  <Input 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="مثال: حساب قوي - المستوى 45"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                   maxLength={255}
-                  required
                 />
                 <p className="text-sm text-white/60 mt-1">
                   {title.length}/255 حرف
@@ -480,7 +479,7 @@ const SellWOS = () => {
               <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white mb-2 block">السيرفر *</Label>
-                    <Select value={server} onValueChange={setServer} required>
+                      <Select value={server} onValueChange={setServer}>
                       <SelectTrigger className="bg-white/5 border-white/10 text-white">
                         <SelectValue placeholder="اختر السيرفر" />
                       </SelectTrigger>
@@ -503,7 +502,7 @@ const SellWOS = () => {
 
               <div>
                 <Label className="text-white mb-2 block">السعر ($) *</Label>
-                <Input 
+                  <Input 
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
@@ -512,7 +511,6 @@ const SellWOS = () => {
                   min="10"
                   max="10000"
                   step="0.01"
-                  required
                 />
                 <p className="text-sm text-white/60 mt-1">
                   {t('listing.priceRange')}
@@ -524,7 +522,7 @@ const SellWOS = () => {
                 
                 <div>
                   <Label className="text-white mb-2 block">حجرة الاحتراق *</Label>
-                  <Select value={stoveLevel} onValueChange={setStoveLevel} required>
+                    <Select value={stoveLevel} onValueChange={setStoveLevel}>
                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
                       <SelectValue placeholder="اختر حجرة الاحتراق" />
                     </SelectTrigger>
@@ -651,7 +649,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
                         placeholder="مثال: 1M أو 1,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        required
                       />
                   </div>
 
@@ -666,7 +663,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
                         placeholder="مثال: 50M أو 50,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        required
                       />
                   </div>
                 </div>
@@ -683,7 +679,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
                         placeholder="مثال: 10M أو 10,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        required
                       />
                   </div>
 
@@ -698,7 +693,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
                         placeholder="مثال: 7 أو 1K"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        required
                       />
                   </div>
                 </div>
@@ -715,7 +709,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
                         placeholder="مثال: 5M أو 5,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        required
                       />
                   </div>
 
@@ -730,7 +723,6 @@ const SellWOS = () => {
                         onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
                         placeholder="مثال: 15M أو 15,000,000"
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                        required
                       />
                   </div>
                 </div>
@@ -746,7 +738,6 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
                       placeholder="مثال: 3M أو 3,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      required
                     />
                 </div>
 
@@ -895,29 +886,27 @@ const SellWOS = () => {
               <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
               
               <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
-                  <Input 
-                    type="email"
-                    value={accountEmail}
-                    onChange={(e) => setAccountEmail(e.target.value)}
-                    placeholder="account@example.com"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    required
-                  />
-                </div>
+                  <div>
+                    <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
+                    <Input 
+                      type="email"
+                      value={accountEmail}
+                      onChange={(e) => setAccountEmail(e.target.value)}
+                      placeholder="account@example.com"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    />
+                  </div>
 
-                <div>
-                  <Label className="text-white mb-2 block">كلمة المرور *</Label>
-                  <Input 
-                    type="password"
-                    value={accountPassword}
-                    onChange={(e) => setAccountPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    required
-                  />
-                </div>
+                  <div>
+                    <Label className="text-white mb-2 block">كلمة المرور *</Label>
+                    <Input 
+                      type="password"
+                      value={accountPassword}
+                      onChange={(e) => setAccountPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                    />
+                  </div>
               </div>
 
               <div className="space-y-4">
