@@ -226,6 +226,7 @@ const Home = () => {
                 className="h-16 md:h-20 w-16 md:w-20"
                 style={{ objectFit: 'contain', aspectRatio: '1/1' }}
                 loading="lazy"
+                decoding="async"
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
                   if (img.src.includes('new')) {

@@ -207,10 +207,9 @@ const Marketplace = () => {
                     {account.images && account.images.length > 0 ? (
                       <img 
                         src={account.images[0]}
-                        loading="lazy"
-                        decoding="async" 
                         alt={`${account.title} - ${account.category}`}
                         loading="lazy"
+                        decoding="async"
                         className={`w-full h-full object-cover ${isSold ? 'grayscale' : ''}`}
                       />
                     ) : (
