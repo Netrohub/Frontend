@@ -204,20 +204,33 @@ const ProductDetails = () => {
           {/* Left Column - Images */}
           <div className="space-y-4">
             <Card 
-              className="overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all"
-              onClick={() => images.length > 0 && setEnlargedImage(images[0])}
+              className={`overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm ${
+                listing.status === 'sold' 
+                  ? 'opacity-60 cursor-not-allowed' 
+                  : 'cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all'
+              }`}
+              onClick={() => listing.status !== 'sold' && images.length > 0 && setEnlargedImage(images[0])}
             >
-              <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
+              <div className="relative aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
                 {images.length > 0 ? (
-                  <img 
-                    src={images[0]} 
-                    alt={listing.title}
-                    width="800"
-                    height="450"
-                    loading="eager"
-                    className="w-full h-full object-cover"
-                    style={{ aspectRatio: '16/9' }}
-                  />
+                  <>
+                    <img 
+                      src={images[0]} 
+                      alt={listing.title}
+                      width="800"
+                      height="450"
+                      loading="eager"
+                      className={`w-full h-full object-cover ${listing.status === 'sold' ? 'grayscale' : ''}`}
+                      style={{ aspectRatio: '16/9' }}
+                    />
+                    {listing.status === 'sold' && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <Badge className="bg-red-600 hover:bg-red-700 text-white font-bold text-xl px-6 py-3">
+                          🔒 {t('product.sold')}
+                        </Badge>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <Shield className="h-32 w-32 text-white/20" aria-hidden="true" />
                 )}
@@ -229,8 +242,12 @@ const ProductDetails = () => {
                 {images.slice(1, 5).map((img, i) => (
                   <Card 
                     key={i} 
-                    className="aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all"
-                    onClick={() => setEnlargedImage(img)}
+                    className={`aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden ${
+                      listing.status === 'sold' 
+                        ? 'opacity-60 cursor-not-allowed' 
+                        : 'cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all'
+                    }`}
+                    onClick={() => listing.status !== 'sold' && setEnlargedImage(img)}
                   >
                     <img 
                       src={img} 
@@ -238,7 +255,7 @@ const ProductDetails = () => {
                       width="200"
                       height="200"
                       loading="lazy"
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full object-cover ${listing.status === 'sold' ? 'grayscale' : ''}`}
                       style={{ aspectRatio: '1/1' }}
                     />
                   </Card>
@@ -585,9 +602,19 @@ const ProductDetails = () => {
               </div>
             )}
 
-            {listing.status !== 'active' && !isOwner && (
-              <Badge className="w-full justify-center py-3 text-lg bg-red-500/20 text-red-400 border-red-500/30">
-                {listing.status === 'sold' ? `🔒 ${t('product.sold')}` : t('product.unavailable')}
+            {listing.status === 'sold' && !isOwner && (
+              <div className="space-y-3">
+                <Badge className="w-full justify-center py-4 text-lg bg-red-500/20 text-red-400 border-red-500/30 font-bold">
+                  🔒 {t('product.sold')}
+                </Badge>
+                <p className="text-center text-white/60 text-sm">
+                  {t('product.soldMessage') || 'This product has been sold and is no longer available for purchase.'}
+                </p>
+              </div>
+            )}
+            {listing.status !== 'active' && listing.status !== 'sold' && !isOwner && (
+              <Badge className="w-full justify-center py-3 text-lg bg-gray-500/20 text-gray-400 border-gray-500/30">
+                {t('product.unavailable')}
               </Badge>
             )}
           </div>

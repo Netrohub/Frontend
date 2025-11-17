@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, Tag, Star, Shield, Loader2, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -190,9 +191,14 @@ const Marketplace = () => {
         {/* Listings Grid */}
         {!isLoading && !error && filteredListings.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredListings.map((account) => (
-              <Link key={account.id} to={`/product/${account.id}`}>
-                <Card className="overflow-hidden bg-white/5 border-white/10 hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:-translate-y-1 group backdrop-blur-sm">
+            {filteredListings.map((account) => {
+              const isSold = account.status === 'sold';
+              const CardContent = (
+                <Card className={`overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm ${
+                  isSold 
+                    ? 'opacity-60 cursor-not-allowed' 
+                    : 'hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:-translate-y-1 group'
+                }`}>
                   {/* Image */}
                   <div className="relative h-48 bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] overflow-hidden">
                     {account.images && account.images.length > 0 ? (
@@ -200,18 +206,28 @@ const Marketplace = () => {
                         src={account.images[0]} 
                         alt={`${account.title} - ${account.category}`}
                         loading="lazy"
-                        className="w-full h-full object-cover"
+                        className={`w-full h-full object-cover ${isSold ? 'grayscale' : ''}`}
                       />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <Shield className="h-20 w-20 text-white/20" />
                       </div>
                     )}
+                    {/* SOLD Badge */}
+                    {isSold && (
+                      <div className="absolute top-2 right-2 z-10">
+                        <Badge className="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1">
+                          {t('product.sold')}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
 
                   {/* Content */}
                   <div className="p-5 space-y-3">
-                    <h3 className="text-xl font-bold text-white group-hover:text-[hsl(195,80%,70%)] transition-colors">
+                    <h3 className={`text-xl font-bold ${
+                      isSold ? 'text-white/50' : 'text-white group-hover:text-[hsl(195,80%,70%)] transition-colors'
+                    }`}>
                       {account.title}
                     </h3>
                     
@@ -238,15 +254,42 @@ const Marketplace = () => {
                     )}
 
                     <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                      <span className="text-2xl font-black text-[hsl(195,80%,70%)]">{formatCurrency(account.price)}</span>
-                      <Button size="sm" className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
-                        {t('marketplace.viewDetails')}
+                      <span className={`text-2xl font-black ${
+                        isSold ? 'text-white/50' : 'text-[hsl(195,80%,70%)]'
+                      }`}>
+                        {formatCurrency(account.price)}
+                      </span>
+                      <Button 
+                        size="sm" 
+                        disabled={isSold}
+                        className={`${
+                          isSold 
+                            ? 'bg-white/10 text-white/50 cursor-not-allowed border-0' 
+                            : 'bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0'
+                        }`}
+                      >
+                        {isSold ? t('product.sold') : t('marketplace.viewDetails')}
                       </Button>
                     </div>
                   </div>
                 </Card>
-              </Link>
-            ))}
+              );
+
+              // Only make clickable if not sold
+              if (isSold) {
+                return (
+                  <div key={account.id} className="relative">
+                    {CardContent}
+                  </div>
+                );
+              }
+
+              return (
+                <Link key={account.id} to={`/product/${account.id}`}>
+                  {CardContent}
+                </Link>
+              );
+            })}
           </div>
         )}
         </div>
