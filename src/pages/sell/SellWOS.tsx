@@ -27,6 +27,9 @@ import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { formatCompactNumber } from "@/utils/numberFormat";
 
+const COMPACT_NUMBER_PATTERN =
+  "^(?:[0-9\\u0660-\\u0669]{1,3}(?:,[0-9\\u0660-\\u0669]{3})*|[0-9\\u0660-\\u0669]+)(?:\\.[0-9\\u0660-\\u0669]+)?(?:[KMB])?$";
+
 const SellWOS = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -645,16 +648,16 @@ const SellWOS = () => {
                       <Users className="h-4 w-4 text-[hsl(195,80%,70%)]" />
                       عدد الجنود *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={troops}
-                      onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
-                      placeholder="مثال: 1M أو 1,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        value={troops}
+                        onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
+                        placeholder="مثال: 1M أو 1,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        pattern={COMPACT_NUMBER_PATTERN}
+                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                        required
+                      />
                   </div>
 
                   <div>
@@ -662,16 +665,16 @@ const SellWOS = () => {
                       <Zap className="h-4 w-4 text-[hsl(40,90%,55%)]" />
                       القوة الشخصية (Total Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={totalPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
-                      placeholder="مثال: 50M أو 50,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        value={totalPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
+                        placeholder="مثال: 50M أو 50,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        pattern={COMPACT_NUMBER_PATTERN}
+                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                        required
+                      />
                   </div>
                 </div>
 
@@ -681,16 +684,16 @@ const SellWOS = () => {
                       <Swords className="h-4 w-4 text-[hsl(340,70%,70%)]" />
                       قوة البطل (Hero Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={heroPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
-                      placeholder="مثال: 10M أو 10,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        value={heroPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
+                        placeholder="مثال: 10M أو 10,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        pattern={COMPACT_NUMBER_PATTERN}
+                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                        required
+                      />
                   </div>
 
                   <div>
@@ -698,16 +701,16 @@ const SellWOS = () => {
                       <MapPin className="h-4 w-4 text-[hsl(220,70%,70%)]" />
                       الجزيرة (Island) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={island}
-                      onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
-                      placeholder="مثال: 7 أو 1K"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        value={island}
+                        onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
+                        placeholder="مثال: 7 أو 1K"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        pattern={COMPACT_NUMBER_PATTERN}
+                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                        required
+                      />
                   </div>
                 </div>
 
@@ -717,16 +720,16 @@ const SellWOS = () => {
                       <GraduationCap className="h-4 w-4 text-[hsl(120,60%,70%)]" />
                       قوة الخبير (Expert Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={expertPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
-                      placeholder="مثال: 5M أو 5,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        value={expertPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
+                        placeholder="مثال: 5M أو 5,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        pattern={COMPACT_NUMBER_PATTERN}
+                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                        required
+                      />
                   </div>
 
                   <div>
@@ -734,16 +737,16 @@ const SellWOS = () => {
                       <Crown className="h-4 w-4 text-[hsl(40,90%,55%)]" />
                       قوة البطل الإجمالية (Hero's total Power) *
                     </Label>
-                    <Input 
-                      type="text"
-                      value={heroTotalPower}
-                      onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
-                      placeholder="مثال: 15M أو 15,000,000"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                      required
-                    />
+                      <Input 
+                        type="text"
+                        value={heroTotalPower}
+                        onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
+                        placeholder="مثال: 15M أو 15,000,000"
+                        className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                        pattern={COMPACT_NUMBER_PATTERN}
+                        title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                        required
+                      />
                   </div>
                 </div>
 
@@ -752,16 +755,16 @@ const SellWOS = () => {
                     <PawPrint className="h-4 w-4 text-[hsl(280,70%,70%)]" />
                     قوة الحيوانات (Pet Power) *
                   </Label>
-                  <Input 
-                    type="text"
-                    value={petPower}
-                    onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
-                    placeholder="مثال: 3M أو 3,000,000"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
-                    title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
-                    required
-                  />
+                    <Input 
+                      type="text"
+                      value={petPower}
+                      onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
+                      placeholder="مثال: 3M أو 3,000,000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
+                      pattern={COMPACT_NUMBER_PATTERN}
+                      title="يمكنك إدخال أرقام (إنجليزية أو عربية) مع إمكانية إضافة K أو M أو B في النهاية"
+                      required
+                    />
                 </div>
 
                 <div>
