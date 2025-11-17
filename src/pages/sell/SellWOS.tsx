@@ -32,12 +32,8 @@ const SellWOS = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t, language } = useLanguage();
-  const billImagesInstructions = language === 'ar'
-    ? 'قم برفع لقطات من فواتير الشراء — ستُعرض للمشتري بعد الدفع.'
-    : 'Upload purchase receipts — visible to the buyer after payment confirmation.';
-  const billImagesSecurityNote = language === 'ar'
-    ? 'معلومات الحساب ستكون محمية ومشفرة. سيتم عرضها للمشتري فقط بعد إتمام عملية الدفع.'
-    : 'Account information is protected and encrypted. It will be visible to the buyer only after payment is completed.';
+  const billImagesInstructions = t('listing.billImagesInstructions');
+  const billImagesSecurityNote = t('listing.billImagesSecurityNote');
   const isVerified = user?.is_verified || false;
 
   // Form state
@@ -203,9 +199,7 @@ const SellWOS = () => {
                    server || price || stoveLevel || troops || totalPower;
     
     if (hasData) {
-      const confirmed = window.confirm(
-        'هل أنت متأكد من الإلغاء؟ ستفقد جميع البيانات المدخلة.'
-      );
+      const confirmed = window.confirm(t('listing.cancelConfirm'));
       if (!confirmed) return;
     }
     
@@ -339,22 +333,23 @@ const SellWOS = () => {
       const formattedHeroTotalPower = formatCompactNumber(heroTotalPower);
       const formattedPetPower = formatCompactNumber(petPower);
 
+      const yesNo = (value: string) => value === 'yes' ? t('sell.wos.yes') : t('sell.wos.no');
       const descriptionParts = [
-        `السيرفر: ${server}`,
-        `حجرة الاحتراق: ${stoveLevel}`,
-        helios.length > 0 ? `هيليوس: ${helios.join(', ')}` : 'هيليوس: لا يوجد',
-        `عدد الجنود: ${formattedTroops}`,
-        `القوة الشخصية: ${formattedTotalPower}`,
-        `قوة البطل: ${formattedHeroPower}`,
-        `الجزيرة: ${formattedIsland}`,
-        `قوة الخبير: ${formattedExpertPower}`,
-        `قوة البطل الإجمالية: ${formattedHeroTotalPower}`,
-        `قوة الحيوانات: ${formattedPetPower}`,
-        `مع البريد الإلكتروني الأساسي: ${hasEmail === 'yes' ? 'نعم' : 'لا'}`,
-        `مربوط في أبل: ${hasApple === 'yes' ? 'نعم' : 'لا'}`,
-        `مربوط في قوقل: ${hasGoogle === 'yes' ? 'نعم' : 'لا'}`,
-        `مربوط في فيسبوك: ${hasFacebook === 'yes' ? 'نعم' : 'لا'}`,
-        `مربوط في قيم سنتر: ${hasGameCenter === 'yes' ? 'نعم' : 'لا'}`,
+        t('sell.wos.descriptionServer', { server }),
+        t('sell.wos.descriptionFurnace', { level: stoveLevel }),
+        helios.length > 0 ? t('sell.wos.descriptionHelios', { helios: helios.join(', ') }) : t('sell.wos.descriptionHeliosNone'),
+        t('sell.wos.descriptionTroops', { troops: formattedTroops }),
+        t('sell.wos.descriptionTotalPower', { power: formattedTotalPower }),
+        t('sell.wos.descriptionHeroPower', { power: formattedHeroPower }),
+        t('sell.wos.descriptionIsland', { island: formattedIsland }),
+        t('sell.wos.descriptionExpertPower', { power: formattedExpertPower }),
+        t('sell.wos.descriptionHeroTotalPower', { power: formattedHeroTotalPower }),
+        t('sell.wos.descriptionPetPower', { power: formattedPetPower }),
+        t('sell.wos.descriptionHasEmail', { value: yesNo(hasEmail) }),
+        t('sell.wos.descriptionHasApple', { value: yesNo(hasApple) }),
+        t('sell.wos.descriptionHasGoogle', { value: yesNo(hasGoogle) }),
+        t('sell.wos.descriptionHasFacebook', { value: yesNo(hasFacebook) }),
+        t('sell.wos.descriptionHasGameCenter', { value: yesNo(hasGameCenter) }),
       ];
 
       const description = descriptionParts.join('\n');
@@ -397,7 +392,7 @@ const SellWOS = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       
@@ -423,8 +418,8 @@ const SellWOS = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">إضافة حساب Whiteout Survival للبيع</h1>
-          <p className="text-white/60">أضف تفاصيل الحساب وابدأ البيع</p>
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('sell.wos.pageTitle')}</h1>
+          <p className="text-white/60">{t('sell.wos.pageSubtitle')}</p>
         </div>
 
         {/* KYC Required Warning */}
@@ -434,12 +429,12 @@ const SellWOS = () => {
               <div className="flex gap-4 flex-1">
                 <ShieldAlert className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">التحقق من الهوية (KYC) مطلوب</h3>
+                  <h3 className="text-lg font-bold text-white mb-2">{t('sell.wos.kycRequired')}</h3>
                   <p className="text-white/80 text-sm mb-1">
-                    يجب إكمال عملية التحقق من الهوية قبل أن تتمكن من عرض حسابات للبيع على المنصة.
+                    {t('sell.wos.kycDescription1')}
                   </p>
                   <p className="text-white/80 text-sm">
-                    هذا الإجراء إلزامي لضمان أمان وموثوقية جميع البائعين على المنصة.
+                    {t('sell.wos.kycDescription2')}
                   </p>
                 </div>
               </div>
@@ -448,7 +443,7 @@ const SellWOS = () => {
                 className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 whitespace-nowrap"
               >
                 <Link to="/kyc">
-                  ابدأ التحقق الآن
+                  {t('sell.wos.startVerification')}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -460,29 +455,29 @@ const SellWOS = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Info */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white">المعلومات الأساسية</h2>
+              <h2 className="text-xl font-bold text-white">{t('sell.wos.basicInfo')}</h2>
               
               <div>
-                <Label className="text-white mb-2 block">عنوان الإعلان *</Label>
+                <Label className="text-white mb-2 block">{t('sell.wos.listingTitle')}</Label>
                 <Input 
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="مثال: حساب قوي - المستوى 45"
+                  placeholder={t('sell.wos.listingTitlePlaceholder')}
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                   maxLength={255}
                   required
                 />
                 <p className="text-sm text-white/60 mt-1">
-                  {title.length}/255 حرف
+                  {title.length}/255 {t('sell.wos.characters')}
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-white mb-2 block">السيرفر *</Label>
+                    <Label className="text-white mb-2 block">{t('sell.wos.server')}</Label>
                     <Select value={server} onValueChange={setServer} required>
                       <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                        <SelectValue placeholder="اختر السيرفر" />
+                        <SelectValue placeholder={t('sell.wos.selectServer')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="0-99">0-99</SelectItem>
@@ -495,14 +490,14 @@ const SellWOS = () => {
                         <SelectItem value="701-800">701-800</SelectItem>
                         <SelectItem value="801-900">801-900</SelectItem>
                         <SelectItem value="901-1000">901-1000</SelectItem>
-                        <SelectItem value="other">آخر</SelectItem>
+                        <SelectItem value="other">{t('sell.wos.other')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
               </div>
 
               <div>
-                <Label className="text-white mb-2 block">السعر ($) *</Label>
+                <Label className="text-white mb-2 block">{t('sell.wos.price')}</Label>
                 <Input 
                   type="number"
                   value={price}
@@ -520,13 +515,13 @@ const SellWOS = () => {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-white">تفاصيل الحساب (إلزامية)</h3>
+                <h3 className="text-lg font-bold text-white">{t('sell.wos.accountDetails')}</h3>
                 
                 <div>
-                  <Label className="text-white mb-2 block">حجرة الاحتراق *</Label>
+                  <Label className="text-white mb-2 block">{t('sell.wos.furnaceLevel')}</Label>
                   <Select value={stoveLevel} onValueChange={setStoveLevel} required>
                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                      <SelectValue placeholder="اختر حجرة الاحتراق" />
+                      <SelectValue placeholder={t('sell.wos.selectFurnaceLevel')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="FC1">
@@ -594,37 +589,37 @@ const SellWOS = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">هيليوس (يمكن اختيار أكثر من واحد)</Label>
+                  <Label className="text-white mb-2 block">{t('sell.wos.helios')}</Label>
                   <div className="space-y-3 p-4 bg-white/5 rounded-lg border border-white/10">
                     <div className="flex items-center gap-2">
                       <input 
                         type="checkbox" 
                         id="infantry"
-                        checked={helios.includes("المشاة")}
-                        onChange={() => handleHeliosChange("المشاة")}
+                        checked={helios.includes(t('sell.wos.heliosInfantry'))}
+                        onChange={() => handleHeliosChange(t('sell.wos.heliosInfantry'))}
                         className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
                       />
-                      <label htmlFor="infantry" className="text-white text-sm cursor-pointer">المشاة</label>
+                      <label htmlFor="infantry" className="text-white text-sm cursor-pointer">{t('sell.wos.heliosInfantry')}</label>
                     </div>
                     <div className="flex items-center gap-2">
                       <input 
                         type="checkbox" 
                         id="archers"
-                        checked={helios.includes("الرماه")}
-                        onChange={() => handleHeliosChange("الرماه")}
+                        checked={helios.includes(t('sell.wos.heliosArchers'))}
+                        onChange={() => handleHeliosChange(t('sell.wos.heliosArchers'))}
                         className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
                       />
-                      <label htmlFor="archers" className="text-white text-sm cursor-pointer">الرماه</label>
+                      <label htmlFor="archers" className="text-white text-sm cursor-pointer">{t('sell.wos.heliosArchers')}</label>
                     </div>
                     <div className="flex items-center gap-2">
                       <input 
                         type="checkbox" 
                         id="spear"
-                        checked={helios.includes("الرمح")}
-                        onChange={() => handleHeliosChange("الرمح")}
+                        checked={helios.includes(t('sell.wos.heliosSpear'))}
+                        onChange={() => handleHeliosChange(t('sell.wos.heliosSpear'))}
                         className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
                       />
-                      <label htmlFor="spear" className="text-white text-sm cursor-pointer">الرمح</label>
+                      <label htmlFor="spear" className="text-white text-sm cursor-pointer">{t('sell.wos.heliosSpear')}</label>
                     </div>
                     <div className="flex items-center gap-2">
                       <input 
@@ -634,7 +629,7 @@ const SellWOS = () => {
                         onChange={() => handleHeliosChange("none")}
                         className="w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
                       />
-                      <label htmlFor="none" className="text-white text-sm cursor-pointer">ولا شي</label>
+                      <label htmlFor="none" className="text-white text-sm cursor-pointer">{t('sell.wos.heliosNone')}</label>
                     </div>
                   </div>
                 </div>
@@ -643,16 +638,16 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <Users className="h-4 w-4 text-[hsl(195,80%,70%)]" />
-                      عدد الجنود *
+                      {t('sell.wos.troops')}
                     </Label>
                     <Input 
                       type="text"
                       value={troops}
                       onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
-                      placeholder="مثال: 1M أو 1,000,000"
+                      placeholder={t('sell.wos.troopsPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                      title={t('sell.wos.numericInputHint')}
                       required
                     />
                   </div>
@@ -660,16 +655,16 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <Zap className="h-4 w-4 text-[hsl(40,90%,55%)]" />
-                      القوة الشخصية (Total Power) *
+                      {t('sell.wos.totalPower')}
                     </Label>
                     <Input 
                       type="text"
                       value={totalPower}
                       onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
-                      placeholder="مثال: 50M أو 50,000,000"
+                      placeholder={t('sell.wos.totalPowerPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                      title={t('sell.wos.numericInputHint')}
                       required
                     />
                   </div>
@@ -679,16 +674,16 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <Swords className="h-4 w-4 text-[hsl(340,70%,70%)]" />
-                      قوة البطل (Hero Power) *
+                      {t('sell.wos.heroPower')}
                     </Label>
                     <Input 
                       type="text"
                       value={heroPower}
                       onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
-                      placeholder="مثال: 10M أو 10,000,000"
+                      placeholder={t('sell.wos.heroPowerPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                      title={t('sell.wos.numericInputHint')}
                       required
                     />
                   </div>
@@ -696,16 +691,16 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-[hsl(220,70%,70%)]" />
-                      الجزيرة (Island) *
+                      {t('sell.wos.island')}
                     </Label>
                     <Input 
                       type="text"
                       value={island}
                       onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
-                      placeholder="مثال: 7 أو 1K"
+                      placeholder={t('sell.wos.islandPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                      title={t('sell.wos.numericInputHint')}
                       required
                     />
                   </div>
@@ -715,16 +710,16 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <GraduationCap className="h-4 w-4 text-[hsl(120,60%,70%)]" />
-                      قوة الخبير (Expert Power) *
+                      {t('sell.wos.expertPower')}
                     </Label>
                     <Input 
                       type="text"
                       value={expertPower}
                       onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
-                      placeholder="مثال: 5M أو 5,000,000"
+                      placeholder={t('sell.wos.expertPowerPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                      title={t('sell.wos.numericInputHint')}
                       required
                     />
                   </div>
@@ -732,16 +727,16 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <Crown className="h-4 w-4 text-[hsl(40,90%,55%)]" />
-                      قوة البطل الإجمالية (Hero's total Power) *
+                      {t('sell.wos.heroTotalPower')}
                     </Label>
                     <Input 
                       type="text"
                       value={heroTotalPower}
                       onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
-                      placeholder="مثال: 15M أو 15,000,000"
+                      placeholder={t('sell.wos.heroTotalPowerPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                      title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                      title={t('sell.wos.numericInputHint')}
                       required
                     />
                   </div>
@@ -750,86 +745,86 @@ const SellWOS = () => {
                 <div>
                   <Label className="text-white mb-2 block flex items-center gap-2">
                     <PawPrint className="h-4 w-4 text-[hsl(280,70%,70%)]" />
-                    قوة الحيوانات (Pet Power) *
+                    {t('sell.wos.petPower')}
                   </Label>
                   <Input 
                     type="text"
                     value={petPower}
                     onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
-                    placeholder="مثال: 3M أو 3,000,000"
+                    placeholder={t('sell.wos.petPowerPlaceholder')}
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                     pattern="^[0-9٠-٩,.\s]*[KMB]?$"
-                    title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
+                    title={t('sell.wos.numericInputHint')}
                     required
                   />
                 </div>
 
                 <div>
-                  <Label className="text-white mb-3 block">مع البريد الإلكتروني الأساسي؟</Label>
+                  <Label className="text-white mb-3 block">{t('sell.wos.hasEmail')}</Label>
                   <RadioGroup value={hasEmail} onValueChange={setHasEmail} className="flex gap-6">
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="yes" id="email-yes" className="border-white/30" />
-                      <Label htmlFor="email-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                      <Label htmlFor="email-yes" className="text-white cursor-pointer font-normal">{t('sell.wos.yes')}</Label>
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="no" id="email-no" className="border-white/30" />
-                      <Label htmlFor="email-no" className="text-white cursor-pointer font-normal">لا</Label>
+                      <Label htmlFor="email-no" className="text-white cursor-pointer font-normal">{t('sell.wos.no')}</Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div>
-                  <Label className="text-white mb-3 block">هل الحساب مربوط في أبل؟</Label>
+                  <Label className="text-white mb-3 block">{t('sell.wos.hasApple')}</Label>
                   <RadioGroup value={hasApple} onValueChange={setHasApple} className="flex gap-6">
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="yes" id="apple-yes" className="border-white/30" />
-                      <Label htmlFor="apple-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                      <Label htmlFor="apple-yes" className="text-white cursor-pointer font-normal">{t('sell.wos.yes')}</Label>
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="no" id="apple-no" className="border-white/30" />
-                      <Label htmlFor="apple-no" className="text-white cursor-pointer font-normal">لا</Label>
+                      <Label htmlFor="apple-no" className="text-white cursor-pointer font-normal">{t('sell.wos.no')}</Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div>
-                  <Label className="text-white mb-3 block">هل الحساب مربوط في قوقل؟</Label>
+                  <Label className="text-white mb-3 block">{t('sell.wos.hasGoogle')}</Label>
                   <RadioGroup value={hasGoogle} onValueChange={setHasGoogle} className="flex gap-6">
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="yes" id="google-yes" className="border-white/30" />
-                      <Label htmlFor="google-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                      <Label htmlFor="google-yes" className="text-white cursor-pointer font-normal">{t('sell.wos.yes')}</Label>
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="no" id="google-no" className="border-white/30" />
-                      <Label htmlFor="google-no" className="text-white cursor-pointer font-normal">لا</Label>
+                      <Label htmlFor="google-no" className="text-white cursor-pointer font-normal">{t('sell.wos.no')}</Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div>
-                  <Label className="text-white mb-3 block">هل الحساب مربوط في فيسبوك؟</Label>
+                  <Label className="text-white mb-3 block">{t('sell.wos.hasFacebook')}</Label>
                   <RadioGroup value={hasFacebook} onValueChange={setHasFacebook} className="flex gap-6">
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="yes" id="facebook-yes" className="border-white/30" />
-                      <Label htmlFor="facebook-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                      <Label htmlFor="facebook-yes" className="text-white cursor-pointer font-normal">{t('sell.wos.yes')}</Label>
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="no" id="facebook-no" className="border-white/30" />
-                      <Label htmlFor="facebook-no" className="text-white cursor-pointer font-normal">لا</Label>
+                      <Label htmlFor="facebook-no" className="text-white cursor-pointer font-normal">{t('sell.wos.no')}</Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div>
-                  <Label className="text-white mb-3 block">هل الحساب مربوط في قيم سنتر؟</Label>
+                  <Label className="text-white mb-3 block">{t('sell.wos.hasGameCenter')}</Label>
                   <RadioGroup value={hasGameCenter} onValueChange={setHasGameCenter} className="flex gap-6">
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="yes" id="gamecenter-yes" className="border-white/30" />
-                      <Label htmlFor="gamecenter-yes" className="text-white cursor-pointer font-normal">نعم</Label>
+                      <Label htmlFor="gamecenter-yes" className="text-white cursor-pointer font-normal">{t('sell.wos.yes')}</Label>
                     </div>
                     <div className="flex items-center space-x-2 space-x-reverse">
                       <RadioGroupItem value="no" id="gamecenter-no" className="border-white/30" />
-                      <Label htmlFor="gamecenter-no" className="text-white cursor-pointer font-normal">لا</Label>
+                      <Label htmlFor="gamecenter-no" className="text-white cursor-pointer font-normal">{t('sell.wos.no')}</Label>
                     </div>
                   </RadioGroup>
                 </div>
@@ -850,7 +845,7 @@ const SellWOS = () => {
                           type="button"
                           className="relative w-full bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
                         >
-                          <img src={img} alt={`صورة ${i + 1}`} className="w-full h-auto object-contain max-h-48" />
+                          <img src={img} alt={t('sell.wos.imageAlt', { number: i + 1 })} className="w-full h-auto object-contain max-h-48" />
                           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <ZoomIn className="h-8 w-8 text-white" />
                           </div>
@@ -871,8 +866,8 @@ const SellWOS = () => {
                     <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
                       <img 
                         src={img} 
-                        alt={`صورة ${i + 1}`} 
-                        className="w-full h-auto object-contain max-h-[85vh] mx-auto"
+                        alt={t('sell.wos.imageAlt', { number: i + 1 })} 
+                        className="w-full h-auto object-contain max-h-[85vh] mx-auto" 
                       />
                     </DialogContent>
                   </Dialog>
@@ -906,11 +901,11 @@ const SellWOS = () => {
 
             {/* Account Details */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white">تفاصيل الحساب</h2>
+              <h2 className="text-xl font-bold text-white">{t('sell.wos.accountDetailsSection')}</h2>
               
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-white mb-2 block">البريد الإلكتروني *</Label>
+                  <Label className="text-white mb-2 block">{t('sell.wos.accountEmail')}</Label>
                   <Input 
                     type="email"
                     value={accountEmail}
@@ -922,7 +917,7 @@ const SellWOS = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">كلمة المرور *</Label>
+                  <Label className="text-white mb-2 block">{t('sell.wos.accountPassword')}</Label>
                   <Input 
                     type="password"
                     value={accountPassword}
@@ -948,7 +943,7 @@ const SellWOS = () => {
                             type="button"
                             className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
                           >
-                            <img src={billImages.first} alt="أول فاتورة" className="h-32 w-auto object-contain" />
+                            <img src={billImages.first} alt={t('sell.wos.firstBillAlt')} className="h-32 w-auto object-contain" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                               <ZoomIn className="h-6 w-6 text-white" />
                             </div>
@@ -967,7 +962,7 @@ const SellWOS = () => {
                         </button>
                       </div>
                       <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
-                        <img src={billImages.first} alt="أول فاتورة" className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                        <img src={billImages.first} alt={t('sell.wos.firstBillAlt')} className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
                       </DialogContent>
                     </Dialog>
                   ) : (
@@ -999,7 +994,7 @@ const SellWOS = () => {
                             type="button"
                             className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
                           >
-                            <img src={billImages.three} alt="فواتير متعددة" className="h-32 w-auto object-contain" />
+                            <img src={billImages.three} alt={t('sell.wos.multipleBillsAlt')} className="h-32 w-auto object-contain" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                               <ZoomIn className="h-6 w-6 text-white" />
                             </div>
@@ -1018,7 +1013,7 @@ const SellWOS = () => {
                         </button>
                       </div>
                       <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
-                        <img src={billImages.three} alt="فواتير متعددة" className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                        <img src={billImages.three} alt={t('sell.wos.multipleBillsAlt')} className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
                       </DialogContent>
                     </Dialog>
                   ) : (
@@ -1050,7 +1045,7 @@ const SellWOS = () => {
                             type="button"
                             className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
                           >
-                            <img src={billImages.last} alt="آخر فاتورة" className="h-32 w-auto object-contain" />
+                            <img src={billImages.last} alt={t('sell.wos.lastBillAlt')} className="h-32 w-auto object-contain" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                               <ZoomIn className="h-6 w-6 text-white" />
                             </div>
@@ -1069,7 +1064,7 @@ const SellWOS = () => {
                         </button>
                       </div>
                       <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
-                        <img src={billImages.last} alt="آخر فاتورة" className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                        <img src={billImages.last} alt={t('sell.wos.lastBillAlt')} className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
                       </DialogContent>
                     </Dialog>
                   ) : (
@@ -1109,12 +1104,12 @@ const SellWOS = () => {
                 {createListingMutation.isPending ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    جاري النشر...
+                    {t('listing.publishing')}
                   </>
                 ) : (
                   <>
                     <Plus className="h-5 w-5" />
-                    نشر الإعلان
+                    {t('listing.publishListing')}
                   </>
                 )}
               </Button>
@@ -1125,7 +1120,7 @@ const SellWOS = () => {
                 onClick={handleCancel}
                 className="px-8 py-6 bg-white/5 hover:bg-white/10 text-white border-white/20"
               >
-                إلغاء
+                {t('common.cancel')}
               </Button>
             </div>
           </form>
