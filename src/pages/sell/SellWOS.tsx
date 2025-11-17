@@ -147,6 +147,15 @@ const SellWOS = () => {
     }
   };
 
+  // Common attributes for numeric inputs to prevent iOS autofill bar
+  const numericInputProps = {
+    inputMode: "numeric" as const,
+    pattern: "[0-9]*",
+    autoComplete: "off",
+    autoCapitalize: "off" as const,
+    autoCorrect: "off" as const,
+  };
+
   // Helper function for numeric input validation
   const handleNumericInput = (
     value: string,
@@ -500,17 +509,15 @@ const SellWOS = () => {
                   </div>
               </div>
 
-              <div>
+                <div>
                 <Label className="text-white mb-2 block">السعر ($) *</Label>
                   <Input 
-                  type="number"
+                    type="text"
+                    {...numericInputProps}
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="100"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                  min="10"
-                  max="10000"
-                  step="0.01"
                 />
                 <p className="text-sm text-white/60 mt-1">
                   {t('listing.priceRange')}
@@ -645,6 +652,7 @@ const SellWOS = () => {
                     </Label>
                       <Input 
                         type="text"
+                        {...numericInputProps}
                         value={troops}
                         onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
                         placeholder="مثال: 1M أو 1,000,000"
@@ -659,6 +667,7 @@ const SellWOS = () => {
                     </Label>
                       <Input 
                         type="text"
+                        {...numericInputProps}
                         value={totalPower}
                         onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
                         placeholder="مثال: 50M أو 50,000,000"
@@ -675,6 +684,7 @@ const SellWOS = () => {
                     </Label>
                       <Input 
                         type="text"
+                        {...numericInputProps}
                         value={heroPower}
                         onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
                         placeholder="مثال: 10M أو 10,000,000"
@@ -689,6 +699,7 @@ const SellWOS = () => {
                     </Label>
                       <Input 
                         type="text"
+                        {...numericInputProps}
                         value={island}
                         onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
                         placeholder="مثال: 7 أو 1K"
@@ -705,6 +716,7 @@ const SellWOS = () => {
                     </Label>
                       <Input 
                         type="text"
+                        {...numericInputProps}
                         value={expertPower}
                         onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
                         placeholder="مثال: 5M أو 5,000,000"
@@ -719,6 +731,7 @@ const SellWOS = () => {
                     </Label>
                       <Input 
                         type="text"
+                        {...numericInputProps}
                         value={heroTotalPower}
                         onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
                         placeholder="مثال: 15M أو 15,000,000"
@@ -734,6 +747,7 @@ const SellWOS = () => {
                   </Label>
                     <Input 
                       type="text"
+                      {...numericInputProps}
                       value={petPower}
                       onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
                       placeholder="مثال: 3M أو 3,000,000"
