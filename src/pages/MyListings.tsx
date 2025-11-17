@@ -22,7 +22,6 @@ const MyListings = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState("all");
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [markAsSoldId, setMarkAsSoldId] = useState<number | null>(null);
 
   // Fetch ONLY current user's listings (SECURITY: data isolation)
   const { data: listingsResponse, isLoading } = useQuery({
@@ -67,18 +66,16 @@ const MyListings = () => {
     },
   });
 
-  // Update status mutation (mark as sold, deactivate, reactivate)
+  // Update status mutation (deactivate, reactivate only - sold is automatic via payment)
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: number; status: string }) => 
-      listingsApi.update(id, { status: status as 'active' | 'inactive' | 'sold' }),
+      listingsApi.update(id, { status: status as 'active' | 'inactive' }),
     onSuccess: () => {
       toast.success(t('myListings.updateSuccess'));
       queryClient.invalidateQueries({ queryKey: ['my-listings'] });
-      setMarkAsSoldId(null);
     },
     onError: (error: any) => {
       toast.error(error.message || t('myListings.updateError'));
-      setMarkAsSoldId(null);
     },
   });
 
@@ -253,28 +250,16 @@ const MyListings = () => {
                       {/* Actions */}
                       <div className="flex gap-2 pt-2 flex-wrap">
                         {listing.status === "active" && (
-                          <>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="gap-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
-                              onClick={() => updateStatusMutation.mutate({ id: listing.id, status: 'inactive' })}
-                              disabled={updateStatusMutation.isPending}
-                            >
-                              <XCircle className="h-4 w-4" />
-                              {t('myListings.deactivate')}
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="gap-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border-blue-500/30"
-                              onClick={() => setMarkAsSoldId(listing.id)}
-                              disabled={updateStatusMutation.isPending}
-                            >
-                              <CheckCircle2 className="h-4 w-4" />
-                              {t('myListings.markAsSold')}
-                            </Button>
-                          </>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="gap-2 bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                            onClick={() => updateStatusMutation.mutate({ id: listing.id, status: 'inactive' })}
+                            disabled={updateStatusMutation.isPending}
+                          >
+                            <XCircle className="h-4 w-4" />
+                            {t('myListings.deactivate')}
+                          </Button>
                         )}
                         {listing.status === "inactive" && (
                           <Button 
@@ -359,29 +344,6 @@ const MyListings = () => {
               className="bg-red-500 hover:bg-red-600 text-white"
             >
               {t('myListings.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Mark as Sold Confirmation Dialog */}
-      <AlertDialog open={markAsSoldId !== null} onOpenChange={(open) => !open && setMarkAsSoldId(null)}>
-        <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('myListings.soldTitle')}</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
-              {t('myListings.soldDescription')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">
-              {t('myListings.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => markAsSoldId && updateStatusMutation.mutate({ id: markAsSoldId, status: 'sold' })}
-              className="bg-blue-500 hover:bg-blue-600 text-white"
-            >
-              {t('myListings.confirmSale')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
