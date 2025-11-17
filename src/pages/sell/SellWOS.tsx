@@ -151,9 +151,10 @@ const SellWOS = () => {
   const numericInputProps = {
     inputMode: "numeric" as const,
     pattern: "[0-9]*",
-    autoComplete: "off",
+    autoComplete: "one-time-code",
     autoCapitalize: "off" as const,
     autoCorrect: "off" as const,
+    spellCheck: false as const,
   };
 
   // Helper function for numeric input validation
@@ -467,6 +468,14 @@ const SellWOS = () => {
 
           <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              <input
+                type="text"
+                name="fake-username"
+                autoComplete="username"
+                aria-hidden="true"
+                tabIndex={-1}
+                style={{ position: "absolute", opacity: 0, height: 0, width: 0, pointerEvents: "none" }}
+              />
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white">المعلومات الأساسية</h2>
