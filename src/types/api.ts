@@ -87,7 +87,7 @@ export interface Order {
   buyer_id: number;
   seller_id: number;
   amount: number;
-  status: 'payment_intent' | 'pending' | 'escrow_hold' | 'disputed' | 'completed' | 'cancelled';
+  status: 'payment_intent' | 'escrow_hold' | 'disputed' | 'completed' | 'cancelled';
   notes?: string;
   tap_charge_id?: string;
   paid_at?: string;
