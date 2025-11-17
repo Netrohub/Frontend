@@ -88,7 +88,7 @@ const Marketplace = () => {
         <Navbar />
 
         {/* Main Content */}
-        <div id="marketplace-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8">
+        <div id="marketplace-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl md:text-5xl font-black text-white mb-2">{t('marketplace.title')}</h1>
@@ -194,7 +194,7 @@ const Marketplace = () => {
             {filteredListings.map((account) => {
               const isSold = account.status === 'sold';
               const CardContent = (
-                <Card className={`overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm ${
+                <Card className={`overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm p-4 md:p-6 ${
                   isSold 
                     ? 'opacity-60 cursor-not-allowed' 
                     : 'hover:border-[hsl(195,80%,70%,0.5)] transition-all hover:-translate-y-1 group'

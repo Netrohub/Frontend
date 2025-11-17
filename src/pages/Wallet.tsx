@@ -247,7 +247,7 @@ const Wallet = () => {
 
       <Navbar />
 
-      <div className="relative z-10 container mx-auto px-4 py-8 pb-24">
+      <div className="relative z-10 container mx-auto px-4 py-8 pb-24 md:pb-8">
         <h1 className="text-3xl md:text-4xl font-black text-white mb-8">{t('wallet.title')}</h1>
 
         {/* Balance Cards */}

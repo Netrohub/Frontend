@@ -108,7 +108,7 @@ const Orders = () => {
         <Navbar />
         <div className="relative z-10 container mx-auto px-4 py-8 text-center">
           <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm">
-            <p className="text-white/60 mb-4">{t('orders.loginRequired')}</p>
+            <p className="text-white/70 mb-4">{t('orders.loginRequired')}</p>
             <Link to="/auth">
               <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">{t('auth.login')}</Button>
             </Link>
@@ -133,14 +133,14 @@ const Orders = () => {
         <div className="relative z-10 container mx-auto px-4 py-8 max-w-5xl">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('orders.title')}</h1>
-            <p className="text-white/60">{t('orders.subtitle')}</p>
+            <p className="text-white/70">{t('orders.subtitle')}</p>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
             <Card className="p-3 md:p-4 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="text-xl md:text-2xl font-black text-white mb-1">{stats.total}</div>
-              <div className="text-xs md:text-sm text-white/60">{t('orders.total')}</div>
+              <div className="text-xs md:text-sm text-white/70">{t('orders.total')}</div>
             </Card>
             <Card className="p-3 md:p-4 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="text-xl md:text-2xl font-black text-blue-400 mb-1">{stats.asBuyer}</div>

@@ -61,7 +61,7 @@ const Home = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section id="main-content" className="relative z-10 container mx-auto px-4 md:px-6 py-24 md:py-32">
+      <section id="main-content" className="relative z-10 container mx-auto px-4 md:px-6 py-24 md:py-32 pb-24 md:pb-32">
         <div className="flex flex-col items-center text-center space-y-8">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[hsl(195,80%,70%,0.3)]">
@@ -145,7 +145,7 @@ const Home = () => {
       <section id="features" className="relative z-10 container mx-auto px-4 md:px-6 py-16">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">{t('home.whyChoose')}</h2>
-          <p className="text-xl text-white/60">{t('home.feature1.desc')}</p>
+            <p className="text-xl text-white/70">{t('home.feature1.desc')}</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -160,7 +160,7 @@ const Home = () => {
             >
               <feature.icon className="h-8 w-8 text-[hsl(195,80%,70%)] mb-4 group-hover:scale-110 transition-transform" />
               <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-              <p className="text-white/60">{feature.desc}</p>
+                <p className="text-white/70">{feature.desc}</p>
             </div>
           ))}
         </div>
@@ -185,7 +185,7 @@ const Home = () => {
               </div>
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-white/60">{item.desc}</p>
+                <p className="text-white/70">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -233,7 +233,7 @@ const Home = () => {
                   }
                 }}
               />
-              <p className="text-white/60 text-xs">
+              <p className="text-white/70 text-sm">
                 {t('home.footer.commercialRegistration')}: NXO Establishment / 7052368375
               </p>
             </div>
@@ -303,7 +303,7 @@ const Home = () => {
           
           {/* Copyright at the very bottom */}
           <div className="mt-8 pt-8 border-t border-white/10 text-center">
-            <p className="text-white/50 text-sm">
+            <p className="text-white/70 text-sm">
               © 2025 NXOLand. {t('home.footer.rights')}
             </p>
           </div>
