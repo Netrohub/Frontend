@@ -233,9 +233,6 @@ const Home = () => {
                   }
                 }}
               />
-              <p className="text-white/50 text-sm md:text-base">
-                © 2025 NXOLand. {t('home.footer.rights')}
-              </p>
               <p className="text-white/60 text-xs">
                 {t('home.footer.commercialRegistration')}: NXO Establishment / 7052368375
               </p>
@@ -302,6 +299,13 @@ const Home = () => {
                 </a>
               </div>
             </div>
+          </div>
+          
+          {/* Copyright at the very bottom */}
+          <div className="mt-8 pt-8 border-t border-white/10 text-center">
+            <p className="text-white/50 text-sm">
+              © 2025 NXOLand. {t('home.footer.rights')}
+            </p>
           </div>
         </div>
       </footer>

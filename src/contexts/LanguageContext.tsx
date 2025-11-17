@@ -298,6 +298,7 @@ const translations: Record<Language, Record<string, string>> = {
 'common.retry': 'إعادة المحاولة',
 'common.skipToContent': 'انتقال إلى المحتوى الرئيسي',
 'common.sending': 'جارٍ الإرسال...',
+'common.processing': 'جارٍ المعالجة...',
 'common.errorTryAgain': 'حدث خطأ، حاول مرة أخرى لاحقًا',
 
     
@@ -501,6 +502,7 @@ const translations: Record<Language, Record<string, string>> = {
     
 // Checkout
 'checkout.title': 'إتمام الشراء',
+'checkout.subtitle': 'أكمل عملية الشراء بأمان عبر بوابة دفع آمنة.',
 'checkout.description': 'أكمل عملية الشراء بأمان عبر بوابة دفع آمنة.',
 'checkout.loginRequired': 'يجب تسجيل الدخول لإتمام عملية الشراء.',
 'checkout.orderNotFound': 'لم يتم العثور على الطلب.',
@@ -580,6 +582,7 @@ const translations: Record<Language, Record<string, string>> = {
 'orders.stats.inEscrow': 'طلبات قيد الضمان',
 'orders.stats.completed': 'طلبات مكتملة',
 'orders.stats.cancelled': 'طلبات ملغاة',
+'orders.deletedAccount': 'حساب محذوف',
 
 
 // Order Details
@@ -1535,6 +1538,7 @@ const translations: Record<Language, Record<string, string>> = {
 'common.retry': 'Retry',
 'common.skipToContent': 'Skip to main content',
 'common.sending': 'Sending...',
+'common.processing': 'Processing...',
 'common.errorTryAgain': 'Something went wrong. Please try again.',
 
 
@@ -1740,6 +1744,7 @@ const translations: Record<Language, Record<string, string>> = {
 
 // Checkout
 'checkout.title': 'Checkout',
+'checkout.subtitle': 'Complete your secure payment through our trusted payment gateway.',
 'checkout.description': 'Complete your secure payment through our trusted payment gateway.',
 'checkout.loginRequired': 'Please log in to continue.',
 'checkout.orderNotFound': 'Order not found.',
@@ -1819,6 +1824,7 @@ const translations: Record<Language, Record<string, string>> = {
 'orders.stats.inEscrow': 'In Escrow',
 'orders.stats.completed': 'Completed',
 'orders.stats.cancelled': 'Cancelled',
+'orders.deletedAccount': 'Deleted Account',
 
     
 // Order Details

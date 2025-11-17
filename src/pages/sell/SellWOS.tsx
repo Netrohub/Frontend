@@ -651,7 +651,7 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setTroops, { allowSuffix: true })}
                       placeholder="مثال: 1M أو 1,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
+                      pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
@@ -668,7 +668,7 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
                       placeholder="مثال: 50M أو 50,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
+                      pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
@@ -687,7 +687,7 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setHeroPower, { allowSuffix: true })}
                       placeholder="مثال: 10M أو 10,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
+                      pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
@@ -704,7 +704,7 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
                       placeholder="مثال: 7 أو 1K"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
+                      pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
@@ -723,7 +723,7 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setExpertPower, { allowSuffix: true })}
                       placeholder="مثال: 5M أو 5,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
+                      pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
@@ -740,7 +740,7 @@ const SellWOS = () => {
                       onChange={(e) => handleNumericInput(e.target.value, setHeroTotalPower, { allowSuffix: true })}
                       placeholder="مثال: 15M أو 15,000,000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      pattern="^(\\d{1,3}(,\\d{3})*|\\d+)([KMB])?$"
+                      pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                       required
                     />
@@ -758,7 +758,7 @@ const SellWOS = () => {
                     onChange={(e) => handleNumericInput(e.target.value, setPetPower, { allowSuffix: true })}
                     placeholder="مثال: 3M أو 3,000,000"
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    pattern="^(\\d{1,3}(,\\d{3})*|\\d+)(\\.\\d+)?([KMB])?$"
+                    pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                     title="يمكنك إدخال أرقام مع إمكانية إضافة K أو M أو B في النهاية"
                     required
                   />
