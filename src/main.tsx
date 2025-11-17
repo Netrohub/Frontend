@@ -15,28 +15,59 @@ window.addEventListener('error', (event) => {
   }
 });
 
+// SECURITY: Sanitize error messages to prevent XSS
+function escapeHtml(text: string): string {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
 // Check environment configuration before loading app
 try {
   if (!isEnvConfigured()) {
     const rootElement = document.getElementById("root");
     if (rootElement) {
-      rootElement.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: system-ui, sans-serif; background: #1a1a1a; color: #fff; direction: rtl;">
-          <div style="max-width: 600px; text-align: center;">
-            <h1 style="color: #ef4444; margin-bottom: 16px;">خطأ في الإعدادات</h1>
-            <p style="margin-bottom: 8px; font-size: 18px;">المتغير البيئي VITE_API_BASE_URL غير محدد</p>
-            <div style="background: #2a2a2a; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: right;">
-              <p style="margin-bottom: 12px; color: #9ca3af;">يرجى إضافة المتغيرات التالية في Cloudflare Pages:</p>
-              <p style="margin-bottom: 8px; font-family: monospace; color: #60a5fa; padding: 8px; background: #1a1a1a; border-radius: 4px;">
-                VITE_API_BASE_URL=https://backend-piz0.onrender.com/api/v1
-              </p>
-              <p style="margin-top: 16px; color: #9ca3af; font-size: 14px;">
-                Cloudflare Dashboard → Pages → Settings → Environment Variables
-              </p>
-            </div>
-          </div>
-        </div>
-      `;
+      // SECURITY: Use textContent instead of innerHTML to prevent XSS
+      // Create elements safely instead of using innerHTML with user-controlled content
+      rootElement.innerHTML = ''; // Clear first
+      const container = document.createElement('div');
+      container.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: system-ui, sans-serif; background: #1a1a1a; color: #fff; direction: rtl;';
+      
+      const innerDiv = document.createElement('div');
+      innerDiv.style.cssText = 'max-width: 600px; text-align: center;';
+      
+      const h1 = document.createElement('h1');
+      h1.style.cssText = 'color: #ef4444; margin-bottom: 16px;';
+      h1.textContent = 'خطأ في الإعدادات';
+      
+      const p1 = document.createElement('p');
+      p1.style.cssText = 'margin-bottom: 8px; font-size: 18px;';
+      p1.textContent = 'المتغير البيئي VITE_API_BASE_URL غير محدد';
+      
+      const configDiv = document.createElement('div');
+      configDiv.style.cssText = 'background: #2a2a2a; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: right;';
+      
+      const p2 = document.createElement('p');
+      p2.style.cssText = 'margin-bottom: 12px; color: #9ca3af;';
+      p2.textContent = 'يرجى إضافة المتغيرات التالية في Cloudflare Pages:';
+      
+      const codeP = document.createElement('p');
+      codeP.style.cssText = 'margin-bottom: 8px; font-family: monospace; color: #60a5fa; padding: 8px; background: #1a1a1a; border-radius: 4px;';
+      codeP.textContent = 'VITE_API_BASE_URL=https://backend-piz0.onrender.com/api/v1';
+      
+      const p3 = document.createElement('p');
+      p3.style.cssText = 'margin-top: 16px; color: #9ca3af; font-size: 14px;';
+      p3.textContent = 'Cloudflare Dashboard → Pages → Settings → Environment Variables';
+      
+      configDiv.appendChild(p2);
+      configDiv.appendChild(codeP);
+      configDiv.appendChild(p3);
+      
+      innerDiv.appendChild(h1);
+      innerDiv.appendChild(p1);
+      innerDiv.appendChild(configDiv);
+      container.appendChild(innerDiv);
+      rootElement.appendChild(container);
     }
   } else {
     // GTM is already loaded via index.html for Google Search Console verification
@@ -51,19 +82,35 @@ try {
   }
 } catch (error) {
   // Fallback error display if something goes wrong
+  // SECURITY: Use textContent instead of innerHTML to prevent XSS
   const rootElement = document.getElementById("root");
   if (rootElement) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    rootElement.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: system-ui, sans-serif; background: #1a1a1a; color: #fff; direction: rtl;">
-        <div style="max-width: 600px; text-align: center;">
-          <h1 style="color: #ef4444; margin-bottom: 16px;">خطأ في التهيئة</h1>
-          <p style="margin-bottom: 8px; font-size: 18px;">${errorMessage}</p>
-          <p style="margin-top: 16px; color: #9ca3af; font-size: 14px;">
-            يرجى التحقق من إعدادات البيئة في Cloudflare Pages
-          </p>
-        </div>
-      </div>
-    `;
+    
+    // SECURITY: Create elements safely instead of using innerHTML with error message
+    rootElement.innerHTML = ''; // Clear first
+    const container = document.createElement('div');
+    container.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; font-family: system-ui, sans-serif; background: #1a1a1a; color: #fff; direction: rtl;';
+    
+    const innerDiv = document.createElement('div');
+    innerDiv.style.cssText = 'max-width: 600px; text-align: center;';
+    
+    const h1 = document.createElement('h1');
+    h1.style.cssText = 'color: #ef4444; margin-bottom: 16px;';
+    h1.textContent = 'خطأ في التهيئة';
+    
+    const p1 = document.createElement('p');
+    p1.style.cssText = 'margin-bottom: 8px; font-size: 18px;';
+    p1.textContent = escapeHtml(errorMessage); // Escape to prevent XSS
+    
+    const p2 = document.createElement('p');
+    p2.style.cssText = 'margin-top: 16px; color: #9ca3af; font-size: 14px;';
+    p2.textContent = 'يرجى التحقق من إعدادات البيئة في Cloudflare Pages';
+    
+    innerDiv.appendChild(h1);
+    innerDiv.appendChild(p1);
+    innerDiv.appendChild(p2);
+    container.appendChild(innerDiv);
+    rootElement.appendChild(container);
   }
 }
