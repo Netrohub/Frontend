@@ -126,6 +126,7 @@ const Order = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { text: string; className: string }> = {
+      payment_intent: { text: t('order.statusPending'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
       pending: { text: t('order.statusPending'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
       paid: { text: t('order.statusPaid'), className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
       escrow_hold: { text: t('order.statusEscrow'), className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]" },

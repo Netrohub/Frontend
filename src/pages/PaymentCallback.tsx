@@ -36,8 +36,8 @@ const PaymentCallback = () => {
         return false;
       }
 
-      // Keep refetching every 2 seconds if still pending payment
-      if (data?.status === 'pending') {
+      // Keep refetching every 2 seconds if still payment_intent (waiting for payment confirmation)
+      if (data?.status === 'payment_intent') {
         setPollCount(c => c + 1);
         return 2000;
       }
@@ -61,8 +61,8 @@ const PaymentCallback = () => {
       } else if (order.status === 'cancelled') {
         setStatus('error');
         setMessage(t('paymentCallback.cancelled'));
-      } else if (order.status === 'pending') {
-        // Still waiting for webhook
+      } else if (order.status === 'payment_intent') {
+        // Still waiting for payment confirmation webhook
         setStatus('loading');
         setMessage(t('paymentCallback.processing'));
       } else {

@@ -254,7 +254,7 @@ const Checkout = () => {
                 <span className="text-3xl font-black text-[hsl(195,80%,70%)]">{formatPrice(totalAmount)}</span>
               </div>
 
-              {order.status !== 'pending' && (
+              {order.status !== 'payment_intent' && (
                 <div className="mb-4 p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
                   <p className="text-yellow-400 text-sm">
                     {order.status === 'completed' && t('checkout.orderCompleted')}
@@ -266,7 +266,7 @@ const Checkout = () => {
 
               <Button 
                 onClick={handlePayment}
-                disabled={processing || order.status !== 'pending'}
+                disabled={processing || order.status !== 'payment_intent'}
                 size="lg" 
                 className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
               >

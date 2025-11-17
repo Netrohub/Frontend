@@ -59,6 +59,7 @@ const Orders = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { text: string; className: string }> = {
+      payment_intent: { text: t('orders.statusPending'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
       pending: { text: t('orders.statusPending'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
       paid: { text: t('orders.statusPaid'), className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
       escrow_hold: { text: t('orders.statusEscrow'), className: "bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]" },
@@ -183,7 +184,7 @@ const Orders = () => {
               <Tabs value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setCurrentPage(1); }}>
                 <TabsList className="bg-white/5 border border-white/10 w-full md:w-auto overflow-x-auto">
                   <TabsTrigger value="all" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('orders.all')}</TabsTrigger>
-                  <TabsTrigger value="pending" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('orders.statusPending')}</TabsTrigger>
+                  {/* Note: payment_intent orders are not shown (they're not real orders yet) */}
                   <TabsTrigger value="escrow_hold" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('orders.statusEscrow')}</TabsTrigger>
                   <TabsTrigger value="completed" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('orders.statusCompleted')}</TabsTrigger>
                   <TabsTrigger value="cancelled" className="data-[state=active]:bg-[hsl(195,80%,50%)]">{t('orders.statusCancelled')}</TabsTrigger>
