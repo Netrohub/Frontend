@@ -456,8 +456,8 @@ const SellWOS = () => {
           </Card>
         )}
 
-        <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             {/* Basic Info */}
             <div className="space-y-4">
               <h2 className="text-xl font-bold text-white">المعلومات الأساسية</h2>
