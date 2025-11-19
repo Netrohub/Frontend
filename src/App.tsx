@@ -1,7 +1,7 @@
 import { Suspense, lazy, useState, useEffect } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { NotificationBanner } from "@/components/NotificationBanner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -17,8 +17,9 @@ import { QuickNav } from "@/components/QuickNav";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { publicApi } from "@/lib/api";
 import Maintenance from "./pages/Maintenance";
-import { PlasmicRootProvider, PlasmicComponent, PageParamsProvider, ComponentRenderData } from "@plasmicapp/loader-react";
-import { PLASMIC } from "./plasmic-init";
+// Plasmic codegen imports
+import Homepage from "@/components/Homepage";
+import { PlasmicCanvasHost } from "@plasmicapp/react-web";
 
 // Critical routes - loaded immediately (above the fold)
 import Home from "./pages/Home";
@@ -137,121 +138,7 @@ const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-// Plasmic catch-all page component
-const CatchAllPlasmicPage = () => {
-  const [loading, setLoading] = useState(true);
-  const [pageData, setPageData] = useState<ComponentRenderData | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    let cancelled = false;
-    
-    async function load() {
-      try {
-        setError(null);
-        setLoading(true);
-        
-        if (process.env.NODE_ENV !== 'production') {
-          console.log('[Plasmic] Fetching component data for route:', location.pathname);
-        }
-        
-        const data = await PLASMIC.maybeFetchComponentData(location.pathname);
-        
-        // Don't update state if component was unmounted or route changed
-        if (cancelled) return;
-        
-        if (process.env.NODE_ENV !== 'production') {
-          if (data) {
-            // Try different ways to get component name
-            const nameFromModules = data.modules?.[0]?.name;
-            const nameFromEntry = (data as any).entryCompMetas?.[0]?.name;
-            const actualName = nameFromModules || nameFromEntry || location.pathname;
-            
-            console.log('[Plasmic] Component data found:', {
-              route: location.pathname,
-              componentNameFromModules: nameFromModules,
-              componentNameFromEntry: nameFromEntry,
-              actualComponentName: actualName,
-              modules: data.modules?.length || 0,
-              willRender: true
-            });
-          } else {
-            console.log('[Plasmic] No component data found for route:', location.pathname);
-            console.log('[Plasmic] Make sure the page has a route set in Plasmic Studio and is published.');
-          }
-        }
-        
-        setPageData(data);
-      } catch (err) {
-        if (cancelled) return;
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-        console.error('[Plasmic] Error fetching component data:', errorMessage);
-        setError(errorMessage);
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      }
-    }
-    
-    load();
-    
-    return () => {
-      cancelled = true;
-    };
-  }, [location.pathname]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-white/60" />
-      </div>
-    );
-  }
-  
-  if (error) {
-    console.error('[Plasmic] Error loading page:', error);
-    return <NotFound />;
-  }
-  
-  if (!pageData) {
-    // No Plasmic page found for this route
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[Plasmic] No page found for route:', location.pathname);
-      console.log('[Plasmic] Make sure the page has a route set in Plasmic Studio and is published.');
-    }
-    return <NotFound />;
-  }
-
-  // Use route path as component name (Plasmic expects route to match component)
-  // Try to get actual component name from data, but fallback to route
-  const nameFromModules = pageData.modules?.[0]?.name;
-  const nameFromEntry = (pageData as any).entryCompMetas?.[0]?.name;
-  const componentName = nameFromModules || nameFromEntry || location.pathname;
-
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('[Plasmic] Rendering component:', {
-      route: location.pathname,
-      componentName: componentName,
-      hasPageData: !!pageData
-    });
-  }
-
-  return (
-    <PageParamsProvider route={location.pathname} query={Object.fromEntries(searchParams)}>
-      <PlasmicComponent component={componentName} />
-    </PageParamsProvider>
-  );
-};
-
-// Plasmic Studio host page
-const PlasmicHost = lazy(() => 
-  import("@plasmicapp/loader-react").then(module => ({
-    default: () => <module.PlasmicCanvasHost />
-  }))
-);
+// Plasmic Studio host page (for codegen, uses react-web instead of loader)
 
 // App content with keyboard shortcuts
 const AppContent = () => {
@@ -267,7 +154,10 @@ const AppContent = () => {
         <RouteErrorBoundary>
           <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<Home />} />
+                {/* Plasmic codegen Homepage - matches path "/" from plasmic.json */}
+                <Route path="/" element={<Homepage />} />
+                {/* Original Home route - keep as backup or remove if not needed */}
+                {/* <Route path="/" element={<Home />} /> */}
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/auth" element={<Auth />} />
@@ -623,19 +513,14 @@ const AppContent = () => {
                 />
               </Route>
 
-            {/* Plasmic Studio host route */}
+            {/* Plasmic Studio host route - needed for Plasmic Studio to connect */}
             <Route
               path="/plasmic-host"
-              element={
-                <Suspense fallback={<LoadingFallback />}>
-                  <PlasmicHost />
-                </Suspense>
-              }
+              element={<PlasmicCanvasHost />}
             />
 
-            {/* Plasmic catch-all route - handles all routes not matched above */}
-            {/* If Plasmic page exists, it renders; otherwise shows NotFound */}
-            <Route path="*" element={<CatchAllPlasmicPage />} />
+            {/* 404 - all unmatched routes */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </RouteErrorBoundary>
       </main>
@@ -675,11 +560,9 @@ const App = () => {
                     <Sonner />
                   </Suspense>
                 )}
-                <PlasmicRootProvider loader={PLASMIC}>
-                  <BrowserRouter>
-                    <AppContent />
-                  </BrowserRouter>
-                </PlasmicRootProvider>
+                <BrowserRouter>
+                  <AppContent />
+                </BrowserRouter>
               </TooltipProvider>
             </AuthProvider>
           </LanguageProvider>
