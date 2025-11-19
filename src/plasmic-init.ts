@@ -3,8 +3,8 @@ import { initPlasmicLoader } from "@plasmicapp/loader-react";
 export const PLASMIC = initPlasmicLoader({
   projects: [
     {
-      id: "PROJECTID",  // Replace with your Plasmic project ID
-      token: "APITOKEN"  // Replace with your Plasmic API token
+      id: "fyJN35ZWf1yWjUgFKAikKJ",  // Replace with your Plasmic project ID
+      token: "Eo7h2eUHcOnBpj3bewFHjAWzNuf78UAiyoHP752oIUDAcehZugzUYznLiMPZoBP864XkdfKjbRzet5sN1Hg3g"  // Replace with your Plasmic API token
     }
   ],
   // Fetches the latest revisions, whether or not they were unpublished!
