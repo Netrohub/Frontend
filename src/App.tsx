@@ -158,7 +158,16 @@ const CatchAllPlasmicPage = () => {
         const data = await PLASMIC.maybeFetchComponentData(location.pathname);
         
         if (process.env.NODE_ENV !== 'production') {
-          console.log('[Plasmic] Component data:', data ? 'Found' : 'Not found');
+          if (data) {
+            console.log('[Plasmic] Component data found:', {
+              route: location.pathname,
+              componentName: data.modules?.[0]?.name || 'unknown',
+              modules: data.modules?.length || 0
+            });
+          } else {
+            console.log('[Plasmic] No component data found for route:', location.pathname);
+            console.log('[Plasmic] Make sure the page has a route set in Plasmic Studio and is published.');
+          }
         }
         
         setPageData(data);
@@ -196,9 +205,12 @@ const CatchAllPlasmicPage = () => {
     return <NotFound />;
   }
 
+  // Get component name from pageData if available, otherwise use route
+  const componentName = pageData.modules?.[0]?.name || location.pathname;
+
   return (
     <PageParamsProvider route={location.pathname} query={Object.fromEntries(searchParams)}>
-      <PlasmicComponent component={location.pathname} />
+      <PlasmicComponent component={componentName} />
     </PageParamsProvider>
   );
 };
