@@ -141,14 +141,34 @@ const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
 const CatchAllPlasmicPage = () => {
   const [loading, setLoading] = useState(true);
   const [pageData, setPageData] = useState<ComponentRenderData | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     async function load() {
-      const data = await PLASMIC.maybeFetchComponentData(location.pathname);
-      setPageData(data);
-      setLoading(false);
+      try {
+        setError(null);
+        setLoading(true);
+        
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[Plasmic] Fetching component data for route:', location.pathname);
+        }
+        
+        const data = await PLASMIC.maybeFetchComponentData(location.pathname);
+        
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('[Plasmic] Component data:', data ? 'Found' : 'Not found');
+        }
+        
+        setPageData(data);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        console.error('[Plasmic] Error fetching component data:', errorMessage);
+        setError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [location.pathname]);
@@ -161,8 +181,18 @@ const CatchAllPlasmicPage = () => {
     );
   }
   
+  if (error) {
+    console.error('[Plasmic] Error loading page:', error);
+    // Still try to render NotFound even on error
+    return <NotFound />;
+  }
+  
   if (!pageData) {
-    // No Plasmic page found, render NotFound
+    // No Plasmic page found for this route
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[Plasmic] No page found for route:', location.pathname);
+      console.log('[Plasmic] Make sure the page has a route set in Plasmic Studio and is published.');
+    }
     return <NotFound />;
   }
 
