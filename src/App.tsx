@@ -157,10 +157,11 @@ const AppContent = () => {
         <RouteErrorBoundary>
           <Routes>
                 {/* Public Routes */}
-                {/* Plasmic codegen Homepage - matches path "/" from plasmic.json */}
-                <Route path="/" element={<Homepage />} />
-                {/* Original Home route - keep as backup or remove if not needed */}
-                {/* <Route path="/" element={<Home />} /> */}
+                {/* Original Home route - active until Plasmic design is ready */}
+                <Route path="/" element={<Home />} />
+                {/* Plasmic codegen Homepage - preview route while designing in Plasmic Studio */}
+                {/* Access at /plasmic-homepage to see your Plasmic design */}
+                <Route path="/plasmic-homepage" element={<Homepage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/auth" element={<Auth />} />
