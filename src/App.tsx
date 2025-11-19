@@ -141,12 +141,13 @@ const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
 const CatchAllPlasmicPage = () => {
   const [loading, setLoading] = useState(true);
   const [pageData, setPageData] = useState<ComponentRenderData | null>(null);
-  const [componentName, setComponentName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    let cancelled = false;
+    
     async function load() {
       try {
         setError(null);
@@ -157,6 +158,9 @@ const CatchAllPlasmicPage = () => {
         }
         
         const data = await PLASMIC.maybeFetchComponentData(location.pathname);
+        
+        // Don't update state if component was unmounted or route changed
+        if (cancelled) return;
         
         if (process.env.NODE_ENV !== 'production') {
           if (data) {
@@ -171,39 +175,32 @@ const CatchAllPlasmicPage = () => {
               componentNameFromEntry: nameFromEntry,
               actualComponentName: actualName,
               modules: data.modules?.length || 0,
-              fullData: data
+              willRender: true
             });
-            
-            // Persist component name so it doesn't get lost on re-render
-            setComponentName(actualName);
           } else {
             console.log('[Plasmic] No component data found for route:', location.pathname);
             console.log('[Plasmic] Make sure the page has a route set in Plasmic Studio and is published.');
-            setComponentName(null);
-          }
-        } else {
-          // Production: still extract and persist component name
-          if (data) {
-            const nameFromModules = data.modules?.[0]?.name;
-            const nameFromEntry = (data as any).entryCompMetas?.[0]?.name;
-            const actualName = nameFromModules || nameFromEntry || location.pathname;
-            setComponentName(actualName);
-          } else {
-            setComponentName(null);
           }
         }
         
         setPageData(data);
       } catch (err) {
+        if (cancelled) return;
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('[Plasmic] Error fetching component data:', errorMessage);
         setError(errorMessage);
-        setComponentName(null);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
+    
     load();
+    
+    return () => {
+      cancelled = true;
+    };
   }, [location.pathname]);
 
   if (loading) {
@@ -216,19 +213,30 @@ const CatchAllPlasmicPage = () => {
   
   if (error) {
     console.error('[Plasmic] Error loading page:', error);
-    // Still try to render NotFound even on error
     return <NotFound />;
   }
   
-  if (!pageData || !componentName) {
+  if (!pageData) {
     // No Plasmic page found for this route
     if (process.env.NODE_ENV !== 'production') {
       console.log('[Plasmic] No page found for route:', location.pathname);
-      console.log('[Plasmic] pageData:', pageData);
-      console.log('[Plasmic] componentName:', componentName);
       console.log('[Plasmic] Make sure the page has a route set in Plasmic Studio and is published.');
     }
     return <NotFound />;
+  }
+
+  // Use route path as component name (Plasmic expects route to match component)
+  // Try to get actual component name from data, but fallback to route
+  const nameFromModules = pageData.modules?.[0]?.name;
+  const nameFromEntry = (pageData as any).entryCompMetas?.[0]?.name;
+  const componentName = nameFromModules || nameFromEntry || location.pathname;
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('[Plasmic] Rendering component:', {
+      route: location.pathname,
+      componentName: componentName,
+      hasPageData: !!pageData
+    });
   }
 
   return (
