@@ -3,8 +3,8 @@ import { initPlasmicLoader } from "@plasmicapp/loader-react";
 export const PLASMIC = initPlasmicLoader({
   projects: [
     {
-      id: "1Hn4NBB5sATdK2CZK8S6bB",  // Plasmic project ID
-      token: "iQz155EqDyKTfo33hTtAEKrqKYS7nB1xdY6tgo2qOehiQJq7qbXrXPzihV9NVO58L48zSHtwO3jcWg3B3Ufg"  // Plasmic API token
+      id: "bsWvY6yXzULcMzaG6XfkDA",  // Plasmic project ID
+      token: "6JoIh0Nve6zQBLyZJSVx64ykU2xRniCrU0niQL2rhCmncqqUXsIpbvCVARvTPBNAy0p6rol5d6bK284XMKQA"  // Plasmic API token
     }
   ],
   // Fetches the latest revisions, whether or not they were unpublished!
