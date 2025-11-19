@@ -106,18 +106,22 @@ const queryClient = new QueryClient({
 const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const location = useLocation();
   
-  // Check maintenance mode (skip if admin)
+  // Skip maintenance check for Plasmic host route (needed for Plasmic Studio to connect)
+  const isPlasmicHost = location.pathname === '/plasmic-host';
+  
+  // Check maintenance mode (skip if admin or Plasmic host)
   const { data: maintenanceStatus, isLoading } = useQuery({
     queryKey: ['maintenance-status'],
     queryFn: () => publicApi.checkMaintenance(),
-    enabled: !isAdmin, // Skip check for admins
+    enabled: !isAdmin && !isPlasmicHost, // Skip check for admins and Plasmic host
     refetchInterval: 30000, // Check every 30 seconds
     retry: 1,
   });
 
-  // Show loading while checking (only for non-admins)
-  if (!isAdmin && isLoading) {
+  // Show loading while checking (only for non-admins, not for Plasmic host)
+  if (!isAdmin && !isPlasmicHost && isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]">
         <Loader2 className="h-8 w-8 animate-spin text-white/60" />
@@ -125,8 +129,8 @@ const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Show maintenance page if enabled (but allow admins to bypass)
-  if (!isAdmin && maintenanceStatus?.maintenance_mode) {
+  // Show maintenance page if enabled (but allow admins and Plasmic host to bypass)
+  if (!isAdmin && !isPlasmicHost && maintenanceStatus?.maintenance_mode) {
     return <Maintenance />;
   }
 
