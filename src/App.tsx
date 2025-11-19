@@ -1,7 +1,7 @@
 import { Suspense, lazy, useState, useEffect } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useSearchParams } from "react-router-dom";
 import { NotificationBanner } from "@/components/NotificationBanner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -17,6 +17,8 @@ import { QuickNav } from "@/components/QuickNav";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { publicApi } from "@/lib/api";
 import Maintenance from "./pages/Maintenance";
+import { PlasmicRootProvider, PlasmicComponent, PageParamsProvider, ComponentRenderData } from "@plasmicapp/loader-react";
+import { PLASMIC } from "./plasmic-init";
 
 // Critical routes - loaded immediately (above the fold)
 import Home from "./pages/Home";
@@ -130,6 +132,49 @@ const MaintenanceCheck = ({ children }: { children: React.ReactNode }) => {
 
   return <>{children}</>;
 };
+
+// Plasmic catch-all page component
+const CatchAllPlasmicPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [pageData, setPageData] = useState<ComponentRenderData | null>(null);
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    async function load() {
+      const data = await PLASMIC.maybeFetchComponentData(location.pathname);
+      setPageData(data);
+      setLoading(false);
+    }
+    load();
+  }, [location.pathname]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-white/60" />
+      </div>
+    );
+  }
+  
+  if (!pageData) {
+    // No Plasmic page found, render NotFound
+    return <NotFound />;
+  }
+
+  return (
+    <PageParamsProvider route={location.pathname} query={Object.fromEntries(searchParams)}>
+      <PlasmicComponent component={location.pathname} />
+    </PageParamsProvider>
+  );
+};
+
+// Plasmic Studio host page
+const PlasmicHost = lazy(() => 
+  import("@plasmicapp/loader-react").then(module => ({
+    default: () => <module.PlasmicCanvasHost />
+  }))
+);
 
 // App content with keyboard shortcuts
 const AppContent = () => {
@@ -501,8 +546,19 @@ const AppContent = () => {
                 />
               </Route>
 
-            {/* 404 - Must be last */}
-            <Route path="*" element={<NotFound />} />
+            {/* Plasmic Studio host route */}
+            <Route
+              path="/plasmic-host"
+              element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <PlasmicHost />
+                </Suspense>
+              }
+            />
+
+            {/* Plasmic catch-all route - handles all routes not matched above */}
+            {/* If Plasmic page exists, it renders; otherwise shows NotFound */}
+            <Route path="*" element={<CatchAllPlasmicPage />} />
           </Routes>
         </RouteErrorBoundary>
       </main>
@@ -542,9 +598,11 @@ const App = () => {
                     <Sonner />
                   </Suspense>
                 )}
-                <BrowserRouter>
-                  <AppContent />
-                </BrowserRouter>
+                <PlasmicRootProvider loader={PLASMIC}>
+                  <BrowserRouter>
+                    <AppContent />
+                  </BrowserRouter>
+                </PlasmicRootProvider>
               </TooltipProvider>
             </AuthProvider>
           </LanguageProvider>
