@@ -23,6 +23,8 @@ import Homepage from "@/components/Homepage";
 import { PlasmicCanvasHost } from "@plasmicapp/loader-react";
 import { initPlasmicLoader } from "@plasmicapp/loader-react";
 import { PLASMIC } from "./plasmic-init";
+// Register components for Plasmic Studio (allows editing your existing components)
+import "./plasmic-registration";
 
 // Critical routes - loaded immediately (above the fold)
 import Home from "./pages/Home";
