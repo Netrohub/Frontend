@@ -1,10 +1,12 @@
 import { initPlasmicLoader } from "@plasmicapp/loader-react";
 
+// Plasmic loader instance for PlasmicCanvasHost (host page)
+// Note: This is separate from codegen - used only for /plasmic-host route
 export const PLASMIC = initPlasmicLoader({
   projects: [
     {
-      id: "bsWvY6yXzULcMzaG6XfkDA",  // Plasmic project ID
-      token: "6JoIh0Nve6zQBLyZJSVx64ykU2xRniCrU0niQL2rhCmncqqUXsIpbvCVARvTPBNAy0p6rol5d6bK284XMKQA"  // Plasmic API token
+      id: "1Hn4NBB5sATdK2CZK8S6bB",  // Plasmic project ID (matches codegen project)
+      token: "iQz155EqDyKTfo33hTtAEKrqKYS7nB1xdY6tgo2qOehiQJq7qbXrXPziwV9NVO58L48zSHtwO3jcWg3B3Ufg"  // Plasmic API token
     }
   ],
   // Fetches the latest revisions, whether or not they were unpublished!

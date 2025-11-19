@@ -19,7 +19,10 @@ import { publicApi } from "@/lib/api";
 import Maintenance from "./pages/Maintenance";
 // Plasmic codegen imports
 import Homepage from "@/components/Homepage";
-import { PlasmicCanvasHost } from "@plasmicapp/react-web";
+// Use loader package for host page (needed for Plasmic Studio connection)
+import { PlasmicCanvasHost } from "@plasmicapp/loader-react";
+import { initPlasmicLoader } from "@plasmicapp/loader-react";
+import { PLASMIC } from "./plasmic-init";
 
 // Critical routes - loaded immediately (above the fold)
 import Home from "./pages/Home";
@@ -514,9 +517,10 @@ const AppContent = () => {
               </Route>
 
             {/* Plasmic Studio host route - needed for Plasmic Studio to connect */}
+            {/* Note: With codegen, we still need the loader for the host page */}
             <Route
               path="/plasmic-host"
-              element={<PlasmicCanvasHost />}
+              element={<PlasmicCanvasHost loader={PLASMIC} />}
             />
 
             {/* 404 - all unmatched routes */}
