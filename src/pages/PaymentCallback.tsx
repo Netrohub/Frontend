@@ -15,7 +15,9 @@ const PaymentCallback = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const orderId = id ? parseInt(id) : null;
-  const tapId = searchParams.get('tap_id');
+  // Note: This page is legacy for Tap Payments. Paylink redirects directly to /order/:id
+  // Keeping for backward compatibility with old Tap payment callbacks
+  const transactionNo = searchParams.get('transactionNo') || searchParams.get('tap_id');
 
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'timeout'>('loading');
   const [message, setMessage] = useState('');
@@ -47,7 +49,7 @@ const PaymentCallback = () => {
 
   // Check order status and update UI
   useEffect(() => {
-    if (!orderId || !tapId) {
+    if (!orderId) {
       setStatus('error');
       setMessage(t('paymentCallback.invalidLink'));
       return;
@@ -71,7 +73,7 @@ const PaymentCallback = () => {
         setMessage(t('paymentCallback.unexpected'));
       }
     }
-  }, [orderId, tapId, order, isLoading, t]);
+  }, [orderId, order, isLoading, t]);
 
   // Countdown timer for auto-redirect on success
   useEffect(() => {
