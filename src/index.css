@@ -325,4 +325,17 @@ All colors MUST be HSL.
     filter: drop-shadow(0 0 12px currentColor);
     transform: scale(1.05);
   }
+
+  /* Make toast container match website width */
+  [data-sonner-toaster] {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  @media (min-width: 768px) {
+    [data-sonner-toaster] {
+      padding: 0 1.5rem;
+    }
+  }
 }

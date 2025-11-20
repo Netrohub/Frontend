@@ -11,10 +11,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme="dark"
       position="top-center"
       className="toaster group"
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+      }}
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-gradient-to-br group-[.toaster]:from-[hsl(220,30%,12%)] group-[.toaster]:via-[hsl(220,30%,15%)] group-[.toaster]:to-[hsl(220,30%,12%)] group-[.toaster]:text-white group-[.toaster]:border group-[.toaster]:border-white/20 group-[.toaster]:shadow-2xl group-[.toaster]:backdrop-blur-sm group-[.toaster]:rounded-xl group-[.toaster]:p-5 group-[.toaster]:min-w-[380px] group-[.toaster]:max-w-[420px] group-[.toaster]:ring-1 group-[.toaster]:ring-white/10 group-[.toaster]:dir-rtl",
+            "group toast group-[.toaster]:bg-gradient-to-br group-[.toaster]:from-[hsl(220,30%,12%)] group-[.toaster]:via-[hsl(220,30%,15%)] group-[.toaster]:to-[hsl(220,30%,12%)] group-[.toaster]:text-white group-[.toaster]:border group-[.toaster]:border-white/20 group-[.toaster]:shadow-2xl group-[.toaster]:backdrop-blur-sm group-[.toaster]:rounded-xl group-[.toaster]:p-5 group-[.toaster]:w-full group-[.toaster]:max-w-[896px] group-[.toaster]:mx-auto group-[.toaster]:ring-1 group-[.toaster]:ring-white/10 group-[.toaster]:dir-rtl",
           description: "group-[.toast]:text-white/80 group-[.toast]:text-sm group-[.toast]:mt-2 group-[.toast]:leading-relaxed",
           title: "group-[.toast]:text-white group-[.toast]:font-semibold group-[.toast]:text-base group-[.toast]:mb-1",
           actionButton: 
