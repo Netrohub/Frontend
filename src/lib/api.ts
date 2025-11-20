@@ -450,8 +450,22 @@ export const walletApi = {
   getWithdrawals: () =>
     api.get<any[]>('/wallet/withdrawals'),
   
+  getFeeInfo: () =>
+    api.get<{ fee_percentage: number; min_withdrawal: number; max_withdrawal: number }>('/wallet/fee-info'),
+  
   withdraw: (data: { amount: number; iban: string; bank_name: string; account_holder_name: string }) =>
-    api.post<{ message: string; wallet: Wallet; withdrawal_request?: any; note?: string }>('/wallet/withdraw', data),
+    api.post<{ 
+      message: string; 
+      wallet: Wallet; 
+      withdrawal_request?: any; 
+      note?: string;
+      fee_info?: {
+        requested_amount: number;
+        fee_percentage: number;
+        fee_amount: number;
+        net_amount: number;
+      };
+    }>('/wallet/withdraw', data),
 };
 
 // KYC API

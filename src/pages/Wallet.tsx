@@ -33,7 +33,7 @@ import type { ApiError } from "@/types/api";
 const MIN_WITHDRAWAL = 10;
 const MAX_WITHDRAWAL = 2000;
 const DAILY_LIMIT = 5000;
-const WITHDRAWAL_FEE = 2.50;
+// WITHDRAWAL_FEE will be fetched from backend
 
 const Wallet = () => {
   const { user } = useAuth();
@@ -328,7 +328,11 @@ const Wallet = () => {
                   <p>{t('wallet.withdrawalMin', { amount: `$${MIN_WITHDRAWAL}` })}</p>
                   <p>{t('wallet.withdrawalMax', { amount: `$${MAX_WITHDRAWAL}` })}</p>
                   <p>{t('wallet.withdrawalDaily', { amount: `$${DAILY_LIMIT}` })}</p>
-                  <p>{t('wallet.withdrawalFeeInfo', { amount: `$${WITHDRAWAL_FEE.toFixed(2)}` })}</p>
+                  <p>
+                    {feeInfo 
+                      ? t('wallet.withdrawalFeeInfo', { amount: `${feeInfo.fee_percentage}%` })
+                      : t('wallet.withdrawalFeeInfo', { amount: '0%' })}
+                  </p>
                 </div>
               </div>
 
@@ -358,14 +362,17 @@ const Wallet = () => {
                     <span className="text-white">${parseFloat(withdrawAmount).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-white/60">{t('wallet.withdrawalFeeLabel')}</span>
-                    <span className="text-red-400">-${WITHDRAWAL_FEE.toFixed(2)}</span>
+                    <span className="text-white/60">
+                      {t('wallet.withdrawalFeeLabel')} 
+                      {feeInfo && ` (${feeInfo.fee_percentage}%)`}
+                    </span>
+                    <span className="text-red-400">-${withdrawalFee.toFixed(2)}</span>
                   </div>
                   <div className="border-t border-white/10 my-2"></div>
                   <div className="flex justify-between font-bold">
                     <span className="text-white">{t('wallet.netAmount')}</span>
                     <span className="text-green-400">
-                      ${(parseFloat(withdrawAmount) - WITHDRAWAL_FEE).toFixed(2)}
+                      ${(parseFloat(withdrawAmount) - withdrawalFee).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -518,13 +525,16 @@ const Wallet = () => {
                   <span className="text-white font-bold">${parseFloat(withdrawAmount || "0").toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-white/60">{t('wallet.withdrawalFeeLabel')}</span>
-                  <span className="text-red-400">-${WITHDRAWAL_FEE.toFixed(2)}</span>
+                  <span className="text-white/60">
+                    {t('wallet.withdrawalFeeLabel')}
+                    {feeInfo && ` (${feeInfo.fee_percentage}%)`}
+                  </span>
+                  <span className="text-red-400">-${withdrawalFee.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-white/20 pt-2 flex justify-between">
                   <span className="text-white font-bold">{t('wallet.netAmount')}</span>
                   <span className="text-green-400 font-bold">
-                    ${(parseFloat(withdrawAmount || "0") - WITHDRAWAL_FEE).toFixed(2)}
+                    ${(parseFloat(withdrawAmount || "0") - withdrawalFee).toFixed(2)}
                   </span>
                 </div>
                 <div className="border-t border-white/20 pt-2 space-y-1">
