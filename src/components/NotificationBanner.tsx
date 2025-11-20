@@ -89,14 +89,14 @@ export function NotificationBanner() {
 
   return (
     <div 
-      className="w-full bg-white border-b-2 border-red-500 shadow-md"
+      className="w-full bg-white border-b border-gray-200 shadow-md"
       dir="rtl"
     >
       <div className="w-full px-4 md:px-6 py-3">
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3 flex-1">
             <div className="flex items-center gap-2 flex-shrink-0">
-              <IconComponent className="h-5 w-5 text-red-500" />
+              <IconComponent className="h-5 w-5 text-gray-600" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm md:text-base text-gray-800 leading-relaxed">
