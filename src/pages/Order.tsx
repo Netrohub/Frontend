@@ -203,7 +203,10 @@ const Order = () => {
 
   const canConfirm = isBuyer && order.status === 'escrow_hold';
   const canDispute = isBuyer && (order.status === 'escrow_hold' || order.status === 'disputed');
-  const canCancel = (isBuyer || isSeller) && order.status !== 'completed';
+  // CRITICAL: Digital products (accounts) CANNOT be cancelled once payment is confirmed
+  // Once credentials are shared (escrow_hold), cancellation is impossible
+  // Only allow cancellation for payment_intent (before payment is confirmed)
+  const canCancel = (isBuyer || isSeller) && order.status === 'payment_intent';
 
   return (
     <div className="min-h-screen relative overflow-hidden pb-20" dir="rtl">
