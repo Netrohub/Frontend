@@ -32,11 +32,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SEO } from "@/components/SEO";
 import { toast } from "sonner";
-import { Bell, Plus, Loader2, Send, Users, CheckCircle, Calendar } from "lucide-react";
+import { Bell, Plus, Loader2, Send, Users, CheckCircle, Calendar, StopCircle, Play } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { formatLocalizedDateTime } from "@/utils/date";
+import { useNotifications } from "@/hooks/use-notifications";
 
 const AdminNotifications = () => {
   const { t, language } = useLanguage();
@@ -48,15 +49,23 @@ const AdminNotifications = () => {
     targetAudience: "all",
   });
   const queryClient = useQueryClient();
+  const { notifications: localNotifications, addNotification, updateNotification } = useNotifications();
+  const [stopDialogOpen, setStopDialogOpen] = useState<string | null>(null);
 
-  // Fetch notification history
+  // Fetch notification history from backend
   const { data: notificationHistory, isLoading } = useQuery({
     queryKey: ['admin-notification-history'],
     queryFn: () => adminApi.getNotificationHistory(),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
-  const notifications = notificationHistory || [];
+  // Combine backend notifications with local notifications
+  const allNotifications = [...(notificationHistory || []), ...localNotifications];
+  const notifications = allNotifications.sort((a: any, b: any) => {
+    const dateA = new Date(a.sent_at || a.createdAt || 0).getTime();
+    const dateB = new Date(b.sent_at || b.createdAt || 0).getTime();
+    return dateB - dateA;
+  });
 
   // Send notification mutation
   const sendNotificationMutation = useMutation({
@@ -72,6 +81,16 @@ const AdminNotifications = () => {
       }),
     onSuccess: (response) => {
       const usersCount = response.users_count || 0;
+      
+      // Also save to localStorage for banner display
+      addNotification({
+        title: formData.title,
+        message: formData.message,
+        type: formData.type as any,
+        targetAudience: formData.targetAudience as any,
+        status: "published",
+      });
+      
       toast.success(`تم إرسال الإشعار بنجاح إلى ${usersCount} مستخدم`);
       queryClient.invalidateQueries({ queryKey: ['admin-notification-history'] });
       setFormData({
@@ -86,6 +105,19 @@ const AdminNotifications = () => {
       toast.error(error.message || "فشل إرسال الإشعار");
     },
   });
+
+  const handleStopNotification = (notificationId: string) => {
+    // Update notification status to stopped
+    updateNotification(notificationId, { status: "stopped" });
+    toast.success("تم إيقاف الإشعار بنجاح");
+    setStopDialogOpen(null);
+  };
+
+  const handleResumeNotification = (notificationId: string) => {
+    // Update notification status back to published
+    updateNotification(notificationId, { status: "published" });
+    toast.success("تم استئناف الإشعار بنجاح");
+  };
 
   const handleSend = () => {
     if (!formData.title || !formData.message) {
@@ -309,10 +341,21 @@ const AdminNotifications = () => {
                       <div className="space-y-1 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <CardTitle className="text-xl text-white">{notification.title}</CardTitle>
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                            <CheckCircle className="h-3 w-3 ml-1" />
-                            تم الإرسال
-                          </Badge>
+                          {notification.status === "published" ? (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              <CheckCircle className="h-3 w-3 ml-1" />
+                              نشط
+                            </Badge>
+                          ) : notification.status === "stopped" ? (
+                            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                              <StopCircle className="h-3 w-3 ml-1" />
+                              متوقف
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                              مسودة
+                            </Badge>
+                          )}
                           <Badge variant="outline" className="border-white/20 text-white/70">
                             {getTypeLabel(notification.type)}
                           </Badge>
@@ -332,12 +375,58 @@ const AdminNotifications = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-white/70">{notification.message}</p>
+                    <p className="text-white/70 mb-4">{notification.message}</p>
+                    <div className="flex gap-2">
+                      {notification.status === "published" ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setStopDialogOpen(notification.id)}
+                          className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border-red-500/30"
+                        >
+                          <StopCircle className="h-4 w-4 mr-2" />
+                          إيقاف الإشعار
+                        </Button>
+                      ) : notification.status === "stopped" ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleResumeNotification(notification.id)}
+                          className="bg-green-500/10 hover:bg-green-500/20 text-green-400 border-green-500/30"
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          استئناف الإشعار
+                        </Button>
+                      ) : null}
+                    </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           )}
+
+          {/* Stop Notification Dialog */}
+          <AlertDialog open={stopDialogOpen !== null} onOpenChange={(open) => !open && setStopDialogOpen(null)}>
+            <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
+              <AlertDialogHeader>
+                <AlertDialogTitle>إيقاف الإشعار</AlertDialogTitle>
+                <AlertDialogDescription className="text-white/70">
+                  هل أنت متأكد من إيقاف هذا الإشعار؟ سيتم إخفاؤه من جميع المستخدمين.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-white/5 hover:bg-white/10 text-white border-white/20">
+                  إلغاء
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => stopDialogOpen && handleStopNotification(stopDialogOpen)}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  إيقاف
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </>

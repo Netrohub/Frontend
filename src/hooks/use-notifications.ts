@@ -8,7 +8,7 @@ export interface Notification {
   read: boolean;
   type: "order" | "dispute" | "message" | "system";
   targetAudience: "all" | "buyers" | "sellers";
-  status: "draft" | "published";
+  status: "draft" | "published" | "stopped";
   createdAt: string;
 }
 
