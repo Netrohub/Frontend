@@ -40,7 +40,9 @@ const Wallet = () => {
   const { t, language } = useLanguage();
   const queryClient = useQueryClient();
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [bankAccount, setBankAccount] = useState("");
+  const [iban, setIban] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [accountHolderName, setAccountHolderName] = useState("");
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [ibanError, setIbanError] = useState("");
@@ -78,7 +80,7 @@ const Wallet = () => {
   });
 
   const withdrawMutation = useMutation({
-    mutationFn: (data: { amount: number; bank_account: string }) => walletApi.withdraw(data),
+    mutationFn: (data: { amount: number; iban: string; bank_name: string; account_holder_name: string }) => walletApi.withdraw(data),
     onSuccess: () => {
       toast.success(t('wallet.withdrawSuccess'));
       queryClient.invalidateQueries({ queryKey: ['wallet'] });
@@ -86,7 +88,9 @@ const Wallet = () => {
       setConfirmDialogOpen(false);
       setWithdrawDialogOpen(false);
       setWithdrawAmount("");
-      setBankAccount("");
+      setIban("");
+      setBankName("");
+      setAccountHolderName("");
       setIbanError("");
     },
     onError: (error: Error) => {
@@ -139,11 +143,23 @@ const Wallet = () => {
       return;
     }
     
-    // Validate bank account
-    if (!bankAccount || !validateIBAN(bankAccount)) {
+    // Validate IBAN
+    if (!iban || !validateIBAN(iban)) {
       if (!ibanError) {
         toast.error(t('wallet.enterValidIBAN'));
       }
+      return;
+    }
+    
+    // Validate bank name
+    if (!bankName || bankName.trim().length < 2) {
+      toast.error(t('wallet.enterBankName'));
+      return;
+    }
+    
+    // Validate account holder name
+    if (!accountHolderName || accountHolderName.trim().length < 2) {
+      toast.error(t('wallet.enterAccountHolderName'));
       return;
     }
     
@@ -153,7 +169,12 @@ const Wallet = () => {
 
   const handleWithdrawConfirm = () => {
     const amount = parseFloat(withdrawAmount);
-    withdrawMutation.mutate({ amount, bank_account: bankAccount.trim() });
+    withdrawMutation.mutate({ 
+      amount, 
+      iban: iban.trim(), 
+      bank_name: bankName.trim(),
+      account_holder_name: accountHolderName.trim()
+    });
   };
 
   const formatPrice = (price: number) => {
@@ -351,12 +372,12 @@ const Wallet = () => {
               )}
 
               <div>
-                <Label>{t('wallet.bankAccount')}</Label>
+                <Label>{t('wallet.iban')}</Label>
                 <Input
                   type="text"
-                  value={bankAccount}
+                  value={iban}
                   onChange={(e) => {
-                    setBankAccount(e.target.value);
+                    setIban(e.target.value);
                     if (e.target.value) {
                       validateIBAN(e.target.value);
                     }
@@ -373,6 +394,30 @@ const Wallet = () => {
                 <p className="text-xs text-white/60 mt-1">
                   {t('wallet.ibanHint')}
                 </p>
+              </div>
+
+              <div>
+                <Label>{t('wallet.bankName')}</Label>
+                <Input
+                  type="text"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="bg-white/5 border-white/10 text-white"
+                  placeholder={t('wallet.bankNamePlaceholder')}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label>{t('wallet.accountHolderName')}</Label>
+                <Input
+                  type="text"
+                  value={accountHolderName}
+                  onChange={(e) => setAccountHolderName(e.target.value)}
+                  className="bg-white/5 border-white/10 text-white"
+                  placeholder={t('wallet.accountHolderNamePlaceholder')}
+                  required
+                />
               </div>
 
               <Button
@@ -420,8 +465,18 @@ const Wallet = () => {
                         {getStatusBadge(withdrawal.status)}
                       </div>
                       <p className="text-sm text-white/60">
-                        {withdrawal.bank_account}
+                        {withdrawal.iban || withdrawal.bank_account}
                       </p>
+                      {withdrawal.bank_name && (
+                        <p className="text-xs text-white/50 mt-1">
+                          {withdrawal.bank_name}
+                        </p>
+                      )}
+                      {withdrawal.account_holder_name && (
+                        <p className="text-xs text-white/50 mt-1">
+                          {withdrawal.account_holder_name}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -472,9 +527,19 @@ const Wallet = () => {
                     ${(parseFloat(withdrawAmount || "0") - WITHDRAWAL_FEE).toFixed(2)}
                   </span>
                 </div>
-                <div className="border-t border-white/20 pt-2">
-                  <span className="text-white/60">{t('wallet.bankAccountLabel')}</span>
-                  <p className="text-white font-mono text-xs mt-1">{bankAccount}</p>
+                <div className="border-t border-white/20 pt-2 space-y-1">
+                  <div>
+                    <span className="text-white/60">{t('wallet.iban')}: </span>
+                    <p className="text-white font-mono text-xs mt-1 inline">{iban}</p>
+                  </div>
+                  <div>
+                    <span className="text-white/60">{t('wallet.bankName')}: </span>
+                    <p className="text-white text-xs mt-1 inline">{bankName}</p>
+                  </div>
+                  <div>
+                    <span className="text-white/60">{t('wallet.accountHolderName')}: </span>
+                    <p className="text-white text-xs mt-1 inline">{accountHolderName}</p>
+                  </div>
                 </div>
               </div>
               <br />

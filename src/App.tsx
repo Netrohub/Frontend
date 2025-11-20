@@ -84,6 +84,7 @@ const AdminReviews = lazy(() => import("./pages/admin/Reviews"));
 const AdminFinancial = lazy(() => import("./pages/admin/Financial"));
 const AdminActivity = lazy(() => import("./pages/admin/Activity"));
 const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
+const AdminWithdrawals = lazy(() => import("./pages/admin/Withdrawals"));
 
 // Loading component
 const LoadingFallback = () => (

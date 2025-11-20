@@ -43,6 +43,7 @@ const config: StorybookConfig = {
   async viteFinal(config, { configType }) {
     // Fix Windows path issues with spaces in directory names
     // This ensures proper path resolution for MDX files
+    // Note: @storybook/react-vite framework already includes React plugin via framework.options
     return mergeConfig(config, {
       resolve: {
         alias: {
@@ -55,6 +56,7 @@ const config: StorybookConfig = {
       server: {
         fs: {
           // Allow serving files from project root and node_modules
+          // Fix Windows paths with spaces by using relative paths
           allow: ['..', path.resolve(__dirname, '../node_modules')],
         },
         // Fix Windows path issues with spaces in directory names
@@ -62,32 +64,48 @@ const config: StorybookConfig = {
         port: 6006,
         // Disable strict mode for better virtual module resolution
         strictPort: false,
+        // Fix URL encoding issues with Windows paths
+        hmr: {
+          protocol: 'ws',
+          host: 'localhost',
+          port: 6006,
+        },
       },
       // Set unique cache directory to prevent conflicts
+      // Use relative path to avoid Windows path encoding issues
       cacheDir: path.resolve(__dirname, '../node_modules/.vite-storybook'),
       // Ensure React runs in development mode in Storybook (always use development for dev server)
       define: {
         ...config.define,
         'process.env.NODE_ENV': JSON.stringify('development'),
-        __DEV__: true,
+        'import.meta.env.MODE': JSON.stringify('development'),
+        'import.meta.env.PROD': 'false',
+        'import.meta.env.DEV': 'true',
+        __DEV__: 'true',
+      },
+      // Better handling of React - Storybook framework handles React plugin
+      esbuild: {
+        ...config.esbuild,
+        jsx: 'automatic',
+        jsxImportSource: 'react',
       },
       // Optimize dependencies to handle path resolution better
       optimizeDeps: {
-        include: ['@storybook/addon-docs', 'react', 'react-dom'],
+        include: ['@storybook/addon-docs', 'react', 'react-dom', 'react/jsx-runtime'],
         exclude: [],
-        // Force re-optimization if needed
+        // Force re-optimization if needed (helpful after config changes)
         force: false,
         // Include MDX related dependencies
         esbuildOptions: {
           loader: {
             '.mdx': 'jsx',
           },
+          jsx: 'automatic',
+          jsxImportSource: 'react',
         },
       },
       // Better handling of MDX imports
       assetsInclude: ['**/*.mdx'],
-      // Plugin configuration for MDX
-      plugins: config.plugins || [],
     });
   },
 };

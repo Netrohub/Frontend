@@ -450,7 +450,7 @@ export const walletApi = {
   getWithdrawals: () =>
     api.get<any[]>('/wallet/withdrawals'),
   
-  withdraw: (data: { amount: number; bank_account: string }) =>
+  withdraw: (data: { amount: number; iban: string; bank_name: string; account_holder_name: string }) =>
     api.post<{ message: string; wallet: Wallet; withdrawal_request?: any; note?: string }>('/wallet/withdraw', data),
 };
 
@@ -658,6 +658,23 @@ export const adminApi = {
   
   getNotificationHistory: () =>
     api.get<any[]>('/admin/notifications/history'),
+  
+  // Withdrawals (manual approval)
+  withdrawals: (params?: { page?: number; status?: string; search?: string; from_date?: string; to_date?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.status) query.append('status', params.status);
+    if (params?.search) query.append('search', params.search);
+    if (params?.from_date) query.append('from_date', params.from_date);
+    if (params?.to_date) query.append('to_date', params.to_date);
+    return api.get<any>(`/admin/withdrawals?${query.toString()}`);
+  },
+  
+  approveWithdrawal: (id: number) =>
+    api.post<{ message: string; withdrawal_request: any }>(`/admin/withdrawals/${id}/approve`),
+  
+  rejectWithdrawal: (id: number, reason: string) =>
+    api.post<{ message: string; withdrawal_request: any }>(`/admin/withdrawals/${id}/reject`, { reason }),
 };
 
 // Suggestions API
