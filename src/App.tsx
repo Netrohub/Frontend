@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { NotificationBanner } from "@/components/NotificationBanner";
+import { NotificationToastListener } from "@/components/NotificationToastListener";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -155,6 +156,7 @@ const AppContent = () => {
     <MaintenanceCheck>
       <SkipLink />
       <NotificationBanner />
+      <NotificationToastListener />
       {/* <GlobalSearch /> */}
       <QuickNav />
       <main id="main-content" tabIndex={-1}>
