@@ -85,6 +85,7 @@ const AdminFinancial = lazy(() => import("./pages/admin/Financial"));
 const AdminActivity = lazy(() => import("./pages/admin/Activity"));
 const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
 const AdminWithdrawals = lazy(() => import("./pages/admin/Withdrawals"));
+const AdminKYC = lazy(() => import("./pages/admin/KYC"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -523,6 +524,14 @@ const AppContent = () => {
                   element={
                     <Suspense fallback={<LoadingFallback />}>
                       <AdminLegalContent />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="kyc"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminKYC />
                     </Suspense>
                   }
                 />

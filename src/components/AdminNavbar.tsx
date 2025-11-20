@@ -9,6 +9,7 @@ const items = [
   { title: "الطلبات", url: "/admin/orders", icon: ShoppingCart },
   { title: "طلبات السحب", url: "/admin/withdrawals", icon: DollarSign },
   { title: "النزاعات", url: "/admin/disputes", icon: AlertTriangle },
+  { title: "التحقق من الهوية", url: "/admin/kyc", icon: ShieldCheck },
   { title: "الإشعارات", url: "/admin/notifications", icon: Bell },
   { title: "المحتوى القانوني", url: "/admin/legal", icon: FileText },
   { title: "الإعدادات", url: "/admin/settings", icon: Settings },

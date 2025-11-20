@@ -626,6 +626,33 @@ export const adminApi = {
     return api.get<AdminKycResponse>(`/admin/kyc?${query.toString()}`);
   },
   
+  // Financial
+  financial: () =>
+    api.get<{
+      stats: {
+        total_revenue: number;
+        revenue_growth: number;
+        total_commissions: number;
+        commissions_growth: number;
+        pending_payments: number;
+        total_withdrawals: number;
+        withdrawals_growth: number;
+      };
+      transactions: Array<{
+        id: string;
+        type: 'order' | 'withdrawal';
+        amount: number;
+        order_id?: number;
+        order_number?: string;
+        buyer?: string;
+        seller?: string;
+        listing_title?: string;
+        user?: string;
+        status: string;
+        date: string;
+      }>;
+    }>('/admin/financial'),
+  
   // Reviews
   reviews: (params?: { page?: number; search?: string; status?: string; rating?: string }) => {
     const query = new URLSearchParams();

@@ -35,9 +35,15 @@ export interface KycVerification {
   user_id: number;
   status: 'pending' | 'verified' | 'failed' | 'expired';
   persona_inquiry_id?: string;
+  persona_data?: any; // Persona response data stored as JSON
   verified_at?: string;
   created_at: string;
   updated_at: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 export interface KycCreateResponse {
