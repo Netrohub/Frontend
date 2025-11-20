@@ -1,6 +1,11 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// ES modules don't have __dirname, so we need to create it from import.meta.url
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const config: StorybookConfig = {
   "stories": [
