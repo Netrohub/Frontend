@@ -471,6 +471,14 @@ const AppContent = () => {
                   }
                 />
                 <Route
+                  path="withdrawals"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminWithdrawals />
+                    </Suspense>
+                  }
+                />
+                <Route
                   path="notifications"
                   element={
                     <Suspense fallback={<LoadingFallback />}>
