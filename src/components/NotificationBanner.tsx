@@ -97,34 +97,35 @@ export function NotificationBanner() {
 
   return (
     <div 
-      className={`w-full border-b-2 ${config.color} shadow-lg`}
+      className="w-full bg-white border-b-2 border-red-500 shadow-md"
       dir="rtl"
     >
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span className="text-2xl" role="img" aria-label="notification-icon">
-              {config.emoji}
-            </span>
-            <div className="p-2 rounded-lg bg-white/20 backdrop-blur-sm">
-              <IconComponent className="h-5 w-5 text-white" />
+      <div className="w-full px-4 md:px-6 py-3">
+        <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 flex-1">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-red-500" />
             </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="font-bold text-base text-white mb-1">
-              {notification.title}
-            </h4>
-            <p className="text-sm text-white/90 leading-relaxed">
-              {notification.message}
-            </p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm md:text-base text-gray-800 leading-relaxed">
+                <span className="font-semibold">احذر المحتالين</span> - المنصة لا تتواصل بأي طريقة خارج الموقع الرسمي{' '}
+                <a 
+                  href="/about" 
+                  className="text-red-600 hover:text-red-700 underline font-medium"
+                >
+                  معرفة المزيد
+                </a>
+              </p>
+            </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleDismiss}
-            className="flex-shrink-0 h-9 w-9 p-0 hover:bg-white/20 text-white"
+            className="flex-shrink-0 h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-800 rounded-full"
+            aria-label="إغلاق"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </Button>
         </div>
       </div>
