@@ -7,7 +7,7 @@ Lighthouse reports an error:
 Line 29: Content-signal: search=yes,ai-train=no
 Unknown directive
 ```
-
+# x
 ## Explanation
 
 The `Content-signal` directive is **automatically added by Cloudflare Pages** and is not part of the standard robots.txt specification. This is a Cloudflare-specific extension that allows you to control:
