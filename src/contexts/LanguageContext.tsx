@@ -774,6 +774,7 @@ const translations: Record<Language, Record<string, string>> = {
 'wallet.warningCheckIban': 'تأكد من صحة رقم الحساب البنكي.',
 'wallet.warningManualApproval': 'سيتم مراجعة طلب السحب من قبل الإدارة. سيتم إبلاغك عند الموافقة أو الرفض.',
 'wallet.warningFeeDeducted': 'سيتم خصم الرسوم من المبلغ المسحوب.',
+'wallet.platformNotResponsible': 'المنصة غير مسؤولة عن اي خطا بالمعلومات المدخلة من قبل المستخدم.',
 'wallet.confirmWithdrawalButton': 'تأكيد السحب',
 
 
@@ -2142,6 +2143,7 @@ const translations: Record<Language, Record<string, string>> = {
 'wallet.warningProcessingTime': 'Processing may take 1 to 3 business days.',
 'wallet.warningCheckIban': 'Double-check the bank account number.',
 'wallet.warningFeeDeducted': 'Fees will be deducted from the withdrawn amount.',
+'wallet.platformNotResponsible': 'The platform is not responsible for any errors in information entered by the user.',
 'wallet.confirmWithdrawalButton': 'Confirm withdrawal',
 
 // Profile

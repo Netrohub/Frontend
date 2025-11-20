@@ -550,6 +550,9 @@ const Wallet = () => {
                 <li>{t('wallet.warningCheckIban')}</li>
                 <li>{t('wallet.warningFeeDeducted')}</li>
               </ul>
+              <p className="text-xs text-white/60 mt-3 italic">
+                {t('wallet.platformNotResponsible')}
+              </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
