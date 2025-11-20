@@ -9,11 +9,15 @@ const __dirname = path.dirname(__filename);
 
 const config: StorybookConfig = {
   "stories": [
-    // Temporarily exclude onboarding MDX to fix loading issue
-    // "../src/stories/Configure.mdx", // Excluded temporarily
+    // Load story files first
     "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
-    "../src/**/*.mdx"
+    // Temporarily exclude all MDX files to avoid onboarding issues
+    // "../src/**/*.mdx",
   ],
+  // Feature flags for better MDX handling
+  features: {
+    buildStoriesJson: false,
+  },
   "addons": [
     "@chromatic-com/storybook",
     {
@@ -65,9 +69,17 @@ const config: StorybookConfig = {
         exclude: [],
         // Force re-optimization if needed
         force: false,
+        // Include MDX related dependencies
+        esbuildOptions: {
+          loader: {
+            '.mdx': 'jsx',
+          },
+        },
       },
       // Better handling of MDX imports
       assetsInclude: ['**/*.mdx'],
+      // Plugin configuration for MDX
+      plugins: config.plugins || [],
     });
   },
 };
