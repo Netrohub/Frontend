@@ -722,8 +722,6 @@ const translations: Record<Language, Record<string, string>> = {
 'wallet.enterAccountHolderName': 'يرجى إدخال اسم صاحب الحساب',
 'wallet.accountNumber': 'رقم الحساب البنكي',
 'wallet.accountName': 'اسم صاحب الحساب',
-'wallet.bankName': 'اسم البنك',
-'wallet.iban': 'رقم الآيبان (IBAN)',
 'wallet.requestWithdrawal': 'طلب سحب',
 'wallet.withdrawalRequested': 'تم إرسال طلب السحب بنجاح.',
 'wallet.withdrawalPending': 'قيد المعالجة',
@@ -1314,7 +1312,6 @@ const translations: Record<Language, Record<string, string>> = {
 'admin.item': 'عنصر',
 'admin.total': 'الإجمالي',
 'admin.order': 'طلب',
-'common.processing': 'جارٍ المعالجة...',
 
 
 // Help & Support
@@ -2091,8 +2088,6 @@ const translations: Record<Language, Record<string, string>> = {
 'wallet.enterAccountHolderName': 'Please enter account holder name',
 'wallet.accountNumber': 'Account Number',
 'wallet.accountName': 'Account Holder Name',
-'wallet.bankName': 'Bank Name',
-'wallet.iban': 'IBAN',
 'wallet.requestWithdrawal': 'Request Withdrawal',
 'wallet.withdrawalRequested': 'Withdrawal request submitted successfully.',
 'wallet.withdrawalPending': 'Processing',
@@ -2679,7 +2674,6 @@ const translations: Record<Language, Record<string, string>> = {
 'admin.item': 'Item',
 'admin.total': 'Total',
 'admin.order': 'Order',
-'common.processing': 'Processing...',
 
 
 // Help & Support

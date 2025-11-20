@@ -8,12 +8,20 @@ import "./index.css";
 
 // Handle chunk loading errors (happens when new deployment invalidates old chunks)
 window.addEventListener('error', (event) => {
-  if (event.message.includes('Failed to fetch dynamically imported module') || 
-      event.message.includes('Importing a module script failed')) {
-    console.warn('Chunk load error detected, reloading page...');
-    window.location.reload();
+  const errorMessage = event.message || '';
+  const errorSource = (event.target as HTMLScriptElement)?.src || '';
+  
+  if (errorMessage.includes('Failed to fetch dynamically imported module') || 
+      errorMessage.includes('Importing a module script failed') ||
+      errorMessage.includes('Unexpected token') ||
+      errorSource.includes('.js') && event.target && !(event.target as HTMLScriptElement).type) {
+    console.warn('Chunk load error detected, reloading page...', { errorMessage, errorSource });
+    // Small delay to prevent infinite reload loops
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   }
-});
+}, true);
 
 // SECURITY: Sanitize error messages to prevent XSS
 function escapeHtml(text: string): string {
