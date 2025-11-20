@@ -288,3 +288,41 @@ All colors MUST be HSL.
   backface-visibility: hidden;
   perspective: 1000px;
 }
+
+/* Beautiful Notification Toast Styles */
+@layer components {
+  .notification-toast {
+    animation: slideInFromTop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .notification-toast:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.4), 0 15px 15px -5px rgba(0, 0, 0, 0.3), 0 0 40px rgba(200, 85%, 55%, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Smooth slide-in animation for toasts */
+  @keyframes slideInFromTop {
+    0% {
+      transform: translateY(-100%) scale(0.95);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Toast icon container glow effect */
+  [data-sonner-toast] [data-icon] {
+    filter: drop-shadow(0 0 8px currentColor);
+    transition: all 0.3s ease;
+  }
+
+  [data-sonner-toast]:hover [data-icon] {
+    filter: drop-shadow(0 0 12px currentColor);
+    transform: scale(1.05);
+  }
+}

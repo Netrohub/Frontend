@@ -38,20 +38,40 @@ export function NotificationToastListener() {
       // Mark as shown
       shownNotificationIdsRef.current.add(notification.id);
       
-      // Get icon based on notification type
-      const getIcon = () => {
+      // Get icon and color based on notification type
+      const getIconConfig = () => {
         switch (notification.type) {
           case 'system':
           case 'announcement':
-            return <Bell className="h-5 w-5" />;
+            return {
+              icon: <Bell className="h-5 w-5" />,
+              color: 'hsl(40, 90%, 55%)', // Amber/Gold
+              borderColor: 'rgba(255, 193, 7, 0.3)',
+            };
           case 'order':
-            return <CheckCircle className="h-5 w-5" />;
+            return {
+              icon: <CheckCircle className="h-5 w-5" />,
+              color: 'hsl(160, 60%, 50%)', // Green/Success
+              borderColor: 'rgba(16, 185, 129, 0.3)',
+            };
           case 'dispute':
-            return <AlertTriangle className="h-5 w-5" />;
+            return {
+              icon: <AlertTriangle className="h-5 w-5" />,
+              color: 'hsl(0, 70%, 60%)', // Red/Error
+              borderColor: 'rgba(239, 68, 68, 0.3)',
+            };
           case 'message':
-            return <Info className="h-5 w-5" />;
+            return {
+              icon: <Info className="h-5 w-5" />,
+              color: 'hsl(200, 85%, 55%)', // Blue/Info
+              borderColor: 'rgba(59, 130, 246, 0.3)',
+            };
           default:
-            return <Bell className="h-5 w-5" />;
+            return {
+              icon: <Bell className="h-5 w-5" />,
+              color: 'hsl(200, 85%, 55%)', // Default Blue
+              borderColor: 'rgba(59, 130, 246, 0.3)',
+            };
         }
       };
 
@@ -70,16 +90,35 @@ export function NotificationToastListener() {
         }
       };
 
-      // Show toast notification
+      const iconConfig = getIconConfig();
+      const style = getToastStyle();
+
+      // Show toast notification with beautiful styling
       toast(notification.title || 'إشعار جديد', {
         description: notification.message || '',
-        duration: getToastStyle().duration,
-        icon: getIcon(),
+        duration: style.duration,
+        icon: (
+          <div 
+            className="flex items-center justify-center w-10 h-10 rounded-lg backdrop-blur-sm"
+            style={{
+              background: `linear-gradient(135deg, ${iconConfig.color}20, ${iconConfig.color}10)`,
+              border: `1px solid ${iconConfig.borderColor}`,
+            }}
+          >
+            <div style={{ color: iconConfig.color }}>
+              {iconConfig.icon}
+            </div>
+          </div>
+        ),
         action: {
           label: 'عرض',
           onClick: () => {
             window.location.href = '/notifications';
           },
+        },
+        className: "notification-toast",
+        style: {
+          borderLeft: `3px solid ${iconConfig.color}`,
         },
       });
     });
