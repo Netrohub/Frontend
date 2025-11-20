@@ -41,7 +41,6 @@ const AdminSettings = () => {
   const [escrowHours, setEscrowHours] = useState('72');
   const [minWithdrawal, setMinWithdrawal] = useState('100');
   const [platformFee, setPlatformFee] = useState('5');
-  const [withdrawalFee, setWithdrawalFee] = useState('5');
   
   // Track original values for change detection
   const [originalValues, setOriginalValues] = useState<any>({});
@@ -75,17 +74,14 @@ const AdminSettings = () => {
     if (allSettings.payments) {
       const minWithdrawValue = allSettings.payments.find((s: any) => s.key === 'min_withdrawal_amount')?.value || '100';
       const feeValue = allSettings.payments.find((s: any) => s.key === 'platform_fee_percentage')?.value || '5';
-      const withdrawalFeeValue = allSettings.payments.find((s: any) => s.key === 'withdrawal_fee_percentage')?.value || feeValue;
       
       setMinWithdrawal(minWithdrawValue);
       setPlatformFee(feeValue);
-      setWithdrawalFee(withdrawalFeeValue);
       
       setOriginalValues(prev => ({
         ...prev,
         minWithdrawal: minWithdrawValue,
         platformFee: feeValue,
-        withdrawalFee: withdrawalFeeValue,
       }));
     }
   }, [allSettings]);
@@ -98,8 +94,7 @@ const AdminSettings = () => {
       maintenanceMode !== originalValues.maintenanceMode ||
       escrowHours !== originalValues.escrowHours ||
       minWithdrawal !== originalValues.minWithdrawal ||
-      platformFee !== originalValues.platformFee ||
-      withdrawalFee !== originalValues.withdrawalFee;
+      platformFee !== originalValues.platformFee;
     
     setHasChanges(changed);
   }, [siteName, siteDescription, maintenanceMode, escrowHours, minWithdrawal, platformFee, originalValues]);
@@ -137,11 +132,6 @@ const AdminSettings = () => {
       toast.error("نسبة العمولة يجب أن تكون بين 0% و 20%");
       return;
     }
-    const withdrawalFeeNum = Number(withdrawalFee);
-    if (withdrawalFeeNum < 0 || withdrawalFeeNum > 20) {
-      toast.error("نسبة رسوم السحب يجب أن تكون بين 0% و 20%");
-      return;
-    }
 
     setShowConfirmDialog(true);
   };
@@ -154,7 +144,6 @@ const AdminSettings = () => {
       { key: 'escrow_hold_hours', value: escrowHours },
       { key: 'min_withdrawal_amount', value: minWithdrawal },
       { key: 'platform_fee_percentage', value: platformFee },
-      { key: 'withdrawal_fee_percentage', value: withdrawalFee },
     ];
     
     updateSettingsMutation.mutate(settings);
@@ -167,7 +156,6 @@ const AdminSettings = () => {
     setEscrowHours('72');
     setMinWithdrawal('100');
     setPlatformFee('5');
-    setWithdrawalFee('5');
     toast.success("تم إعادة تعيين القيم الافتراضية");
   };
 
@@ -283,7 +271,7 @@ const AdminSettings = () => {
             
             <div className="space-y-4">
               <div>
-                <Label htmlFor="commission" className="text-white/80">نسبة العمولة (%)</Label>
+                <Label htmlFor="commission" className="text-white/80">رسوم المنصة (%)</Label>
                 <Input 
                   id="commission"
                   type="number"
@@ -297,7 +285,7 @@ const AdminSettings = () => {
                   }}
                   className="mt-2 bg-white/5 border-white/10 text-white"
                 />
-                <p className="text-xs text-white/50 mt-1">نسبة عمولة المنصة من كل عملية (0-20%)</p>
+                <p className="text-xs text-white/50 mt-1">نسبة رسوم المنصة من كل عملية وسحب (0-20%)</p>
               </div>
 
               <div>
@@ -315,24 +303,6 @@ const AdminSettings = () => {
                   className="mt-2 bg-white/5 border-white/10 text-white"
                 />
                 <p className="text-xs text-white/50 mt-1">الحد الأدنى لسحب الأموال من المحفظة ($10-$10,000)</p>
-              </div>
-
-              <div>
-                <Label htmlFor="withdrawalFee" className="text-white/80">نسبة رسوم السحب (%)</Label>
-                <Input 
-                  id="withdrawalFee"
-                  type="number"
-                  min="0"
-                  max="20"
-                  step="0.1"
-                  value={withdrawalFee}
-                  onChange={(e) => {
-                    const value = Math.max(0, Math.min(20, Number(e.target.value) || 0));
-                    setWithdrawalFee(value.toString());
-                  }}
-                  className="mt-2 bg-white/5 border-white/10 text-white"
-                />
-                <p className="text-xs text-white/50 mt-1">نسبة الرسوم المقتطعة من كل عملية سحب (0-20%). إذا لم يتم تحديدها، سيتم استخدام نسبة عمولة المنصة.</p>
               </div>
             </div>
           </Card>
