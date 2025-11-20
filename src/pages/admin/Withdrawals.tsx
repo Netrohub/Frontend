@@ -216,7 +216,7 @@ const AdminWithdrawals = () => {
   }
 
   return (
-    <div className="p-4 md:p-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] p-4 md:p-6" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -274,7 +274,7 @@ const AdminWithdrawals = () => {
           {withdrawals.map((withdrawal) => (
             <Card 
               key={withdrawal.id} 
-              className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm hover:border-white/20 transition-all"
+              className="p-4 md:p-6 bg-white/5 border-white/10 backdrop-blur-sm hover:border-white/20 hover:bg-white/10 transition-all"
             >
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 {/* Left: User & Amount Info */}
@@ -338,7 +338,7 @@ const AdminWithdrawals = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleViewDetails(withdrawal)}
-                    className="border-white/10 text-white hover:bg-white/10"
+                    className="border-white/20 text-white hover:bg-white/10 hover:border-white/30"
                   >
                     <Eye className="h-4 w-4 mr-2" />
                     {t('admin.viewDetails')}
@@ -554,7 +554,7 @@ const AdminWithdrawals = () => {
                   variant="outline"
                   onClick={() => setIsApproveDialogOpen(false)}
                   disabled={approveMutation.isPending}
-                  className="flex-1 border-white/10 text-white hover:bg-white/10"
+                  className="flex-1 border-white/20 text-white hover:bg-white/10 hover:border-white/30"
                 >
                   {t('common.cancel')}
                 </Button>
@@ -632,7 +632,7 @@ const AdminWithdrawals = () => {
                     setRejectReason("");
                   }}
                   disabled={rejectMutation.isPending}
-                  className="flex-1 border-white/10 text-white hover:bg-white/10"
+                  className="flex-1 border-white/20 text-white hover:bg-white/10 hover:border-white/30"
                 >
                   {t('common.cancel')}
                 </Button>
