@@ -129,7 +129,8 @@ export interface Payment {
 
 export interface PaymentCreateResponse {
   payment: Payment;
-  redirect_url?: string;
+  redirect_url?: string; // Legacy Tap field
+  paymentUrl?: string; // Paylink field
 }
 
 // Dispute types
