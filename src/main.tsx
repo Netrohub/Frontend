@@ -10,18 +10,40 @@ import "./index.css";
 window.addEventListener('error', (event) => {
   const errorMessage = event.message || '';
   const errorSource = (event.target as HTMLScriptElement)?.src || '';
+  const errorFilename = (event.filename || '').toLowerCase();
   
-  if (errorMessage.includes('Failed to fetch dynamically imported module') || 
-      errorMessage.includes('Importing a module script failed') ||
-      errorMessage.includes('Unexpected token') ||
-      errorSource.includes('.js') && event.target && !(event.target as HTMLScriptElement).type) {
-    console.warn('Chunk load error detected, reloading page...', { errorMessage, errorSource });
+  // Check for chunk loading errors
+  const isChunkError = 
+    errorMessage.includes('Failed to fetch dynamically imported module') || 
+    errorMessage.includes('Importing a module script failed') ||
+    (errorMessage.includes('SyntaxError') && errorMessage.includes('Unexpected token')) ||
+    (errorFilename.includes('.js') && errorMessage.includes('Unexpected token')) ||
+    (errorSource.includes('.js') && event.target && !(event.target as HTMLScriptElement).type);
+  
+  if (isChunkError) {
+    console.warn('Chunk load error detected, reloading page...', { errorMessage, errorSource, errorFilename });
     // Small delay to prevent infinite reload loops
     setTimeout(() => {
       window.location.reload();
     }, 100);
+    event.preventDefault(); // Prevent error from propagating
   }
 }, true);
+
+// Also catch unhandled promise rejections that might be chunk loading errors
+window.addEventListener('unhandledrejection', (event) => {
+  const errorMessage = String(event.reason?.message || event.reason || '');
+  
+  if (errorMessage.includes('Failed to fetch dynamically imported module') || 
+      errorMessage.includes('Importing a module script failed') ||
+      (errorMessage.includes('SyntaxError') && errorMessage.includes('Unexpected token'))) {
+    console.warn('Chunk load error detected in promise rejection, reloading page...', { errorMessage });
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+    event.preventDefault(); // Prevent error from propagating
+  }
+});
 
 // SECURITY: Sanitize error messages to prevent XSS
 function escapeHtml(text: string): string {

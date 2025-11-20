@@ -79,6 +79,13 @@ const Wallet = () => {
     enabled: !!user,
   });
 
+  const { data: feeInfo, isLoading: feeInfoLoading } = useQuery({
+    queryKey: ['withdrawal-fee-info'],
+    queryFn: () => walletApi.getFeeInfo(),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
   const withdrawMutation = useMutation({
     mutationFn: (data: { amount: number; iban: string; bank_name: string; account_holder_name: string }) => walletApi.withdraw(data),
     onSuccess: () => {
@@ -122,14 +129,15 @@ const Wallet = () => {
     
     // Validate amount
     const amount = parseFloat(withdrawAmount);
+    const minWithdrawal = feeInfo?.min_withdrawal ?? MIN_WITHDRAWAL;
     
     if (!withdrawAmount || isNaN(amount)) {
       toast.error(t('wallet.enterValidAmount'));
       return;
     }
     
-    if (amount < MIN_WITHDRAWAL) {
-      toast.error(t('wallet.minWithdrawal', { min: MIN_WITHDRAWAL }));
+    if (amount < minWithdrawal) {
+      toast.error(t('wallet.minWithdrawal', { min: minWithdrawal }));
       return;
     }
     
@@ -251,6 +259,12 @@ const Wallet = () => {
   const onHoldBalance = wallet?.on_hold_balance || 0;
   const withdrawnTotal = wallet?.withdrawn_total || 0;
 
+  // Calculate withdrawal fee
+  const withdrawalFeePercentage = feeInfo?.fee_percentage ?? 0;
+  const withdrawalFee = withdrawAmount && parseFloat(withdrawAmount) >= MIN_WITHDRAWAL
+    ? parseFloat(withdrawAmount) * (withdrawalFeePercentage / 100)
+    : 0;
+
   // Show loading state
   if (isLoading) {
     return (
@@ -325,8 +339,8 @@ const Wallet = () => {
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
                 <p className="text-blue-400 text-sm font-semibold mb-1">{`💰 ${t('wallet.withdrawalLimitsTitle')}`}</p>
                 <div className="text-white/70 text-xs space-y-1">
-                  <p>{t('wallet.withdrawalMin', { amount: `$${MIN_WITHDRAWAL}` })}</p>
-                  <p>{t('wallet.withdrawalMax', { amount: `$${MAX_WITHDRAWAL}` })}</p>
+                  <p>{t('wallet.withdrawalMin', { amount: `$${feeInfo?.min_withdrawal ?? MIN_WITHDRAWAL}` })}</p>
+                  <p>{t('wallet.withdrawalMax', { amount: `$${feeInfo?.max_withdrawal ?? MAX_WITHDRAWAL}` })}</p>
                   <p>{t('wallet.withdrawalDaily', { amount: `$${DAILY_LIMIT}` })}</p>
                   <p>
                     {feeInfo 
@@ -341,12 +355,12 @@ const Wallet = () => {
                 <Input
                   type="number"
                   step="0.01"
-                  min={MIN_WITHDRAWAL}
-                  max={Math.min(MAX_WITHDRAWAL, availableBalance)}
+                  min={feeInfo?.min_withdrawal ?? MIN_WITHDRAWAL}
+                  max={Math.min(feeInfo?.max_withdrawal ?? MAX_WITHDRAWAL, availableBalance)}
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
                   className="bg-white/5 border-white/10 text-white"
-                  placeholder={t('wallet.amountPlaceholder', { amount: MIN_WITHDRAWAL })}
+                  placeholder={t('wallet.amountPlaceholder', { amount: feeInfo?.min_withdrawal ?? MIN_WITHDRAWAL })}
                   required
                 />
                 <p className="text-sm text-white/60 mt-1">
@@ -355,7 +369,7 @@ const Wallet = () => {
               </div>
 
               {/* Fee Calculation */}
-              {withdrawAmount && parseFloat(withdrawAmount) >= MIN_WITHDRAWAL && (
+              {withdrawAmount && parseFloat(withdrawAmount) >= (feeInfo?.min_withdrawal ?? MIN_WITHDRAWAL) && (
                 <div className="bg-white/5 border border-white/10 rounded-lg p-3">
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-white/60">{t('wallet.requestedAmount')}</span>
