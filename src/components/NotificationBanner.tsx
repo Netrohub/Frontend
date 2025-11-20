@@ -94,22 +94,28 @@ export function NotificationBanner() {
     >
       <div className="w-full px-4 md:px-6 py-3">
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 flex-1">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-shrink-0">
-              <IconComponent className="h-5 w-5 text-gray-600" />
+              <div className="p-2 rounded-lg bg-blue-50 border border-blue-200">
+                <IconComponent className="h-5 w-5 text-blue-600" />
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm md:text-base text-gray-800 leading-relaxed">
-                <span className="font-semibold">{notification.title}</span>
-                {notification.message && ` - ${notification.message}`}
-              </p>
+            <div className="flex-1 min-w-0 flex flex-col gap-1">
+              <h4 className="text-sm md:text-base font-semibold text-gray-900 leading-tight">
+                {notification.title}
+              </h4>
+              {notification.message && (
+                <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
+                  {notification.message}
+                </p>
+              )}
             </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleDismiss}
-            className="flex-shrink-0 h-8 w-8 p-0 hover:bg-gray-100 text-gray-600 hover:text-gray-800 rounded-full"
+            className="flex-shrink-0 h-8 w-8 p-0 hover:bg-gray-100 text-gray-500 hover:text-gray-700 rounded-full transition-colors"
             aria-label="إغلاق"
           >
             <X className="h-4 w-4" />
