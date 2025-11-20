@@ -2075,6 +2075,7 @@ const translations: Record<Language, Record<string, string>> = {
 'wallet.onHold': 'On Hold',
 'wallet.total': 'Total',
 'wallet.withdraw': 'Withdraw',
+'wallet.withdrawDescription': 'Enter withdrawal details to complete the transaction',
 'wallet.withdrawnTotalLabel': 'Total Withdrawn',
 'wallet.deposit': 'Deposit',
 'wallet.transactions': 'Transactions',
