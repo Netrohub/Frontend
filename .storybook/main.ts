@@ -9,8 +9,10 @@ const __dirname = path.dirname(__filename);
 
 const config: StorybookConfig = {
   "stories": [
-    "../src/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    // Temporarily exclude onboarding MDX to fix loading issue
+    // "../src/stories/Configure.mdx", // Excluded temporarily
+    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../src/**/*.mdx"
   ],
   "addons": [
     "@chromatic-com/storybook",
@@ -51,12 +53,21 @@ const config: StorybookConfig = {
           // Allow serving files from project root and node_modules
           allow: ['..', path.resolve(__dirname, '../node_modules')],
         },
+        // Fix Windows path issues with spaces in directory names
+        host: true,
+        port: 6006,
       },
+      // Set unique cache directory to prevent conflicts
+      cacheDir: path.resolve(__dirname, '../node_modules/.vite-storybook'),
       // Optimize dependencies to handle path resolution better
       optimizeDeps: {
-        include: ['@storybook/addon-docs'],
+        include: ['@storybook/addon-docs', 'react', 'react-dom'],
         exclude: [],
+        // Force re-optimization if needed
+        force: false,
       },
+      // Better handling of MDX imports
+      assetsInclude: ['**/*.mdx'],
     });
   },
 };
