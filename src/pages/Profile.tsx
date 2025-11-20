@@ -27,7 +27,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { ErrorState } from "@/components/ErrorState";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApi } from "@/lib/api";
 import { toast } from "sonner";
 
@@ -56,6 +56,18 @@ const Profile = () => {
 
   // Get wallet data (if it exists in user object)
   const userWallet = user?.wallet;
+  const queryClient = useQueryClient();
+
+  // Resend email verification mutation
+  const resendVerificationMutation = useMutation({
+    mutationFn: () => authApi.resendVerificationEmail(),
+    onSuccess: () => {
+      toast.success(t('profile.verificationEmailSent'));
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || t('profile.verificationEmailError'));
+    },
+  });
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -313,7 +325,28 @@ const Profile = () => {
               {user.email_verified_at ? (
                 <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
               ) : (
-                <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
+                <div className="flex items-center gap-2">
+                  <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => resendVerificationMutation.mutate()}
+                    disabled={resendVerificationMutation.isPending}
+                    className="h-7 px-2 text-xs text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] hover:bg-[hsl(195,80%,70%)]/10"
+                  >
+                    {resendVerificationMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                        {t('common.sending')}
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="h-3 w-3 mr-1" />
+                        {t('profile.resendVerificationEmail')}
+                      </>
+                    )}
+                  </Button>
+                </div>
               )}
             </div>
             

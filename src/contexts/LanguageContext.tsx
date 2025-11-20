@@ -705,6 +705,7 @@ const translations: Record<Language, Record<string, string>> = {
 'wallet.onHold': 'قيد الانتظار',
 'wallet.total': 'إجمالي الرصيد',
 'wallet.withdraw': 'سحب الأموال',
+'wallet.withdrawDescription': 'أدخل تفاصيل السحب لإكمال العملية',
 'wallet.withdrawnTotalLabel': 'إجمالي المسحوب',
 'wallet.deposit': 'إيداع رصيد',
 'wallet.transactions': 'سجل المعاملات',
@@ -833,6 +834,9 @@ const translations: Record<Language, Record<string, string>> = {
 'profile.manageInfo': 'إدارة معلومات الحساب والإعدادات الشخصية.',
 'profile.totalRevenue': 'إجمالي الأرباح',
 'profile.editProfileLink': 'تعديل الملف الشخصي',
+'profile.resendVerificationEmail': 'إعادة إرسال رسالة التحقق',
+'profile.verificationEmailSent': 'تم إرسال رسالة التحقق إلى بريدك الإلكتروني',
+'profile.verificationEmailError': 'فشل إرسال رسالة التحقق',
 
 
 // Edit Profile
@@ -2200,6 +2204,9 @@ const translations: Record<Language, Record<string, string>> = {
 'profile.manageInfo': 'Manage your information and settings.',
 'profile.totalRevenue': 'Total Revenue',
 'profile.editProfileLink': 'Edit Profile',
+'profile.resendVerificationEmail': 'Resend Verification Email',
+'profile.verificationEmailSent': 'Verification email sent to your inbox',
+'profile.verificationEmailError': 'Failed to send verification email',
 
 // Edit Profile
 'editProfile.title': 'Edit Profile',

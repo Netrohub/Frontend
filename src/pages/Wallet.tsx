@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -333,6 +333,9 @@ const Wallet = () => {
           <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
             <DialogHeader>
               <DialogTitle>{t('wallet.withdraw')}</DialogTitle>
+              <DialogDescription className="text-white/70">
+                {t('wallet.withdrawDescription')}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleWithdrawClick} className="space-y-4">
               {/* Withdrawal Limits Info */}
