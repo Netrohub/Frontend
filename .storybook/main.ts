@@ -60,9 +60,17 @@ const config: StorybookConfig = {
         // Fix Windows path issues with spaces in directory names
         host: true,
         port: 6006,
+        // Disable strict mode for better virtual module resolution
+        strictPort: false,
       },
       // Set unique cache directory to prevent conflicts
       cacheDir: path.resolve(__dirname, '../node_modules/.vite-storybook'),
+      // Ensure React runs in development mode in Storybook (always use development for dev server)
+      define: {
+        ...config.define,
+        'process.env.NODE_ENV': JSON.stringify('development'),
+        __DEV__: true,
+      },
       // Optimize dependencies to handle path resolution better
       optimizeDeps: {
         include: ['@storybook/addon-docs', 'react', 'react-dom'],
