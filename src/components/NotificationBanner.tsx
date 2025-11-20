@@ -11,89 +11,22 @@ interface Notification {
 }
 
 export function NotificationBanner() {
-  const [notification, setNotification] = useState<Notification | null>(null);
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
-    // Load dismissed IDs once on mount
-    const dismissedStr = localStorage.getItem("dismissed_notifications");
-    if (dismissedStr) {
-      setDismissedIds(new Set(JSON.parse(dismissedStr)));
+    // Check if banner was dismissed
+    const dismissed = localStorage.getItem("scammer_warning_dismissed");
+    if (dismissed === "true") {
+      setIsDismissed(true);
     }
   }, []);
 
-  const loadNotifications = useCallback(() => {
-    const stored = localStorage.getItem("admin_notifications");
-    if (stored) {
-      const notifications: Notification[] = JSON.parse(stored);
-      const published = notifications
-        .filter(n => n.status === "published")
-        .sort((a, b) => b.id.localeCompare(a.id))[0];
-      
-      if (published && !dismissedIds.has(published.id)) {
-        setNotification(published);
-      } else {
-        setNotification(null);
-      }
-    }
-  }, [dismissedIds]);
-
-  useEffect(() => {
-    loadNotifications();
-
-    const handleNotificationUpdate = () => {
-      loadNotifications();
-    };
-
-    window.addEventListener("notificationsUpdated", handleNotificationUpdate);
-    window.addEventListener("storage", handleNotificationUpdate);
-
-    return () => {
-      window.removeEventListener("notificationsUpdated", handleNotificationUpdate);
-      window.removeEventListener("storage", handleNotificationUpdate);
-    };
-  }, [loadNotifications]);
-
   const handleDismiss = () => {
-    if (notification) {
-      const newDismissed = new Set(dismissedIds);
-      newDismissed.add(notification.id);
-      setDismissedIds(newDismissed);
-      localStorage.setItem("dismissed_notifications", JSON.stringify(Array.from(newDismissed)));
-      setNotification(null);
-    }
+    setIsDismissed(true);
+    localStorage.setItem("scammer_warning_dismissed", "true");
   };
 
-  if (!notification) return null;
-
-  const getTypeConfig = (type: string) => {
-    const configs = {
-      order: {
-        color: "bg-blue-600 border-blue-700",
-        icon: Package,
-        emoji: "📦"
-      },
-      dispute: {
-        color: "bg-red-600 border-red-700",
-        icon: AlertCircle,
-        emoji: "⚠️"
-      },
-      message: {
-        color: "bg-green-600 border-green-700",
-        icon: MessageSquare,
-        emoji: "💬"
-      },
-      system: {
-        color: "bg-amber-600 border-amber-700",
-        icon: Megaphone,
-        emoji: "📢"
-      },
-    };
-    return configs[type as keyof typeof configs] || configs.system;
-  };
-
-  const config = getTypeConfig(notification.type);
-  const IconComponent = config.icon;
+  if (isDismissed) return null;
 
   return (
     <div 
