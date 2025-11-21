@@ -26,6 +26,8 @@ const KYC = () => {
   const queryClient = useQueryClient();
   const [personaLoaded, setPersonaLoaded] = useState(false);
   const personaClientRef = useRef<any>(null);
+  const personaScriptInjectedRef = useRef(false);
+  const [sessionLoading, setSessionLoading] = useState(false);
 
   // Fetch KYC status
   const { data: kyc, isLoading, error: kycError, refetch, isRefetching } = useQuery({
@@ -77,13 +79,24 @@ const KYC = () => {
       return;
     }
 
+    if (sessionLoading) {
+      toast.info("جاري تجهيز جلسة Persona...");
+      return;
+    }
+
+    setSessionLoading(true);
     try {
       const response = await kycApi.resume({ inquiry_id: inquiryId });
       const sessionToken = response.session_token;
       const resolvedInquiryId = response.inquiry_id ?? inquiryId;
 
+      if (import.meta.env.DEV) {
+        debugLog('Persona resume response', response);
+      }
+
       if (!sessionToken) {
-        toast.error("فشل إنشاء جلسة Persona. الرجاء المحاولة مرة أخرى.");
+        toast.error("فشل إنشاء جلسة Persona. تحقق من سجلات الخادم.");
+        console.error('Persona resume response missing session_token', response);
         return;
       }
 
@@ -118,6 +131,9 @@ const KYC = () => {
     } catch (error) {
       debugLog('Failed to open Persona with session', error);
       toast.error("فشل فتح عملية التحقق. الرجاء المحاولة مرة أخرى.");
+    } finally {
+      setSessionLoading(false);
+      debugLog('Session loading finished');
     }
   };
 
@@ -126,6 +142,12 @@ const KYC = () => {
       setPersonaLoaded(true);
       return;
     }
+
+    if (personaScriptInjectedRef.current) {
+      return;
+    }
+
+    personaScriptInjectedRef.current = true;
 
     const script = document.createElement('script');
     script.src = 'https://cdn.withpersona.com/dist/persona-v5.1.2.js';
@@ -144,6 +166,7 @@ const KYC = () => {
     return () => {
       if (document.body.contains(script)) {
         document.body.removeChild(script);
+        personaScriptInjectedRef.current = false;
       }
     };
   }, []);
@@ -390,7 +413,7 @@ const KYC = () => {
               
               <KYCVerificationForm 
                 onStart={startPersonaVerification}
-                isLoading={createKycMutation.isPending}
+                isLoading={createKycMutation.isPending || sessionLoading}
                 isRefetching={isRefetching}
                 canStart={canStartVerification}
                 personaLoaded={true}
@@ -418,7 +441,7 @@ const KYC = () => {
               
               <KYCVerificationForm 
                 onStart={startPersonaVerification}
-                isLoading={createKycMutation.isPending}
+                isLoading={createKycMutation.isPending || sessionLoading}
                 isRefetching={isRefetching}
                 canStart={canStartVerification}
                 personaLoaded={true}
@@ -480,7 +503,7 @@ const KYC = () => {
                 <Button
                   onClick={resumePersonaVerification}
                   className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
-                  disabled={isRefetching || createKycMutation.isPending}
+                disabled={isRefetching || createKycMutation.isPending || sessionLoading}
                 >
                   أكمل عملية التحقق الآن
                 </Button>
@@ -490,7 +513,7 @@ const KYC = () => {
             // Initial State - No KYC record
             <KYCVerificationForm 
               onStart={startPersonaVerification}
-              isLoading={createKycMutation.isPending}
+              isLoading={createKycMutation.isPending || sessionLoading}
               isRefetching={isRefetching}
               canStart={canStartVerification}
               personaLoaded={true}
