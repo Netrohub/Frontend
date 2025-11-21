@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ShieldCheck, CheckCircle2, AlertCircle, Mail, Phone, IdCard, ArrowRight, Loader2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2, AlertCircle, IdCard, ArrowRight, Loader2 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -121,26 +119,11 @@ const KYC = () => {
   const steps = [
     {
       number: 1,
-      title: "التحقق من البريد الإلكتروني",
-      icon: Mail,
-      status: "completed",
-    },
-    {
-      number: 2,
-      title: "التحقق من رقم الهاتف",
-      icon: Phone,
-      status: "completed",
-    },
-    {
-      number: 3,
       title: "التحقق من الهوية",
       icon: IdCard,
       status: identityVerified ? "completed" : "active",
     },
   ];
-
-  const phoneLabel = user?.phone || "05XXXXXXXX";
-  const emailLabel = user?.email || "example@email.com";
 
   return (
     <div className="min-h-screen relative overflow-hidden" dir="rtl">
@@ -215,118 +198,69 @@ const KYC = () => {
                       {step.title}
                     </span>
                   </div>
-                  {index < steps.length - 1 && (
-                    <div
-                      className={`h-0.5 flex-1 mx-2 ${
-                        steps[index + 1].status === "completed" ? "bg-green-500" : "bg-white/20"
-                      }`}
-                    />
-                  )}
                 </div>
               );
             })}
           </div>
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 mb-2">
-                  <Mail className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h3 className="text-xl font-bold text-white">التحقق من البريد الإلكتروني</h3>
-                </div>
-                <p className="text-white/60 text-sm">
-                  تم ربط بريدك الإلكتروني، فقط انتقل لخطوة التحقق من الهوية.
-                </p>
-                <div>
-                  <Label className="text-white text-xs mb-2 block">البريد الإلكتروني</Label>
-                  <Input
-                    type="email"
-                    value={emailLabel}
-                    disabled
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40 cursor-not-allowed"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 mb-2">
-                  <Phone className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h3 className="text-xl font-bold text-white">التحقق من رقم الهاتف</h3>
-                </div>
-                <p className="text-white/60 text-sm">
-                  تم التحقق من رقم الهاتف المرتبط بالحساب مسبقاً.
-                </p>
-                <div>
-                  <Label className="text-white text-xs mb-2 block">رقم الهاتف</Label>
-                  <Input
-                    type="tel"
-                    value={phoneLabel}
-                    disabled
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40 cursor-not-allowed"
-                    dir="ltr"
-                  />
-                </div>
-              </div>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
+              <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
             </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
+            <p className="text-white/60 text-sm">
+              سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك بشكل آمن وسريع.
+            </p>
+            <Card className="p-6 bg-white/5 border-white/10">
+              <div className="text-center space-y-4">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
+                  <ShieldCheck className="h-10 w-10 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
+                  <ul className="text-sm text-white/60 text-right space-y-1">
+                    <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
+                    <li>• التقط صورة سيلفي للتحقق</li>
+                    <li>• التحقق يتم تلقائياً في دقائق</li>
+                  </ul>
+                </div>
               </div>
-              <p className="text-white/60 text-sm">
-                سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك بشكل آمن وسريع.
-              </p>
-              <Card className="p-6 bg-white/5 border-white/10">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
-                    <ShieldCheck className="h-10 w-10 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
-                    <ul className="text-sm text-white/60 text-right space-y-1">
-                      <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
-                      <li>• التقط صورة سيلفي للتحقق</li>
-                      <li>• التحقق يتم تلقائياً في دقائق</li>
-                    </ul>
-                  </div>
+            </Card>
+
+            <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
+              <div className="flex gap-2">
+                <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] mt-0.5" />
+                <div className="text-sm text-white/80">
+                  <p className="font-bold mb-1">آمن ومشفر</p>
+                  <p>Persona منصة موثوقة عالمياً وتؤمن بياناتك طوال العملية.</p>
                 </div>
-              </Card>
+              </div>
+            </Card>
 
-              <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
-                <div className="flex gap-2">
-                  <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] mt-0.5" />
-                  <div className="text-sm text-white/80">
-                    <p className="font-bold mb-1">آمن ومشفر</p>
-                    <p>Persona منصة موثوقة عالمياً وتؤمن بياناتك طوال العملية.</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Button
-                onClick={handleStart}
-                disabled={startMutation.isPending || !sdkLoaded}
-                className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6"
-              >
-                {startMutation.isPending ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    جاري التحميل...
-                  </>
-                ) : (
-                  <>
-                    <IdCard className="h-5 w-5" />
-                    {sdkLoaded ? "بدء التحقق عبر Persona" : "جاري التحميل..."}
-                  </>
-                )}
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-
-              {!sdkLoaded && (
-                <p className="text-xs text-center text-white/60">
-                  SDK التابع لـ Persona لا يزال يُحمَّل، يُرجى الانتظار قبل الضغط على الزر.
-                </p>
+            <Button
+              onClick={handleStart}
+              disabled={startMutation.isPending || !sdkLoaded}
+              className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6"
+            >
+              {startMutation.isPending ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  جاري التحميل...
+                </>
+              ) : (
+                <>
+                  <IdCard className="h-5 w-5" />
+                  {sdkLoaded ? "بدء التحقق عبر Persona" : "جاري التحميل..."}
+                </>
               )}
-            </div>
+              <ArrowRight className="h-5 w-5" />
+            </Button>
+
+            {!sdkLoaded && (
+              <p className="text-xs text-center text-white/60">
+                SDK التابع لـ Persona لا يزال يُحمَّل، يُرجى الانتظار قبل الضغط على الزر.
+              </p>
+            )}
           </div>
         </Card>
 
