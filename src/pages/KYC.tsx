@@ -229,6 +229,71 @@ const KYC = () => {
     canStartVerification,
   });
 
+  const resumePersonaVerification = () => {
+    const inquiryId = kyc?.persona_inquiry_id as string | undefined;
+
+    debugLog('Resume button clicked', {
+      inquiryId,
+      personaLoaded,
+      hasPersona: !!(window as any).Persona,
+    });
+
+    if (!inquiryId) {
+      toast.error("لا يوجد طلب تحقق يمكن استكماله حالياً. الرجاء بدء تحقق جديد.");
+      return;
+    }
+
+    const hasPersona = !!(window as any).Persona;
+    if (!personaLoaded && !hasPersona) {
+      toast.error("جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى");
+      return;
+    }
+
+    if (hasPersona && !personaLoaded) {
+      setPersonaLoaded(true);
+    }
+
+    // Clean up any existing Persona client
+    if (personaClientRef.current) {
+      try {
+        personaClientRef.current.destroy();
+      } catch (e) {
+        debugLog('Error destroying existing Persona client (resume)', e);
+      }
+      personaClientRef.current = null;
+    }
+
+    try {
+      const personaClient = new (window as any).Persona.Client({
+        inquiryId,
+        onReady: () => debugLog('Persona widget ready (resume)'),
+        onComplete: ({ inquiryId }: { inquiryId: string }) => {
+          debugLog('Persona verification completed (resume)', { inquiryId });
+          personaClientRef.current = null;
+          toast.success("تم إكمال عملية التحقق بنجاح");
+          // Refetch KYC status after a short delay
+          setTimeout(() => refetch(), 2000);
+        },
+        onCancel: () => {
+          debugLog('Persona verification cancelled (resume)');
+          personaClientRef.current = null;
+          toast.info("تم إلغاء عملية التحقق");
+        },
+        onError: (error: any) => {
+          debugLog('Persona error (resume)', error);
+          personaClientRef.current = null;
+          toast.error("حدث خطأ أثناء عملية التحقق");
+        },
+      });
+
+      personaClientRef.current = personaClient;
+      personaClient.open();
+    } catch (error) {
+      debugLog('Failed to resume Persona', error);
+      toast.error("فشل استكمال عملية التحقق. الرجاء المحاولة مرة أخرى أو بدء تحقق جديد.");
+    }
+  };
+
   const startPersonaVerification = () => {
     debugLog('Button clicked', {
       personaLoaded,
@@ -494,6 +559,17 @@ const KYC = () => {
                       تحديث الحالة
                     </>
                   )}
+                </Button>
+              </div>
+
+              {/* Resume existing Persona flow */}
+              <div className="flex justify-center mt-4">
+                <Button
+                  onClick={resumePersonaVerification}
+                  className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
+                  disabled={isRefetching || createKycMutation.isPending}
+                >
+                  أكمل عملية التحقق الآن
                 </Button>
               </div>
             </div>
