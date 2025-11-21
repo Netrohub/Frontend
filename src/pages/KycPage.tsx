@@ -1,4 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { kycApi } from "@/lib/api";
+import type { KycStartResponse } from "@/types/api";
 
 declare global {
   interface Window {
@@ -13,6 +18,29 @@ const ENVIRONMENT_ID =
 
 const KycPage = () => {
   const clientRef = useRef<any>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [inquiryId, setInquiryId] = useState<string | null>(null);
+  const [sdkLoaded, setSdkLoaded] = useState(false);
+
+  const startMutation = useMutation<KycStartResponse, Error>({
+    mutationFn: () => kycApi.start(),
+    onSuccess: (data) => {
+      if (!data.session_token || !data.inquiry_id) {
+        toast.error("Unable to start verification flow.");
+        return;
+      }
+
+      setSessionToken(data.session_token);
+      setInquiryId(data.inquiry_id);
+    },
+    onError: () => {
+      toast.error("Unable to initiate Persona verification. Try again later.");
+    },
+  });
+
+  useEffect(() => {
+    startMutation.mutate();
+  }, [startMutation.mutate]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -27,20 +55,7 @@ const KycPage = () => {
         return;
       }
 
-      const client = new window.Persona.Client({
-        templateId: TEMPLATE_ID,
-        environmentId: ENVIRONMENT_ID,
-        onReady: () => {
-          client.open();
-        },
-        onComplete: ({ inquiryId, status, fields }: any) => {
-          console.log(`Completed inquiry ${inquiryId} with status ${status}`);
-          console.log("fields:", fields);
-          // TODO: send the inquiryId + status to the backend with your API
-        },
-      });
-
-      clientRef.current = client;
+      setSdkLoaded(true);
     };
 
     document.body.appendChild(script);
@@ -51,9 +66,34 @@ const KycPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!sdkLoaded || !sessionToken || !inquiryId || !window.Persona) {
+      return;
+    }
+
+    clientRef.current?.close?.();
+
+    const client = new window.Persona.Client({
+      templateId: TEMPLATE_ID,
+      environmentId: ENVIRONMENT_ID,
+      sessionToken,
+      inquiryId,
+      onReady: () => client.open(),
+      onComplete: () => {
+        toast.success("Persona verification flow completed.");
+      },
+    });
+
+    clientRef.current = client;
+
+    return () => {
+      client.close?.();
+    };
+  }, [sdkLoaded, sessionToken, inquiryId]);
+
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <p>Loading verification flow…</p>
+      <p>{startMutation.isPending ? "Preparing verification…" : "Verify your identity…"}</p>
     </div>
   );
 };
