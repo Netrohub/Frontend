@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ShieldCheck, CheckCircle2, AlertCircle, ArrowRight, Loader2, Clock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { kycApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,8 +23,6 @@ const KYC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [personaLoaded, setPersonaLoaded] = useState(false);
-  const personaClientRef = useRef<any>(null);
 
   // Fetch KYC status
   const { data: kyc, isLoading, error: kycError, refetch, isRefetching } = useQuery({
@@ -61,67 +58,20 @@ const KYC = () => {
     onSuccess: (data) => {
       debugLog('Create success', {
         kyc: data.kyc,
-        inquiryId: data.kyc?.persona_inquiry_id,
         inquiryUrl: data.inquiry_url,
       });
 
       // Update cache with new KYC data
       queryClient.setQueryData(['kyc'], data.kyc);
       
-      // Initialize Persona with the inquiry ID if SDK is loaded
-      if (data.kyc?.persona_inquiry_id) {
-        if (personaLoaded && (window as any).Persona) {
-          try {
-            // Clean up any existing Persona client
-            if (personaClientRef.current) {
-              try {
-                personaClientRef.current.destroy();
-              } catch (e) {
-                debugLog('Error destroying existing Persona client', e);
-              }
-            }
-            
-            // Use Persona SDK to open embedded widget
-            const personaClient = new (window as any).Persona.Client({
-              inquiryId: data.kyc.persona_inquiry_id,
-              onReady: () => debugLog('Persona widget ready'),
-              onComplete: ({ inquiryId }: { inquiryId: string }) => {
-                debugLog('Persona verification completed', { inquiryId });
-                personaClientRef.current = null;
-                toast.success("تم إكمال عملية التحقق بنجاح");
-                // Refetch KYC status after a short delay
-                setTimeout(() => refetch(), 2000);
-              },
-              onCancel: () => {
-                debugLog('Persona verification cancelled');
-                personaClientRef.current = null;
-                toast.info("تم إلغاء عملية التحقق");
-              },
-              onError: (error: any) => {
-                debugLog('Persona error', error);
-                personaClientRef.current = null;
-                toast.error("حدث خطأ أثناء عملية التحقق");
-              },
-            });
-            
-            personaClientRef.current = personaClient;
-            personaClient.open();
-          } catch (error) {
-            debugLog('Failed to initialize Persona', error);
-            // Fallback to opening in new window/tab
-            if (data.inquiry_url) {
-              openPersonaFallback(data.inquiry_url);
-            } else {
-              toast.error("فشل تحميل نظام التحقق. الرجاء المحاولة مرة أخرى");
-            }
-          }
-        } else if (data.inquiry_url) {
-          openPersonaFallback(data.inquiry_url);
-        } else {
-          toast.error("فشل الحصول على رابط التحقق");
-        }
+      // Always use Hosted Flow via inquiry_url (no embedded widget)
+      const inquiryUrl =
+        data.inquiry_url ?? (data.kyc as any)?.persona_data?.data?.attributes?.['inquiry-url'];
+
+      if (inquiryUrl) {
+        openPersonaFallback(inquiryUrl);
       } else {
-        toast.error("فشل إنشاء طلب التحقق - لا يوجد معرف الاستعلام");
+        toast.error("فشل الحصول على رابط التحقق");
       }
     },
     onError: (error: Error) => {
@@ -155,59 +105,6 @@ const KYC = () => {
     }
   };
 
-  // Load Persona SDK
-  useEffect(() => {
-    // Check if Persona is already loaded
-    if ((window as any).Persona) {
-      setPersonaLoaded(true);
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.withpersona.com/dist/persona-v5.1.2.js';
-    script.integrity = 'sha384-nuMfOsYXMwp5L13VJicJkSs8tObai/UtHEOg3f7tQuFWU5j6LAewJbjbF5ZkfoDo';
-    script.crossOrigin = 'anonymous';
-    script.async = true;
-    script.onload = () => {
-      if ((window as any).Persona) {
-        setPersonaLoaded(true);
-        debugLog('Persona SDK loaded successfully');
-      } else {
-        setTimeout(() => {
-          if ((window as any).Persona) {
-            setPersonaLoaded(true);
-          } else {
-            setPersonaLoaded(true); // Allow fallback
-          }
-        }, 1000);
-      }
-    };
-    script.onerror = () => {
-      debugLog('Failed to load Persona SDK script');
-      setPersonaLoaded(true); // Allow fallback
-    };
-    document.body.appendChild(script);
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
-
-  // Cleanup Persona client on unmount
-  useEffect(() => {
-    return () => {
-      if (personaClientRef.current) {
-        try {
-          personaClientRef.current.destroy();
-        } catch (e) {
-          // Ignore errors when destroying
-        }
-        personaClientRef.current = null;
-      }
-    };
-  }, []);
-
   // Calculate status flags
   const kycStatus = kyc?.status;
   const isVerified = kycStatus === 'verified';
@@ -230,74 +127,24 @@ const KYC = () => {
   });
 
   const resumePersonaVerification = () => {
-    const inquiryId = kyc?.persona_inquiry_id as string | undefined;
+    const inquiryUrl =
+      (kyc as any)?.persona_data?.data?.attributes?.['inquiry-url'] ??
+      (kyc as any)?.persona_data?.data?.attributes?.inquiry_url;
 
     debugLog('Resume button clicked', {
-      inquiryId,
-      personaLoaded,
-      hasPersona: !!(window as any).Persona,
+      inquiryUrl,
     });
 
-    if (!inquiryId) {
-      toast.error("لا يوجد طلب تحقق يمكن استكماله حالياً. الرجاء بدء تحقق جديد.");
+    if (!inquiryUrl) {
+      toast.error("لا يوجد رابط تحقق متاح حالياً. الرجاء بدء تحقق جديد.");
       return;
     }
 
-    const hasPersona = !!(window as any).Persona;
-    if (!personaLoaded && !hasPersona) {
-      toast.error("جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى");
-      return;
-    }
-
-    if (hasPersona && !personaLoaded) {
-      setPersonaLoaded(true);
-    }
-
-    // Clean up any existing Persona client
-    if (personaClientRef.current) {
-      try {
-        personaClientRef.current.destroy();
-      } catch (e) {
-        debugLog('Error destroying existing Persona client (resume)', e);
-      }
-      personaClientRef.current = null;
-    }
-
-    try {
-      const personaClient = new (window as any).Persona.Client({
-        inquiryId,
-        onReady: () => debugLog('Persona widget ready (resume)'),
-        onComplete: ({ inquiryId }: { inquiryId: string }) => {
-          debugLog('Persona verification completed (resume)', { inquiryId });
-          personaClientRef.current = null;
-          toast.success("تم إكمال عملية التحقق بنجاح");
-          // Refetch KYC status after a short delay
-          setTimeout(() => refetch(), 2000);
-        },
-        onCancel: () => {
-          debugLog('Persona verification cancelled (resume)');
-          personaClientRef.current = null;
-          toast.info("تم إلغاء عملية التحقق");
-        },
-        onError: (error: any) => {
-          debugLog('Persona error (resume)', error);
-          personaClientRef.current = null;
-          toast.error("حدث خطأ أثناء عملية التحقق");
-        },
-      });
-
-      personaClientRef.current = personaClient;
-      personaClient.open();
-    } catch (error) {
-      debugLog('Failed to resume Persona', error);
-      toast.error("فشل استكمال عملية التحقق. الرجاء المحاولة مرة أخرى أو بدء تحقق جديد.");
-    }
+    openPersonaFallback(inquiryUrl);
   };
 
   const startPersonaVerification = () => {
     debugLog('Button clicked', {
-      personaLoaded,
-      hasPersona: !!(window as any).Persona,
       canStartVerification,
     });
 
@@ -308,16 +155,6 @@ const KYC = () => {
         toast.error('لا يمكن بدء التحقق في الوقت الحالي');
       }
       return;
-    }
-
-    const hasPersona = !!(window as any).Persona;
-    if (!personaLoaded && !hasPersona) {
-      toast.error('جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى');
-      return;
-    }
-
-    if (hasPersona && !personaLoaded) {
-      setPersonaLoaded(true);
     }
 
     if (createKycMutation.isPending || isRefetching) {
@@ -480,7 +317,7 @@ const KYC = () => {
                 isLoading={createKycMutation.isPending}
                 isRefetching={isRefetching}
                 canStart={canStartVerification}
-                personaLoaded={personaLoaded}
+                personaLoaded={true}
                 buttonText="إعادة المحاولة"
               />
             </div>
@@ -508,7 +345,7 @@ const KYC = () => {
                 isLoading={createKycMutation.isPending}
                 isRefetching={isRefetching}
                 canStart={canStartVerification}
-                personaLoaded={personaLoaded}
+                personaLoaded={true}
                 buttonText="بدء التحقق الآن"
               />
             </div>
@@ -580,7 +417,7 @@ const KYC = () => {
               isLoading={createKycMutation.isPending}
               isRefetching={isRefetching}
               canStart={canStartVerification}
-              personaLoaded={personaLoaded}
+              personaLoaded={true}
             />
           )}
 
@@ -595,8 +432,6 @@ const KYC = () => {
                 <div>isPending: <span className="font-bold">{String(isPending)}</span></div>
                 <div>isFailed: <span className="font-bold">{String(isFailed)}</span></div>
                 <div>isExpired: <span className="font-bold">{String(isExpired)}</span></div>
-                <div>personaLoaded: <span className="font-bold">{String(personaLoaded)}</span></div>
-                <div>hasPersona: <span className="font-bold">{String(!!(window as any).Persona)}</span></div>
               </div>
               <div className={`font-bold mt-2 p-2 rounded ${canStartVerification ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                 canStartVerification: {String(canStartVerification)}
