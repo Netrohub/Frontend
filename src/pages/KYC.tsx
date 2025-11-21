@@ -19,6 +19,15 @@ const debugLog = (message: string, data?: any) => {
   }
 };
 
+const DEFAULT_PERSONA_TEMPLATE_ID = 'itmpl_L2ov6vU15f9rwMfaYbKEZCvufJSo';
+const DEFAULT_PERSONA_ENVIRONMENT_ID = 'env_DDF3BCje6bnnowdzgL5DqRxyMjd';
+
+const getPersonaTemplateId = () =>
+  import.meta.env.VITE_PERSONA_TEMPLATE_ID || DEFAULT_PERSONA_TEMPLATE_ID;
+
+const getPersonaEnvironmentId = () =>
+  import.meta.env.VITE_PERSONA_ENVIRONMENT_ID || DEFAULT_PERSONA_ENVIRONMENT_ID;
+
 const KYC = () => {
   const { user } = useAuth();
   const { t, language } = useLanguage();
@@ -270,9 +279,9 @@ const KYC = () => {
         }
       }
 
-      const personaClient = new (window as any).Persona.Client({
-        templateId: import.meta.env.VITE_PERSONA_TEMPLATE_ID || 'itmpl_adDgCZjWg4q6EaB4TZEMLxWBeeyP',
-        environmentId: import.meta.env.VITE_PERSONA_ENVIRONMENT_ID || 'env_G6yssyR43GAhoTicT3digMzo8gUL',
+    const personaClient = new (window as any).Persona.Client({
+      templateId: getPersonaTemplateId(),
+      environmentId: getPersonaEnvironmentId(),
         referenceId: `user_${user?.id}`,
         fields: {
           'name-first': user?.name?.split(' ')[0] || '',
