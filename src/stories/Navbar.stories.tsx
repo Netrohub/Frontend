@@ -13,7 +13,7 @@ const mockUser: User = {
   updated_at: "2024-01-01T00:00:00Z",
 };
 
-const meta = {
+const meta: Meta<typeof Navbar> = {
   title: "Navigation/Navbar",
   component: Navbar,
   tags: ["autodocs"],

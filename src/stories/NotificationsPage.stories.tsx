@@ -55,7 +55,7 @@ const createNotificationsClient = () => {
   return queryClient;
 };
 
-const meta = {
+const meta: Meta<typeof NotificationsPage> = {
   title: "Pages/Notifications",
   component: NotificationsPage,
   parameters: {

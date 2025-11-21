@@ -54,7 +54,7 @@ const createAdminClient = () => {
   return queryClient;
 };
 
-const meta = {
+const meta: Meta<typeof AdminWithdrawals> = {
   title: "Pages/Admin/Withdrawals",
   component: AdminWithdrawals,
   parameters: {

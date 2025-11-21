@@ -50,7 +50,7 @@ const createWalletClient = () => {
   return queryClient;
 };
 
-const meta = {
+const meta: Meta<typeof WalletPage> = {
   title: "Pages/Wallet",
   component: WalletPage,
   parameters: {

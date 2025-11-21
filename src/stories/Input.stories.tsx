@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const meta = {
+const meta: Meta<typeof Input> = {
   title: "Primitives/Input",
   component: Input,
   tags: ["autodocs"],
@@ -18,9 +18,10 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof Input>;
+};
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {

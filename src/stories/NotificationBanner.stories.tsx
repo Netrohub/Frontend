@@ -15,7 +15,7 @@ const seedNotifications = () => {
   window.dispatchEvent(new Event("notificationsUpdated"));
 };
 
-const meta = {
+const meta: Meta<typeof NotificationBanner> = {
   title: "Content/NotificationBanner",
   component: NotificationBanner,
   decorators: [

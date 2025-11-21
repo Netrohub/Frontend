@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const meta = {
+const meta: Meta<typeof Card> = {
   title: "Primitives/Card",
   component: Card,
   tags: ["autodocs"],
@@ -16,9 +16,10 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-} satisfies Meta<typeof Card>;
+};
 
 export default meta;
+
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {

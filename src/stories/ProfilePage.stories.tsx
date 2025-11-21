@@ -46,7 +46,7 @@ const createProfileClient = () => {
   return qc;
 };
 
-const meta = {
+const meta: Meta<typeof ProfilePage> = {
   title: "Pages/Profile",
   component: ProfilePage,
   parameters: {
