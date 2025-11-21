@@ -132,11 +132,13 @@ const KYC = () => {
       (kyc as any)?.persona_data?.data?.attributes?.inquiry_url;
 
     debugLog('Resume button clicked', {
-      inquiryUrl,
+      hasInquiryUrl: !!inquiryUrl,
     });
 
     if (!inquiryUrl) {
-      toast.error("لا يوجد رابط تحقق متاح حالياً. الرجاء بدء تحقق جديد.");
+      // Fallback: start a fresh verification if we don't have a hosted link
+      toast.info("لا يوجد رابط تحقق سابق، سيتم بدء عملية تحقق جديدة.");
+      startPersonaVerification();
       return;
     }
 
