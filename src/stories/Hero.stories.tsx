@@ -11,7 +11,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const HeroTemplate = () => (
+export const HeroTemplate = () => (
   <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] px-6 py-16">
     <div className="max-w-5xl mx-auto text-white space-y-10">
       <div className="flex flex-col gap-3">
