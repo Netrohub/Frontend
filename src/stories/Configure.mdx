@@ -82,6 +82,424 @@ Buttons leverage `buttonVariants`. Use `variant="arctic"` for CTAs and `variant=
 
 <Props of={Badge} />
 <ArgsTable of={StatusBadge} />
+import { Meta, Canvas, ArgsTable, Props } from "@storybook/addon-docs/blocks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+<Meta title="Design/Configure" />
+
+# Design System
+
+This page captures the core tokens, components, and spacing rules that keep NXOLand's UI cohesive.
+
+## Palette
+
+Primary colors live in CSS variables (`--primary`, `--accent`, `--destructive`) and power gradients, CTAs, and badges.
+
+| Token | Sample | Usage |
+| --- | --- | --- |
+| `--background` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(210,40%,98%)]" /> | Page background |
+| `--primary` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(200,85%,45%)]" /> | Primary CTAs |
+| `--accent` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(185,70%,50%)]" /> | Status accents |
+| `--destructive` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(0,70%,55%)]" /> | Errors & alerts |
+
+## Typography
+
+- Headings use `font-black` with sizes from `text-4xl` to `text-7xl`.
+- Body copy uses `font-arabic` with `text-base` / `text-lg`.
+- Hero titles keep `tracking-tight` and `leading-snug`.
+
+## Spacing & Layout
+
+- Cards use `p-6`, `py-8`, and `gap-6`.
+- Layout grids lean on multiples of `gap-4`.
+- The page background is a layered `bg-gradient-to-b` with soft particles and blur overlays for depth.
+
+<Story name="Layout tokens">
+  <Canvas>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Spacing guidance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            <Badge variant="outline">gap-2</Badge>
+            <Badge variant="outline">gap-4</Badge>
+            <Badge variant="outline">gap-6</Badge>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Button sizes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Button size="sm">Small</Button>
+            <Button size="default">Default</Button>
+            <Button size="lg">Large</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </Canvas>
+</Story>
+
+## Component Guidelines
+
+### Buttons
+
+Buttons leverage `buttonVariants`. Use `variant="arctic"` for CTAs and `variant="ghost"` for inline actions.
+
+<Canvas>
+  <Button variant="arctic">Primary</Button>
+  <Button variant="ghost">Secondary</Button>
+</Canvas>
+
+### Badges
+
+- Use `Badge` for inline tags and `StatusBadge` for discrete statuses.
+- Keep the copy concise (two words max) and add icons when clarity is needed.
+
+<Props of={Badge} />
+<ArgsTable of={StatusBadge} />
+import { Meta, Canvas, ArgsTable, Props } from "@storybook/addon-docs/blocks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+<Meta title="Design/Configure" />
+
+# Design System
+
+This page captures the core tokens, components, and spacing rules that keep NXOLand's UI cohesive.
+
+## Palette
+
+Primary colors live in CSS variables (`--primary`, `--accent`, `--destructive`) and power gradients, CTAs, and badges.
+
+| Token | Sample | Usage |
+| --- | --- | --- |
+| `--background` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(210,40%,98%)]" /> | Page background |
+| `--primary` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(200,85%,45%)]" /> | Primary CTAs |
+| `--accent` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(185,70%,50%)]" /> | Status accents |
+| `--destructive` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(0,70%,55%)]" /> | Errors & alerts |
+
+## Typography
+
+- Headings use `font-black` with sizes from `text-4xl` to `text-7xl`.
+- Body copy uses `font-arabic` with `text-base` / `text-lg`.
+- Hero titles keep `tracking-tight` and `leading-snug`.
+
+## Spacing & Layout
+
+- Cards use `p-6`, `py-8`, and `gap-6`.
+- Layout grids lean on multiples of `gap-4`.
+- The page background is a layered `bg-gradient-to-b` with soft particles and blur overlays for depth.
+
+<Story name="Layout tokens">
+  <Canvas>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Spacing guidance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            <Badge variant="outline">gap-2</Badge>
+            <Badge variant="outline">gap-4</Badge>
+            <Badge variant="outline">gap-6</Badge>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Button sizes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Button size="sm">Small</Button>
+            <Button size="default">Default</Button>
+            <Button size="lg">Large</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </Canvas>
+</Story>
+
+## Component Guidelines
+
+### Buttons
+
+Buttons leverage `buttonVariants`. Use `variant="arctic"` for CTAs and `variant="ghost"` for inline actions.
+
+<Canvas>
+  <Button variant="arctic">Primary</Button>
+  <Button variant="ghost">Secondary</Button>
+</Canvas>
+
+### Badges
+
+- Use `Badge` for inline tags and `StatusBadge` for discrete statuses.
+- Keep the copy concise (two words max) and add icons when clarity is needed.
+
+<Props of={Badge} />
+<ArgsTable of={StatusBadge} />
+import { Meta, Canvas, ArgsTable, Props } from "@storybook/addon-docs/blocks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+<Meta title="Design/Configure" />
+
+# Design System
+
+This page captures the core tokens, components, and spacing rules that keep NXOLand's UI cohesive.
+
+## Palette
+
+Primary colors live in CSS variables (`--primary`, `--accent`, `--destructive`) and power gradients, CTAs, and badges.
+
+| Token | Sample | Usage |
+| --- | --- | --- |
+| `--background` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(210,40%,98%)]" /> | Page background |
+| `--primary` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(200,85%,45%)]" /> | Primary CTAs |
+| `--accent` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(185,70%,50%)]" /> | Status accents |
+| `--destructive` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(0,70%,55%)]" /> | Errors & alerts |
+
+## Typography
+
+- Headings use `font-black` with sizes from `text-4xl` to `text-7xl`.
+- Body copy uses `font-arabic` with `text-base` / `text-lg`.
+- Hero titles keep `tracking-tight` and `leading-snug`.
+
+## Spacing & Layout
+
+- Cards use `p-6`, `py-8`, and `gap-6`.
+- Layout grids lean on multiples of `gap-4`.
+- The page background is a layered `bg-gradient-to-b` with soft particles and blur overlays for depth.
+
+<Story name="Layout tokens">
+  <Canvas>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Spacing guidance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            <Badge variant="outline">gap-2</Badge>
+            <Badge variant="outline">gap-4</Badge>
+            <Badge variant="outline">gap-6</Badge>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Button sizes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Button size="sm">Small</Button>
+            <Button size="default">Default</Button>
+            <Button size="lg">Large</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </Canvas>
+</Story>
+
+## Component Guidelines
+
+### Buttons
+
+Buttons leverage `buttonVariants`. Use `variant="arctic"` for CTAs and `variant="ghost"` for inline actions.
+
+<Canvas>
+  <Button variant="arctic">Primary</Button>
+  <Button variant="ghost">Secondary</Button>
+</Canvas>
+
+### Badges
+
+- Use `Badge` for inline tags and `StatusBadge` for discrete statuses.
+- Keep the copy concise (two words max) and add icons when clarity is needed.
+
+<Props of={Badge} />
+<ArgsTable of={StatusBadge} />
+import { Meta, Canvas, ArgsTable, Props } from "@storybook/addon-docs/blocks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+<Meta title="Design/Configure" />
+
+# Design System
+
+This page captures the core tokens, components, and spacing rules that keep NXOLand's UI cohesive.
+
+## Palette
+
+Primary colors live in CSS variables (`--primary`, `--accent`, `--destructive`) and power gradients, CTAs, and badges.
+
+| Token | Sample | Usage |
+| --- | --- | --- |
+| `--background` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(210,40%,98%)]" /> | Page background |
+| `--primary` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(200,85%,45%)]" /> | Primary CTAs |
+| `--accent` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(185,70%,50%)]" /> | Status accents |
+| `--destructive` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(0,70%,55%)]" /> | Errors & alerts |
+
+## Typography
+
+- Headings use `font-black` with sizes from `text-4xl` to `text-7xl`.
+- Body copy uses `font-arabic` with `text-base` / `text-lg`.
+- Hero titles keep `tracking-tight` and `leading-snug`.
+
+## Spacing & Layout
+
+- Cards use `p-6`, `py-8`, and `gap-6`.
+- Layout grids lean on multiples of `gap-4`.
+- The page background is a layered `bg-gradient-to-b` with soft particles and blur overlays for depth.
+
+<Story name="Layout tokens">
+  <Canvas>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Spacing guidance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            <Badge variant="outline">gap-2</Badge>
+            <Badge variant="outline">gap-4</Badge>
+            <Badge variant="outline">gap-6</Badge>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Button sizes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Button size="sm">Small</Button>
+            <Button size="default">Default</Button>
+            <Button size="lg">Large</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </Canvas>
+</Story>
+
+## Component Guidelines
+
+### Buttons
+
+Buttons leverage `buttonVariants`. Use `variant="arctic"` for CTAs and `variant="ghost"` for inline actions.
+
+<Canvas>
+  <Button variant="arctic">Primary</Button>
+  <Button variant="ghost">Secondary</Button>
+</Canvas>
+
+### Badges
+
+- Use `Badge` for inline tags and `StatusBadge` for discrete statuses.
+- Keep the copy concise (two words max) and add icons when clarity is needed.
+
+import { Meta, Canvas, ArgsTable, Props } from "@storybook/addon-docs/blocks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/StatusBadge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+
+<Meta title="Design/Configure" />
+
+# Design System
+
+This page captures the core tokens, components, and spacing rules that keep NXOLand's UI cohesive.
+
+## Palette
+
+Primary colors live in CSS variables (`--primary`, `--accent`, `--destructive`) and power gradients, CTAs, and badges.
+
+| Token | Sample | Usage |
+| --- | --- | --- |
+| `--background` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(210,40%,98%)]" /> | Page background |
+| `--primary` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(200,85%,45%)]" /> | Primary CTAs |
+| `--accent` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(185,70%,50%)]" /> | Status accents |
+| `--destructive` | <span className="inline-block w-16 h-6 rounded-lg bg-[hsl(0,70%,55%)]" /> | Errors & alerts |
+
+## Typography
+
+- Headings use `font-black` with sizes from `text-4xl` to `text-7xl`.
+- Body copy uses `font-arabic` with `text-base` / `text-lg`.
+- Hero titles keep `tracking-tight` and `leading-snug`.
+
+## Spacing & Layout
+
+- Cards use `p-6`, `py-8`, and `gap-6`.
+- Layout grids lean on multiples of `gap-4`.
+- The page background is a layered `bg-gradient-to-b` with soft particles and blur overlays for depth.
+
+<Story name="Layout tokens">
+  <Canvas>
+    <div className="space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Spacing guidance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            <Badge variant="outline">gap-2</Badge>
+            <Badge variant="outline">gap-4</Badge>
+            <Badge variant="outline">gap-6</Badge>
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Button sizes</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Button size="sm">Small</Button>
+            <Button size="default">Default</Button>
+            <Button size="lg">Large</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </Canvas>
+</Story>
+
+## Component Guidelines
+
+### Buttons
+
+Buttons leverage `buttonVariants`. Use `variant="arctic"` for CTAs and `variant="ghost"` for inline actions.
+
+<Canvas>
+  <Button variant="arctic">Primary</Button>
+  <Button variant="ghost">Secondary</Button>
+</Canvas>
+
+### Badges
+
+- Use `Badge` for inline tags and `StatusBadge` for discrete statuses.
+- Keep the copy concise (two words max) and add icons when clarity is needed.
+
+<Props of={Badge} />
+<ArgsTable of={StatusBadge} />
 import { Meta, Canvas, ArgsTable } from "@storybook/addon-docs/blocks";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
