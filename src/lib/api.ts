@@ -16,7 +16,8 @@ import type {
   DisputeResponse,
   Wallet,
   KycVerification,
-  KycCreateResponse,
+  KycStartResponse,
+  KycStatusResponse,
   PaginatedResponse,
   LeaderboardResponse,
   MemberResponse,
@@ -276,6 +277,12 @@ export const authApi = {
     api.put<{ message: string }>('/user/password', data),
 };
 
+// KYC API
+export const kycApi = {
+  start: () => api.post<KycStartResponse>('/kyc/start'),
+  status: () => api.get<KycStatusResponse>('/kyc/status'),
+};
+
 // Listings API
 export const listingsApi = {
   getAll: (params?: { category?: string; search?: string; page?: number }) => {
@@ -469,31 +476,6 @@ export const walletApi = {
 };
 
 // KYC API
-export const kycApi = {
-  get: () =>
-    api.get<KycVerification | null>('/kyc'),
-  
-  create: () =>
-    api.post<KycCreateResponse>('/kyc'),
-  
-  resume: (data?: { inquiry_id?: string }) =>
-    api.post<{ inquiry_id: string; session_token: string }>(
-      '/kyc/resume',
-      data ?? {}
-    ),
-
-  reset: () =>
-    api.post<{
-      inquiry_id: string;
-      session_token: string;
-      kyc: KycVerification;
-      inquiry_url?: string;
-    }>('/kyc/reset'),
-
-  sync: (data?: { inquiry_id?: string }) =>
-    api.post<KycVerification>('/kyc/sync', data),
-};
-
 // Public API
 export const publicApi = {
   leaderboard: () =>
@@ -608,6 +590,13 @@ export const adminApi = {
     if (params?.search) query.append('search', params.search);
     return api.get<AdminUserResponse>(`/admin/users?${query.toString()}`);
   },
+
+  kyc: (params?: { page?: number; search?: string }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    if (params?.search) query.append('search', params.search);
+    return api.get<AdminKycResponse>(`/admin/kyc?${query.toString()}`);
+  },
   
   updateUser: (id: number, data: Partial<{ role: 'user' | 'admin'; is_verified: boolean; name: string; email: string }>) =>
     api.put<User>(`/admin/users/${id}`, data),
@@ -645,13 +634,6 @@ export const adminApi = {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
     return api.get<AdminDisputeResponse>(`/admin/disputes?${query.toString()}`);
-  },
-  
-  // KYC
-  kyc: (params?: { page?: number }) => {
-    const query = new URLSearchParams();
-    if (params?.page) query.append('page', params.page.toString());
-    return api.get<AdminKycResponse>(`/admin/kyc?${query.toString()}`);
   },
   
   // Financial

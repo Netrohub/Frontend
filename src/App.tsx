@@ -59,7 +59,6 @@ const MyListings = lazy(() => import("./pages/MyListings"));
 const Disputes = lazy(() => import("./pages/Disputes"));
 const DisputeDetails = lazy(() => import("./pages/DisputeDetails"));
 const Orders = lazy(() => import("./pages/Orders"));
-const KYC = lazy(() => import("./pages/KYC"));
 const Notifications = lazy(() => import("./pages/Notifications"));
 const Profile = lazy(() => import("./pages/Profile"));
 const EditProfile = lazy(() => import("./pages/EditProfile"));
@@ -83,9 +82,10 @@ const AdminNotifications = lazy(() => import("./pages/admin/Notifications"));
 const AdminReviews = lazy(() => import("./pages/admin/Reviews"));
 const AdminFinancial = lazy(() => import("./pages/admin/Financial"));
 const AdminActivity = lazy(() => import("./pages/admin/Activity"));
+const AdminKyc = lazy(() => import("./pages/admin/KYC"));
+const Kyc = lazy(() => import("./pages/KYC"));
 const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
 const AdminWithdrawals = lazy(() => import("./pages/admin/Withdrawals"));
-const AdminKYC = lazy(() => import("./pages/admin/KYC"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -353,16 +353,6 @@ const AppContent = () => {
                 }
               />
               <Route
-                path="/kyc"
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <ProtectedRoute>
-                      <KYC />
-                    </ProtectedRoute>
-                  </Suspense>
-                }
-              />
-              <Route
                 path="/notifications"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
@@ -378,6 +368,16 @@ const AppContent = () => {
                   <Suspense fallback={<LoadingFallback />}>
                     <ProtectedRoute>
                       <Profile />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/kyc"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <Kyc />
                     </ProtectedRoute>
                   </Suspense>
                 }
@@ -504,6 +504,14 @@ const AppContent = () => {
                   }
                 />
                 <Route
+                  path="kyc"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminKyc />
+                    </Suspense>
+                  }
+                />
+                <Route
                   path="activity"
                   element={
                     <Suspense fallback={<LoadingFallback />}>
@@ -524,14 +532,6 @@ const AppContent = () => {
                   element={
                     <Suspense fallback={<LoadingFallback />}>
                       <AdminLegalContent />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="kyc"
-                  element={
-                    <Suspense fallback={<LoadingFallback />}>
-                      <AdminKYC />
                     </Suspense>
                   }
                 />

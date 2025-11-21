@@ -32,10 +32,26 @@ const SellWOS = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t, language } = useLanguage();
+
+  if (user && !user.is_verified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] to-[hsl(195,60%,25%)] px-4 py-12">
+        <Card className="max-w-xl w-full p-6 bg-white/5 border-white/10 backdrop-blur-sm space-y-5">
+          <h1 className="text-2xl font-black text-white">{t('sell.wos.kycRequired')}</h1>
+          <p className="text-white/70">{t('sell.wos.kycDescription1')}</p>
+          <p className="text-white/70">{t('sell.wos.kycDescription2')}</p>
+          <Button
+            asChild
+            className="w-full justify-center gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white"
+          >
+            <Link to="/kyc">{t('sell.wos.startVerification')}</Link>
+          </Button>
+        </Card>
+      </div>
+    );
+  }
   const billImagesInstructions = t('listing.billImagesInstructions');
   const billImagesSecurityNote = t('listing.billImagesSecurityNote');
-  const isVerified = user?.is_verified || false;
-
   // Form state
   const [title, setTitle] = useState("");
   const [server, setServer] = useState("");
@@ -249,11 +265,6 @@ const SellWOS = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!isVerified) {
-      toast.error(t('listing.verificationRequired'));
-      return;
-    }
-
     // Validation
     if (!title.trim()) {
       toast.error(t('listing.titleRequired'));
@@ -422,36 +433,7 @@ const SellWOS = () => {
           <p className="text-white/60">{t('sell.wos.pageSubtitle')}</p>
         </div>
 
-        {/* KYC Required Warning */}
-        {!isVerified && (
-          <Card className="p-6 bg-red-500/10 border-2 border-red-500/30 backdrop-blur-sm mb-6">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-              <div className="flex gap-4 flex-1">
-                <ShieldAlert className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-2">{t('sell.wos.kycRequired')}</h3>
-                  <p className="text-white/80 text-sm mb-1">
-                    {t('sell.wos.kycDescription1')}
-                  </p>
-                  <p className="text-white/80 text-sm">
-                    {t('sell.wos.kycDescription2')}
-                  </p>
-                </div>
-              </div>
-              <Button 
-                asChild
-                className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 whitespace-nowrap"
-              >
-                <Link to="/kyc">
-                  {t('sell.wos.startVerification')}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        <Card className={`p-6 bg-white/5 border-white/10 backdrop-blur-sm ${!isVerified ? 'opacity-60 pointer-events-none' : ''}`}>
+        <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Info */}
             <div className="space-y-4">
@@ -1098,7 +1080,7 @@ const SellWOS = () => {
             <div className="flex gap-4 pt-4">
               <Button 
                 type="submit"
-                disabled={createListingMutation.isPending || !isVerified}
+                disabled={createListingMutation.isPending}
                 className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createListingMutation.isPending ? (

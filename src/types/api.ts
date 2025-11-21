@@ -17,7 +17,7 @@ export interface User {
   created_at: string;
   updated_at: string;
   wallet?: Wallet;
-  kyc_verification?: KycVerification;
+  kyc_verification?: KycVerification | null;
 }
 
 export interface Wallet {
@@ -30,25 +30,26 @@ export interface Wallet {
   updated_at: string;
 }
 
+export interface KycStartResponse {
+  inquiry_id: string;
+  session_token: string | null;
+  persona_data?: Record<string, unknown> | null;
+}
+
+export interface KycStatusResponse {
+  kyc: KycVerification | null;
+}
+
 export interface KycVerification {
   id: number;
   user_id: number;
-  status: 'pending' | 'verified' | 'failed' | 'expired';
-  persona_inquiry_id?: string;
-  persona_data?: any; // Persona response data stored as JSON
-  verified_at?: string;
+  persona_inquiry_id: string | null;
+  status: 'pending' | 'failed' | 'verified' | 'expired' | null;
+  persona_data: Record<string, unknown> | null;
+  verified_at: string | null;
   created_at: string;
   updated_at: string;
-  user?: {
-    id: number;
-    name: string;
-    email: string;
-  };
-}
-
-export interface KycCreateResponse {
-  kyc: KycVerification;
-  inquiry_url?: string;
+  user?: User;
 }
 
 // Auth API responses
@@ -193,7 +194,6 @@ export interface AdminDisputeResponse extends PaginatedResponse<Dispute> {}
 export interface AdminListingResponse extends PaginatedResponse<Listing> {}
 export interface AdminOrderResponse extends PaginatedResponse<Order> {}
 export interface AdminKycResponse extends PaginatedResponse<KycVerification> {}
-
 // Public API types
 export interface LeaderboardEntry {
   user_id: number;

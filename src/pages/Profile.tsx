@@ -211,7 +211,7 @@ const Profile = () => {
                   <User className="h-12 w-12 text-white" aria-hidden="true" />
                 )}
               </div>
-              {user.kyc_verification?.status === 'verified' && (
+              {user.is_verified && (
                 <div className="absolute -bottom-1 -right-1 p-1.5 rounded-full bg-green-500">
                   <CheckCircle className="h-5 w-5 text-white" aria-label={t('profile.verified')} />
                 </div>
@@ -243,10 +243,19 @@ const Profile = () => {
                 </div>
               ) : null}
               
-              {user.kyc_verification?.status === 'verified' ? (
+              {user.is_verified ? (
                 <StatusBadge status="success" label={t('profile.verifiedAccount')} />
               ) : (
-                <StatusBadge status="warning" label={t('profile.requiresKYC')} />
+                <>
+                  <StatusBadge status="warning" label={t('profile.requiresKYC')} />
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="mt-2 border-white/30 text-white/80 hover:border-white/50"
+                  >
+                    <Link to="/kyc">{t('kyc.startVerification')}</Link>
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -411,23 +420,6 @@ const Profile = () => {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {user.kyc_verification?.status !== 'verified' && (
-            <Card className="p-6 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/30 backdrop-blur-sm group hover:border-yellow-500/50 transition-all">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-1">{t('profile.accountVerification')}</h3>
-                  <p className="text-sm text-white/70">{t('profile.requiredForSelling')}</p>
-                </div>
-                <Shield className="h-8 w-8 text-yellow-400" aria-hidden="true" />
-              </div>
-              <Button asChild className="w-full gap-2 bg-yellow-500 hover:bg-yellow-600 text-white border-0 min-h-[48px] text-sm md:text-base">
-                <Link to="/kyc">
-                  {t('profile.startVerification')}
-                </Link>
-              </Button>
-            </Card>
-          )}
-
           <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm group hover:border-[hsl(195,80%,70%,0.5)] transition-all">
             <div className="flex items-center justify-between mb-4">
               <div>
