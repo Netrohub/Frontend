@@ -16,6 +16,7 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {}
   },
+  staticDirs: ['../public'],
   typescript: {
     check: false,
     reactDocgen: 'react-docgen-typescript',
