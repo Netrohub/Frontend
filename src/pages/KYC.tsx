@@ -20,7 +20,7 @@ const debugLog = (message: string, data?: any) => {
 };
 
 const DEFAULT_PERSONA_TEMPLATE_ID = 'itmpl_L2ov6vU15f9rwMfaYbKEZCvufJSo';
-const DEFAULT_PERSONA_ENVIRONMENT_ID = 'env_DDF3BCje6bnnowdzgL5DqRxyMjd';
+const DEFAULT_PERSONA_ENVIRONMENT_ID = 'env_DDF3BCje6bnwnowdzgL5DqRxyMjd';
 
 const getPersonaTemplateId = () =>
   import.meta.env.VITE_PERSONA_TEMPLATE_ID || DEFAULT_PERSONA_TEMPLATE_ID;
