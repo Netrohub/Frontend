@@ -476,6 +476,12 @@ export const kycApi = {
   create: () =>
     api.post<KycCreateResponse>('/kyc'),
   
+  resume: (data?: { inquiry_id?: string }) =>
+    api.post<{ inquiry_id: string; session_token: string }>(
+      '/kyc/resume',
+      data ?? {}
+    ),
+
   sync: (data?: { inquiry_id?: string }) =>
     api.post<KycVerification>('/kyc/sync', data),
 };

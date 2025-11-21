@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { SEO } from "@/components/SEO";
 import { KYCVerificationForm } from "@/components/KYCVerificationForm";
+import { useState, useEffect, useRef } from "react";
 
 const debugLog = (message: string, data?: any) => {
   if (import.meta.env.DEV) {
@@ -23,6 +24,8 @@ const KYC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [personaLoaded, setPersonaLoaded] = useState(false);
+  const personaClientRef = useRef<any>(null);
 
   // Fetch KYC status
   const { data: kyc, isLoading, error: kycError, refetch, isRefetching } = useQuery({
@@ -52,6 +55,105 @@ const KYC = () => {
     refetchOnMount: false,
   });
 
+  const destroyPersonaClient = () => {
+    if (personaClientRef.current) {
+      try {
+        personaClientRef.current.destroy();
+      } catch (error) {
+        debugLog('Error destroying Persona client (cleanup)', error);
+      }
+      personaClientRef.current = null;
+    }
+  };
+
+  const openPersonaWithSession = async (inquiryId?: string) => {
+    if (!inquiryId) {
+      toast.error("لا يوجد طلب تحقق متاح حالياً.");
+      return;
+    }
+
+    if (!personaLoaded && !(window as any).Persona) {
+      toast.error("جاري تحميل نظام التحقق... الرجاء المحاولة مرة أخرى");
+      return;
+    }
+
+    try {
+      const response = await kycApi.resume({ inquiry_id: inquiryId });
+      const sessionToken = response.session_token;
+      const resolvedInquiryId = response.inquiry_id ?? inquiryId;
+
+      if (!sessionToken) {
+        toast.error("فشل إنشاء جلسة Persona. الرجاء المحاولة مرة أخرى.");
+        return;
+      }
+
+      destroyPersonaClient();
+
+      const personaClient = new (window as any).Persona.Client({
+        inquiryId: resolvedInquiryId,
+        sessionToken,
+        onReady: () => {
+          debugLog('Persona widget ready');
+        },
+        onComplete: ({ inquiryId }) => {
+          debugLog('Persona verification completed', { inquiryId });
+          personaClientRef.current = null;
+          toast.success("تم إكمال عملية التحقق بنجاح");
+          setTimeout(() => refetch(), 2000);
+        },
+        onCancel: () => {
+          debugLog('Persona verification cancelled');
+          personaClientRef.current = null;
+          toast.info("تم إلغاء عملية التحقق");
+        },
+        onError: (error: any) => {
+          debugLog('Persona error', error);
+          personaClientRef.current = null;
+          toast.error("حدث خطأ أثناء عملية التحقق");
+        },
+      });
+
+      personaClientRef.current = personaClient;
+      personaClient.open();
+    } catch (error) {
+      debugLog('Failed to open Persona with session', error);
+      toast.error("فشل فتح عملية التحقق. الرجاء المحاولة مرة أخرى.");
+    }
+  };
+
+  useEffect(() => {
+    if ((window as any).Persona) {
+      setPersonaLoaded(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.withpersona.com/dist/persona-v5.1.2.js';
+    script.integrity = 'sha384-nuMfOsYXMwp5L13VJicJkSs8tObai/UtHEOg3f7tQuFWU5j6LAewJbjbF5ZkfoDo';
+    script.crossOrigin = 'anonymous';
+    script.async = true;
+    script.onload = () => {
+      setPersonaLoaded(true);
+      debugLog('Persona SDK loaded successfully');
+    };
+    script.onerror = () => {
+      debugLog('Failed to load Persona SDK script');
+      toast.error("فشل تحميل نظام التحقق. الرجاء تحديث الصفحة.");
+    };
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      destroyPersonaClient();
+    };
+  }, []);
+
   // Create KYC mutation
   const createKycMutation = useMutation({
     mutationFn: () => kycApi.create(),
@@ -63,16 +165,8 @@ const KYC = () => {
 
       // Update cache with new KYC data
       queryClient.setQueryData(['kyc'], data.kyc);
-      
-      // Always use Hosted Flow via inquiry_url (no embedded widget)
-      const inquiryUrl =
-        data.inquiry_url ?? (data.kyc as any)?.persona_data?.data?.attributes?.['inquiry-url'];
-
-      if (inquiryUrl) {
-        openPersonaFallback(inquiryUrl);
-      } else {
-        toast.error("فشل الحصول على رابط التحقق");
-      }
+      const inquiryId = data.kyc?.persona_inquiry_id ?? data.kyc?.persona_data?.data?.id;
+      openPersonaWithSession(inquiryId);
     },
     onError: (error: Error) => {
       const apiError = error as Error & ApiError;
@@ -91,20 +185,6 @@ const KYC = () => {
   });
 
   // Helper function for mobile-friendly Persona fallback
-  const openPersonaFallback = (url: string) => {
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-      // On mobile, open in same tab (popups often blocked)
-      toast.info("سيتم نقلك إلى صفحة التحقق...");
-      window.location.href = url;
-    } else {
-      // On desktop, open in new tab
-      toast.info("سيتم فتح نافذة جديدة للتحقق");
-      window.open(url, '_blank', 'width=600,height=700');
-    }
-  };
-
   // Calculate status flags
   const kycStatus = kyc?.status;
   const isVerified = kycStatus === 'verified';
@@ -127,22 +207,16 @@ const KYC = () => {
   });
 
   const resumePersonaVerification = () => {
-    const inquiryUrl =
-      (kyc as any)?.persona_data?.data?.attributes?.['inquiry-url'] ??
-      (kyc as any)?.persona_data?.data?.attributes?.inquiry_url;
+    const inquiryId = kyc?.persona_inquiry_id;
 
-    debugLog('Resume button clicked', {
-      hasInquiryUrl: !!inquiryUrl,
-    });
+    debugLog('Resume button clicked', { inquiryId });
 
-    if (!inquiryUrl) {
-      // Fallback: start a fresh verification if we don't have a hosted link
-      toast.info("لا يوجد رابط تحقق سابق، سيتم بدء عملية تحقق جديدة.");
-      startPersonaVerification();
+    if (!inquiryId) {
+      toast.error("لا يوجد طلب تحقق يمكن استئنافه.");
       return;
     }
 
-    openPersonaFallback(inquiryUrl);
+    openPersonaWithSession(inquiryId);
   };
 
   const startPersonaVerification = () => {
