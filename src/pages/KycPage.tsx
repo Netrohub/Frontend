@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import { kycApi } from "@/lib/api";
 import type { KycStartResponse } from "@/types/api";
 
@@ -21,6 +22,8 @@ const KycPage = () => {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [inquiryId, setInquiryId] = useState<string | null>(null);
   const [sdkLoaded, setSdkLoaded] = useState(false);
+  const { user } = useAuth();
+  const referenceId = user ? `user_${user.id}` : undefined;
 
   const startMutation = useMutation<KycStartResponse, Error>({
     mutationFn: () => kycApi.start(),
@@ -39,8 +42,12 @@ const KycPage = () => {
   });
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
+
     startMutation.mutate();
-  }, [startMutation.mutate]);
+  }, [user, startMutation.mutate]);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -78,6 +85,7 @@ const KycPage = () => {
       environmentId: ENVIRONMENT_ID,
       sessionToken,
       inquiryId,
+      referenceId,
       onReady: () => client.open(),
       onComplete: () => {
         toast.success("Persona verification flow completed.");
