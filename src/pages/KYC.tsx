@@ -19,14 +19,16 @@ const debugLog = (message: string, data?: any) => {
   }
 };
 
-const DEFAULT_PERSONA_TEMPLATE_ID = 'itmpl_L2ov6vU15f9rwMfaYbKEZCvufJSo';
-const DEFAULT_PERSONA_ENVIRONMENT_ID = 'env_DDF3BCje6bnwnowdzgL5DqRxyMjd';
+const requirePersonaEnv = (key: 'VITE_PERSONA_TEMPLATE_ID' | 'VITE_PERSONA_ENVIRONMENT_ID'): string => {
+  const value = import.meta.env[key];
+  if (!value) {
+    throw new Error(`${key} is required for Persona verification. Please set it in your environment variables.`);
+  }
+  return value;
+};
 
-const getPersonaTemplateId = () =>
-  import.meta.env.VITE_PERSONA_TEMPLATE_ID || DEFAULT_PERSONA_TEMPLATE_ID;
-
-const getPersonaEnvironmentId = () =>
-  import.meta.env.VITE_PERSONA_ENVIRONMENT_ID || DEFAULT_PERSONA_ENVIRONMENT_ID;
+const getPersonaTemplateId = () => requirePersonaEnv('VITE_PERSONA_TEMPLATE_ID');
+const getPersonaEnvironmentId = () => requirePersonaEnv('VITE_PERSONA_ENVIRONMENT_ID');
 
 const KYC = () => {
   const { user } = useAuth();
