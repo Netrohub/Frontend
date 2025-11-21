@@ -94,47 +94,69 @@ const KYC = () => {
         debugLog('Persona resume response', response);
       }
 
-      if (!sessionToken) {
+      if (!sessionToken || !resolvedInquiryId) {
         toast.error("فشل إنشاء جلسة Persona. تحقق من سجلات الخادم.");
         console.error('Persona resume response missing session_token', response);
+        await restartPersonaSession();
         return;
       }
 
-      destroyPersonaClient();
-
-      const personaClient = new (window as any).Persona.Client({
-        inquiryId: resolvedInquiryId,
-        sessionToken,
-        onReady: () => {
-          debugLog('Persona widget ready');
-        },
-        onComplete: ({ inquiryId }) => {
-          debugLog('Persona verification completed', { inquiryId });
-          personaClientRef.current = null;
-          toast.success("تم إكمال عملية التحقق بنجاح");
-          setTimeout(() => refetch(), 2000);
-        },
-        onCancel: () => {
-          debugLog('Persona verification cancelled');
-          personaClientRef.current = null;
-          toast.info("تم إلغاء عملية التحقق");
-        },
-        onError: (error: any) => {
-          debugLog('Persona error', error);
-          personaClientRef.current = null;
-          toast.error("حدث خطأ أثناء عملية التحقق");
-        },
-      });
-
-      personaClientRef.current = personaClient;
-      personaClient.open();
+      openPersonaClient(resolvedInquiryId, sessionToken);
     } catch (error) {
       debugLog('Failed to open Persona with session', error);
       toast.error("فشل فتح عملية التحقق. الرجاء المحاولة مرة أخرى.");
+      await restartPersonaSession();
     } finally {
       setSessionLoading(false);
       debugLog('Session loading finished');
     }
+  };
+
+  const restartPersonaSession = async () => {
+    try {
+      const response = await kycApi.reset();
+      queryClient.setQueryData(['kyc'], response.kyc);
+
+      if (!response.session_token || !response.inquiry_id) {
+        throw new Error('Missing session token after reset');
+      }
+
+      openPersonaClient(response.inquiry_id, response.session_token);
+    } catch (error) {
+      debugLog('Failed to restart Persona session', error);
+      toast.error("فشل بدء جلسة جديدة. الرجاء المحاولة مرة أخرى.");
+    }
+  };
+
+  const openPersonaClient = (inquiryId: string, sessionToken: string) => {
+    destroyPersonaClient();
+
+    const personaClient = new (window as any).Persona.Client({
+      inquiryId,
+      sessionToken,
+      onReady: () => {
+        debugLog('Persona widget ready');
+      },
+      onComplete: ({ inquiryId }) => {
+        debugLog('Persona verification completed', { inquiryId });
+        personaClientRef.current = null;
+        toast.success("تم إكمال عملية التحقق بنجاح");
+        setTimeout(() => refetch(), 2000);
+      },
+      onCancel: () => {
+        debugLog('Persona verification cancelled');
+        personaClientRef.current = null;
+        toast.info("تم إلغاء عملية التحقق");
+      },
+      onError: (error: any) => {
+        debugLog('Persona error', error);
+        personaClientRef.current = null;
+        toast.error("حدث خطأ أثناء عملية التحقق");
+      },
+    });
+
+    personaClientRef.current = personaClient;
+    personaClient.open();
   };
 
   useEffect(() => {

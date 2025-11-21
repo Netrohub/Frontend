@@ -482,6 +482,14 @@ export const kycApi = {
       data ?? {}
     ),
 
+  reset: () =>
+    api.post<{
+      inquiry_id: string;
+      session_token: string;
+      kyc: KycVerification;
+      inquiry_url?: string;
+    }>('/kyc/reset'),
+
   sync: (data?: { inquiry_id?: string }) =>
     api.post<KycVerification>('/kyc/sync', data),
 };
