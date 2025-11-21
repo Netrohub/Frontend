@@ -19,17 +19,6 @@ const debugLog = (message: string, data?: any) => {
   }
 };
 
-const requirePersonaEnv = (key: 'VITE_PERSONA_TEMPLATE_ID' | 'VITE_PERSONA_ENVIRONMENT_ID'): string => {
-  const value = import.meta.env[key];
-  if (!value) {
-    throw new Error(`${key} is required for Persona verification. Please set it in your environment variables.`);
-  }
-  return value;
-};
-
-const getPersonaTemplateId = () => requirePersonaEnv('VITE_PERSONA_TEMPLATE_ID');
-const getPersonaEnvironmentId = () => requirePersonaEnv('VITE_PERSONA_ENVIRONMENT_ID');
-
 const KYC = () => {
   const { user } = useAuth();
   const { t, language } = useLanguage();
