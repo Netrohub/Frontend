@@ -1,119 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShieldCheck, CheckCircle2, AlertCircle, IdCard, ArrowRight, Loader2 } from "lucide-react";
+import { ShieldCheck, CheckCircle2, AlertCircle, IdCard, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
-import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
-import { kycApi } from "@/lib/api";
 import { toast } from "sonner";
-import type { KycStartResponse } from "@/types/api";
-
-declare global {
-  interface Window {
-    Persona?: any;
-  }
-}
-
-const PERSONA_TEMPLATE_ID = import.meta.env.VITE_PERSONA_TEMPLATE_ID;
-const PERSONA_ENVIRONMENT_ID = import.meta.env.VITE_PERSONA_ENVIRONMENT_ID;
+import { PersonaKycButton } from "@/components/PersonaKycButton";
 
 const KYC = () => {
   const { user } = useAuth();
-  const [sessionToken, setSessionToken] = useState<string | null>(null);
-  const [inquiryId, setInquiryId] = useState<string | null>(null);
-  const [sdkLoaded, setSdkLoaded] = useState(false);
-  const clientRef = useRef<any>(null);
-
-  const startMutation = useMutation<KycStartResponse, Error>({
-    mutationFn: () => kycApi.start(),
-    onSuccess: (data) => {
-      if (!data.session_token) {
-        toast.error("حدث خطأ غير متوقع، حاول مجدداً");
-        return;
-      }
-      setSessionToken(data.session_token);
-      setInquiryId(data.inquiry_id);
-    },
-    onError: () => {
-      toast.error("تعذر فتح واجهة التحقق، حاول لاحقاً");
-    },
-  });
-
-  useEffect(() => {
-    if (window.Persona) {
-      setSdkLoaded(true);
-      return;
-    }
-
-    const existing = document.getElementById("persona-sdk") as HTMLScriptElement | null;
-    if (existing) {
-      const handleLoad = () => {
-        setSdkLoaded(true);
-        existing.setAttribute("data-loaded", "true");
-      };
-      if (existing.getAttribute("data-loaded") === "true") {
-        setSdkLoaded(true);
-        return;
-      }
-      existing.addEventListener("load", handleLoad);
-      return () => existing.removeEventListener("load", handleLoad);
-    }
-
-    const script = document.createElement("script");
-    script.id = "persona-sdk";
-    script.src = "https://cdn.withpersona.com/dist/persona-v5.1.2.js";
-    script.async = true;
-    script.onload = () => {
-      setSdkLoaded(true);
-      script.setAttribute("data-loaded", "true");
-    };
-    script.crossOrigin = "anonymous";
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!sdkLoaded || !sessionToken || !inquiryId) {
-      return;
-    }
-
-    if (!window.Persona) {
-      toast.error("تعذر تحميل SDK التابع لـ Persona");
-      return;
-    }
-
-    clientRef.current?.close?.();
-
-    const client = new window.Persona.Client({
-      templateId: PERSONA_TEMPLATE_ID,
-      environmentId: PERSONA_ENVIRONMENT_ID,
-      sessionToken,
-      inquiryId,
-      onReady: () => client.open(),
-      onComplete: () => {
-        toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق");
-      },
-    });
-
-    clientRef.current = client;
-
-    return () => {
-      client.close?.();
-    };
-  }, [sdkLoaded, sessionToken, inquiryId]);
-
-  const handleStart = () => {
-    if (!PERSONA_TEMPLATE_ID || !PERSONA_ENVIRONMENT_ID) {
-      toast.error("نظام التحقق غير مهيأ حالياً");
-      return;
-    }
-
-    startMutation.mutate();
-  };
 
   const identityVerified = Boolean(user?.is_verified);
   const steps = [
@@ -237,30 +130,16 @@ const KYC = () => {
               </div>
             </Card>
 
-            <Button
-              onClick={handleStart}
-              disabled={startMutation.isPending || !sdkLoaded}
-              className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6"
+            <PersonaKycButton
+              userId={user?.id}
+              className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 flex items-center justify-center"
+              onCompleted={() => toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق")}
             >
-              {startMutation.isPending ? (
-                <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                  جاري التحميل...
-                </>
-              ) : (
-                <>
-                  <IdCard className="h-5 w-5" />
-                  {sdkLoaded ? "بدء التحقق عبر Persona" : "جاري التحميل..."}
-                </>
-              )}
+              <IdCard className="h-5 w-5" />
+              بدء التحقق عبر Persona
               <ArrowRight className="h-5 w-5" />
-            </Button>
+            </PersonaKycButton>
 
-            {!sdkLoaded && (
-              <p className="text-xs text-center text-white/60">
-                SDK التابع لـ Persona لا يزال يُحمَّل، يُرجى الانتظار قبل الضغط على الزر.
-              </p>
-            )}
           </div>
         </Card>
 

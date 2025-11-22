@@ -30,12 +30,6 @@ export interface Wallet {
   updated_at: string;
 }
 
-export interface KycStartResponse {
-  inquiry_id: string;
-  session_token: string | null;
-  persona_data?: Record<string, unknown> | null;
-}
-
 export interface KycStatusResponse {
   kyc: KycVerification | null;
 }

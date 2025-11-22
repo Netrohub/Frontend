@@ -16,7 +16,6 @@ import type {
   DisputeResponse,
   Wallet,
   KycVerification,
-  KycStartResponse,
   KycStatusResponse,
   PaginatedResponse,
   LeaderboardResponse,
@@ -27,7 +26,7 @@ import type {
   AdminOrderResponse,
   AdminKycResponse,
   ApiError,
-} from '@/types/api';
+} from "@/types/api";
 import { getAPIBaseURL } from '@/config/env';
 import { API_TIMEOUT } from '@/config/constants';
 import { getEnvConfig } from '@/config/env';
@@ -279,7 +278,8 @@ export const authApi = {
 
 // KYC API
 export const kycApi = {
-  start: () => api.post<KycStartResponse>('/kyc/start'),
+  complete: (payload: { inquiryId: string; status: string; userId: number | string }) =>
+    api.post('/kyc/complete', payload),
   status: () => api.get<KycStatusResponse>('/kyc/status'),
 };
 
