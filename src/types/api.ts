@@ -9,6 +9,14 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  persona_inquiry_id?: string | null;
+  persona_reference_id?: string | null;
+  kyc_status?: 'pending' | 'verified' | 'failed' | 'expired' | 'canceled' | 'review';
+  kyc_verified_at?: string | null;
+  verified_phone?: string | null;
+  phone_verified_at?: string | null;
+  has_completed_kyc?: boolean;
+  phone_verified?: boolean;
   role: 'user' | 'admin';
   is_verified: boolean;
   avatar?: string;

@@ -3,7 +3,7 @@ import Persona from "persona";
 
 type PersonaKycButtonProps = {
   userId?: number | string;
-  isVerified?: boolean;
+  hasCompletedKyc?: boolean;
   onCompleted?: () => void;
   className?: string;
   children?: ReactNode;
@@ -11,7 +11,7 @@ type PersonaKycButtonProps = {
 
 export function PersonaKycButton({
   userId,
-  isVerified,
+  hasCompletedKyc,
   onCompleted,
   className,
   children,
@@ -19,7 +19,7 @@ export function PersonaKycButton({
   const referenceId = userId ? `user_${userId}` : undefined;
 
   const handleClick = useCallback(() => {
-    if (isVerified) {
+    if (hasCompletedKyc) {
       console.warn("PersonaKycButton: user already verified");
       return;
     }
@@ -84,14 +84,14 @@ export function PersonaKycButton({
         destroyClient();
       },
     });
-  }, [userId, onCompleted, referenceId]);
+  }, [userId, hasCompletedKyc, onCompleted, referenceId]);
 
   return (
     <button
       type="button"
       onClick={handleClick}
       className={className}
-      disabled={!userId || isVerified}
+      disabled={!userId || Boolean(hasCompletedKyc)}
     >
       {children ?? "Verify identity"}
     </button>

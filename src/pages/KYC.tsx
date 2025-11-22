@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { PersonaKycButton } from "@/components/PersonaKycButton";
 
 const KYC = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
-  const identityVerified = Boolean(user?.is_verified);
+  const identityVerified = Boolean(user?.has_completed_kyc);
   const steps = [
     {
       number: 1,
@@ -146,10 +146,15 @@ const KYC = () => {
 
                 <PersonaKycButton
                   userId={user?.id}
-                  isVerified={user?.is_verified}
+                  hasCompletedKyc={user?.has_completed_kyc}
                   className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 flex items-center justify-center"
-                  onCompleted={() => {
+                  onCompleted={async () => {
                     toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق");
+                    try {
+                      await refreshUser();
+                    } catch {
+                      // ignore refresh failures for now
+                    }
                   }}
                 >
                   <IdCard className="h-5 w-5" />
