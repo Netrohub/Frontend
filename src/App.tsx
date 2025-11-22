@@ -83,7 +83,7 @@ const AdminReviews = lazy(() => import("./pages/admin/Reviews"));
 const AdminFinancial = lazy(() => import("./pages/admin/Financial"));
 const AdminActivity = lazy(() => import("./pages/admin/Activity"));
 const AdminKyc = lazy(() => import("./pages/admin/KYC"));
-const KycPage = lazy(() => import("./pages/KycPage"));
+const Kyc = lazy(() => import("./pages/KYC"));
 const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
 const AdminWithdrawals = lazy(() => import("./pages/admin/Withdrawals"));
 
@@ -377,7 +377,7 @@ const AppContent = () => {
                 element={
                   <Suspense fallback={<LoadingFallback />}>
                     <ProtectedRoute>
-                      <KycPage />
+                      <Kyc />
                     </ProtectedRoute>
                   </Suspense>
                 }
