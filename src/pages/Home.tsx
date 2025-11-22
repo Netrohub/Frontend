@@ -279,8 +279,8 @@ const Home = () => {
                   <Mail className="h-5 w-5 text-white/60 group-hover:text-[hsl(195,80%,70%)] transition-colors" />
                 </a>
 
-                {/* WhatsApp */}
-                <a 
+                {/* WhatsApp - Hidden */}
+                {/* <a 
                   href="https://wa.me/966536784471"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -289,7 +289,7 @@ const Home = () => {
                   title={t('help.whatsapp')}
                 >
                   <WhatsAppIcon size={20} className="text-white/60 group-hover:text-[hsl(142,71%,45%)] transition-colors" />
-                </a>
+                </a> */}
 
                 {/* Discord */}
                 <a 

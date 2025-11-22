@@ -130,8 +130,8 @@ const Help = () => {
               <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.liveChat')}</span>
             </a>
 
-            {/* WhatsApp */}
-            <a 
+            {/* WhatsApp - Hidden */}
+            {/* <a 
               href="https://wa.me/966536784471"
               target="_blank"
               rel="noopener noreferrer"
@@ -141,7 +141,7 @@ const Help = () => {
             >
               <WhatsAppIcon size={32} className="text-[hsl(142,71%,45%)] group-hover:text-[hsl(142,71%,35%)] transition-colors mb-1" />
               <span className="text-xs text-white/70 group-hover:text-white transition-colors">{t('help.whatsapp')}</span>
-            </a>
+            </a> */}
 
             {/* Email */}
             <a 

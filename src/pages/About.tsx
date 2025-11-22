@@ -261,8 +261,8 @@ const About = () => {
                 <Mail className="h-6 w-6 text-[hsl(195,80%,70%)] group-hover:text-[hsl(195,80%,60%)] transition-colors" />
               </a>
 
-              {/* WhatsApp */}
-              <a 
+              {/* WhatsApp - Hidden */}
+              {/* <a 
                 href="https://wa.me/966536784471"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -271,7 +271,7 @@ const About = () => {
                 title={t('about.whatsapp')}
               >
                 <WhatsAppIcon size={24} className="text-[hsl(142,71%,45%)] group-hover:text-[hsl(142,71%,35%)] transition-colors" />
-              </a>
+              </a> */}
 
               {/* Discord */}
               <a 
