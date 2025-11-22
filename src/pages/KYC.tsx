@@ -132,6 +132,7 @@ const KYC = () => {
 
             <PersonaKycButton
               userId={user?.id}
+              isVerified={user?.is_verified}
               className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 flex items-center justify-center"
               onCompleted={() => toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق")}
             >
