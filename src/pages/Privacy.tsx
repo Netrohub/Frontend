@@ -36,11 +36,11 @@ const Privacy = () => {
         <div id="privacy-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-              {language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+              {t('privacy.title')}
             </h1>
             {lastUpdated && (
               <p className="text-white/60">
-                {language === 'ar' ? 'آخر تحديث:' : 'Last updated:'} {lastUpdated}
+                {t('privacy.lastUpdated')} {lastUpdated}
               </p>
             )}
           </div>
@@ -57,7 +57,7 @@ const Privacy = () => {
               />
             ) : (
               <p className="text-white/60 text-center py-8">
-                {language === 'ar' ? 'لا توجد سياسة خصوصية متاحة حاليًا' : 'No privacy policy available'}
+                {t('privacy.emptyState')}
               </p>
             )}
           </Card>

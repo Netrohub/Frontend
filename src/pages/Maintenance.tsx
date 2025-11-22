@@ -39,21 +39,17 @@ const Maintenance = () => {
 
         {/* Title */}
         <h1 className="text-4xl md:text-5xl font-black text-white mb-6">
-          {language === 'ar' ? 'وضع الصيانة' : 'Maintenance Mode'}
+          {t('maintenance.title')}
         </h1>
 
         {/* Description */}
         <div className="space-y-4 mb-8">
           <p className="text-xl md:text-2xl text-white/80 font-semibold">
-            {language === 'ar' 
-              ? 'نعمل على تحسين الموقع لخدمتكم بشكل أفضل'
-              : 'We are working to improve the site to serve you better'}
+            {t('maintenance.description')}
           </p>
           
           <p className="text-lg text-white/60 max-w-lg mx-auto">
-            {language === 'ar'
-              ? 'NXOLand هي منصة آمنة لشراء وبيع حسابات الألعاب الرقمية مع نظام ضمان متكامل. نحن نعمل حالياً على تحديثات مهمة لتحسين تجربتك.'
-              : 'NXOLand is a secure platform for buying and selling digital gaming accounts with an integrated guarantee system. We are currently working on important updates to improve your experience.'}
+            {t('maintenance.descriptionDetail')}
           </p>
         </div>
 
@@ -64,14 +60,12 @@ const Maintenance = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 py-4 bg-[#5865F2]/20 hover:bg-[#5865F2]/30 border-2 border-[#5865F2]/50 hover:border-[#5865F2] rounded-xl text-white font-bold text-lg transition-all duration-300 hover:scale-105 group"
-            aria-label={language === 'ar' ? 'انضم إلى Discord' : 'Join Discord'}
+            aria-label={t('maintenance.discordAriaLabel')}
           >
             <DiscordIcon size={28} className="text-[#5865F2] group-hover:text-[#4752C4] transition-colors" />
             <MessageCircle className="h-6 w-6 text-white/70 group-hover:text-white transition-colors" aria-hidden="true" />
             <span>
-              {language === 'ar' 
-                ? 'انضم إلى Discord للحصول على آخر التحديثات'
-                : 'Join Discord for Latest Updates'}
+              {t('maintenance.discordButton')}
             </span>
           </a>
         </div>
@@ -79,9 +73,7 @@ const Maintenance = () => {
         {/* Status message */}
         <div className="mt-8 p-4 bg-white/5 border border-white/10 rounded-lg backdrop-blur-sm">
           <p className="text-sm text-white/50">
-            {language === 'ar'
-              ? 'سيتم إعادة فتح الموقع قريباً. شكراً لصبركم!'
-              : 'The site will reopen soon. Thank you for your patience!'}
+            {t('maintenance.statusMessage')}
           </p>
         </div>
       </div>

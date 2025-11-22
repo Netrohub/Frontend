@@ -278,7 +278,7 @@ const EditProfile = () => {
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   disabled={updateProfileMutation.isPending}
-                  aria-label="الاسم الكامل"
+                  aria-label={t('profile.edit.fullNameAriaLabel')}
                 />
               </div>
             </div>
@@ -295,7 +295,7 @@ const EditProfile = () => {
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   disabled={updateProfileMutation.isPending}
-                  aria-label="البريد الإلكتروني"
+                  aria-label={t('profile.edit.emailAriaLabel')}
                 />
               </div>
             </div>
@@ -312,7 +312,7 @@ const EditProfile = () => {
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40"
                   disabled={updateProfileMutation.isPending}
-                  aria-label="رقم الهاتف"
+                  aria-label={t('profile.edit.phoneAriaLabel')}
                 />
               </div>
             </div>

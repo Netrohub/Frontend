@@ -101,7 +101,7 @@ const Reviews = () => {
       queryClient.invalidateQueries({ queryKey: ['reviews', userId] });
     },
     onError: () => {
-      toast.error("فشل تحديث التقييم");
+      toast.error(t('reviews.updateError'));
     },
   });
 
@@ -110,16 +110,16 @@ const Reviews = () => {
     mutationFn: ({ reviewId, reason }: { reviewId: number; reason: string }) => 
       reviewsApi.report(reviewId, reason),
     onSuccess: () => {
-      toast.success("تم الإبلاغ عن التقييم بنجاح");
+      toast.success(t('reviews.reportSuccess'));
       setReportDialogOpen(false);
       setReportReason("");
       setReportDetails("");
     },
     onError: (error: any) => {
       if (error.data?.error_code === 'ALREADY_REPORTED') {
-        toast.error("لقد قمت بالإبلاغ عن هذا التقييم من قبل");
+        toast.error(t('reviews.reportAlreadyReported'));
       } else {
-        toast.error(error.message || "فشل الإبلاغ عن التقييم");
+        toast.error(error.message || t('reviews.reportError'));
       }
     },
   });
@@ -129,13 +129,13 @@ const Reviews = () => {
     mutationFn: ({ id, data }: { id: number; data: any }) => 
       reviewsApi.update(id, data),
     onSuccess: () => {
-      toast.success("تم تحديث التقييم بنجاح");
+      toast.success(t('reviews.updateSuccess'));
       setEditDialogOpen(false);
       setEditingReview(null);
       queryClient.invalidateQueries({ queryKey: ['reviews', userId] });
     },
     onError: () => {
-      toast.error("فشل تحديث التقييم");
+      toast.error(t('reviews.updateError'));
     },
   });
 
@@ -143,7 +143,7 @@ const Reviews = () => {
   const deleteMutation = useMutation({
     mutationFn: (reviewId: number) => reviewsApi.delete(reviewId),
     onSuccess: () => {
-      toast.success("تم حذف التقييم بنجاح");
+      toast.success(t('reviews.deleteSuccess'));
       setDeleteDialogOpen(false);
       setDeletingReviewId(null);
       queryClient.invalidateQueries({ queryKey: ['reviews', userId] });
@@ -177,9 +177,9 @@ const Reviews = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-            التقييمات والمراجعات
+            {t('reviews.title')}
           </h1>
-          <p className="text-white/60">آراء المشترين السابقين</p>
+          <p className="text-white/60">{t('reviews.subtitle')}</p>
         </div>
 
         {/* Rating Overview */}
@@ -195,13 +195,13 @@ const Reviews = () => {
                   <div>
                     <StarRating rating={stats.average_rating} readonly size="lg" />
                     <p className="text-white/60 text-sm mt-1">
-                      بناءً على {stats.total_reviews} تقييم
+                      {t('reviews.basedOn').replace('{count}', stats.total_reviews.toString())}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-center md:justify-start gap-2">
                   <TrendingUp className="h-5 w-5 text-green-400" />
-                  <span className="text-green-400 font-bold">{positivePercentage}% تقييمات إيجابية</span>
+                  <span className="text-green-400 font-bold">{positivePercentage}% {t('reviews.positiveReviews')}</span>
                 </div>
               </div>
 
@@ -237,7 +237,7 @@ const Reviews = () => {
                 value="all"
                 className="data-[state=active]:bg-[hsl(195,80%,50%)] data-[state=active]:text-white text-white/70 text-sm"
               >
-                الكل
+                {t('reviews.all')}
               </TabsTrigger>
               {[5, 4, 3, 2, 1].map((rating) => (
                 <TabsTrigger 
@@ -258,10 +258,10 @@ const Reviews = () => {
                 className="gap-2 bg-white/5 hover:bg-white/10 text-white border-white/20 min-h-[48px] w-full md:w-auto"
               >
                 <Filter className="h-4 w-4" />
-                {sortBy === "recent" && "الأحدث"}
-                {sortBy === "helpful" && "الأكثر فائدة"}
-                {sortBy === "rating-high" && "التقييم: الأعلى"}
-                {sortBy === "rating-low" && "التقييم: الأدنى"}
+                {sortBy === "recent" && t('reviews.sortRecent')}
+                {sortBy === "helpful" && t('reviews.sortHelpful')}
+                {sortBy === "rating-high" && t('reviews.sortRatingHigh')}
+                {sortBy === "rating-low" && t('reviews.sortRatingLow')}
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -270,25 +270,25 @@ const Reviews = () => {
                 onClick={() => setSortBy("recent")}
                 className="text-white hover:bg-white/10 cursor-pointer"
               >
-                الأحدث
+                {t('reviews.sortRecent')}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => setSortBy("helpful")}
                 className="text-white hover:bg-white/10 cursor-pointer"
               >
-                الأكثر فائدة
+                {t('reviews.sortHelpful')}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => setSortBy("rating-high")}
                 className="text-white hover:bg-white/10 cursor-pointer"
               >
-                التقييم: الأعلى أولاً
+                {t('reviews.sortRatingHighFirst')}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => setSortBy("rating-low")}
                 className="text-white hover:bg-white/10 cursor-pointer"
               >
-                التقييم: الأدنى أولاً
+                {t('reviews.sortRatingLowFirst')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -313,7 +313,7 @@ const Reviews = () => {
           </div>
         ) : error ? (
           <ErrorState 
-            message="فشل تحميل التقييمات" 
+            message={t('reviews.loadError')} 
             onRetry={() => refetch()}
           />
         ) : reviews.length > 0 ? (
@@ -355,7 +355,7 @@ const Reviews = () => {
                   className="bg-white/5 text-white border-white/20 hover:bg-white/10"
                 >
                   <ChevronRight className="h-4 w-4" />
-                  السابق
+                  {t('reviews.previous')}
                 </Button>
 
                 <div className="flex items-center gap-1">
@@ -397,7 +397,7 @@ const Reviews = () => {
                   disabled={currentPage === reviewsData.last_page || isLoading}
                   className="bg-white/5 text-white border-white/20 hover:bg-white/10"
                 >
-                  التالي
+                  {t('reviews.next')}
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
               </div>
@@ -406,7 +406,7 @@ const Reviews = () => {
         ) : (
           <Card className="p-12 bg-white/5 border-white/10 border-dashed text-center">
             <Star className="h-12 w-12 mx-auto mb-4 text-white/30" />
-            <p className="text-white/60">لا توجد تقييمات في هذه الفئة</p>
+            <p className="text-white/60">{t('reviews.noReviewsInCategory')}</p>
           </Card>
         )}
       </div>
@@ -421,9 +421,9 @@ const Reviews = () => {
       <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
         <DialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
           <DialogHeader>
-            <DialogTitle className="text-white text-right">إبلاغ عن تقييم غير لائق</DialogTitle>
+            <DialogTitle className="text-white text-right">{t('reviews.reportTitle')}</DialogTitle>
             <DialogDescription className="text-white/80 text-right">
-              اختر سبب الإبلاغ عن هذا التقييم. سيتم مراجعة البلاغ من قبل فريق المشرفين.
+              {t('reviews.reportDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -432,31 +432,31 @@ const Reviews = () => {
               <div className="flex items-center space-x-2 space-x-reverse">
                 <RadioGroupItem value="spam" id="spam" />
                 <Label htmlFor="spam" className="text-white cursor-pointer">
-                  محتوى غير مرغوب (spam)
+                  {t('reviews.reportSpam')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 <RadioGroupItem value="offensive" id="offensive" />
                 <Label htmlFor="offensive" className="text-white cursor-pointer">
-                  محتوى مسيء أو غير لائق
+                  {t('reviews.reportOffensive')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 <RadioGroupItem value="fake" id="fake" />
                 <Label htmlFor="fake" className="text-white cursor-pointer">
-                  تقييم مزيف أو ملفق
+                  {t('reviews.reportFake')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 <RadioGroupItem value="irrelevant" id="irrelevant" />
                 <Label htmlFor="irrelevant" className="text-white cursor-pointer">
-                  غير متعلق بالمنتج أو الخدمة
+                  {t('reviews.reportIrrelevant')}
                 </Label>
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
                 <RadioGroupItem value="other" id="other" />
                 <Label htmlFor="other" className="text-white cursor-pointer">
-                  سبب آخر
+                  {t('reviews.reportOther')}
                 </Label>
               </div>
             </div>
@@ -464,7 +464,7 @@ const Reviews = () => {
 
           {reportReason === 'other' && (
             <Textarea
-              placeholder="يرجى توضيح السبب... (10 أحرف على الأقل)"
+              placeholder={t('reviews.reportOtherPlaceholder')}
               value={reportDetails}
               onChange={(e) => setReportDetails(e.target.value)}
               className="bg-white/5 border-white/20 text-white placeholder:text-white/40 resize-none"
@@ -489,11 +489,11 @@ const Reviews = () => {
             <Button
               onClick={() => {
                 if (!reportReason) {
-                  toast.error("يرجى اختيار سبب الإبلاغ");
+                  toast.error(t('reviews.reportSelectReason'));
                   return;
                 }
                 if (reportReason === 'other' && reportDetails.trim().length < 10) {
-                  toast.error("يرجى توضيح السبب (10 أحرف على الأقل)");
+                  toast.error(t('reviews.reportClarifyReason'));
                   return;
                 }
                 if (reportingReviewId) {
@@ -506,7 +506,7 @@ const Reviews = () => {
               disabled={!reportReason || reportMutation.isPending || (reportReason === 'other' && reportDetails.trim().length < 10)}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
-              {reportMutation.isPending ? "جاري الإرسال..." : "إرسال الإبلاغ"}
+              {reportMutation.isPending ? t('reviews.reportSending') : t('reviews.reportSubmit')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -516,9 +516,9 @@ const Reviews = () => {
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent className="bg-[hsl(200,70%,15%)] border-white/20 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white text-right">تعديل التقييم</DialogTitle>
+            <DialogTitle className="text-white text-right">{t('reviews.editTitle')}</DialogTitle>
             <DialogDescription className="text-white/80 text-right">
-              قم بتحديث تقييمك وتعليقك
+              {t('reviews.editDescription')}
             </DialogDescription>
           </DialogHeader>
           {editingReview && (
@@ -548,12 +548,10 @@ const Reviews = () => {
         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/20">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white text-right">
-              حذف التقييم
+              {t('reviews.deleteTitle')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/80 text-right">
-              هل أنت متأكد من حذف هذا التقييم؟ هذا الإجراء لا يمكن التراجع عنه.
-              <br /><br />
-              سيتم حذف التقييم نهائياً من المنصة ولن تتمكن من استعادته.
+              {t('reviews.deleteDescription')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-2">
@@ -572,7 +570,7 @@ const Reviews = () => {
               disabled={deleteMutation.isPending}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
-              {deleteMutation.isPending ? "جاري الحذف..." : "حذف التقييم"}
+              {deleteMutation.isPending ? t('reviews.deleting') : t('reviews.deleteConfirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

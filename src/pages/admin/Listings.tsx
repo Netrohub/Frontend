@@ -46,12 +46,12 @@ const AdminListings = () => {
     mutationFn: (id: number) => adminApi.deleteListing(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-listings'] });
-      toast.success("تم حذف الإعلان");
+      toast.success(t('admin.listings.deleteSuccess'));
       setDeleteListingId(null);
       setIsDialogOpen(false);
     },
     onError: () => {
-      toast.error("فشل حذف الإعلان");
+      toast.error(t('admin.listings.deleteError'));
       setDeleteListingId(null);
     },
   });
@@ -93,17 +93,17 @@ const AdminListings = () => {
     switch (status) {
       case 'active':
         return {
-          label: 'نشط',
+          label: t('admin.listings.status.active'),
           className: 'bg-green-500/20 text-green-400 border-green-500/30'
         };
       case 'sold':
         return {
-          label: 'مباع',
+          label: t('admin.listings.status.sold'),
           className: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
         };
       case 'inactive':
         return {
-          label: 'غير نشط',
+          label: t('admin.listings.status.inactive'),
           className: 'bg-red-500/20 text-red-400 border-red-500/30'
         };
       default:
@@ -243,7 +243,7 @@ const AdminListings = () => {
                   onClick={() => handleDeleteClick(listing.id)}
                 >
                   <Trash2 className="h-4 w-4" />
-                  حذف
+                  {t('admin.listings.actions.delete')}
                 </Button>
               </div>
             </Card>
@@ -343,7 +343,7 @@ const AdminListings = () => {
                   onClick={() => handleDeleteClick(selectedListing.id)}
                 >
                   <Trash2 className="h-4 w-4" />
-                  حذف الإعلان
+                  {t('admin.listings.deleteListing')}
                 </Button>
               </div>
             </div>
@@ -355,14 +355,14 @@ const AdminListings = () => {
       <AlertDialog open={deleteListingId !== null} onOpenChange={() => setDeleteListingId(null)}>
         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">تأكيد حذف الإعلان</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">{t('admin.listings.confirmDelete')}</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">
-              هل أنت متأكد من حذف هذا الإعلان؟ هذا الإجراء لا يمكن التراجع عنه وسيتم حذف جميع البيانات المتعلقة بالإعلان.
+              {t('admin.listings.confirmDeleteMessage')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/10 hover:bg-white/20 text-white border-white/20">
-              إلغاء
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
@@ -372,7 +372,7 @@ const AdminListings = () => {
               {deleteListingMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                'حذف'
+                {t('admin.listings.actions.delete')}
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -330,6 +330,16 @@ const Order = () => {
                     </div>
                   )}
 
+                  {/* Delivery Description */}
+                  {credentials.account_metadata?.delivery_description && (
+                    <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+                      <div className="mb-2">
+                        <span className="text-sm text-white/60">{t('order.deliveryDescription')}</span>
+                      </div>
+                      <div className="text-white whitespace-pre-wrap">{credentials.account_metadata.delivery_description}</div>
+                    </div>
+                  )}
+
                   {/* Bill Images */}
                   {credentials.bill_images_unlocked && credentials.account_metadata?.bill_images ? (
                     <div className="space-y-3">
@@ -337,20 +347,26 @@ const Order = () => {
                       <div className="grid grid-cols-3 gap-3">
                         {credentials.account_metadata.bill_images.first && (
                           <div className="bg-white/5 rounded-lg border border-white/10 p-2">
-                            <img src={credentials.account_metadata.bill_images.first} alt="أول فاتورة" className="w-full h-auto rounded" />
-                            <p className="text-xs text-white/60 text-center mt-1">أول فاتورة</p>
+                            <img src={credentials.account_metadata.bill_images.first} alt={t('sell.wos.firstBillAlt')} className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">{t('sell.wos.firstBillAlt')}</p>
                           </div>
                         )}
-                        {credentials.account_metadata.bill_images.three && (
+                        {credentials.account_metadata.bill_images.second && (
                           <div className="bg-white/5 rounded-lg border border-white/10 p-2">
-                            <img src={credentials.account_metadata.bill_images.three} alt="فواتير متعددة" className="w-full h-auto rounded" />
-                            <p className="text-xs text-white/60 text-center mt-1">فواتير متعددة</p>
+                            <img src={credentials.account_metadata.bill_images.second} alt={t('sell.wos.secondBillAlt')} className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">{t('sell.wos.secondBillAlt')}</p>
+                          </div>
+                        )}
+                        {credentials.account_metadata.bill_images.third && (
+                          <div className="bg-white/5 rounded-lg border border-white/10 p-2">
+                            <img src={credentials.account_metadata.bill_images.third} alt={t('sell.wos.thirdBillAlt')} className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">{t('sell.wos.thirdBillAlt')}</p>
                           </div>
                         )}
                         {credentials.account_metadata.bill_images.last && (
                           <div className="bg-white/5 rounded-lg border border-white/10 p-2">
-                            <img src={credentials.account_metadata.bill_images.last} alt="آخر فاتورة" className="w-full h-auto rounded" />
-                            <p className="text-xs text-white/60 text-center mt-1">آخر فاتورة</p>
+                            <img src={credentials.account_metadata.bill_images.last} alt={t('sell.wos.lastBillAlt')} className="w-full h-auto rounded" />
+                            <p className="text-xs text-white/60 text-center mt-1">{t('sell.wos.lastBillAlt')}</p>
                           </div>
                         )}
                       </div>
@@ -382,7 +398,7 @@ const Order = () => {
             ) : (
               <div className="text-center py-12">
                 <Shield className="h-16 w-16 text-white/20 mx-auto mb-4" />
-                <p className="text-white/60">اضغط "عرض" للكشف عن معلومات الحساب</p>
+                <p className="text-white/60">{t('order.revealAccountInfo')}</p>
               </div>
             )}
           </Card>
@@ -394,8 +410,8 @@ const Order = () => {
             <div className="flex items-center gap-3">
               <Clock className="h-6 w-6 text-blue-400" />
               <div>
-                <p className="text-blue-400 font-bold">في انتظار تأكيد المشتري</p>
-                <p className="text-white/70 text-sm mt-1">الأموال محتجزة وسيتم تحويلها بعد تأكيد المشتري</p>
+                <p className="text-blue-400 font-bold">{t('order.waitingBuyerConfirmation')}</p>
+                <p className="text-white/70 text-sm mt-1">{t('order.escrowHoldMessage')}</p>
               </div>
             </div>
           </Card>

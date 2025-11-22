@@ -36,11 +36,11 @@ const Terms = () => {
         <div id="terms-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl pb-24 md:pb-8">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-            {language === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
+            {t('terms.title')}
           </h1>
           {lastUpdated && (
             <p className="text-white/60">
-              {language === 'ar' ? 'آخر تحديث:' : 'Last updated:'} {lastUpdated}
+              {t('terms.lastUpdated')} {lastUpdated}
             </p>
           )}
         </div>
@@ -57,7 +57,7 @@ const Terms = () => {
             />
           ) : (
             <p className="text-white/60 text-center py-8">
-              {language === 'ar' ? 'لا توجد شروط وأحكام متاحة حاليًا' : 'No terms and conditions available'}
+              {t('terms.emptyState')}
             </p>
           )}
         </Card>

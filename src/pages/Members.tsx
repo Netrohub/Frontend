@@ -200,7 +200,7 @@ const Members = () => {
                       <h3 className="font-bold text-white text-lg flex items-center gap-2">
                         {member.name}
                         {member.kyc_verified && (
-                          <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label="موثق" />
+                          <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label={t('common.verified')} />
                         )}
                       </h3>
                       {member.kyc_verified && (
@@ -262,7 +262,7 @@ const Members = () => {
                     <h3 className="text-2xl font-bold text-white flex items-center gap-2 mb-1">
                       {selectedMemberDetails.name}
                       {selectedMemberDetails.kyc_verified && (
-                        <CheckCircle2 className="h-6 w-6 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label="موثق" />
+                        <CheckCircle2 className="h-6 w-6 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label={t('common.verified')} />
                       )}
                     </h3>
                     {selectedMemberDetails.kyc_verified && (

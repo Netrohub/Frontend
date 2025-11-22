@@ -89,9 +89,9 @@ const SocialProductExample = () => {
         
         <Breadcrumb 
           items={[
-            { label: language === 'ar' ? "الرئيسية" : "Home", href: "/" },
-            { label: language === 'ar' ? "السوق" : "Marketplace", href: "/marketplace" },
-            { label: language === 'ar' ? "تفاصيل الحساب" : "Account Details" }
+            { label: t('socialProduct.home'), href: "/" },
+            { label: t('socialProduct.marketplace'), href: "/marketplace" },
+            { label: t('socialProduct.accountDetails') }
           ]}
         />
 
@@ -114,7 +114,7 @@ const SocialProductExample = () => {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                  {language === 'ar' ? 'متاح الآن' : 'Available Now'}
+                  {t('socialProduct.availableNow')}
                 </Badge>
               </div>
               
@@ -138,21 +138,21 @@ const SocialProductExample = () => {
                       <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
                     )}
                   </div>
-                  <div className="text-sm text-white/60">{language === 'ar' ? 'بائع موثوق' : 'Verified Seller'}</div>
+                  <div className="text-sm text-white/60">{t('socialProduct.verifiedSeller')}</div>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="text-2xl font-bold text-[hsl(195,80%,70%)]">{sellerInfo.totalSales}</div>
-                  <div className="text-xs text-white/60">{language === 'ar' ? 'عملية بيع' : 'Sales'}</div>
+                  <div className="text-xs text-white/60">{t('socialProduct.sales')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-[hsl(40,90%,55%)]">{sellerInfo.rating}</div>
-                  <div className="text-xs text-white/60">{language === 'ar' ? 'التقييم' : 'Rating'}</div>
+                  <div className="text-xs text-white/60">{t('socialProduct.rating')}</div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">{sellerInfo.memberSince}</div>
-                  <div className="text-xs text-white/60">{language === 'ar' ? 'عضو منذ' : 'Member'}</div>
+                  <div className="text-xs text-white/60">{t('socialProduct.member')}</div>
                 </div>
               </div>
             </Card>
@@ -161,26 +161,26 @@ const SocialProductExample = () => {
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
               <h3 className="font-bold text-white mb-4 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                {language === 'ar' ? 'تفاصيل الحساب' : 'Account Details'}
+                {t('socialProduct.accountDetails')}
               </h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)] col-span-2">
                   <div className="text-xs text-[hsl(120,60%,70%)] mb-1">
-                    {language === 'ar' ? 'مع البريد الإلكتروني الأساسي' : 'With Primary Email'}
+                    {t('socialProduct.withPrimaryEmail')}
                   </div>
                   <div className="flex items-center gap-2">
                     {accountData.hasPrimaryEmail ? (
                       <>
                         <CheckCircle2 className="h-5 w-5 text-[hsl(120,70%,50%)]" />
                         <span className="font-bold text-[hsl(120,70%,50%)] text-lg">
-                          {language === 'ar' ? 'نعم' : 'Yes'}
+                          {t('socialProduct.yes')}
                         </span>
                       </>
                     ) : (
                       <>
                         <X className="h-5 w-5 text-red-500" />
                         <span className="font-bold text-red-500 text-lg">
-                          {language === 'ar' ? 'لا' : 'No'}
+                          {t('socialProduct.no')}
                         </span>
                       </>
                     )}
@@ -189,21 +189,21 @@ const SocialProductExample = () => {
 
                 <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.15)] to-[hsl(195,80%,30%,0.1)] rounded-lg border border-[hsl(195,80%,70%,0.2)] col-span-2">
                   <div className="text-xs text-[hsl(195,80%,70%)] mb-1">
-                    {language === 'ar' ? 'الحساب مرتبط برقم هاتف' : 'Account Linked to Phone Number'}
+                    {t('socialProduct.accountLinkedToPhone')}
                   </div>
                   <div className="flex items-center gap-2">
                     {accountData.hasPhoneNumber ? (
                       <>
                         <CheckCircle2 className="h-5 w-5 text-[hsl(120,70%,50%)]" />
                         <span className="font-bold text-[hsl(120,70%,50%)] text-lg">
-                          {language === 'ar' ? 'نعم' : 'Yes'}
+                          {t('socialProduct.yes')}
                         </span>
                       </>
                     ) : (
                       <>
                         <X className="h-5 w-5 text-red-500" />
                         <span className="font-bold text-red-500 text-lg">
-                          {language === 'ar' ? 'لا' : 'No'}
+                          {t('socialProduct.no')}
                         </span>
                       </>
                     )}
@@ -216,7 +216,7 @@ const SocialProductExample = () => {
             <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
               <h3 className="font-bold text-white mb-4 flex items-center gap-2">
                 <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
-                {language === 'ar' ? 'الوصف' : 'Description'}
+                {t('socialProduct.description')}
               </h3>
               <p className="text-white/80 leading-relaxed">{accountData.description}</p>
             </Card>
@@ -229,7 +229,7 @@ const SocialProductExample = () => {
                 size="lg"
               >
                 <Link to="/checkout">
-                  {language === 'ar' ? 'شراء الآن' : 'Buy Now'}
+                  {t('socialProduct.buyNow')}
                 </Link>
               </Button>
               <Button 
@@ -238,7 +238,7 @@ const SocialProductExample = () => {
                 size="lg"
               >
                 <MessageSquare className="h-5 w-5 mr-2" />
-                {language === 'ar' ? 'تواصل مع البائع' : 'Contact Seller'}
+                {t('socialProduct.contactSeller')}
               </Button>
             </div>
           </div>
@@ -249,7 +249,7 @@ const SocialProductExample = () => {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-              {language === 'ar' ? 'تقييمات البائع' : 'Seller Reviews'}
+              {t('socialProduct.sellerReviews')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">

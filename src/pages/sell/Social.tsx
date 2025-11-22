@@ -43,16 +43,14 @@ const Social = () => {
             </div>
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-            {language === 'ar' ? 'قريباً' : 'Coming Soon'}
+            {t('sell.social.comingSoon')}
           </h2>
           <p className="text-xl text-white/70 mb-8">
-            {language === 'ar' 
-              ? 'نعمل على إضافة هذه الميزة قريباً' 
-              : 'We are working on adding this feature soon'}
+            {t('sell.social.comingSoonDescription')}
           </p>
           <BackButton 
             fallbackPath="/sell" 
-            label={language === 'ar' ? 'العودة' : 'Go Back'}
+            label={t('sell.social.goBack')}
             className="mx-auto"
           />
         </div>

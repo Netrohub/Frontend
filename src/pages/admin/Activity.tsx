@@ -98,9 +98,9 @@ export default function AdminActivity() {
 
   const getSeverityLabel = (severity: string) => {
     switch (severity) {
-      case "high": return "عالية";
-      case "medium": return "متوسطة";
-      case "low": return "منخفضة";
+      case "high": return t('admin.activity.severityHigh');
+      case "medium": return t('admin.activity.severityMedium');
+      case "low": return t('admin.activity.severityLow');
       default: return severity;
     }
   };
@@ -108,15 +108,15 @@ export default function AdminActivity() {
   return (
     <div className="p-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">سجل النشاطات</h1>
-        <p className="text-white/60">تتبع جميع إجراءات المسؤولين والمشرفين</p>
+        <h1 className="text-3xl font-bold text-white mb-2">{t('admin.activity.title')}</h1>
+        <p className="text-white/60">{t('admin.activity.subtitle')}</p>
       </div>
 
       <div className="flex gap-4 mb-6">
         <div className="flex-1 relative">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/40 h-5 w-5" />
           <Input
-            placeholder="البحث في السجل..."
+            placeholder={t('admin.activity.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pr-10 bg-[hsl(200,70%,15%)] border-white/10 text-white"
@@ -128,17 +128,17 @@ export default function AdminActivity() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">جميع النشاطات</SelectItem>
-            <SelectItem value="user">المستخدمين</SelectItem>
-            <SelectItem value="listing">الإعلانات</SelectItem>
-            <SelectItem value="order">الطلبات</SelectItem>
-            <SelectItem value="dispute">النزاعات</SelectItem>
-            <SelectItem value="settings">الإعدادات</SelectItem>
+            <SelectItem value="all">{t('admin.activity.allActivities')}</SelectItem>
+            <SelectItem value="user">{t('admin.activity.users')}</SelectItem>
+            <SelectItem value="listing">{t('admin.activity.listings')}</SelectItem>
+            <SelectItem value="order">{t('admin.activity.orders')}</SelectItem>
+            <SelectItem value="dispute">{t('admin.activity.disputes')}</SelectItem>
+            <SelectItem value="settings">{t('admin.activity.settings')}</SelectItem>
           </SelectContent>
         </Select>
         <Button className="bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(200,90%,40%)]">
           <Search className="h-4 w-4 mr-2" />
-          بحث
+          {t('admin.activity.search')}
         </Button>
       </div>
 
@@ -156,19 +156,19 @@ export default function AdminActivity() {
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="text-lg font-semibold text-white">{activity.action}</h3>
                     <Badge className={getSeverityColor(activity.severity)}>
-                      أهمية {getSeverityLabel(activity.severity)}
+                      {t('admin.activity.severity')} {getSeverityLabel(activity.severity)}
                     </Badge>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-x-6 gap-y-1 mb-3 text-sm">
                     <p className="text-white/60">
-                      المسؤول: <span className="text-white font-medium">{activity.admin}</span>
+                      {t('admin.activity.admin')} <span className="text-white font-medium">{activity.admin}</span>
                     </p>
                     <p className="text-white/60">
-                      الهدف: <span className="text-white font-medium">{activity.target}</span>
+                      {t('admin.activity.target')} <span className="text-white font-medium">{activity.target}</span>
                     </p>
                     <p className="text-white/60">
-                      الوقت: <span className="text-white font-medium">{activity.timestamp}</span>
+                      {t('admin.activity.time')} <span className="text-white font-medium">{activity.timestamp}</span>
                     </p>
                   </div>
                   

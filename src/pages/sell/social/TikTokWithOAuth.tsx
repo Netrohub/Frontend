@@ -104,11 +104,7 @@ const TikTok = () => {
   // Handle OAuth connection success
   useEffect(() => {
     if (connected && oauthUsername) {
-      sonnerToast.success(
-        language === 'ar' 
-          ? `تم الاتصال بحساب TikTok: @${oauthUsername}` 
-          : `Connected to TikTok: @${oauthUsername}`
-      );
+      sonnerToast.success(t('tiktok.connected').replace('{username}', oauthUsername));
     }
   }, [connected, oauthUsername, language]);
 
@@ -131,10 +127,8 @@ const TikTok = () => {
     
     if (!isConnected) {
       toast({
-        title: language === 'ar' ? 'خطأ' : 'Error',
-        description: language === 'ar' 
-          ? 'يرجى الاتصال بحساب TikTok أولاً'
-          : 'Please connect your TikTok account first',
+        title: t('common.error'),
+        description: t('tiktok.connectError'),
         variant: "destructive",
       });
       return;
@@ -169,11 +163,7 @@ const TikTok = () => {
       
       if (result.verified) {
         setBioVerified(true);
-        sonnerToast.success(
-          language === 'ar'
-            ? '✅ تم التحقق من البايو بنجاح!'
-            : '✅ Bio verified successfully!'
-        );
+        sonnerToast.success(t('tiktok.bioVerified'));
         
         // Wait a moment then proceed to delivery info
         setTimeout(() => {
@@ -182,7 +172,7 @@ const TikTok = () => {
         }, 1500);
       } else {
         toast({
-          title: language === 'ar' ? 'فشل التحقق' : 'Verification Failed',
+          title: t('tiktok.verificationFailed'),
           description: result.message,
           variant: "destructive",
         });
@@ -201,10 +191,8 @@ const TikTok = () => {
   const handleFinalSubmit = async () => {
     if (!bioVerified) {
       toast({
-        title: "Error",
-        description: language === 'ar'
-          ? 'يرجى التحقق من البايو أولاً'
-          : 'Please verify your bio first',
+        title: t('common.error'),
+        description: t('tiktok.pleaseVerifyBio'),
         variant: "destructive",
       });
       return;
@@ -245,10 +233,8 @@ const TikTok = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(verificationCode);
     toast({
-      title: language === 'ar' ? 'تم النسخ!' : 'Copied!',
-      description: language === 'ar' 
-        ? 'تم نسخ كود التحقق'
-        : 'Verification code copied to clipboard',
+      title: t('tiktok.copied'),
+      description: t('tiktok.codeCopied'),
     });
   };
 
@@ -284,12 +270,10 @@ const TikTok = () => {
                 <Video className="h-10 w-10 text-[hsl(180,100%,50%)]" />
                 <div>
                   <CardTitle className="text-2xl text-white">
-                    {language === 'ar' ? 'الاتصال بـ TikTok' : 'Connect TikTok'}
+                    {t('tiktok.connectTitle')}
                   </CardTitle>
                   <CardDescription className="text-white/60">
-                    {language === 'ar' 
-                      ? 'اتصل بحسابك للتحقق من الملكية'
-                      : 'Connect your account to verify ownership'}
+                    {t('tiktok.connectDescription')}
                   </CardDescription>
                 </div>
               </div>
@@ -297,9 +281,7 @@ const TikTok = () => {
             <CardContent>
               <Alert className="bg-blue-500/10 border-blue-500/20 mb-4">
                 <AlertDescription className="text-white/90">
-                  {language === 'ar'
-                    ? '🔒 سنستخدم TikTok فقط للتحقق من ملكية الحساب. لن نقوم بالنشر أو الوصول إلى أي شيء آخر.'
-                    : '🔒 We only use TikTok to verify account ownership. We won\'t post or access anything else.'}
+                  {t('tiktok.privacyNote')}
                 </AlertDescription>
               </Alert>
               
@@ -309,7 +291,7 @@ const TikTok = () => {
                 size="lg"
               >
                 <Video className="h-5 w-5 mr-2" />
-                {language === 'ar' ? 'اتصل بـ TikTok' : 'Connect TikTok'}
+                {t('tiktok.connectButton')}
               </Button>
             </CardContent>
           </Card>
@@ -327,7 +309,7 @@ const TikTok = () => {
                 />
                 <div className="flex-1">
                   <CardTitle className="text-2xl text-white">
-                    {language === 'ar' ? 'بيع حساب TikTok' : 'Sell TikTok Account'}
+                    {t('tiktok.sellAccount')}
                   </CardTitle>
                   <CardDescription className="text-white/60">
                     @{tiktokProfile.username} {tiktokProfile.is_verified && '✓'}
@@ -341,9 +323,7 @@ const TikTok = () => {
                 <Alert className="bg-green-500/10 border-green-500/20">
                   <CheckCircle2 className="h-4 w-4 text-green-400" />
                   <AlertDescription className="text-white/90">
-                    {language === 'ar'
-                      ? `متصل بـ ${tiktokProfile.display_name}`
-                      : `Connected as ${tiktokProfile.display_name}`}
+                    {t('tiktok.connectedAs').replace('{name}', tiktokProfile.display_name)}
                   </AlertDescription>
                 </Alert>
 
@@ -439,7 +419,7 @@ const TikTok = () => {
                 </div>
 
                 <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-                  {language === 'ar' ? 'متابعة' : 'Continue'}
+                  {t('tiktok.continue')}
                 </Button>
               </form>
             </CardContent>
@@ -452,12 +432,10 @@ const TikTok = () => {
         <DialogContent className="bg-[hsl(220,15%,12%)] border-white/10 text-white max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl text-center">
-              {language === 'ar' ? 'تأكيد ملكية الحساب' : 'Verify Account Ownership'}
+              {t('tiktok.verifyOwnership')}
             </DialogTitle>
             <DialogDescription className="text-white/60 text-center pt-2">
-              {language === 'ar'
-                ? 'أضف هذا الكود إلى البايو الخاص بك'
-                : 'Add this code to your TikTok bio'}
+              {t('tiktok.addCodeToBio')}
             </DialogDescription>
           </DialogHeader>
 
@@ -481,15 +459,15 @@ const TikTok = () => {
                   </div>
 
                   <div className="text-sm text-white/70 space-y-2 p-3 bg-white/5 rounded-lg">
-                    <p className="font-semibold">{language === 'ar' ? 'الخطوات:' : 'Steps:'}</p>
+                    <p className="font-semibold">{t('tiktok.steps')}</p>
                     <ol className="list-decimal list-inside space-y-1 text-xs">
-                      <li>{language === 'ar' ? 'انسخ الكود أعلاه' : 'Copy the code above'}</li>
-                      <li>{language === 'ar' ? 'افتح TikTok' : 'Open TikTok app'}</li>
-                      <li>{language === 'ar' ? 'انتقل إلى ملفك الشخصي' : 'Go to your profile'}</li>
-                      <li>{language === 'ar' ? 'اضغط "تعديل الملف الشخصي"' : 'Tap "Edit Profile"'}</li>
-                      <li>{language === 'ar' ? 'الصق الكود في البايو' : 'Paste code in Bio'}</li>
-                      <li>{language === 'ar' ? 'احفظ التغييرات' : 'Save changes'}</li>
-                      <li>{language === 'ar' ? 'ارجع هنا واضغط "تحقق"' : 'Come back and click "Verify"'}</li>
+                      <li>{t('tiktok.step1')}</li>
+                      <li>{t('tiktok.step2')}</li>
+                      <li>{t('tiktok.step3')}</li>
+                      <li>{t('tiktok.step4')}</li>
+                      <li>{t('tiktok.step5')}</li>
+                      <li>{t('tiktok.step6')}</li>
+                      <li>{t('tiktok.step7')}</li>
                     </ol>
                   </div>
                 </div>
@@ -503,12 +481,12 @@ const TikTok = () => {
                   {isVerifying ? (
                     <>
                       <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      {language === 'ar' ? 'جاري التحقق...' : 'Verifying...'}
+                      {t('tiktok.verifying')}
                     </>
                   ) : (
                     <>
                       <CheckCircle2 className="h-4 w-4 mr-2" />
-                      {language === 'ar' ? 'أضفت الكود - تحقق الآن' : 'I Added It - Verify Now'}
+                      {t('tiktok.verifyNow')}
                     </>
                   )}
                 </Button>
@@ -517,7 +495,7 @@ const TikTok = () => {
               <div className="text-center space-y-4">
                 <CheckCircle2 className="h-16 w-16 text-green-400 mx-auto" />
                 <p className="text-lg text-green-400 font-semibold">
-                  {language === 'ar' ? '✅ تم التحقق بنجاح!' : '✅ Verified Successfully!'}
+                  {t('tiktok.verifiedSuccess')}
                 </p>
               </div>
             )}

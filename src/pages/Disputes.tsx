@@ -92,10 +92,10 @@ const Disputes = () => {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { text: string; className: string }> = {
-      open: { text: "مفتوح", className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-      under_review: { text: "قيد المراجعة", className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-      resolved: { text: "تم الحل", className: "bg-green-500/20 text-green-400 border-green-500/30" },
-      closed: { text: "مغلق", className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
+      open: { text: t('disputes.status.open'), className: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+      under_review: { text: t('disputes.status.underReview'), className: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
+      resolved: { text: t('disputes.status.resolved'), className: "bg-green-500/20 text-green-400 border-green-500/30" },
+      closed: { text: t('disputes.status.closed'), className: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
     };
     const statusInfo = statusMap[status] || statusMap.open;
     return <Badge className={statusInfo.className}>{statusInfo.text}</Badge>;
@@ -164,10 +164,10 @@ const Disputes = () => {
                       className="w-full p-2 bg-white/5 border border-white/10 rounded text-white"
                       required
                     >
-                      <option value={0}>اختر الطلب</option>
+                      <option value={0}>{t('disputes.selectOrder')}</option>
                       {availableOrders.map((order: Order) => (
                         <option key={order.id} value={order.id}>
-                          طلب #{order.id} - {order.listing?.title || 'حساب'} - ${order.amount}
+                          {t('disputes.orderLabel')} #{order.id} - {order.listing?.title || t('disputes.account')} - ${order.amount}
                         </option>
                       ))}
                     </select>
@@ -282,7 +282,7 @@ const Disputes = () => {
                     </div>
                     <p className="text-white/80 mb-4 line-clamp-2">{dispute.description}</p>
                     <div className="flex items-center justify-between text-sm text-white/60">
-                      <span>{dispute.party === 'buyer' ? 'مشتري' : 'بائع'}</span>
+                      <span>{dispute.party === 'buyer' ? t('disputes.party.buyer') : t('disputes.party.seller')}</span>
                       <span>{dispute.created_at ? new Date(dispute.created_at).toLocaleDateString('ar-SA') : ''}</span>
                     </div>
                   </Card>

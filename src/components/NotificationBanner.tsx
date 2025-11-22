@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, AlertCircle, Bell, Package, MessageSquare, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Notification {
   id: string;
@@ -11,6 +12,7 @@ interface Notification {
 }
 
 export function NotificationBanner() {
+  const { t } = useLanguage();
   const [notification, setNotification] = useState<Notification | null>(null);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
 
@@ -116,7 +118,7 @@ export function NotificationBanner() {
             size="sm"
             onClick={handleDismiss}
             className="flex-shrink-0 h-8 w-8 p-0 hover:bg-gray-100 text-gray-500 hover:text-gray-700 rounded-full transition-colors"
-            aria-label="إغلاق"
+            aria-label={t('common.close')}
           >
             <X className="h-4 w-4" />
           </Button>

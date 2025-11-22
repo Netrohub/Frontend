@@ -143,20 +143,20 @@ const AdminNotifications = () => {
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
-      order: "طلب",
-      dispute: "نزاع",
-      message: "رسالة",
-      system: "نظام",
-      announcement: "إعلان",
+      order: t('admin.notifications.types.order'),
+      dispute: t('admin.notifications.types.dispute'),
+      message: t('admin.notifications.types.message'),
+      system: t('admin.notifications.types.system'),
+      announcement: t('admin.notifications.types.announcement'),
     };
     return labels[type] || type;
   };
 
   const getAudienceLabel = (audience: string) => {
     const labels: Record<string, string> = {
-      all: "الجميع",
-      buyers: "المشترين",
-      sellers: "البائعين",
+      all: t('admin.notifications.filters.all'),
+      buyers: t('admin.notifications.filters.buyers'),
+      sellers: t('admin.notifications.filters.sellers'),
     };
     return labels[audience] || audience;
   };

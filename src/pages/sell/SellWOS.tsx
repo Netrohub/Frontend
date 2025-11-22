@@ -74,21 +74,26 @@ const SellWOS = () => {
   const [accountPassword, setAccountPassword] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [billImages, setBillImages] = useState<{ first: string | null; three: string | null; last: string | null }>({
+  const [billImages, setBillImages] = useState<{ first: string | null; second: string | null; third: string | null; last: string | null }>({
     first: null,
-    three: null,
+    second: null,
+    third: null,
     last: null,
   });
-  const [billFiles, setBillFiles] = useState<{ first: File | null; three: File | null; last: File | null }>({
+  const [billFiles, setBillFiles] = useState<{ first: File | null; second: File | null; third: File | null; last: File | null }>({
     first: null,
-    three: null,
+    second: null,
+    third: null,
     last: null,
   });
+  const [deliveryDescription, setDeliveryDescription] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // File input refs
   const imageInputRef = useRef<HTMLInputElement>(null);
   const billFirstRef = useRef<HTMLInputElement>(null);
-  const billThreeRef = useRef<HTMLInputElement>(null);
+  const billSecondRef = useRef<HTMLInputElement>(null);
+  const billThirdRef = useRef<HTMLInputElement>(null);
   const billLastRef = useRef<HTMLInputElement>(null);
 
   // Handle image upload - convert to preview URLs immediately, upload on submit
@@ -129,7 +134,7 @@ const SellWOS = () => {
   };
 
   // Handle bill image upload - create preview
-  const handleBillImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'first' | 'three' | 'last') => {
+  const handleBillImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'first' | 'second' | 'third' | 'last') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -197,7 +202,7 @@ const SellWOS = () => {
       });
       
       // Revoke all bill image URLs
-      [billImages.first, billImages.three, billImages.last].forEach(url => {
+      [billImages.first, billImages.second, billImages.third, billImages.last].forEach(url => {
         if (url) {
           try {
             URL.revokeObjectURL(url);
@@ -296,8 +301,13 @@ const SellWOS = () => {
       return;
     }
 
-    if (!billImages.first || !billImages.three || !billImages.last) {
+    if (!billImages.first || !billImages.second || !billImages.third || !billImages.last) {
       toast.error(t('listing.billImagesRequired'));
+      return;
+    }
+
+    if (!termsAccepted) {
+      toast.error(t('listing.termsAcceptanceRequired'));
       return;
     }
 
@@ -315,7 +325,8 @@ const SellWOS = () => {
 
       // Add bill images
       if (billFiles.first) allFiles.push(billFiles.first);
-      if (billFiles.three) allFiles.push(billFiles.three);
+      if (billFiles.second) allFiles.push(billFiles.second);
+      if (billFiles.third) allFiles.push(billFiles.third);
       if (billFiles.last) allFiles.push(billFiles.last);
 
       if (allFiles.length === 0) {
@@ -326,13 +337,14 @@ const SellWOS = () => {
       toast.info(t('listing.uploadingImages'));
       const uploadedUrls = await imagesApi.upload(allFiles);
 
-      // Split images: first images are listing images, last 3 are bill images
+      // Split images: first images are listing images, last 4 are bill images
       const listingImageCount = imageFiles.length;
       const listingImages = uploadedUrls.slice(0, listingImageCount);
       const billImagesUrls = {
         first: uploadedUrls[listingImageCount],
-        three: uploadedUrls[listingImageCount + 1],
-        last: uploadedUrls[listingImageCount + 2],
+        second: uploadedUrls[listingImageCount + 1],
+        third: uploadedUrls[listingImageCount + 2],
+        last: uploadedUrls[listingImageCount + 3],
       };
 
       // Build description from form data (NO passwords/emails!)
@@ -383,6 +395,7 @@ const SellWOS = () => {
         has_facebook: hasFacebook === 'yes',
         has_game_center: hasGameCenter === 'yes',
         bill_images: billImagesUrls,
+        delivery_description: deliveryDescription.trim(), // Delivery instructions
       };
 
       // Use uploaded URLs - send credentials as SEPARATE fields (will be encrypted)
@@ -394,7 +407,7 @@ const SellWOS = () => {
         images: listingImages,
         account_email: accountEmail,      // Separate field (will be encrypted)
         account_password: accountPassword, // Separate field (will be encrypted)
-        account_metadata: accountMetadata, // Game-specific data
+        account_metadata: accountMetadata, // Game-specific data including delivery_description
       });
     } catch (error) {
       console.error('Failed to upload images:', error);
@@ -909,6 +922,18 @@ const SellWOS = () => {
                     required
                   />
                 </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">{t('listing.deliveryDescription')}</Label>
+                  <textarea
+                    value={deliveryDescription}
+                    onChange={(e) => setDeliveryDescription(e.target.value)}
+                    placeholder={t('listing.deliveryDescriptionPlaceholder')}
+                    className="w-full min-h-[100px] bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-md px-3 py-2 resize-y"
+                    rows={4}
+                  />
+                  <p className="text-sm text-white/60 mt-1">{t('listing.deliveryDescriptionHint')}</p>
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -967,8 +992,8 @@ const SellWOS = () => {
                 </div>
 
                 <div>
-                  <Label className="text-white mb-2 block">{t('listing.threeBillImages')}</Label>
-                  {billImages.three ? (
+                  <Label className="text-white mb-2 block">{t('listing.secondBillImage')}</Label>
+                  {billImages.second ? (
                     <Dialog>
                       <div className="relative inline-block group">
                         <DialogTrigger asChild>
@@ -976,7 +1001,7 @@ const SellWOS = () => {
                             type="button"
                             className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
                           >
-                            <img src={billImages.three} alt={t('sell.wos.multipleBillsAlt')} className="h-32 w-auto object-contain" />
+                            <img src={billImages.second} alt={t('sell.wos.secondBillAlt')} className="h-32 w-auto object-contain" />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                               <ZoomIn className="h-6 w-6 text-white" />
                             </div>
@@ -986,22 +1011,22 @@ const SellWOS = () => {
                           type="button"
                           className="absolute -top-2 -right-2 p-1.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600"
                           onClick={() => {
-                            if (billImages.three) URL.revokeObjectURL(billImages.three);
-                            setBillImages({ ...billImages, three: null });
-                            setBillFiles({ ...billFiles, three: null });
+                            if (billImages.second) URL.revokeObjectURL(billImages.second);
+                            setBillImages({ ...billImages, second: null });
+                            setBillFiles({ ...billFiles, second: null });
                           }}
                         >
                           <X className="h-4 w-4 text-white" />
                         </button>
                       </div>
                       <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
-                        <img src={billImages.three} alt={t('sell.wos.multipleBillsAlt')} className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                        <img src={billImages.second} alt={t('sell.wos.secondBillAlt')} className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
                       </DialogContent>
                     </Dialog>
                   ) : (
                     <button
                       type="button"
-                      onClick={() => billThreeRef.current?.click()}
+                      onClick={() => billSecondRef.current?.click()}
                       className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
                     >
                       <Upload className="h-5 w-5 text-white/40" />
@@ -1009,10 +1034,61 @@ const SellWOS = () => {
                     </button>
                   )}
                   <input
-                    ref={billThreeRef}
+                    ref={billSecondRef}
                     type="file"
                     accept="image/*"
-                    onChange={(e) => handleBillImageUpload(e, 'three')}
+                    onChange={(e) => handleBillImageUpload(e, 'second')}
+                    className="hidden"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-white mb-2 block">{t('listing.thirdBillImage')}</Label>
+                  {billImages.third ? (
+                    <Dialog>
+                      <div className="relative inline-block group">
+                        <DialogTrigger asChild>
+                          <button 
+                            type="button"
+                            className="relative bg-white/5 rounded-lg border border-white/10 overflow-hidden hover:border-[hsl(195,80%,50%)] transition-all cursor-pointer"
+                          >
+                            <img src={billImages.third} alt={t('sell.wos.thirdBillAlt')} className="h-32 w-auto object-contain" />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <ZoomIn className="h-6 w-6 text-white" />
+                            </div>
+                          </button>
+                        </DialogTrigger>
+                        <button 
+                          type="button"
+                          className="absolute -top-2 -right-2 p-1.5 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-600"
+                          onClick={() => {
+                            if (billImages.third) URL.revokeObjectURL(billImages.third);
+                            setBillImages({ ...billImages, third: null });
+                            setBillFiles({ ...billFiles, third: null });
+                          }}
+                        >
+                          <X className="h-4 w-4 text-white" />
+                        </button>
+                      </div>
+                      <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/90 border-white/20">
+                        <img src={billImages.third} alt={t('sell.wos.thirdBillAlt')} className="w-full h-auto object-contain max-h-[85vh] mx-auto" />
+                      </DialogContent>
+                    </Dialog>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => billThirdRef.current?.click()}
+                      className="px-4 py-3 bg-white/5 rounded-lg border-2 border-dashed border-white/20 hover:border-[hsl(195,80%,70%,0.5)] transition-colors flex items-center gap-2"
+                    >
+                      <Upload className="h-5 w-5 text-white/40" />
+                      <span className="text-sm text-white/60">{t('listing.chooseImage')}</span>
+                    </button>
+                  )}
+                  <input
+                    ref={billThirdRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleBillImageUpload(e, 'third')}
                     className="hidden"
                   />
                 </div>
@@ -1076,11 +1152,32 @@ const SellWOS = () => {
               </div>
             </div>
 
+            {/* Terms Acceptance */}
+            <div className="space-y-4 pt-4">
+              <div className="flex items-start gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
+                <input
+                  type="checkbox"
+                  id="terms-acceptance"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="mt-1 w-4 h-4 rounded border-white/20 bg-white/5 text-[hsl(195,80%,50%)] focus:ring-[hsl(195,80%,50%)]"
+                  required
+                />
+                <label htmlFor="terms-acceptance" className="text-sm text-white/80 cursor-pointer flex-1">
+                  {language === 'ar' ? (
+                    <>بإدراج هذا الحساب، أنت توافق على <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">شروطنا وأحكامنا</Link> و<Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">سياسة الخصوصية</Link>.</>
+                  ) : (
+                    <>By listing this account, you agree to our <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">Terms and Conditions</Link> and <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">Privacy Policy</Link>.</>
+                  )}
+                </label>
+              </div>
+            </div>
+
             {/* Submit */}
             <div className="flex gap-4 pt-4">
               <Button 
                 type="submit"
-                disabled={createListingMutation.isPending}
+                disabled={createListingMutation.isPending || !termsAccepted}
                 className="flex-1 gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {createListingMutation.isPending ? (

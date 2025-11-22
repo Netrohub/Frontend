@@ -18,28 +18,28 @@ export default function AdminFinancial() {
 
   const stats = financialData?.stats ? [
     {
-      title: language === 'ar' ? "إجمالي الإيرادات" : "Total Revenue",
+      title: t('admin.financial.totalRevenue'),
       value: `$${financialData.stats.total_revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       change: `${financialData.stats.revenue_growth >= 0 ? '+' : ''}${financialData.stats.revenue_growth.toFixed(1)}%`,
       trend: financialData.stats.revenue_growth >= 0 ? "up" : "down",
       icon: DollarSign,
     },
     {
-      title: language === 'ar' ? "العمولات المحصلة" : "Commissions Collected",
+      title: t('admin.financial.commissionsCollected'),
       value: `$${financialData.stats.total_commissions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       change: `${financialData.stats.commissions_growth >= 0 ? '+' : ''}${financialData.stats.commissions_growth.toFixed(1)}%`,
       trend: financialData.stats.commissions_growth >= 0 ? "up" : "down",
       icon: TrendingUp,
     },
     {
-      title: language === 'ar' ? "المدفوعات المعلقة" : "Pending Payments",
+      title: t('admin.financial.pendingPayments'),
       value: `$${financialData.stats.pending_payments.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       change: "-", // Pending payments don't have growth
       trend: "neutral" as const,
       icon: TrendingDown,
     },
     {
-      title: language === 'ar' ? "المسحوبات" : "Total Withdrawals",
+      title: t('admin.financial.totalWithdrawals'),
       value: `$${financialData.stats.total_withdrawals.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       change: `${financialData.stats.withdrawals_growth >= 0 ? '+' : ''}${financialData.stats.withdrawals_growth.toFixed(1)}%`,
       trend: financialData.stats.withdrawals_growth >= 0 ? "up" : "down",
@@ -50,20 +50,11 @@ export default function AdminFinancial() {
   const transactions = financialData?.transactions || [];
 
   const getTransactionTypeLabel = (type: string) => {
-    if (language === 'ar') {
-      switch (type) {
-        case "order": return "طلب";
-        case "withdrawal": return "سحب";
-        case "refund": return "استرداد";
-        default: return type;
-      }
-    } else {
-      switch (type) {
-        case "order": return "Order";
-        case "withdrawal": return "Withdrawal";
-        case "refund": return "Refund";
-        default: return type;
-      }
+    switch (type) {
+      case "order": return t('admin.financial.transactionTypes.order');
+      case "withdrawal": return t('admin.financial.transactionTypes.withdrawal');
+      case "refund": return t('admin.financial.transactionTypes.refund');
+      default: return type;
     }
   };
 
@@ -95,26 +86,14 @@ export default function AdminFinancial() {
   };
 
   const getStatusLabel = (status: string) => {
-    if (language === 'ar') {
-      switch (status) {
-        case "completed": return "مكتمل";
-        case "pending": return "قيد الانتظار";
-        case "processing": return "قيد المعالجة";
-        case "escrow_hold": return "في الضمان";
-        case "failed": return "فشل";
-        case "cancelled": return "ملغي";
-        default: return status;
-      }
-    } else {
-      switch (status) {
-        case "completed": return "Completed";
-        case "pending": return "Pending";
-        case "processing": return "Processing";
-        case "escrow_hold": return "Escrow Hold";
-        case "failed": return "Failed";
-        case "cancelled": return "Cancelled";
-        default: return status;
-      }
+    switch (status) {
+      case "completed": return t('admin.financial.statuses.completed');
+      case "pending": return t('admin.financial.statuses.pending');
+      case "processing": return t('admin.financial.statuses.processing');
+      case "escrow_hold": return t('admin.financial.statuses.escrowHold');
+      case "failed": return t('admin.financial.statuses.failed');
+      case "cancelled": return t('admin.financial.statuses.cancelled');
+      default: return status;
     }
   };
 
@@ -123,20 +102,20 @@ export default function AdminFinancial() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
-            {language === 'ar' ? 'التقارير المالية' : 'Financial Reports'}
+            {t('admin.financial.title')}
           </h1>
           <p className="text-white/60">
-            {language === 'ar' ? 'إدارة ومراقبة العمليات المالية' : 'Manage and monitor financial operations'}
+            {t('admin.financial.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="border-white/20 text-white hover:bg-white/30">
             <Calendar className="h-4 w-4 mr-2" />
-            {language === 'ar' ? 'تحديد الفترة' : 'Select Period'}
+            {t('admin.financial.selectPeriod')}
           </Button>
           <Button className="bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(200,90%,40%)]">
             <Download className="h-4 w-4 mr-2" />
-            {language === 'ar' ? 'تصدير التقرير' : 'Export Report'}
+            {t('admin.financial.exportReport')}
           </Button>
         </div>
       </div>
@@ -168,11 +147,11 @@ export default function AdminFinancial() {
 
           <Card className="p-6 bg-[hsl(200,70%,12%)] border-white/10 backdrop-blur-sm">
             <h2 className="text-xl font-bold text-white mb-4">
-              {language === 'ar' ? 'المعاملات الأخيرة' : 'Recent Transactions'}
+              {t('admin.financial.recentTransactions')}
             </h2>
             {transactions.length === 0 ? (
               <div className="text-center py-8 text-white/60">
-                <p>{language === 'ar' ? 'لا توجد معاملات' : 'No transactions found'}</p>
+                <p>{t('admin.financial.noTransactions')}</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -180,22 +159,22 @@ export default function AdminFinancial() {
                   <thead>
                     <tr className="border-b border-white/10">
                       <th className="text-right py-3 px-4 text-sm font-medium text-white/60">
-                        {language === 'ar' ? 'المعرف' : 'ID'}
+                        {t('admin.financial.tableHeaders.id')}
                       </th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-white/60">
-                        {language === 'ar' ? 'النوع' : 'Type'}
+                        {t('admin.financial.tableHeaders.type')}
                       </th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-white/60">
-                        {language === 'ar' ? 'المبلغ' : 'Amount'}
+                        {t('admin.financial.tableHeaders.amount')}
                       </th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-white/60">
-                        {language === 'ar' ? 'التفاصيل' : 'Details'}
+                        {t('admin.financial.tableHeaders.details')}
                       </th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-white/60">
-                        {language === 'ar' ? 'التاريخ' : 'Date'}
+                        {t('admin.financial.tableHeaders.date')}
                       </th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-white/60">
-                        {language === 'ar' ? 'الحالة' : 'Status'}
+                        {t('admin.financial.tableHeaders.status')}
                       </th>
                     </tr>
                   </thead>
@@ -217,13 +196,13 @@ export default function AdminFinancial() {
                           {transaction.type === 'order' && (
                             <>
                               {transaction.order_number && (
-                                <div>{language === 'ar' ? 'رقم الطلب:' : 'Order:'} {transaction.order_number}</div>
+                                <div>{t('admin.financial.details.order')} {transaction.order_number}</div>
                               )}
                               {transaction.seller && (
-                                <div>{language === 'ar' ? 'البائع:' : 'Seller:'} {transaction.seller}</div>
+                                <div>{t('admin.financial.details.seller')} {transaction.seller}</div>
                               )}
                               {transaction.buyer && (
-                                <div>{language === 'ar' ? 'المشتري:' : 'Buyer:'} {transaction.buyer}</div>
+                                <div>{t('admin.financial.details.buyer')} {transaction.buyer}</div>
                               )}
                               {transaction.listing_title && (
                                 <div className="text-xs text-white/50">{transaction.listing_title}</div>
@@ -231,7 +210,7 @@ export default function AdminFinancial() {
                             </>
                           )}
                           {transaction.type === 'withdrawal' && transaction.user && (
-                            <div>{language === 'ar' ? 'المستخدم:' : 'User:'} {transaction.user}</div>
+                            <div>{t('admin.financial.details.user')} {transaction.user}</div>
                           )}
                         </td>
                         <td className="py-4 px-4 text-sm text-white/60">

@@ -97,7 +97,7 @@ const NotFound = () => {
               >
                 <Link to="/marketplace">
                   <Search className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" aria-hidden="true" />
-                  {language === 'ar' ? 'تصفح المتجر' : 'Browse Marketplace'}
+                  {t('notFound.browseMarketplace')}
                 </Link>
               </Button>
             </div>
@@ -105,14 +105,14 @@ const NotFound = () => {
             {/* Helpful links */}
             <div className="mt-12 p-6 bg-white/5 border border-white/10 rounded-xl backdrop-blur-sm">
               <p className="text-white/60 mb-4 text-sm">
-                {language === 'ar' ? 'ربما تبحث عن:' : 'You might be looking for:'}
+                {t('notFound.youMightBeLookingFor')}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link 
                   to="/marketplace" 
                   className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] text-sm font-semibold transition-colors flex items-center gap-1 group"
                 >
-                  {language === 'ar' ? 'المتجر الرقمي' : 'Marketplace'}
+                  {t('notFound.links.marketplace')}
                   <ArrowRight className={`h-4 w-4 ${language === 'ar' ? 'rotate-180' : ''} group-hover:translate-x-1 transition-transform`} aria-hidden="true" />
                 </Link>
                 <span className="text-white/20">•</span>
@@ -120,7 +120,7 @@ const NotFound = () => {
                   to="/members" 
                   className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] text-sm font-semibold transition-colors flex items-center gap-1 group"
                 >
-                  {language === 'ar' ? 'الأعضاء' : 'Members'}
+                  {t('notFound.links.members')}
                   <ArrowRight className={`h-4 w-4 ${language === 'ar' ? 'rotate-180' : ''} group-hover:translate-x-1 transition-transform`} aria-hidden="true" />
                 </Link>
                 <span className="text-white/20">•</span>
@@ -128,7 +128,7 @@ const NotFound = () => {
                   to="/help" 
                   className="text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] text-sm font-semibold transition-colors flex items-center gap-1 group"
                 >
-                  {language === 'ar' ? 'مركز المساعدة' : 'Help Center'}
+                  {t('notFound.links.help')}
                   <ArrowRight className={`h-4 w-4 ${language === 'ar' ? 'rotate-180' : ''} group-hover:translate-x-1 transition-transform`} aria-hidden="true" />
                 </Link>
               </div>

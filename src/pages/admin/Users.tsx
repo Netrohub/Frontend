@@ -33,13 +33,13 @@ const AdminUsers = () => {
   const deleteUserMutation = useMutation({
     mutationFn: (userId: number) => adminApi.deleteUser(userId),
     onSuccess: () => {
-      toast.success('تم حذف المستخدم بنجاح');
+      toast.success(t('admin.users.deleteSuccess'));
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       setDeleteUserId(null);
       setIsDialogOpen(false);
     },
     onError: (error: any) => {
-      toast.error(error.message || 'فشل حذف المستخدم');
+      toast.error(error.message || t('admin.users.deleteError'));
     },
   });
 
@@ -68,9 +68,9 @@ const AdminUsers = () => {
   const getUserStatus = (user: User) => {
     // Check if user is soft deleted
     if (user.deleted_at) {
-      return { label: 'محذوف', color: 'bg-red-500/20 text-red-400 border-red-500/30' };
+      return { label: t('admin.users.status.deleted'), color: 'bg-red-500/20 text-red-400 border-red-500/30' };
     }
-    return { label: 'نشط', color: 'bg-green-500/20 text-green-400 border-green-500/30' };
+    return { label: t('admin.users.status.active'), color: 'bg-green-500/20 text-green-400 border-green-500/30' };
   };
 
   const getTotalOrders = (user: any) => {
@@ -82,8 +82,8 @@ const AdminUsers = () => {
   return (
     <div className="container mx-auto px-4 md:px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-white mb-2">إدارة المستخدمين</h1>
-        <p className="text-white/60">عرض وإدارة جميع مستخدمي المنصة ({users.length} مستخدم)</p>
+        <h1 className="text-3xl font-black text-white mb-2">{t('admin.users.title')}</h1>
+        <p className="text-white/60">{t('admin.users.subtitle')} ({users.length} {t('admin.users.userCount')})</p>
       </div>
 
       {/* Search */}
@@ -118,7 +118,7 @@ const AdminUsers = () => {
       {/* Empty State */}
       {!isLoading && users.length === 0 && (
         <Card className="p-12 bg-white/5 border-white/10 backdrop-blur-sm text-center">
-          <p className="text-white/60">لا يوجد مستخدمين{searchTerm ? ' مطابقين للبحث' : ''}</p>
+          <p className="text-white/60">{t('admin.users.noUsers')}{searchTerm ? t('admin.users.noUsersSearch') : ''}</p>
         </Card>
       )}
 
@@ -136,12 +136,12 @@ const AdminUsers = () => {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-bold text-white">{user.name}</h3>
                       {user.is_verified && (
-                        <ShieldCheck className="h-5 w-5 text-green-400" title="موثق" />
+                        <ShieldCheck className="h-5 w-5 text-green-400" title={t('admin.users.verifiedTooltip')} />
                       )}
                       {user.role === 'admin' && (
                         <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                           <Shield className="h-3 w-3 ml-1" />
-                          مدير
+                          {t('admin.users.role.admin')}
                         </Badge>
                       )}
                       <Badge className={status.color}>
@@ -191,7 +191,7 @@ const AdminUsers = () => {
                       onClick={() => handleDeleteUser(user.id)}
                     >
                       <UserX className="h-4 w-4" />
-                      حذف
+                      {t('admin.users.actions.delete')}
                     </Button>
                   )}
                 </div>
@@ -210,7 +210,7 @@ const AdminUsers = () => {
               {selectedUser?.is_verified && <ShieldCheck className="h-6 w-6 text-green-400" />}
             </DialogTitle>
             <DialogDescription className="text-white/60">
-              معلومات تفصيلية عن المستخدم
+              {t('admin.users.userDetails')}
             </DialogDescription>
           </DialogHeader>
           
@@ -223,7 +223,7 @@ const AdminUsers = () => {
                 </Badge>
                 {selectedUser.is_verified && (
                   <Badge className="bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]">
-                    موثق بالبريد
+                    {t('admin.users.verifiedByEmail')}
                   </Badge>
                 )}
                 {selectedUser.role === 'admin' && (
@@ -234,7 +234,7 @@ const AdminUsers = () => {
                 {(selectedUser as any).kyc_verification?.status === 'approved' && (
                   <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                     <ShieldCheck className="h-3 w-3 ml-1" />
-                    KYC موثق
+                    {t('admin.users.kycVerified')}
                   </Badge>
                 )}
               </div>
@@ -251,12 +251,12 @@ const AdminUsers = () => {
                     <span className="text-[hsl(195,80%,80%)]">{selectedUser.email}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">معرف المستخدم:</span>
+                    <span className="text-white/60">{t('admin.users.userId')}</span>
                     <span className="text-white/80">#{selectedUser.id}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-white/60">الدور:</span>
-                    <span className="text-white/80">{selectedUser.role === 'admin' ? 'مدير' : 'مستخدم'}</span>
+                    <span className="text-white/60">{t('admin.users.role')}</span>
+                    <span className="text-white/80">{selectedUser.role === 'admin' ? t('admin.users.role.admin') : t('admin.users.role.user')}</span>
                   </div>
                 </div>
               </Card>
@@ -302,7 +302,7 @@ const AdminUsers = () => {
                     }}
                   >
                     <UserX className="h-4 w-4" />
-                    حذف المستخدم
+                    {t('admin.users.deleteUser')}
                   </Button>
                 </div>
               )}
@@ -315,14 +315,14 @@ const AdminUsers = () => {
       <AlertDialog open={deleteUserId !== null} onOpenChange={() => setDeleteUserId(null)}>
         <AlertDialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">تأكيد الحذف</AlertDialogTitle>
+            <AlertDialogTitle className="text-white">{t('admin.users.confirmDelete')}</AlertDialogTitle>
             <AlertDialogDescription className="text-white/70">
-              هل أنت متأكد من حذف هذا المستخدم؟ هذا الإجراء لا يمكن التراجع عنه.
+              {t('admin.users.confirmDeleteMessage')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-white/10 hover:bg-white/20 text-white border-white/20">
-              إلغاء
+              {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
@@ -332,7 +332,7 @@ const AdminUsers = () => {
               {deleteUserMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                'حذف'
+                {t('admin.users.actions.delete')}
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

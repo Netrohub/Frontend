@@ -37,7 +37,7 @@ const AdminOrders = () => {
       adminApi.cancelOrder(id, reason),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
-      toast.success("تم إلغاء الطلب وإرجاع المبلغ للمشتري");
+      toast.success(t('admin.orders.cancelSuccess'));
       setShowCancelDialog(false);
       setIsDialogOpen(false);
       setCancelReason("");
@@ -60,7 +60,7 @@ const AdminOrders = () => {
 
   const handleConfirmCancel = () => {
     if (!cancelReason.trim()) {
-      toast.error("يرجى إدخال سبب الإلغاء");
+      toast.error(t('admin.orders.cancelReasonRequired'));
       return;
     }
     if (orderToCancel) {
@@ -92,27 +92,27 @@ const AdminOrders = () => {
     switch (status) {
       case 'completed':
         return {
-          label: 'مكتمل',
+          label: t('admin.orders.status.completed'),
           className: 'bg-green-500/20 text-green-400 border-green-500/30'
         };
       case 'escrow_hold':
         return {
-          label: 'في الضمان',
+          label: t('admin.orders.status.escrowHold'),
           className: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
         };
       case 'paid':
         return {
-          label: 'مدفوع',
+          label: t('admin.orders.status.paid'),
           className: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30'
         };
       case 'pending':
         return {
-          label: 'قيد الانتظار',
+          label: t('admin.orders.status.pending'),
           className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
         };
       case 'cancelled':
         return {
-          label: 'ملغي',
+          label: t('admin.orders.status.cancelled'),
           className: 'bg-red-500/20 text-red-400 border-red-500/30'
         };
       case 'disputed':
@@ -319,19 +319,19 @@ const AdminOrders = () => {
                 </h4>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <span className="text-white/60 text-xs">المبلغ</span>
+                    <span className="text-white/60 text-xs">{t('admin.orders.amount')}</span>
                     <p className="text-white font-bold text-lg">{formatPrice(selectedOrder.amount)}</p>
                   </div>
                   <div>
-                    <span className="text-white/60 text-xs">حالة الدفع</span>
+                    <span className="text-white/60 text-xs">{t('admin.orders.paymentStatus')}</span>
                     <p className="text-white font-medium text-sm">
-                      {selectedOrder.payment?.status === 'paid' ? 'مدفوع' : 
-                       selectedOrder.payment?.status === 'pending' ? 'قيد الانتظار' :
-                       'غير محدد'}
+                      {selectedOrder.payment?.status === 'paid' ? t('admin.orders.paymentStatus.paid') : 
+                       selectedOrder.payment?.status === 'pending' ? t('admin.orders.paymentStatus.pending') :
+                       t('admin.orders.paymentStatus.unspecified')}
                     </p>
                   </div>
                   <div>
-                    <span className="text-white/60 text-xs">معرف الدفع</span>
+                    <span className="text-white/60 text-xs">{t('admin.orders.paymentId')}</span>
                     <p className="text-white font-medium text-xs">
                       {selectedOrder.payment?.id ? `#${selectedOrder.payment.id}` : 'N/A'}
                     </p>
@@ -343,22 +343,22 @@ const AdminOrders = () => {
               <Card className="p-4 bg-white/5 border-white/10">
                 <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-[hsl(195,80%,70%)]" />
-                  الجدول الزمني
+                  {t('admin.orders.timeline')}
                 </h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-white/60">تاريخ الإنشاء:</span>
+                    <span className="text-white/60">{t('admin.orders.createdAt')}</span>
                     <span className="text-white">{formatDate(selectedOrder.created_at)}</span>
                   </div>
                   {selectedOrder.updated_at && (
                     <div className="flex justify-between">
-                      <span className="text-white/60">آخر تحديث:</span>
+                      <span className="text-white/60">{t('admin.orders.updatedAt')}</span>
                       <span className="text-white">{formatDate(selectedOrder.updated_at)}</span>
                     </div>
                   )}
                   {selectedOrder.cancelled_at && (
                     <div className="flex justify-between">
-                      <span className="text-white/60">تاريخ الإلغاء:</span>
+                      <span className="text-white/60">{t('admin.orders.cancelledAt')}</span>
                       <span className="text-red-400">{formatDate(selectedOrder.cancelled_at)}</span>
                     </div>
                   )}
@@ -370,12 +370,12 @@ const AdminOrders = () => {
                 <Card className="p-4 bg-red-500/10 border-red-500/30">
                   <h4 className="text-sm font-bold text-red-400 mb-2 flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4" />
-                    سبب الإلغاء
+                    {t('admin.orders.cancellationReason')}
                   </h4>
                   <p className="text-white/80 text-sm">{selectedOrder.cancellation_reason}</p>
                   {selectedOrder.cancelled_by && (
                     <p className="text-white/60 text-xs mt-2">
-                      تم الإلغاء بواسطة: {selectedOrder.cancelled_by === 'admin' ? 'الإدارة' : 'المستخدم'}
+                      {t('admin.orders.cancelledBy')} {selectedOrder.cancelled_by === 'admin' ? t('admin.orders.cancelledBy.admin') : t('admin.orders.cancelledBy.user')}
                     </p>
                   )}
                 </Card>
@@ -386,13 +386,13 @@ const AdminOrders = () => {
                 <Card className="p-4 bg-orange-500/10 border-orange-500/30">
                   <h4 className="text-sm font-bold text-orange-400 mb-2 flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4" />
-                    نزاع نشط
+                    {t('admin.orders.activeDispute')}
                   </h4>
                   <p className="text-white/80 text-sm">{selectedOrder.dispute.reason}</p>
                   <p className="text-white/60 text-xs mt-2">
-                    الحالة: {selectedOrder.dispute.status === 'open' ? 'مفتوح' : 
-                             selectedOrder.dispute.status === 'resolved' ? 'محلول' : 
-                             'مغلق'}
+                    {t('admin.orders.disputeStatus')} {selectedOrder.dispute.status === 'open' ? t('admin.orders.dispute.status.open') : 
+                             selectedOrder.dispute.status === 'resolved' ? t('admin.orders.dispute.status.resolved') : 
+                             t('admin.orders.dispute.status.closed')}
                   </p>
                 </Card>
               )}
@@ -441,7 +441,7 @@ const AdminOrders = () => {
             </div>
             <Card className="p-3 bg-yellow-500/10 border-yellow-500/30">
               <p className="text-sm text-yellow-400">
-                ⚠️ سيتم إلغاء الطلب وإرجاع المبلغ إلى محفظة المشتري تلقائياً
+                {t('admin.orders.cancelWarning')}
               </p>
             </Card>
             <div className="flex gap-2">

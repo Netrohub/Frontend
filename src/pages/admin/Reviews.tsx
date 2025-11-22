@@ -35,8 +35,8 @@ export default function AdminReviews() {
   };
 
   const getStatusLabel = (reportsCount: number) => {
-    if (reportsCount > 0) return language === 'ar' ? "مبلغ عنها" : "Flagged";
-    return language === 'ar' ? "معتمدة" : "Approved";
+    if (reportsCount > 0) return t('admin.reviews.status.flagged');
+    return t('admin.reviews.status.approved');
   };
 
   const handleSearch = () => {
@@ -55,10 +55,10 @@ export default function AdminReviews() {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-white mb-2">
-          {language === 'ar' ? 'إدارة المراجعات' : 'Reviews Management'}
+          {t('admin.reviews.title')}
         </h1>
         <p className="text-white/60">
-          {language === 'ar' ? 'مراجعة والموافقة على تقييمات المستخدمين' : 'Review and approve user reviews'}
+          {t('admin.reviews.subtitle')}
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function AdminReviews() {
         <div className="flex-1 relative min-w-[200px]">
           <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/40 h-5 w-5" />
           <Input
-            placeholder={language === 'ar' ? "البحث في المراجعات..." : "Search reviews..."}
+            placeholder={t('admin.reviews.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -78,35 +78,35 @@ export default function AdminReviews() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2 bg-[hsl(200,70%,15%)] border border-white/10 text-white rounded-md"
         >
-          <option value="">{language === 'ar' ? 'جميع الحالات' : 'All Status'}</option>
-          <option value="approved">{language === 'ar' ? 'معتمدة' : 'Approved'}</option>
-          <option value="flagged">{language === 'ar' ? 'مبلغ عنها' : 'Flagged'}</option>
+          <option value="">{t('admin.reviews.filters.allStatus')}</option>
+          <option value="approved">{t('admin.reviews.filters.approved')}</option>
+          <option value="flagged">{t('admin.reviews.filters.flagged')}</option>
         </select>
         <select
           value={ratingFilter}
           onChange={(e) => setRatingFilter(e.target.value)}
           className="px-4 py-2 bg-[hsl(200,70%,15%)] border border-white/10 text-white rounded-md"
         >
-          <option value="">{language === 'ar' ? 'جميع التقييمات' : 'All Ratings'}</option>
-          <option value="5">5 {language === 'ar' ? 'نجوم' : 'Stars'}</option>
-          <option value="4">4 {language === 'ar' ? 'نجوم' : 'Stars'}</option>
-          <option value="3">3 {language === 'ar' ? 'نجوم' : 'Stars'}</option>
-          <option value="2">2 {language === 'ar' ? 'نجوم' : 'Stars'}</option>
-          <option value="1">1 {language === 'ar' ? 'نجوم' : 'Stars'}</option>
+          <option value="">{t('admin.reviews.filters.allRatings')}</option>
+          <option value="5">5 {t('admin.reviews.filters.stars')}</option>
+          <option value="4">4 {t('admin.reviews.filters.stars')}</option>
+          <option value="3">3 {t('admin.reviews.filters.stars')}</option>
+          <option value="2">2 {t('admin.reviews.filters.stars')}</option>
+          <option value="1">1 {t('admin.reviews.filters.stars')}</option>
         </select>
         <Button 
           onClick={handleSearch}
           className="bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(200,90%,40%)]"
         >
           <Search className="h-4 w-4 mr-2" />
-          {language === 'ar' ? 'بحث' : 'Search'}
+          {t('admin.reviews.actions.search')}
         </Button>
       </div>
 
       {reviews.length === 0 ? (
         <Card className="p-12 bg-[hsl(200,70%,12%)] border-white/10 text-center">
           <p className="text-white/60">
-            {language === 'ar' ? 'لا توجد مراجعات' : 'No reviews found'}
+            {t('admin.reviews.labels.noReviews')}
           </p>
         </Card>
       ) : (
@@ -121,7 +121,7 @@ export default function AdminReviews() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <h3 className="text-lg font-semibold text-white">
-                        {review.reviewer?.name || (language === 'ar' ? 'مستخدم مجهول' : 'Anonymous')}
+                        {review.reviewer?.name || t('admin.reviews.labels.anonymous')}
                       </h3>
                       <StarRating rating={review.rating} readonly />
                       <Badge className={getStatusColor(reportsCount)}>
@@ -130,7 +130,7 @@ export default function AdminReviews() {
                       {reportsCount > 0 && (
                         <Badge className="bg-red-500/20 text-red-400">
                           <Flag className="h-3 w-3 mr-1" />
-                          {reportsCount} {language === 'ar' ? 'بلاغات' : 'reports'}
+                          {reportsCount} {t('admin.reviews.labels.reports')}
                         </Badge>
                       )}
                     </div>
@@ -138,7 +138,7 @@ export default function AdminReviews() {
                       {review.reviewer?.email || ''}
                     </p>
                     <p className="text-sm text-white/80 mb-2">
-                      {language === 'ar' ? 'مراجعة لـ:' : 'Review for:'} <span className="font-medium">{review.seller?.name || ''}</span>
+                      {t('admin.reviews.labels.reviewFor')} <span className="font-medium">{review.seller?.name || ''}</span>
                     </p>
                   </div>
                   <span className="text-sm text-white/40">
@@ -150,12 +150,12 @@ export default function AdminReviews() {
                   <p className="text-white/80 mb-2">{review.comment}</p>
                   {review.order?.listing && (
                     <p className="text-sm text-white/60">
-                      {language === 'ar' ? 'المنتج:' : 'Product:'} <span className="font-medium">{review.order.listing.title}</span>
+                      {t('admin.reviews.labels.product')} <span className="font-medium">{review.order.listing.title}</span>
                     </p>
                   )}
                   {review.helpful_voters_count > 0 && (
                     <p className="text-sm text-white/60 mt-1">
-                      {language === 'ar' ? 'مفيد:' : 'Helpful:'} {review.helpful_voters_count} {language === 'ar' ? 'مستخدم' : 'users'}
+                      {t('admin.reviews.labels.helpful')} {review.helpful_voters_count} {t('admin.reviews.users')}
                     </p>
                   )}
                 </div>
@@ -169,11 +169,11 @@ export default function AdminReviews() {
                         className="text-green-400 border-green-500/30"
                         onClick={() => {
                           // TODO: Implement approve flagged review (remove reports)
-                          toast.info(language === 'ar' ? 'قريباً: إزالة البلاغات' : 'Coming soon: Remove reports');
+                          toast.info(t('admin.reviews.comingSoon.removeReports'));
                         }}
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
-                        {language === 'ar' ? 'قبول المراجعة' : 'Approve Review'}
+                        {t('admin.reviews.actions.approve')}
                       </Button>
                       <Button
                         variant="outline"
@@ -181,11 +181,11 @@ export default function AdminReviews() {
                         className="text-red-400 border-red-500/30"
                         onClick={() => {
                           // TODO: Implement delete review
-                          toast.info(language === 'ar' ? 'قريباً: حذف المراجعة' : 'Coming soon: Delete review');
+                          toast.info(t('admin.reviews.comingSoon.deleteReview'));
                         }}
                       >
                         <Trash2 className="h-4 w-4 mr-1" />
-                        {language === 'ar' ? 'حذف المراجعة' : 'Delete Review'}
+                        {t('admin.reviews.actions.delete')}
                       </Button>
                     </>
                   )}
@@ -195,11 +195,11 @@ export default function AdminReviews() {
                     className="mr-auto"
                     onClick={() => {
                       // TODO: Implement view details
-                      toast.info(language === 'ar' ? 'قريباً: عرض التفاصيل' : 'Coming soon: View details');
+                      toast.info(t('admin.reviews.comingSoon.viewDetails'));
                     }}
                   >
                     <Eye className="h-4 w-4 mr-1" />
-                    {language === 'ar' ? 'عرض التفاصيل' : 'View Details'}
+                    {t('admin.reviews.actions.viewDetails')}
                   </Button>
                 </div>
               </Card>
@@ -214,10 +214,10 @@ export default function AdminReviews() {
             variant="outline"
             onClick={() => {
               // TODO: Implement pagination
-              toast.info(language === 'ar' ? 'قريباً: التصفح' : 'Coming soon: Pagination');
+              toast.info(t('admin.reviews.comingSoon.pagination'));
             }}
           >
-            {language === 'ar' ? 'تحميل المزيد' : 'Load More'}
+            {t('admin.reviews.actions.loadMore')}
           </Button>
         </div>
       )}

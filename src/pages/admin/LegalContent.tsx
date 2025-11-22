@@ -161,7 +161,7 @@ const LegalContent = () => {
               className="bg-white/5 border-white/10 text-white hover:bg-white/10"
             >
               {previewMode ? <Code className="h-4 w-4 ml-2" /> : <Eye className="h-4 w-4 ml-2" />}
-              {previewMode ? 'تحرير' : 'معاينة'}
+              {previewMode ? t('admin.legalContent.edit') : t('admin.legalContent.preview')}
             </Button>
 
             <Button

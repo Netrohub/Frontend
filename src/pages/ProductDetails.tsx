@@ -137,7 +137,7 @@ const ProductDetails = () => {
   if (isLoading) {
     return (
       <>
-        <SEO title="جاري التحميل..." />
+        <SEO title={t('common.loading')} />
       <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
         <Navbar />
@@ -170,7 +170,10 @@ const ProductDetails = () => {
   const accountDetails = parseAccountDetails(listing.description || '');
   const notSpecifiedLabel = t('common.notSpecified');
 
-  const isLinked = (value?: string) => value === 'نعم';
+  const isLinked = (value?: string) => {
+    // Check both Arabic and English "yes" values
+    return value === 'نعم' || value?.toLowerCase() === 'yes';
+  };
 
   return (
     <>

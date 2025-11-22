@@ -118,7 +118,7 @@ const Suggestions = () => {
   });
 
   const handleDeleteSuggestion = (id: number) => {
-    if (window.confirm(language === 'ar' ? 'هل أنت متأكد من حذف هذا الاقتراح؟' : 'Are you sure you want to delete this suggestion?')) {
+    if (window.confirm(t('suggestions.confirmDelete'))) {
       deleteSuggestionMutation.mutate(id);
     }
   };
@@ -513,7 +513,7 @@ const Suggestions = () => {
                               onClick={() => handleMarkAsImplemented(suggestion.id)}
                               disabled={updateStatusMutation.isPending}
                             >
-                              {language === 'ar' ? 'تم التنفيذ' : 'Mark as Implemented'}
+                              {t('suggestions.markAsImplemented')}
                             </Button>
                           )}
                           <Button
@@ -524,7 +524,7 @@ const Suggestions = () => {
                             disabled={deleteSuggestionMutation.isPending}
                           >
                             <Trash2 className="h-4 w-4 mr-1" />
-                            {language === 'ar' ? 'حذف' : 'Delete'}
+                            {t('suggestions.delete')}
                           </Button>
                         </div>
                       )}

@@ -145,7 +145,7 @@ const Leaderboard = () => {
                 <h3 className="font-black text-white text-lg mb-2 drop-shadow-lg flex items-center justify-center gap-2">
                   {topSellers[1].name}
                   {topSellers[1].isVerified && (
-                    <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label="موثق" />
+                    <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label={t('common.verified')} />
                   )}
                 </h3>
               <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[1].revenue}</div>
@@ -175,7 +175,7 @@ const Leaderboard = () => {
                 <h3 className="font-black text-white text-xl mb-2 drop-shadow-lg flex items-center justify-center gap-2">
                   {topSellers[0].name}
                   {topSellers[0].isVerified && (
-                    <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label="موثق" />
+                    <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label={t('common.verified')} />
                   )}
                 </h3>
               <div className="text-4xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[0].revenue}</div>
@@ -202,7 +202,7 @@ const Leaderboard = () => {
                 <h3 className="font-black text-white text-lg mb-2 drop-shadow-lg flex items-center justify-center gap-2">
                   {topSellers[2].name}
                   {topSellers[2].isVerified && (
-                    <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label="موثق" />
+                    <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label={t('common.verified')} />
                   )}
                 </h3>
               <div className="text-3xl font-black text-white mb-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">${topSellers[2].revenue}</div>
@@ -231,7 +231,7 @@ const Leaderboard = () => {
                     <div className="font-black text-white drop-shadow-md flex items-center gap-2">
                       {seller.name}
                       {seller.isVerified && (
-                        <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label="موثق" />
+                        <CheckCircle2 className="h-4 w-4 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" aria-label={t('common.verified')} />
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/80 font-medium">
