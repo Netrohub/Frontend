@@ -17,6 +17,7 @@ import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
 import type { ApiError } from "@/types/api";
 import { Turnstile } from "@/components/Turnstile";
 import { authApi } from "@/lib/api";
+import { translateValidationError } from "@/utils/validationTranslations";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -119,7 +120,9 @@ const Auth = () => {
       navigate("/");
     } catch (error) {
       const apiError = error as Error & ApiError;
-      toast.error(apiError.message || t('auth.registerError'));
+      // Translate Laravel validation messages
+      const translatedMessage = translateValidationError(apiError.message || '', t);
+      toast.error(translatedMessage || t('auth.registerError'));
       setTurnstileToken(""); // Reset turnstile on error
     } finally {
       setLoading(false);

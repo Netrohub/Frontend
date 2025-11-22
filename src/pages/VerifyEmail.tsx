@@ -25,10 +25,14 @@ const VerifyEmail = () => {
       toast.success(data.message || t('verifyEmail.emailSent'));
     },
     onError: (error: any) => {
-      if (error.message?.includes('already verified') || error.message?.includes('موثق بالفعل')) {
+      const errorMessage = error.message || '';
+      
+      if (errorMessage.includes('already verified') || errorMessage.includes('موثق بالفعل')) {
         toast.info(t('verifyEmail.alreadyVerified'));
+      } else if (errorMessage.includes('Too Many Attempts') || errorMessage.includes('rate limit') || error.status === 429) {
+        toast.error(t('verifyEmail.rateLimitExceeded'));
       } else {
-        toast.error(error.message || t('verifyEmail.sendFailed'));
+        toast.error(errorMessage || t('verifyEmail.sendFailed'));
       }
     },
   });

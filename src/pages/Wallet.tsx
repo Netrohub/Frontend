@@ -71,12 +71,16 @@ const Wallet = () => {
     queryKey: ['wallet'],
     queryFn: () => walletApi.get(),
     enabled: !!user,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    refetchOnWindowFocus: true,
   });
 
   const { data: withdrawals, isLoading: withdrawalsLoading } = useQuery({
     queryKey: ['withdrawals'],
     queryFn: () => walletApi.getWithdrawals(),
     enabled: !!user,
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    refetchOnWindowFocus: true,
   });
 
   const { data: feeInfo, isLoading: feeInfoLoading } = useQuery({

@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import DOMPurify from "dompurify";
 
 const RefundPolicy = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   
   const { data: refundData, isLoading } = useQuery({
     queryKey: ['site-settings', 'refund_policy'],

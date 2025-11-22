@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import DOMPurify from "dompurify";
 
 const Privacy = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   
   const { data: privacyData, isLoading } = useQuery({
     queryKey: ['site-settings', 'privacy_policy'],

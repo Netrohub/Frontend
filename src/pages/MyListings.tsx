@@ -31,6 +31,8 @@ const MyListings = () => {
       page: currentPage,
     }),
     enabled: !!user,
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    refetchOnWindowFocus: true,
   });
 
   const listings = listingsResponse?.data || [];

@@ -147,6 +147,16 @@ class ApiClient {
           throw error;
         }
 
+        // Handle rate limiting (429 Too Many Requests)
+        if (response.status === 429) {
+          const retryAfter = response.headers.get('Retry-After');
+          const errorMessage = errorData.message || 'Too Many Attempts.';
+          const error = new Error(errorMessage) as Error & ApiError;
+          error.status = response.status;
+          error.data = { ...errorData, retryAfter: retryAfter ? parseInt(retryAfter) : null };
+          throw error;
+        }
+
         // Handle other errors
         const errorMessage = errorData.message || errorData.error || response.statusText || 'API request failed';
         const error = new Error(errorMessage) as Error & ApiError;
@@ -481,9 +491,10 @@ export const publicApi = {
   leaderboard: () =>
     api.get<LeaderboardResponse>('/leaderboard'),
   
-  members: (params?: { page?: number }) => {
+  members: (params?: { page?: number; per_page?: number }) => {
     const query = new URLSearchParams();
     if (params?.page) query.append('page', params.page.toString());
+    if (params?.per_page) query.append('per_page', params.per_page.toString());
     return api.get<MemberResponse>(`/members?${query.toString()}`);
   },
   

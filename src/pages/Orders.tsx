@@ -28,7 +28,8 @@ const Orders = () => {
     queryFn: () => ordersApi.getAll({ page: currentPage }),
     enabled: !!user,
     staleTime: 30000, // 30 seconds - prevents excessive refetching
-    refetchOnWindowFocus: false,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
   });
 
   const orders = ordersResponse?.data || [];

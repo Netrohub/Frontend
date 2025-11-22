@@ -42,6 +42,8 @@ const Profile = () => {
     queryFn: () => authApi.getUserStats(),
     enabled: !!user,
     staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchInterval: 60000, // Auto-refresh every 60 seconds
+    refetchOnWindowFocus: true,
     retry: 1,
   });
 
@@ -51,6 +53,8 @@ const Profile = () => {
     queryFn: () => authApi.getUserActivity(),
     enabled: !!user,
     staleTime: 60 * 1000, // 1 minute
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    refetchOnWindowFocus: true,
     retry: 1,
   });
 

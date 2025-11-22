@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 import DOMPurify from "dompurify";
 
 const Terms = () => {
-  const { language } = useLanguage();
+  const { t, language } = useLanguage();
   
   const { data: termsData, isLoading } = useQuery({
     queryKey: ['site-settings', 'terms_and_conditions'],

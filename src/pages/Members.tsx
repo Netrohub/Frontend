@@ -26,7 +26,38 @@ const Members = () => {
 
   const { data: membersResponse, isLoading } = useQuery({
     queryKey: ['members'],
-    queryFn: () => publicApi.members(),
+    queryFn: async () => {
+      // Fetch all members by requesting a high per_page value (1000 is max allowed by backend)
+      // First, get the first page with high per_page to get all members in one request
+      const response = await publicApi.members({ page: 1, per_page: 1000 });
+      
+      // If there are still more pages (unlikely but possible), fetch them
+      if (response.last_page && response.last_page > 1) {
+        const allPages = [response];
+        
+        // Fetch remaining pages in parallel
+        const remainingPages = await Promise.all(
+          Array.from({ length: response.last_page - 1 }, (_, i) => 
+            publicApi.members({ page: i + 2, per_page: 1000 })
+          )
+        );
+        
+        allPages.push(...remainingPages);
+        
+        // Combine all members from all pages
+        const allMembers = allPages.flatMap(page => page.data || []);
+        
+        return {
+          data: allMembers,
+          current_page: 1,
+          last_page: 1,
+          per_page: allMembers.length,
+          total: allMembers.length,
+        };
+      }
+      
+      return response;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 

@@ -4,22 +4,24 @@ import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { PersonaKycButton } from "@/components/PersonaKycButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const KYC = () => {
   const { user, refreshUser } = useAuth();
+  const { t, language } = useLanguage();
 
   const identityVerified = Boolean(user?.has_completed_kyc);
   const steps = [
     {
       number: 1,
-      title: "التحقق من الهوية",
+      title: t('kyc.identityVerification'),
       icon: IdCard,
       status: identityVerified ? "completed" : "active",
     },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(30)].map((_, i) => (
@@ -42,17 +44,17 @@ const KYC = () => {
         <div className="text-center mb-4">
           <div className="inline-flex items-center gap-3 mb-4">
             <ShieldCheck className="h-10 w-10 text-[hsl(195,80%,70%)]" />
-            <h1 className="text-3xl md:text-4xl font-black text-white">التحقق من الهوية - KYC</h1>
+            <h1 className="text-3xl md:text-4xl font-black text-white">{t('kyc.title')}</h1>
           </div>
-          <p className="text-white/60">أكمل الخطوات الآمنة لتتمكن من إضافة حسابات للبيع</p>
+          <p className="text-white/60">{t('kyc.subtitle')}</p>
         </div>
 
         <Card className="p-5 bg-red-500/10 border-red-500/30 backdrop-blur-sm">
           <div className="flex gap-3">
             <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm text-white/80">
-              <p className="font-bold mb-1">⚠️ مطلوب للبيع</p>
-              <p>يجب إكمال التحقق من الهوية (KYC) قبل أن تتمكن من إضافة أي إعلان.</p>
+              <p className="font-bold mb-1">{t('kyc.requiredForSale')}</p>
+              <p>{t('kyc.requiredDescription')}</p>
             </div>
           </div>
         </Card>
@@ -63,9 +65,9 @@ const KYC = () => {
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500/50 to-green-400/60 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.6)]">
                 <CheckCircle2 className="h-10 w-10 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-white">تم التحقق من هويتك</h3>
+              <h3 className="text-2xl font-bold text-white">{t('kyc.verifiedTitle')}</h3>
               <p className="text-white/70">
-                شكلاً، تم حفظ KYC في النظام ولن تحتاج إلى إكماله مرة أخرى ما دمت مُوثقاً.
+                {t('kyc.verifiedDescription')}
               </p>
             </div>
           </Card>
@@ -113,10 +115,10 @@ const KYC = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-                  <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
+                  <h3 className="text-xl font-bold text-white">{t('kyc.personaTitle')}</h3>
                 </div>
                 <p className="text-white/60 text-sm">
-                  سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك بشكل آمن وسريع.
+                  {t('kyc.personaDescription')}
                 </p>
                 <Card className="p-6 bg-white/5 border-white/10">
                   <div className="text-center space-y-4">
@@ -124,11 +126,11 @@ const KYC = () => {
                       <ShieldCheck className="h-10 w-10 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
-                      <ul className="text-sm text-white/60 text-right space-y-1">
-                        <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
-                        <li>• التقط صورة سيلفي للتحقق</li>
-                        <li>• التحقق يتم تلقائياً في دقائق</li>
+                      <h4 className="font-bold text-white mb-2">{t('kyc.personaStepsTitle')}</h4>
+                      <ul className={`text-sm text-white/60 space-y-1 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                        <li>• {t('kyc.personaStep1')}</li>
+                        <li>• {t('kyc.personaStep2')}</li>
+                        <li>• {t('kyc.personaStep3')}</li>
                       </ul>
                     </div>
                   </div>
@@ -138,8 +140,8 @@ const KYC = () => {
                   <div className="flex gap-2">
                     <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] mt-0.5" />
                     <div className="text-sm text-white/80">
-                      <p className="font-bold mb-1">آمن ومشفر</p>
-                      <p>Persona منصة موثوقة عالمياً وتؤمن بياناتك طوال العملية.</p>
+                      <p className="font-bold mb-1">{t('kyc.secureTitle')}</p>
+                      <p>{t('kyc.secureDescription')}</p>
                     </div>
                   </div>
                 </Card>
@@ -149,7 +151,7 @@ const KYC = () => {
                   hasCompletedKyc={user?.has_completed_kyc}
                   className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 flex items-center justify-center"
                   onCompleted={async () => {
-                    toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق");
+                    toast.success(t('kyc.verificationSubmitted'));
                     try {
                       await refreshUser();
                     } catch {
@@ -158,7 +160,7 @@ const KYC = () => {
                   }}
                 >
                   <IdCard className="h-5 w-5" />
-                  بدء التحقق عبر Persona
+                  {t('kyc.startVerification')}
                   <ArrowRight className="h-5 w-5" />
                 </PersonaKycButton>
 
@@ -171,9 +173,9 @@ const KYC = () => {
           <div className="flex gap-3">
             <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] mt-0.5" />
             <div className="text-sm text-white/80">
-              <p className="font-bold mb-1">حماية الخصوصية والأمان</p>
+              <p className="font-bold mb-1">{t('kyc.privacyTitle')}</p>
               <p>
-                جميع معلوماتك الشخصية محمية ومشفرة. نستخدم Persona المعتمد للتحقق من الهوية ولن يتم مشاركة بياناتك مع أي طرف ثالث.
+                {t('kyc.privacyDescription')}
               </p>
             </div>
           </div>
