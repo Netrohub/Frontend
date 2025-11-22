@@ -332,7 +332,7 @@ const AdminUsers = () => {
               {deleteUserMutation.isPending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                {t('admin.users.actions.delete')}
+                t('admin.users.actions.delete')
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
