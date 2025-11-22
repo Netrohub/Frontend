@@ -369,11 +369,11 @@ const AdminListings = () => {
               disabled={deleteListingMutation.isPending}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
-              {deleteListingMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                {t('admin.listings.actions.delete')}
-              )}
+                {deleteListingMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  t('admin.listings.actions.delete')
+                )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
