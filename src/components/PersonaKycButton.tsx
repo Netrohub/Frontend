@@ -1,5 +1,6 @@
 import { useCallback, type ReactNode } from "react";
 import Persona from "persona";
+import { useAuth } from "@/contexts/AuthContext";
 
 type PersonaKycButtonProps = {
   userId?: number | string;
@@ -16,6 +17,7 @@ export function PersonaKycButton({
   className,
   children,
 }: PersonaKycButtonProps) {
+  const { refreshUser } = useAuth();
   const referenceId = userId ? `user_${userId}` : undefined;
 
   const handleClick = useCallback(() => {
@@ -53,27 +55,38 @@ export function PersonaKycButton({
         let completedSuccessfully = false;
 
         try {
-          const response = await fetch("/api/kyc/complete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ inquiryId, status, userId }),
-          });
-
-          if (!response.ok) {
-            console.error("PersonaKycButton: /api/kyc/complete returned error", response.status, await response.text());
-            return;
-          }
-
+          // Import and use the API client
+          const { kycApi } = await import('@/lib/api');
+          
+          const data = await kycApi.complete({ inquiryId, status, userId });
+          console.log("PersonaKycButton: KYC completion response", data);
+          
           completedSuccessfully = true;
+          
+          // Refresh user data to get latest KYC status
+          try {
+            await refreshUser();
+            console.log("PersonaKycButton: User data refreshed");
+          } catch (error) {
+            console.error("PersonaKycButton: Failed to refresh user", error);
+          }
+          
+          // Trigger user refresh if callback provided
+          if (onCompleted) {
+            // Small delay to allow webhook to process
+            setTimeout(() => {
+              onCompleted();
+            }, 2000);
+          }
         } catch (error) {
           console.error("PersonaKycButton: failed to report completion", error);
         } finally {
           destroyClient();
         }
 
-        if (completedSuccessfully) {
-          onCompleted?.();
+        if (completedSuccessfully && !onCompleted) {
+          // If no callback, at least log success
+          console.log("PersonaKycButton: KYC completion reported successfully");
         }
       },
       onCancel: () => {
