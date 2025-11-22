@@ -498,7 +498,7 @@ const AdminDisputes = () => {
                     {t('admin.disputes.resolving')}
                   </>
                 ) : (
-                  {t('admin.disputes.confirmResolve')}
+                  t('admin.disputes.confirmResolve')
                 )}
               </Button>
             </div>
