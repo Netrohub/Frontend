@@ -57,92 +57,110 @@ const KYC = () => {
           </div>
         </Card>
 
-        <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm space-y-6">
-          <div className="flex items-center justify-between mb-6">
-            {steps.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.number} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center gap-2 flex-1">
-                    <div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${
-                        step.status === "completed"
-                          ? "bg-green-500/20 border-green-500"
-                          : step.status === "active"
-                          ? "bg-[hsl(195,80%,50%)] border-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(56,189,248,0.4)]"
-                          : "bg-white/5 border-white/20"
-                      }`}
-                    >
-                      {step.status === "completed" ? (
-                        <CheckCircle2 className="h-7 w-7 text-green-400" />
-                      ) : (
-                        <Icon className={`h-6 w-6 ${step.status === "active" ? "text-white" : "text-white/40"}`} />
-                      )}
-                    </div>
-                    <span
-                      className={`text-sm font-bold text-center ${
-                        step.status === "completed"
-                          ? "text-green-400"
-                          : step.status === "active"
-                          ? "text-white"
-                          : "text-white/40"
-                      }`}
-                    >
-                      {step.title}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
-              <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
+        {identityVerified ? (
+          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
+            <div className="text-center space-y-4">
+              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-green-500/50 to-green-400/60 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(34,197,94,0.6)]">
+                <CheckCircle2 className="h-10 w-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold text-white">تم التحقق من هويتك</h3>
+              <p className="text-white/70">
+                شكلاً، تم حفظ KYC في النظام ولن تحتاج إلى إكماله مرة أخرى ما دمت مُوثقاً.
+              </p>
             </div>
-            <p className="text-white/60 text-sm">
-              سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك بشكل آمن وسريع.
-            </p>
-            <Card className="p-6 bg-white/5 border-white/10">
-              <div className="text-center space-y-4">
-                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
-                  <ShieldCheck className="h-10 w-10 text-white" />
+          </Card>
+        ) : (
+          <>
+            <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm space-y-6">
+              <div className="flex items-center justify-between mb-6">
+                {steps.map((step, index) => {
+                  const Icon = step.icon;
+                  return (
+                    <div key={step.number} className="flex items-center flex-1">
+                      <div className="flex flex-col items-center gap-2 flex-1">
+                        <div
+                          className={`w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${
+                            step.status === "completed"
+                              ? "bg-green-500/20 border-green-500"
+                              : step.status === "active"
+                              ? "bg-[hsl(195,80%,50%)] border-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(56,189,248,0.4)]"
+                              : "bg-white/5 border-white/20"
+                          }`}
+                        >
+                          {step.status === "completed" ? (
+                            <CheckCircle2 className="h-7 w-7 text-green-400" />
+                          ) : (
+                            <Icon className={`h-6 w-6 ${step.status === "active" ? "text-white" : "text-white/40"}`} />
+                          )}
+                        </div>
+                        <span
+                          className={`text-sm font-bold text-center ${
+                            step.status === "completed"
+                              ? "text-green-400"
+                              : step.status === "active"
+                              ? "text-white"
+                              : "text-white/40"
+                          }`}
+                        >
+                          {step.title}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <IdCard className="h-6 w-6 text-[hsl(195,80%,70%)]" />
+                  <h3 className="text-xl font-bold text-white">التحقق من الهوية - Persona</h3>
                 </div>
-                <div>
-                  <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
-                  <ul className="text-sm text-white/60 text-right space-y-1">
-                    <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
-                    <li>• التقط صورة سيلفي للتحقق</li>
-                    <li>• التحقق يتم تلقائياً في دقائق</li>
-                  </ul>
-                </div>
+                <p className="text-white/60 text-sm">
+                  سنستخدم نظام Persona المعتمد عالمياً للتحقق من هويتك بشكل آمن وسريع.
+                </p>
+                <Card className="p-6 bg-white/5 border-white/10">
+                  <div className="text-center space-y-4">
+                    <div className="w-20 h-20 mx-auto bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] rounded-full flex items-center justify-center">
+                      <ShieldCheck className="h-10 w-10 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white mb-2">خطوات التحقق عبر Persona</h4>
+                      <ul className="text-sm text-white/60 text-right space-y-1">
+                        <li>• التقط صورة لهويتك الوطنية أو الإقامة</li>
+                        <li>• التقط صورة سيلفي للتحقق</li>
+                        <li>• التحقق يتم تلقائياً في دقائق</li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
+                  <div className="flex gap-2">
+                    <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] mt-0.5" />
+                    <div className="text-sm text-white/80">
+                      <p className="font-bold mb-1">آمن ومشفر</p>
+                      <p>Persona منصة موثوقة عالمياً وتؤمن بياناتك طوال العملية.</p>
+                    </div>
+                  </div>
+                </Card>
+
+                <PersonaKycButton
+                  userId={user?.id}
+                  isVerified={user?.is_verified}
+                  className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 flex items-center justify-center"
+                  onCompleted={() => {
+                    toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق");
+                  }}
+                >
+                  <IdCard className="h-5 w-5" />
+                  بدء التحقق عبر Persona
+                  <ArrowRight className="h-5 w-5" />
+                </PersonaKycButton>
+
               </div>
             </Card>
-
-            <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)]">
-              <div className="flex gap-2">
-                <ShieldCheck className="h-5 w-5 text-[hsl(195,80%,70%)] mt-0.5" />
-                <div className="text-sm text-white/80">
-                  <p className="font-bold mb-1">آمن ومشفر</p>
-                  <p>Persona منصة موثوقة عالمياً وتؤمن بياناتك طوال العملية.</p>
-                </div>
-              </div>
-            </Card>
-
-            <PersonaKycButton
-              userId={user?.id}
-              isVerified={user?.is_verified}
-              className="w-full gap-2 bg-gradient-to-r from-[hsl(195,80%,50%)] to-[hsl(280,70%,50%)] hover:from-[hsl(195,80%,60%)] hover:to-[hsl(280,70%,60%)] text-white border-0 py-6 flex items-center justify-center"
-              onCompleted={() => toast.success("شكراً، سيتم تحديث حالة التحقق خلال دقائق")}
-            >
-              <IdCard className="h-5 w-5" />
-              بدء التحقق عبر Persona
-              <ArrowRight className="h-5 w-5" />
-            </PersonaKycButton>
-
-          </div>
-        </Card>
+          </>
+        )}
 
         <Card className="p-5 bg-[hsl(195,80%,50%,0.1)] border-[hsl(195,80%,70%,0.3)] backdrop-blur-sm">
           <div className="flex gap-3">
