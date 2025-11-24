@@ -38,7 +38,7 @@ export const GAMES: Game[] = [
   {
     id: "wos",
     name: "Whiteout Survival",
-    nameAr: "وايت أوت سرفايفل",
+    nameAr: "النجاة في الصقيع",
     category: "wos_accounts",
     image: heroArctic, // Using existing WOS image from assets
   },
