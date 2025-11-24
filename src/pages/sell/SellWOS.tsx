@@ -403,7 +403,7 @@ const SellWOS = () => {
         title: title.trim(),
         description, // NO passwords here!
         price: parseFloat(price),
-        category: 'game_account',
+        category: 'wos_accounts', // Use specific category for Whiteout Survival
         images: listingImages,
         account_email: accountEmail,      // Separate field (will be encrypted)
         account_password: accountPassword, // Separate field (will be encrypted)
