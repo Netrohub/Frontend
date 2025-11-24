@@ -29,6 +29,8 @@ import "./plasmic-registration";
 // Critical routes - loaded immediately (above the fold)
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
+import MarketplaceGames from "./pages/MarketplaceGames";
+import MarketplaceGameCategory from "./pages/MarketplaceGameCategory";
 import ProductDetails from "./pages/ProductDetails";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -166,7 +168,9 @@ const AppContent = () => {
                 {/* Plasmic codegen Homepage - preview route while designing in Plasmic Studio */}
                 {/* Access at /plasmic-homepage to see your Plasmic design */}
                 <Route path="/plasmic-homepage" element={<Homepage />} />
-                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/marketplace" element={<MarketplaceGames />} />
+                <Route path="/marketplace/games" element={<MarketplaceGames />} />
+                <Route path="/marketplace/:gameId" element={<MarketplaceGameCategory />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/discord/callback" element={<Auth />} />
