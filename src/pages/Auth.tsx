@@ -69,6 +69,8 @@ const Auth = () => {
           'invalid_discord_user': t('auth.discordInvalidUser'),
           'oauth_exception': t('auth.discordOAuthException'),
           'discord_already_linked': t('auth.discordAlreadyLinked'),
+          'discord_already_linked_security': t('auth.discordAlreadyLinkedSecurity'),
+          'session_mismatch': t('auth.sessionMismatch'),
           'discord_link_failed': t('auth.discordLinkFailed'),
           'not_authenticated': t('auth.discordNotAuthenticated'),
         };
