@@ -74,6 +74,18 @@ const Checkout = () => {
       }
     } catch (error) {
       const apiError = error as Error & ApiError;
+      
+      // Handle "payment already exists" case - redirect to existing payment URL
+      if (apiError.data && (apiError.data as any).paymentUrl && apiError.status === 400) {
+        const existingPaymentUrl = (apiError.data as any).paymentUrl;
+        if (existingPaymentUrl) {
+          // Payment already initiated - redirect to existing payment link
+          toast.info(t('checkout.paymentAlreadyInitiated') || 'Redirecting to payment page...');
+          window.location.href = existingPaymentUrl;
+          return; // Don't set processing to false, we're redirecting
+        }
+      }
+      
       toast.error(apiError.message || t('checkout.paymentLinkError'));
     } finally {
       setProcessing(false);

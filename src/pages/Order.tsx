@@ -253,12 +253,12 @@ const Order = () => {
                 <Clock className="h-8 w-8 text-[hsl(40,90%,55%)]" />
               </div>
               <div className="flex-1 text-center md:text-right">
-                <h3 className="font-bold text-white text-lg mb-1">فترة الضمان النشطة</h3>
-                <p className="text-white/80 text-sm">الوقت المتبقي لفحص الحساب وتأكيد الاستلام</p>
+                <h3 className="font-bold text-white text-lg mb-1">{t('orders.activeWarrantyPeriod')}</h3>
+                <p className="text-white/80 text-sm">{t('orders.timeRemainingToCheck')}</p>
               </div>
               <div className="text-center md:text-left">
                 <div className="text-4xl md:text-3xl font-black text-[hsl(40,90%,55%)]">{timeLeft || "00:00:00"}</div>
-                <div className="text-xs text-white/70 mt-1">ساعة:دقيقة:ثانية</div>
+                <div className="text-xs text-white/70 mt-1">{t('orders.timeFormat')}</div>
               </div>
             </div>
           </Card>

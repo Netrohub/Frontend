@@ -655,6 +655,9 @@ const translations: Record<Language, Record<string, string>> = {
 'checkout.orderCancelled': 'تم إلغاء الطلب',
 'checkout.orderDisputed': 'الطلب في نزاع',
 'checkout.fullRefund': 'استرداد كامل خلال 12 ساعة',
+'checkout.paylinkPayment': 'دفع Paylink',
+'checkout.confirmPayment': 'تأكيد الدفع',
+'checkout.paymentAlreadyInitiated': 'تم بدء عملية الدفع مسبقاً. جارٍ التوجيه إلى صفحة الدفع...',
 
 
 // Orders
@@ -704,6 +707,9 @@ const translations: Record<Language, Record<string, string>> = {
 'orders.stats.completed': 'طلبات مكتملة',
 'orders.stats.cancelled': 'طلبات ملغاة',
 'orders.deletedAccount': 'حساب محذوف',
+'orders.activeWarrantyPeriod': 'فترة الضمان النشطة',
+'orders.timeRemainingToCheck': 'الوقت المتبقي لفحص الحساب وتأكيد الاستلام',
+'orders.timeFormat': 'ساعة:دقيقة:ثانية',
 
 
 // Order Details
@@ -2452,6 +2458,9 @@ const translations: Record<Language, Record<string, string>> = {
 'checkout.orderCancelled': 'Order Cancelled',
 'checkout.orderDisputed': 'Order in Dispute',
 'checkout.fullRefund': 'Full refund within 12 hours',
+'checkout.paylinkPayment': 'Paylink Payment',
+'checkout.confirmPayment': 'Confirm Payment',
+'checkout.paymentAlreadyInitiated': 'Payment already initiated. Redirecting to payment page...',
 
 
 // Orders
@@ -2499,6 +2508,9 @@ const translations: Record<Language, Record<string, string>> = {
 'orders.stats.asSeller': 'As Seller',
 'orders.stats.inEscrow': 'In Escrow',
 'orders.stats.completed': 'Completed',
+'orders.activeWarrantyPeriod': 'Active Warranty Period',
+'orders.timeRemainingToCheck': 'Time remaining to check account and confirm receipt',
+'orders.timeFormat': 'Hours:Minutes:Seconds',
 'orders.stats.cancelled': 'Cancelled',
 'orders.deletedAccount': 'Deleted Account',
 
