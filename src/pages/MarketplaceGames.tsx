@@ -33,14 +33,14 @@ const MarketplaceGames = () => {
             </p>
           </div>
 
-          {/* Games Grid - Horizontal scroll on mobile, grid on desktop */}
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 overflow-x-auto md:overflow-x-visible pb-4 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {/* Games Grid - Vertical grid on mobile, grid on desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {GAMES.map((game) => {
               return (
                 <Link
                   key={game.id}
                   to={`/marketplace/${game.id}`}
-                  className="group relative flex-shrink-0 w-[180px] md:w-auto"
+                  className="group relative w-full"
                 >
                   <div className="relative overflow-hidden rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm hover:border-[hsl(195,80%,70%,0.5)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] h-full">
                     {/* Game Image/Logo */}
