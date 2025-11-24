@@ -293,7 +293,11 @@ export const authApi = {
 
   discordConnect: () => {
     const baseUrl = getAPIBaseURL();
-    window.location.href = `${baseUrl}/auth/discord/redirect?mode=connect&redirect_to=${encodeURIComponent(window.location.pathname)}`;
+    // Get token from localStorage directly (since api instance might not be accessible here)
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    // For connect mode, pass token as query parameter since browser redirects don't send headers
+    const tokenParam = token ? `&token=${encodeURIComponent(token)}` : '';
+    window.location.href = `${baseUrl}/auth/discord/redirect?mode=connect&redirect_to=${encodeURIComponent(window.location.pathname)}${tokenParam}`;
   },
 };
 
