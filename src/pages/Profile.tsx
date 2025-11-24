@@ -360,8 +360,6 @@ const Profile = () => {
           )}
         </Card>
 
-        </Card>
-
         {/* Recent Activity Section */}
         <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
           <div className="flex items-center justify-between mb-4">
