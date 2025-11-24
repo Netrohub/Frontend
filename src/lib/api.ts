@@ -284,6 +284,17 @@ export const authApi = {
   
   updatePassword: (data: { current_password: string; password: string; password_confirmation: string }) =>
     api.put<{ message: string }>('/user/password', data),
+
+  // Discord OAuth
+  discordLogin: () => {
+    const baseUrl = getAPIBaseURL();
+    window.location.href = `${baseUrl}/auth/discord/redirect?mode=login&redirect_to=${encodeURIComponent(window.location.pathname)}`;
+  },
+
+  discordConnect: () => {
+    const baseUrl = getAPIBaseURL();
+    window.location.href = `${baseUrl}/auth/discord/redirect?mode=connect&redirect_to=${encodeURIComponent(window.location.pathname)}`;
+  },
 };
 
 // KYC API

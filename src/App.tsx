@@ -169,6 +169,7 @@ const AppContent = () => {
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/discord/callback" element={<Auth />} />
                 <Route path="/members" element={
                   <Suspense fallback={<LoadingFallback />}>
                     <Members />

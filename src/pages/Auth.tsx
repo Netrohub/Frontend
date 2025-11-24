@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake } from "lucide-react";
+import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,12 +16,12 @@ import { sanitizeString, isValidEmail, isValidPassword } from "@/lib/utils/valid
 import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
 import type { ApiError } from "@/types/api";
 import { Turnstile } from "@/components/Turnstile";
-import { authApi } from "@/lib/api";
+import { authApi, api } from "@/lib/api";
 import { translateValidationError } from "@/utils/validationTranslations";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { login, register } = useAuth();
+  const { login, register, refreshUser } = useAuth();
   const { t, language } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
@@ -36,6 +36,47 @@ const Auth = () => {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
+  
+  // Handle Discord OAuth callback
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const error = urlParams.get('error');
+    
+    // Check if we're on the Discord callback route
+    if (window.location.pathname === '/auth/discord/callback' || token || error) {
+      if (token) {
+        // Discord OAuth success - set token and refresh user
+        api.setToken(token);
+        refreshUser().then(() => {
+          toast.success(t('auth.discordLoginSuccess'));
+          navigate("/");
+          // Clean URL
+          window.history.replaceState({}, '', '/auth');
+        }).catch(() => {
+          toast.error(t('auth.discordLoginError'));
+          window.history.replaceState({}, '', '/auth');
+        });
+      } else if (error) {
+        // Discord OAuth error
+        const errorMessages: Record<string, string> = {
+          'discord_oauth_failed': t('auth.discordOAuthFailed'),
+          'invalid_state': t('auth.discordInvalidState'),
+          'no_code': t('auth.discordNoCode'),
+          'token_exchange_failed': t('auth.discordTokenExchangeFailed'),
+          'no_access_token': t('auth.discordNoAccessToken'),
+          'user_info_failed': t('auth.discordUserInfoFailed'),
+          'invalid_discord_user': t('auth.discordInvalidUser'),
+          'oauth_exception': t('auth.discordOAuthException'),
+          'discord_already_linked': t('auth.discordAlreadyLinked'),
+          'discord_link_failed': t('auth.discordLinkFailed'),
+          'not_authenticated': t('auth.discordNotAuthenticated'),
+        };
+        toast.error(errorMessages[error] || t('auth.discordOAuthError'));
+        window.history.replaceState({}, '', '/auth');
+      }
+    }
+  }, [navigate, t, refreshUser]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -319,6 +360,24 @@ const Auth = () => {
                   className="flex justify-center"
                 />
 
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-white/20" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white/5 px-2 text-white/60">{t('auth.orContinueWith')}</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  onClick={() => authApi.discordLogin()}
+                  className="w-full gap-2 py-6 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold border-0"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {t('auth.loginWithDiscord')}
+                </Button>
+
                 <Button 
                   type="submit"
                   disabled={loading || !turnstileToken}
@@ -429,6 +488,24 @@ const Auth = () => {
                   onVerify={setTurnstileToken}
                   className="flex justify-center"
                 />
+
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-white/20" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white/5 px-2 text-white/60">{t('auth.orContinueWith')}</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  onClick={() => authApi.discordLogin()}
+                  className="w-full gap-2 py-6 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold border-0"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                  {t('auth.registerWithDiscord')}
+                </Button>
 
                 <Button 
                   type="submit"
