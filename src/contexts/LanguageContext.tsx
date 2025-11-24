@@ -1608,8 +1608,6 @@ const translations: Record<Language, Record<string, string>> = {
 'disputes.orderNotFound': 'الطلب غير موجود',
 'disputes.onlyEscrowOrders': 'يمكن إنشاء النزاع فقط للطلبات في حالة الضمان',
 'disputes.disputeExists': 'يوجد نزاع بالفعل لهذا الطلب',
-'disputes.orderLabel': 'طلب',
-'disputes.account': 'حساب',
 
 // Admin Financial
 'admin.financial.totalRevenue': 'إجمالي الإيرادات',
@@ -2945,8 +2943,6 @@ const translations: Record<Language, Record<string, string>> = {
 'disputes.createError': 'Failed to create dispute',
 'disputes.processing': 'Processing...',
 'disputes.submit': 'Submit Dispute',
-'disputes.orderLabel': 'Order',
-'disputes.account': 'Account',
 'disputes.reasonPlaceholder': 'Example: Account not working',
 'disputes.descriptionPlaceholder': 'Detailed description of the problem...',
 'disputes.fillAllFields': 'Please fill all fields',
