@@ -9,11 +9,15 @@ import { BottomNav } from "@/components/BottomNav";
 import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getDiscordInviteUrl, isDiscordCtaEnabled } from "@/config/appConfig";
+import { MessageCircle } from "lucide-react";
 
 const Home = () => {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const { t, language } = useLanguage();
+  const discordInviteUrl = getDiscordInviteUrl();
+  const discordCtaEnabled = isDiscordCtaEnabled();
   
   // Memoize snow particles to prevent recreation on every render (performance optimization)
   // Optimize snow particles: reduce on mobile, add will-change for better performance
@@ -119,6 +123,24 @@ const Home = () => {
                 <span className="sm:hidden">{t('home.howDoesItWork')}</span>
               </Button>
             )}
+            {/* Discord Secondary CTA */}
+            {discordCtaEnabled && discordInviteUrl && (
+              <Button 
+                asChild
+                size="lg"
+                variant="outline"
+                className="gap-2 text-sm md:text-base px-6 md:px-8 py-4 md:py-6 bg-transparent hover:bg-[#5865F2]/10 text-white/80 hover:text-white font-medium backdrop-blur-sm border border-white/20 hover:border-[#5865F2]/40 min-h-[56px] transition-all"
+              >
+                <a 
+                  href={discordInviteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="h-5 w-5 flex-shrink-0" />
+                  <span>{t('landing.discord.heroCta')}</span>
+                </a>
+              </Button>
+            )}
           </div>
           
           {/* Feature badges */}
@@ -195,6 +217,66 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      {/* Discord Community Section */}
+      {discordCtaEnabled && discordInviteUrl && (
+        <section className="relative z-10 container mx-auto px-4 md:px-6 py-16">
+          <div className="max-w-3xl mx-auto">
+            <div className="p-8 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 hover:border-[hsl(195,80%,70%,0.3)] transition-all">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#5865F2]/10 border border-[#5865F2]/30 mb-4">
+                  <MessageCircle className="h-8 w-8 text-[#5865F2]" aria-hidden="true" />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  {t('landing.discord.sectionTitle')}
+                </h2>
+                <p className="text-lg text-white/70 max-w-2xl mx-auto">
+                  {t('landing.discord.sectionSubtitle')}
+                </p>
+              </div>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3 text-white/80">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/40 flex items-center justify-center mt-0.5">
+                    <span className="text-[#5865F2] text-sm font-bold">1</span>
+                  </div>
+                  <p className="text-base">{t('landing.discord.bulletSupport')}</p>
+                </div>
+                <div className="flex items-start gap-3 text-white/80">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/40 flex items-center justify-center mt-0.5">
+                    <span className="text-[#5865F2] text-sm font-bold">2</span>
+                  </div>
+                  <p className="text-base">{t('landing.discord.bulletUpdates')}</p>
+                </div>
+                <div className="flex items-start gap-3 text-white/80">
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5865F2]/20 border border-[#5865F2]/40 flex items-center justify-center mt-0.5">
+                    <span className="text-[#5865F2] text-sm font-bold">3</span>
+                  </div>
+                  <p className="text-base">{t('landing.discord.bulletSafety')}</p>
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <Button 
+                  asChild
+                  size="lg"
+                  className="gap-2 px-8 py-6 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold border-0 min-h-[56px]"
+                >
+                  <a 
+                    href={discordInviteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    <span>{t('landing.discord.joinButton')}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section - Hidden for authenticated users */}
       {!isAuthenticated && (
@@ -292,16 +374,18 @@ const Home = () => {
                 </a> */}
 
                 {/* Discord */}
-                <a 
-                  href="https://discord.gg/wMnKRSCUVz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/40 hover:scale-110 transition-all duration-300 group"
-                  aria-label={t('help.liveChat')}
-                  title={t('home.footer.discordLiveChat')}
-                >
-                  <DiscordIcon size={20} className="text-white/60 group-hover:text-[#5865F2] transition-colors" />
-                </a>
+                {discordInviteUrl && (
+                  <a 
+                    href={discordInviteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center w-12 h-12 rounded-full bg-white/5 border border-white/10 hover:bg-[#5865F2]/20 hover:border-[#5865F2]/40 hover:scale-110 transition-all duration-300 group"
+                    aria-label={t('help.liveChat')}
+                    title={t('home.footer.discordLiveChat')}
+                  >
+                    <DiscordIcon size={20} className="text-white/60 group-hover:text-[#5865F2] transition-colors" />
+                  </a>
+                )}
               </div>
             </div>
           </div>

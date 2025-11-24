@@ -159,6 +159,15 @@ const translations: Record<Language, Record<string, string>> = {
 'home.cta.subtitle': 'انضم لمجتمع اللاعبين اللي يتداولون حساباتهم بأمان عبر NXOLand.',
 'home.cta.getStarted': 'ابدأ الآن',
 
+// Landing Discord CTAs
+'landing.discord.heroCta': 'انضم إلى مجتمع Discord',
+'landing.discord.sectionTitle': 'انضم إلى مجتمع NXOLand',
+'landing.discord.sectionSubtitle': 'احصل على الدعم والتحديثات ونصائح التداول مباشرة من فريقنا واللاعبين الآخرين.',
+'landing.discord.bulletSupport': 'دعم سريع والإجابة على الأسئلة',
+'landing.discord.bulletUpdates': 'الإعلانات وتحديثات المنصة',
+'landing.discord.bulletSafety': 'نصائح التداول وإرشادات أمان الحسابات',
+'landing.discord.joinButton': 'انضم إلى Discord',
+
 'home.footer.rights': '© جميع الحقوق محفوظة لـ NXOLand',
 'home.footer.terms': 'الشروط والأحكام',
 'home.footer.privacy': 'سياسة الخصوصية',
@@ -1973,6 +1982,15 @@ const translations: Record<Language, Record<string, string>> = {
 'home.cta.title': 'Start Trading with Confidence',
 'home.cta.subtitle': 'Join thousands of gamers who trust NXOLand for secure, seamless trades.',
 'home.cta.getStarted': 'Get Started',
+
+// Landing Discord CTAs
+'landing.discord.heroCta': 'Join our Discord community',
+'landing.discord.sectionTitle': 'Join the NXOLand community',
+'landing.discord.sectionSubtitle': 'Get support, updates, and trade insights directly from our team and other players.',
+'landing.discord.bulletSupport': 'Quick support and Q&A',
+'landing.discord.bulletUpdates': 'Announcements and platform updates',
+'landing.discord.bulletSafety': 'Trade tips and account safety guidance',
+'landing.discord.joinButton': 'Join Discord',
 
 'home.footer.rights': '© All rights reserved to NXOLand',
 'home.footer.terms': 'Terms & Conditions',
