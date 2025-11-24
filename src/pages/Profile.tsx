@@ -21,20 +21,42 @@ import {
   TrendingUp,
   Loader2
 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
 import { ErrorState } from "@/components/ErrorState";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { authApi } from "@/lib/api";
 import { toast } from "sonner";
 
 const Profile = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, refreshUser } = useAuth();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle Discord OAuth callback query parameters
+  useEffect(() => {
+    const error = searchParams.get('error');
+    const discordConnected = searchParams.get('discord_connected');
+
+    if (discordConnected === 'true') {
+      toast.success(t('profile.discordConnected') || 'Discord account connected successfully!');
+      // Refresh user data to get updated Discord info
+      refreshUser();
+      // Clear the query parameter
+      setSearchParams({}, { replace: true });
+    }
+
+    if (error === 'discord_already_linked') {
+      toast.error(t('auth.discordAlreadyLinked') || 'This Discord account is already linked to another user.');
+      // Clear the query parameter
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, t, refreshUser, setSearchParams]);
 
   // Get user statistics from API
   const { data: userStats, isLoading: statsLoading, error: statsError, refetch: refetchStats } = useQuery({
