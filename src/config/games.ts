@@ -1,100 +1,67 @@
-import { Star, ThumbsUp, Flame } from "lucide-react";
-
-export interface GameBanner {
-  text: string; // Arabic text
-  textEn: string; // English text
-  color: string; // Tailwind color class
-  icon: React.ComponentType<{ className?: string }>;
-}
+// Import game images from assets
+import heroArctic from "@/assets/hero-arctic.jpg";
+// TODO: Add game logos to frontend/src/assets/games/ and import them here
+// Example:
+// import pureSniperLogo from "@/assets/games/pure-sniper.jpg";
+// import ageOfEmpiresLogo from "@/assets/games/age-of-empires.jpg";
+// import honorOfKingsLogo from "@/assets/games/honor-of-kings.jpg";
+// import pubgLogo from "@/assets/games/pubg.jpg";
+// import fortniteLogo from "@/assets/games/fortnite.jpg";
 
 export interface Game {
   id: string; // URL slug (e.g., "wos", "fortnite")
   name: string; // Display name
   nameAr: string; // Arabic name
   category: string; // Backend category (e.g., "wos_accounts")
-  image: string; // Game artwork/image URL
-  banner?: GameBanner; // Optional banner with Arabic text
-  gradient?: string; // Optional gradient for card
+  image: string; // Game logo/image URL (imported asset or public path)
 }
 
-// Banner types
-export const BANNER_TYPES = {
-  NEW: {
-    text: "جديد",
-    textEn: "New",
-    color: "bg-green-500",
-    icon: Star,
-  },
-  DISCOUNT: {
-    text: "خصم إضافي",
-    textEn: "Extra Discount",
-    color: "bg-orange-500",
-    icon: ThumbsUp,
-  },
-  REWARD: {
-    text: "مكافأة إضافية",
-    textEn: "Extra Reward",
-    color: "bg-red-500",
-    icon: Flame,
-  },
-};
-
-// Import game images if available
-// import pureSniperImage from "@/assets/games/pure-sniper.jpg";
-// import ageOfEmpiresImage from "@/assets/games/age-of-empires.jpg";
-import heroArctic from "@/assets/hero-arctic.jpg";
-// import honorOfKingsImage from "@/assets/games/honor-of-kings.jpg";
-// import pubgImage from "@/assets/games/pubg.jpg";
-// import fortniteImage from "@/assets/games/fortnite.jpg";
-
 // Games configuration
+// TODO: Add game logo images to frontend/public/images/games/ folder
+// Recommended image size: 800x600px or similar aspect ratio
+// Supported formats: JPG, PNG, WebP
 export const GAMES: Game[] = [
   {
     id: "pure-sniper",
     name: "Pure Sniper",
     nameAr: "بور سنيبر",
     category: "pure_sniper_accounts",
-    image: "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&h=600&fit=crop", // TODO: Replace with actual game image
-    banner: BANNER_TYPES.NEW,
+    image: "/images/games/pure-sniper.jpg", // Add game logo to public/images/games/
   },
   {
     id: "age-of-empires",
     name: "Age of Empires Mobile",
     nameAr: "عصر الإمبراطوريات موبايل",
     category: "age_of_empires_accounts",
-    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop", // TODO: Replace with actual game image
-    banner: BANNER_TYPES.DISCOUNT,
+    image: "/images/games/age-of-empires.jpg", // Add game logo to public/images/games/
   },
   {
     id: "wos",
     name: "Whiteout Survival",
     nameAr: "وايت أوت سرفايفل",
     category: "wos_accounts",
-    image: heroArctic, // Using existing WOS image
-    banner: BANNER_TYPES.REWARD,
+    image: heroArctic, // Using existing WOS image from assets
   },
   {
     id: "honor-of-kings",
     name: "Honor of Kings",
     nameAr: "شرف الملوك",
     category: "honor_of_kings_accounts",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop", // TODO: Replace with actual game image
-    banner: BANNER_TYPES.REWARD,
+    image: "/images/games/honor-of-kings.jpg", // Add game logo to public/images/games/
   },
   {
     id: "pubg",
     name: "PUBG Mobile",
     nameAr: "ببجي موبايل",
     category: "pubg_accounts",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop", // TODO: Replace with actual game image
-    banner: BANNER_TYPES.DISCOUNT,
+    image: "/images/games/pubg.jpg", // Add game logo to public/images/games/
   },
   {
     id: "fortnite",
     name: "Fortnite",
     nameAr: "فورتنايت",
     category: "fortnite_accounts",
-    image: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop", // TODO: Replace with actual game image
+    image: "/images/games/fortnite.jpg", // Add game logo to public/images/games/
   },
 ];
 
