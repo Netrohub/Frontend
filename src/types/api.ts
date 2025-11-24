@@ -7,6 +7,8 @@
 export interface User {
   id: number;
   name: string;
+  username?: string;
+  display_name?: string;
   email: string;
   phone?: string;
   persona_inquiry_id?: string | null;
@@ -26,6 +28,11 @@ export interface User {
   updated_at: string;
   wallet?: Wallet;
   kyc_verification?: KycVerification | null;
+  discord_user_id?: string | null;
+  discord_username?: string | null;
+  discord_avatar?: string | null;
+  discord_connected_at?: string | null;
+  is_seller?: boolean;
 }
 
 export interface Wallet {

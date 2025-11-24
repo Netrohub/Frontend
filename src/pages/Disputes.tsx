@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { AlertTriangle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertTriangle, Loader2, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
-import { disputesApi, ordersApi } from "@/lib/api";
+import { disputesApi, ordersApi, authApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -52,7 +52,7 @@ const Disputes = () => {
     mutationFn: (data: { order_id: number; reason: string; description: string }) =>
       disputesApi.create(data),
     onSuccess: () => {
-      toast.success("تم إنشاء النزاع بنجاح");
+      toast.success(t('disputes.createSuccess'));
       queryClient.invalidateQueries({ queryKey: ['disputes'] });
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       setShowNewDispute(false);
@@ -60,30 +60,45 @@ const Disputes = () => {
     },
     onError: (error: any) => {
       console.error('Dispute creation error:', error);
-      const errorMessage = error?.response?.data?.message || error?.message || "فشل إنشاء النزاع";
-      toast.error(errorMessage);
+      const errorCode = error?.response?.data?.error;
+      const errorMessage = error?.response?.data?.message || error?.message || t('disputes.createError');
+      
+      // Check if it's a Discord requirement error
+      if (errorCode === 'discord_required_for_disputes') {
+        toast.error(errorMessage, {
+          duration: 5000,
+          action: {
+            label: t('disputes.connectDiscord'),
+            onClick: () => {
+              authApi.discordConnect();
+            },
+          },
+        });
+      } else {
+        toast.error(errorMessage);
+      }
     },
   });
 
   const handleCreateDispute = (e: React.FormEvent) => {
     e.preventDefault();
     if (!disputeData.order_id || !disputeData.reason || !disputeData.description) {
-      toast.error("يرجى ملء جميع الحقول");
+      toast.error(t('disputes.fillAllFields'));
       return;
     }
     
     // Validate that the order is still in escrow_hold status
     const selectedOrder = orders?.data?.find((order: Order) => order.id === disputeData.order_id);
     if (!selectedOrder) {
-      toast.error("الطلب غير موجود");
+      toast.error(t('disputes.orderNotFound'));
       return;
     }
     if (selectedOrder.status !== 'escrow_hold') {
-      toast.error("يمكن إنشاء النزاع فقط للطلبات في حالة الضمان");
+      toast.error(t('disputes.onlyEscrowOrders'));
       return;
     }
     if (selectedOrder.dispute_id) {
-      toast.error("يوجد نزاع بالفعل لهذا الطلب");
+      toast.error(t('disputes.disputeExists'));
       return;
     }
     
@@ -145,19 +160,42 @@ const Disputes = () => {
             <Dialog open={showNewDispute} onOpenChange={setShowNewDispute}>
               <DialogTrigger asChild>
                 <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
-                  فتح نزاع جديد
+                  {t('disputes.openNew')}
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-[hsl(200,70%,15%)] border-white/10 text-white max-w-2xl">
                 <DialogHeader>
-                  <DialogTitle>فتح نزاع جديد</DialogTitle>
+                  <DialogTitle>{t('disputes.openNew')}</DialogTitle>
                   <DialogDescription className="text-white/60">
-                    املأ النموذج أدناه لفتح نزاع على طلب في حالة الضمان
+                    {t('disputes.createDescription')}
                   </DialogDescription>
                 </DialogHeader>
+                {/* Discord Requirement Warning */}
+                {user && !user.discord_user_id && (
+                  <Card className="p-4 mb-4 bg-[#5865F2]/10 border-[#5865F2]/30 backdrop-blur-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-[#5865F2]/20">
+                        <MessageCircle className="h-5 w-5 text-[#5865F2]" aria-hidden="true" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-white mb-2">{t('disputes.discordRequired')}</h3>
+                        <p className="text-sm text-white/80 mb-3">{t('disputes.discordRequiredDesc')}</p>
+                        <Button
+                          type="button"
+                          onClick={() => authApi.discordConnect()}
+                          className="bg-[#5865F2] hover:bg-[#4752C4] text-white border-0"
+                          size="sm"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          {t('disputes.connectDiscord')}
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                )}
                 <form onSubmit={handleCreateDispute} className="space-y-4">
                   <div>
-                    <Label>الطلب</Label>
+                    <Label>{t('disputes.orderNumber')}</Label>
                     <select
                       value={disputeData.order_id}
                       onChange={(e) => setDisputeData({ ...disputeData, order_id: parseInt(e.target.value) })}
@@ -173,38 +211,38 @@ const Disputes = () => {
                     </select>
                   </div>
                   <div>
-                    <Label>سبب النزاع</Label>
+                    <Label>{t('disputes.reason')}</Label>
                     <Input
                       value={disputeData.reason}
                       onChange={(e) => setDisputeData({ ...disputeData, reason: e.target.value })}
                       className="bg-white/5 border-white/10"
-                      placeholder="مثال: الحساب لا يعمل"
+                      placeholder={t('disputes.reasonPlaceholder')}
                       required
                     />
                   </div>
                   <div>
-                    <Label>وصف المشكلة</Label>
+                    <Label>{t('disputes.description')}</Label>
                     <Textarea
                       value={disputeData.description}
                       onChange={(e) => setDisputeData({ ...disputeData, description: e.target.value })}
                       className="bg-white/5 border-white/10"
-                      placeholder="وصف تفصيلي للمشكلة..."
+                      placeholder={t('disputes.descriptionPlaceholder')}
                       rows={5}
                       required
                     />
                   </div>
                   <Button
                     type="submit"
-                    disabled={createDisputeMutation.isPending}
-                    className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]"
+                    disabled={createDisputeMutation.isPending || (user && !user.discord_user_id)}
+                    className="w-full bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {createDisputeMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        جاري المعالجة...
+                        {t('disputes.processing')}
                       </>
                     ) : (
-                      "إرسال النزاع"
+                      t('disputes.submit')
                     )}
                   </Button>
                 </form>
@@ -260,10 +298,10 @@ const Disputes = () => {
         ) : disputes?.data?.length === 0 ? (
           <Card className="p-12 text-center bg-white/5 border-white/10">
             <AlertTriangle className="h-16 w-16 text-white/20 mx-auto mb-4" />
-            <p className="text-white/60 text-lg mb-4">لا توجد نزاعات حالياً</p>
+            <p className="text-white/60 text-lg mb-4">{t('disputes.noDisputes')}</p>
             {availableOrders.length > 0 && (
               <Button onClick={() => setShowNewDispute(true)} variant="outline">
-                فتح نزاع جديد
+                {t('disputes.openNew')}
               </Button>
             )}
           </Card>
