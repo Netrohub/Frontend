@@ -188,19 +188,18 @@ const Profile = () => {
           <p className="text-white/60">{t('profile.manageInfo')}</p>
         </div>
 
-        {/* Profile Card */}
+        {/* Profile Card - User Info */}
         <Card className="p-6 md:p-8 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
-          <div className="flex flex-col md:flex-row items-center gap-6 mb-6">
-            <div className="relative">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-6 pb-6 border-b border-white/10">
+            <div className="relative flex-shrink-0">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center overflow-hidden relative">
                 {user.avatar ? (
                   <>
                     <img 
                       src={user.avatar} 
-                      alt={user.name}
+                      alt={user.username || user.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        // Hide broken image and show fallback
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                         const fallback = target.nextElementSibling as HTMLElement;
@@ -221,50 +220,75 @@ const Profile = () => {
                 </div>
               )}
             </div>
-            <div className="flex-1 text-center md:text-right">
-              <h2 className="text-2xl font-black text-white mb-2">{user.name}</h2>
+            <div className="flex-1 w-full">
+              <h2 className="text-2xl font-black text-white mb-3">{user.username || user.display_name || user.name}</h2>
               
-              {/* Rating Display - Only show if reviews exist */}
-              {statsLoading ? (
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                  <Loader2 className="h-4 w-4 animate-spin text-white/60" aria-hidden="true" />
-                  <span className="text-sm text-white/60">{t('common.loading')}</span>
-                </div>
-              ) : userStats && userStats.average_rating && userStats.total_reviews > 0 ? (
-                <Link 
-                  to={`/reviews/${user.id}`}
-                  className="flex items-center justify-center md:justify-start gap-2 mb-3 hover:opacity-80 transition-opacity"
-                >
-                  <Star className="h-5 w-5 text-[hsl(40,90%,55%)] fill-current" aria-hidden="true" />
-                  <span className="text-lg font-bold text-white">{userStats.average_rating.toFixed(1)}</span>
-                  <span className="text-white/60">{t('profile.reviewsWithCount', { count: userStats.total_reviews })}</span>
-                </Link>
-              ) : userStats && userStats.total_revenue > 0 ? (
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-3">
-                  <TrendingUp className="h-5 w-5 text-green-400" aria-hidden="true" />
-                  <span className="text-lg font-bold text-white">${userStats.total_revenue.toLocaleString('en-US')}</span>
-                  <span className="text-white/60">{t('profile.totalRevenue')}</span>
-                </div>
-              ) : null}
-              
+              {/* KYC Status */}
               {user.is_verified ? (
-                <StatusBadge status="success" label={t('profile.verifiedAccount')} />
+                <StatusBadge status="success" label={t('profile.verifiedAccount')} className="mb-3" />
               ) : (
-                <>
-                  <StatusBadge status="warning" label={t('profile.requiresKYC')} />
+                <div className="mb-3">
+                  <StatusBadge status="warning" label={t('profile.requiresKYC')} className="mb-2" />
                   <Button
                     asChild
-                    variant="outline"
-                    className="mt-2 border-white/30 text-white/80 hover:border-white/50"
+                    className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0"
                   >
                     <Link to="/kyc">{t('kyc.startVerification')}</Link>
                   </Button>
-                </>
+                </div>
+              )}
+              
+              {/* Email and Verification */}
+              <div className="flex flex-wrap items-center gap-2 text-white/80">
+                <Mail className="h-4 w-4 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+                <span className="text-sm">{user.email}</span>
+                {user.email_verified_at ? (
+                  <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => resendVerificationMutation.mutate()}
+                      disabled={resendVerificationMutation.isPending}
+                      className="h-6 px-2 text-xs text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] hover:bg-[hsl(195,80%,70%)]/10"
+                    >
+                      {resendVerificationMutation.isPending ? (
+                        <>
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          {t('common.sending')}
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="h-3 w-3 mr-1" />
+                          {t('profile.resendVerificationEmail')}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </div>
+              
+              {/* Phone if exists */}
+              {user.phone && (
+                <div className="flex items-center gap-2 text-white/80 mt-2">
+                  <Phone className="h-4 w-4 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+                  <span className="text-sm">{user.phone}</span>
+                  {user.phone_verified_at ? (
+                    <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
+                  ) : (
+                    <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
+                  )}
+                </div>
               )}
             </div>
           </div>
 
-          {/* Stats Section with Refresh Button */}
+        </Card>
+
+        {/* Account Statistics Section */}
+        <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-white">{t('profile.accountStats')}</h3>
             <Button
@@ -281,7 +305,7 @@ const Profile = () => {
           </div>
 
           {statsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 pb-6 border-b border-white/10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map(i => (
                 <div key={i} className="text-center p-4 bg-white/5 rounded-lg">
                   <Skeleton className="h-8 w-20 mx-auto mb-2 bg-white/10" />
@@ -295,89 +319,50 @@ const Profile = () => {
               onRetry={() => refetchStats()}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 pb-6 border-b border-white/10">
-              <div className="text-center p-4 bg-white/5 rounded-lg">
-                <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.total_sales || 0}</div>
-                <div className="text-sm text-white/60">{t('profile.totalSales')}</div>
-              </div>
-              <div className="text-center p-4 bg-white/5 rounded-lg">
-                <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{userStats?.total_purchases || 0}</div>
-                <div className="text-sm text-white/60">{t('profile.totalPurchases')}</div>
-              </div>
-              <div className="text-center p-4 bg-white/5 rounded-lg">
-                <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-1">{memberSince}</div>
-                <div className="text-sm text-white/60">{t('profile.memberSinceLabel')}</div>
-              </div>
-              
-              {/* Wallet Balance Quick View */}
-              <div className="text-center p-4 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg">
-                <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Available Balance - Highlighted */}
+              <div className="text-center p-5 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-lg">
+                <div className="flex items-center justify-center gap-2 mb-2">
                   <Wallet className="h-5 w-5 text-green-400" aria-hidden="true" />
                   <div className="text-2xl font-black text-green-400">
                     ${userWallet?.available_balance?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                   </div>
                 </div>
-                <div className="text-sm text-white/60 mb-2">{t('profile.availableBalance')}</div>
+                <div className="text-sm text-white/60 mb-3">{t('profile.availableBalance')}</div>
                 <Button 
                   asChild 
                   size="sm" 
                   variant="ghost"
-                  className="h-auto py-1 text-xs text-green-400 hover:text-green-300 hover:bg-green-500/10"
+                  className="h-auto py-1.5 px-3 text-xs text-green-400 hover:text-green-300 hover:bg-green-500/10"
                 >
                   <Link to="/wallet">{t('profile.viewWallet')}</Link>
                 </Button>
               </div>
+              
+              {/* Member Since */}
+              <div className="text-center p-5 bg-white/5 rounded-lg">
+                <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-2">{memberSince}</div>
+                <div className="text-sm text-white/60">{t('profile.memberSinceLabel')}</div>
+              </div>
+              
+              {/* Total Purchases */}
+              <div className="text-center p-5 bg-white/5 rounded-lg">
+                <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-2">{userStats?.total_purchases || 0}</div>
+                <div className="text-sm text-white/60">{t('profile.totalPurchases')}</div>
+              </div>
+              
+              {/* Total Sales */}
+              <div className="text-center p-5 bg-white/5 rounded-lg">
+                <div className="text-2xl font-black text-[hsl(195,80%,70%)] mb-2">{userStats?.total_sales || 0}</div>
+                <div className="text-sm text-white/60">{t('profile.totalSales')}</div>
+              </div>
             </div>
           )}
-
-          {/* Contact Info with Verification Indicators */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-white/80">
-              <Mail className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-              <span>{user.email}</span>
-              {user.email_verified_at ? (
-                <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => resendVerificationMutation.mutate()}
-                    disabled={resendVerificationMutation.isPending}
-                    className="h-7 px-2 text-xs text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] hover:bg-[hsl(195,80%,70%)]/10"
-                  >
-                    {resendVerificationMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                        {t('common.sending')}
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="h-3 w-3 mr-1" />
-                        {t('profile.resendVerificationEmail')}
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
-            </div>
-            
-            {user.phone && (
-              <div className="flex items-center gap-3 text-white/80">
-                <Phone className="h-5 w-5 text-[hsl(195,80%,70%)]" aria-hidden="true" />
-                <span>{user.phone}</span>
-                {user.phone_verified_at ? (
-                  <StatusBadge status="success" label={t('profile.verified')} className="text-xs" />
-                ) : (
-                  <StatusBadge status="warning" label={t('profile.notVerified')} className="text-xs" />
-                )}
-              </div>
-            )}
-          </div>
         </Card>
 
-        {/* Recent Activity Feed */}
+        </Card>
+
+        {/* Recent Activity Section */}
         <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm mb-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-white">{t('profile.recentActivity')}</h3>
@@ -405,40 +390,38 @@ const Profile = () => {
           ) : activities && activities.length > 0 ? (
             <div className="space-y-3">
               {activities.map((activity: any) => (
-                <div key={activity.id} className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all">
+                <div key={activity.id} className="flex items-center gap-3 p-4 bg-white/5 rounded-lg hover:bg-white/10 transition-all">
                   {getActivityIcon(activity.type)}
                   <div className="flex-1">
-                    <p className="text-white text-sm">{activity.title}</p>
-                    <p className="text-white/60 text-xs">{formatRelativeTime(activity.created_at)}</p>
+                    <p className="text-white text-sm font-medium">{activity.title}</p>
+                    <p className="text-white/60 text-xs mt-1">{formatRelativeTime(activity.created_at)}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 text-white/60">
-              <TrendingUp className="h-12 w-12 mx-auto mb-2 opacity-30" aria-hidden="true" />
-              <p>{t('profile.noRecentActivity')}</p>
+            <div className="text-center py-12 text-white/60">
+              <TrendingUp className="h-16 w-16 mx-auto mb-3 opacity-30" aria-hidden="true" />
+              <p className="text-base">{t('profile.noRecentActivity')}</p>
             </div>
           )}
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm group hover:border-[hsl(195,80%,70%,0.5)] transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1">{t('profile.myListings')}</h3>
-                <p className="text-sm text-white/70">{t('profile.manageListings')}</p>
-              </div>
-              <Package className="h-8 w-8 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+        {/* My Ads Section */}
+        <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm mb-6 group hover:border-[hsl(195,80%,70%,0.5)] transition-all">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-bold text-white mb-1">{t('profile.myListings')}</h3>
+              <p className="text-sm text-white/70">{t('profile.manageListings')}</p>
             </div>
-            <Button asChild className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px] text-sm md:text-base">
-              <Link to="/my-listings">
-                {t('profile.viewMyListings')}
-              </Link>
-            </Button>
-          </Card>
-        </div>
+            <Package className="h-10 w-10 text-[hsl(195,80%,70%)]" aria-hidden="true" />
+          </div>
+          <Button asChild className="w-full gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0 min-h-[48px]">
+            <Link to="/my-listings">
+              {t('profile.viewMyListings')}
+            </Link>
+          </Button>
+        </Card>
 
         {/* Account Actions */}
         <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">

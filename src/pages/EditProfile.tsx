@@ -269,7 +269,7 @@ const EditProfile = () => {
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-white">الاسم الكامل</Label>
+              <Label htmlFor="name" className="text-white">{t('editProfile.name')}</Label>
               <div className="relative">
                 <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
                 <Input
