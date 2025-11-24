@@ -1,12 +1,5 @@
-// Import game images from assets
-import heroArctic from "@/assets/hero-arctic.jpg";
-// TODO: Add game logos to frontend/src/assets/games/ and import them here
-// Example:
-// import pureSniperLogo from "@/assets/games/pure-sniper.jpg";
-// import ageOfEmpiresLogo from "@/assets/games/age-of-empires.jpg";
-// import honorOfKingsLogo from "@/assets/games/honor-of-kings.jpg";
-// import pubgLogo from "@/assets/games/pubg.jpg";
-// import fortniteLogo from "@/assets/games/fortnite.jpg";
+// Game images are stored in frontend/public/images/games/
+// Images can be referenced directly as: /images/games/filename.jpg
 
 export interface Game {
   id: string; // URL slug (e.g., "wos", "fortnite")
@@ -40,7 +33,7 @@ export const GAMES: Game[] = [
     name: "Whiteout Survival",
     nameAr: "النجاة في الصقيع",
     category: "wos_accounts",
-    image: heroArctic, // Using existing WOS image from assets
+    image: "/images/games/whiteout-survival.jpg",
   },
   {
     id: "honor-of-kings",
