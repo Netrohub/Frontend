@@ -215,7 +215,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         aria-label={t('nav.homeAriaLabel')}
       >
         <img 
-          src={getStaticImageUrl('LOGO', 'public')} 
+          src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
           alt="NXOLand - Secure Game Account Trading Platform" 
           width="64"
           height="64"
@@ -224,9 +224,11 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
           loading="eager"
           fetchPriority="high"
           onError={(e) => {
-            // Fallback to official logo if main logo fails to load
+            // Fallback to local logo if Cloudflare image fails
             const img = e.target as HTMLImageElement;
-            img.src = getStaticImageUrl('LOGO_OFFICIAL', 'public');
+            if (img.src.includes('imagedelivery.net')) {
+              img.src = '/nxoland-official-logo.png';
+            }
           }}
         />
       </Link>

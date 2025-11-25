@@ -306,7 +306,7 @@ const Home = () => {
             {/* Company Info */}
             <div className="flex flex-col items-center md:items-start gap-3">
               <img 
-                src={getStaticImageUrl('LOGO', 'public')} 
+                src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
                 alt="NXOLand Logo" 
                 width="64"
                 height="64"
@@ -315,8 +315,11 @@ const Home = () => {
                 loading="lazy"
                 decoding="async"
                 onError={(e) => {
+                  // Fallback to local logo if Cloudflare image fails
                   const img = e.target as HTMLImageElement;
-                  img.src = getStaticImageUrl('LOGO_OFFICIAL', 'public');
+                  if (img.src.includes('imagedelivery.net')) {
+                    img.src = '/nxoland-official-logo.png';
+                  }
                 }}
               />
               <p className="text-white/70 text-sm">

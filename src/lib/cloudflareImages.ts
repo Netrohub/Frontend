@@ -12,6 +12,9 @@
 // Set this in Cloudflare Pages → Settings → Environment Variables
 const CLOUDFLARE_ACCOUNT_HASH = import.meta.env.VITE_CF_IMAGES_ACCOUNT_HASH || '';
 
+// Track if we've already warned about missing account hash
+let hasWarnedAboutHash = false;
+
 /**
  * Build a Cloudflare Images URL
  * @param imageId - The Cloudflare image ID
@@ -23,12 +26,20 @@ export function getCloudflareImageUrl(
   variant: 'public' | 'medium' | 'thumbnail' = 'public'
 ): string {
   if (!CLOUDFLARE_ACCOUNT_HASH) {
-    console.warn('VITE_CF_IMAGES_ACCOUNT_HASH is not set. Images may not load correctly.');
+    // Only warn once to avoid console spam
+    if (!hasWarnedAboutHash) {
+      console.warn('VITE_CF_IMAGES_ACCOUNT_HASH is not set. Please set it in Cloudflare Pages → Settings → Environment Variables. Images may not load correctly.');
+      hasWarnedAboutHash = true;
+    }
+    // Return empty string if hash is not set
     return '';
   }
   
-  if (!imageId) {
-    console.warn('Image ID is required for Cloudflare Images URL');
+  if (!imageId || imageId.includes('_ID') || imageId.includes('PLACEHOLDER')) {
+    // Don't warn for placeholder IDs, they're expected during development
+    if (imageId && !imageId.includes('_ID') && !imageId.includes('PLACEHOLDER')) {
+      console.warn('Invalid Image ID for Cloudflare Images:', imageId);
+    }
     return '';
   }
 
@@ -89,13 +100,17 @@ export const STATIC_IMAGE_IDS = {
  * Get static image URL by key
  * @param key - Key from STATIC_IMAGE_IDS
  * @param variant - Image variant
- * @returns Cloudflare Images URL
+ * @returns Cloudflare Images URL (empty string if not configured)
  */
 export function getStaticImageUrl(
   key: keyof typeof STATIC_IMAGE_IDS,
   variant: 'public' | 'medium' | 'thumbnail' = 'public'
 ): string {
   const imageId = STATIC_IMAGE_IDS[key];
-  return getCloudflareImageUrl(imageId, variant);
+  const url = getCloudflareImageUrl(imageId, variant);
+  
+  // If URL is empty (not configured), return empty string silently
+  // The component should handle this with fallback or onError handler
+  return url;
 }
 
