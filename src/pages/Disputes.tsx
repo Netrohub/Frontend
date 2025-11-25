@@ -331,9 +331,10 @@ const Disputes = () => {
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
                           className="inline-flex items-center gap-2 text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] transition-colors"
+                          title={`${t('disputes.openDiscordThread')} - Dispute #${dispute.id}`}
                         >
                           <MessageCircle className="h-4 w-4" />
-                          {t('disputes.openDiscordThread')}
+                          {t('disputes.openDiscordThread')} (Dispute #{dispute.id})
                         </a>
                       </div>
                     )}
