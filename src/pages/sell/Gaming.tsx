@@ -3,6 +3,7 @@ import { BackButton } from "@/components/BackButton";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { GAMES } from "@/config/games";
 import { GameCard } from "@/components/GameCard";
+import { Link } from "react-router-dom";
 
 const Gaming = () => {
   const { t, language } = useLanguage();
@@ -49,21 +50,28 @@ const Gaming = () => {
 
         <div className="flex flex-wrap justify-center gap-4 md:gap-6">
           {gamingGames.map((game) => {
-            // Map game ID to sell path - currently only WOS has a sell page
-            // For other games, we'll need to create their sell pages later
-            const sellPath = game.id === 'wos' ? `/sell/gaming/wos` : `/sell/gaming/${game.id}`;
+            // New route structure: /sell/:gameId
+            const sellPath = `/sell/${game.id}`;
             
             return (
               <div key={game.id} className="flex flex-col items-center">
-                <a href={sellPath} className="block">
-                  <GameCard
-                    id={game.id}
-                    name={game.name}
-                    nameAr={game.nameAr}
-                    image={game.image}
-                    language={language}
-                  />
-                </a>
+                <Link to={sellPath} className="block no-underline">
+                  <div className="group relative w-full max-w-[160px] rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-3 hover:border-[hsl(195,80%,70%,0.5)] hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] transition-all duration-300 hover:scale-105">
+                    <div className="relative">
+                      <img
+                        src={game.image}
+                        alt={game.name}
+                        className="w-24 h-24 mx-auto rounded-xl object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="mt-3 text-center">
+                      <span className="block text-sm font-semibold tracking-wide text-white">
+                        {language === 'ar' && game.nameAr ? game.nameAr : game.name}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
               </div>
             );
           })}

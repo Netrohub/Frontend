@@ -69,9 +69,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                     {isAuthenticated && (
                       <>
                         <li>
-                          <Link to="/sell" className={cn(
+                          <Link to="/sell/gaming" className={cn(
                             "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-all transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.15)] hover:text-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)]",
-                            isActive("/sell") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
+                            isActive("/sell/gaming") || location.pathname.startsWith("/sell/") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)]" : "text-white/90"
                           )}>
                             <div className="text-sm font-semibold leading-none">{t('nav.sell')}</div>
                             <p className="line-clamp-2 text-xs leading-snug text-white/50 mt-1">

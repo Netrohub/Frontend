@@ -20,7 +20,7 @@ export const MobileNav = () => {
     { path: "/", label: t('nav.home'), icon: Home, protected: false },
     { path: "/marketplace", label: t('nav.marketplace'), icon: ShoppingBag, protected: false },
     { path: "/wallet", label: t('nav.wallet'), icon: Wallet, protected: true },
-    { path: "/sell", label: t('nav.sell'), icon: Plus, protected: true },
+    { path: "/sell/gaming", label: t('nav.sell'), icon: Plus, protected: true },
     { path: "/members", label: t('nav.members'), icon: Users, protected: false },
     { path: "/leaderboard", label: t('nav.leaderboard'), icon: Trophy, protected: false },
     { path: "/notifications", label: t('nav.notifications'), icon: Bell, protected: true },

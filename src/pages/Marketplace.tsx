@@ -176,7 +176,7 @@ const Marketplace = () => {
           <div className="text-center py-20">
             <p className="text-white/60 text-lg mb-4">{t('marketplace.noListings')}</p>
             {isAuthenticated ? (
-              <Link to="/sell">
+              <Link to="/sell/gaming">
                 <Button className="bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)]">
                   {t('marketplace.sellNow')}
                 </Button>

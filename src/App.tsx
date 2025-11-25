@@ -51,10 +51,10 @@ const PaymentCallback = lazy(() => import("./pages/PaymentCallback"));
 
 // Protected routes - lazy loaded
 const Order = lazy(() => import("./pages/Order"));
-const Sell = lazy(() => import("./pages/Sell"));
 const Gaming = lazy(() => import("./pages/sell/Gaming"));
 const Social = lazy(() => import("./pages/sell/Social"));
 const SellWOS = lazy(() => import("./pages/sell/SellWOS"));
+const SellGame = lazy(() => import("./pages/sell/SellGame"));
 const TikTok = lazy(() => import("./pages/sell/social/TikTok"));
 const InstagramSell = lazy(() => import("./pages/sell/social/Instagram"));
 const MyListings = lazy(() => import("./pages/MyListings"));
@@ -268,16 +268,6 @@ const AppContent = () => {
                 }
               />
               <Route
-                path="/sell"
-                element={
-                  <Suspense fallback={<LoadingFallback />}>
-                    <ProtectedRoute>
-                      <Sell />
-                    </ProtectedRoute>
-                  </Suspense>
-                }
-              />
-              <Route
                 path="/sell/gaming"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
@@ -288,11 +278,21 @@ const AppContent = () => {
                 }
               />
               <Route
-                path="/sell/gaming/wos"
+                path="/sell/wos"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
                     <ProtectedRoute>
                       <SellWOS />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
+                path="/sell/:gameId"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <SellGame />
                     </ProtectedRoute>
                   </Suspense>
                 }

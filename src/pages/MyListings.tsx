@@ -144,7 +144,7 @@ const MyListings = () => {
             <p className="text-white/60">{t('myListings.subtitle')}</p>
           </div>
           <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
-            <Link to="/sell">
+            <Link to="/sell/gaming">
               <Plus className="h-5 w-5" />
               {t('myListings.addAccount')}
             </Link>
@@ -192,7 +192,7 @@ const MyListings = () => {
                 <h3 className="text-xl font-bold text-white mb-2">{t('myListings.emptyStateTitle')}</h3>
                 <p className="text-white/60 mb-6">{t('myListings.emptyStateMessage')}</p>
                 <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
-                  <Link to="/sell">
+                  <Link to="/sell/gaming">
                     <Plus className="h-5 w-5" />
                     {t('myListings.addNewAccount')}
                   </Link>
