@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload, Plus, X, ShieldAlert, ArrowRight, Users, Zap, MapPin, GraduationCap, PawPrint, Crown, Swords, Loader2, ZoomIn } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { getStaticImageUrl } from "@/lib/cloudflareImages";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +17,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { formatCompactNumber } from "@/utils/numberFormat";
+import { getGameById } from "@/config/games";
 
 // Stove level images from Cloudflare Images
 const stoveImages = {
@@ -37,6 +38,17 @@ const SellWOS = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t, language } = useLanguage();
+  const location = useLocation();
+  const { gameId } = useParams<{ gameId?: string }>();
+  
+  // Determine game from URL
+  // Extract game ID from pathname: /sell/wos or /sell/kingshot
+  const pathname = location.pathname;
+  const pathParts = pathname.split('/');
+  const gameIdFromPath = pathParts[pathParts.length - 1]; // Get last part of path
+  const currentGameId = (gameIdFromPath === 'wos' || gameIdFromPath === 'kingshot') ? gameIdFromPath : 'wos';
+  const game = getGameById(currentGameId);
+  const gameCategory = game?.category || 'wos_accounts';
 
   if (user && !user.is_verified) {
     return (
@@ -408,7 +420,7 @@ const SellWOS = () => {
         title: title.trim(),
         description, // NO passwords here!
         price: parseFloat(price),
-        category: 'wos_accounts', // Use specific category for Whiteout Survival
+        category: gameCategory, // Use category based on game (wos_accounts or kingshot_accounts)
         images: listingImages,
         account_email: accountEmail,      // Separate field (will be encrypted)
         account_password: accountPassword, // Separate field (will be encrypted)
@@ -447,8 +459,18 @@ const SellWOS = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('sell.wos.pageTitle')}</h1>
-          <p className="text-white/60">{t('sell.wos.pageSubtitle')}</p>
+          <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
+            {currentGameId === 'kingshot' 
+              ? (language === 'ar' ? 'بيع حساب كينج شوت' : 'Sell KingShot Account')
+              : t('sell.wos.pageTitle')
+            }
+          </h1>
+          <p className="text-white/60">
+            {currentGameId === 'kingshot'
+              ? (language === 'ar' ? 'أضف حساب كينج شوت للبيع' : 'Add your KingShot account for sale')
+              : t('sell.wos.pageSubtitle')
+            }
+          </p>
         </div>
 
         <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">

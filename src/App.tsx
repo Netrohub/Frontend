@@ -288,6 +288,16 @@ const AppContent = () => {
                 }
               />
               <Route
+                path="/sell/kingshot"
+                element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <ProtectedRoute>
+                      <SellWOS />
+                    </ProtectedRoute>
+                  </Suspense>
+                }
+              />
+              <Route
                 path="/sell/:gameId"
                 element={
                   <Suspense fallback={<LoadingFallback />}>
