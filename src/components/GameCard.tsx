@@ -55,9 +55,9 @@ export function GameCard({
                 target.style.display = 'none';
               }}
             />
-            {/* Very minimal overlay - only 5% for subtle darkening */}
-            <div className="absolute inset-0 bg-black/5 
-                          group-hover:bg-black/0 
+            {/* Overlay for better visibility - 30% opacity */}
+            <div className="absolute inset-0 bg-black/30 
+                          group-hover:bg-black/20 
                           transition-all duration-300 z-[1]" />
           </>
         ) : (
@@ -81,9 +81,29 @@ export function GameCard({
               loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                // Hide broken image and show placeholder
+                const currentSrc = target.src;
+                
+                // If it's a Cloudflare URL that failed, try local fallback
+                if (currentSrc.includes('imagedelivery.net')) {
+                  // Map game id to local image path
+                  const gameImageMap: Record<string, string> = {
+                    'kingshot': '/images/games/kingshot.jpg',
+                    'wos': '/images/games/whiteout-survival.jpg',
+                    'pubg': '/images/games/PUBG.jpg',
+                    'fortnite': '/images/games/fortnite.jpg',
+                  };
+                  
+                  const localPath = gameImageMap[id] || `/images/games/${id}.jpg`;
+                  // Only retry once to avoid infinite loop
+                  if (!target.dataset.retried) {
+                    target.dataset.retried = 'true';
+                    target.src = localPath;
+                    return;
+                  }
+                }
+                
+                // If local also fails or already retried, show placeholder
                 target.style.display = 'none';
-                // Show placeholder icon
                 const placeholder = target.nextElementSibling as HTMLElement;
                 if (placeholder && placeholder.classList.contains('game-icon-placeholder')) {
                   placeholder.style.display = 'flex';
