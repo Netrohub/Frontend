@@ -72,13 +72,13 @@ export function GameCard({
         <div className="relative z-10 flex items-center justify-center h-full">
           <div className="relative">
             {/* Subtle shadow behind logo for better visibility on any background */}
-            <div className="absolute inset-0 bg-black/30 rounded-2xl blur-md -z-10" />
+            <div className="absolute inset-0 bg-black/30 rounded-xl sm:rounded-2xl blur-md -z-10 scale-110 sm:scale-100" />
             <img
               src={image}
               alt={name}
-              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-xl sm:rounded-2xl object-cover drop-shadow-2xl 
+              className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-xl sm:rounded-2xl object-contain sm:object-cover drop-shadow-2xl 
                          group-hover:scale-110 transition-transform duration-300 relative z-10"
-              loading="lazy"
+              loading="eager"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 const currentSrc = target.src;
@@ -112,8 +112,8 @@ export function GameCard({
             />
             {/* Placeholder icon when image fails to load */}
             <div className="game-icon-placeholder absolute inset-0 flex items-center justify-center" style={{ display: 'none' }}>
-              <div className="w-16 h-16 rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
-                <span className="text-white/50 text-2xl font-bold">{name.charAt(0).toUpperCase()}</span>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
+                <span className="text-white/50 text-lg sm:text-2xl font-bold">{name.charAt(0).toUpperCase()}</span>
               </div>
             </div>
           </div>

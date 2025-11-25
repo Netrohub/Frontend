@@ -532,55 +532,55 @@ const SellWOS = () => {
                       </SelectItem>
                       <SelectItem value="FC2">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv2} alt="FC2" className="w-8 h-8" />
+                          <img src={stoveImages[2]} alt="FC2" className="w-8 h-8" />
                           <span>FC2</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC3">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv3} alt="FC3" className="w-8 h-8" />
+                          <img src={stoveImages[3]} alt="FC3" className="w-8 h-8" />
                           <span>FC3</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC4">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv4} alt="FC4" className="w-8 h-8" />
+                          <img src={stoveImages[4]} alt="FC4" className="w-8 h-8" />
                           <span>FC4</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC5">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv5} alt="FC5" className="w-8 h-8" />
+                          <img src={stoveImages[5]} alt="FC5" className="w-8 h-8" />
                           <span>FC5</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC6">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv6} alt="FC6" className="w-8 h-8" />
+                          <img src={stoveImages[6]} alt="FC6" className="w-8 h-8" />
                           <span>FC6</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC7">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv7} alt="FC7" className="w-8 h-8" />
+                          <img src={stoveImages[7]} alt="FC7" className="w-8 h-8" />
                           <span>FC7</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC8">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv8} alt="FC8" className="w-8 h-8" />
+                          <img src={stoveImages[8]} alt="FC8" className="w-8 h-8" />
                           <span>FC8</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC9">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv9} alt="FC9" className="w-8 h-8" />
+                          <img src={stoveImages[9]} alt="FC9" className="w-8 h-8" />
                           <span>FC9</span>
                         </div>
                       </SelectItem>
                       <SelectItem value="FC10">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv10} alt="FC10" className="w-8 h-8" />
+                          <img src={stoveImages[10]} alt="FC10" className="w-8 h-8" />
                           <span>FC10</span>
                         </div>
                       </SelectItem>
