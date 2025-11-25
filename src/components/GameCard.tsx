@@ -80,12 +80,22 @@ export function GameCard({
                          group-hover:scale-110 transition-transform duration-300 relative z-10"
               loading="lazy"
               onError={(e) => {
-                console.error('Failed to load game icon:', image);
                 const target = e.target as HTMLImageElement;
-                // Keep image visible but show error state
-                target.style.opacity = '0.5';
+                // Hide broken image and show placeholder
+                target.style.display = 'none';
+                // Show placeholder icon
+                const placeholder = target.nextElementSibling as HTMLElement;
+                if (placeholder && placeholder.classList.contains('game-icon-placeholder')) {
+                  placeholder.style.display = 'flex';
+                }
               }}
             />
+            {/* Placeholder icon when image fails to load */}
+            <div className="game-icon-placeholder absolute inset-0 flex items-center justify-center" style={{ display: 'none' }}>
+              <div className="w-16 h-16 rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
+                <span className="text-white/50 text-2xl font-bold">{name.charAt(0).toUpperCase()}</span>
+              </div>
+            </div>
           </div>
         </div>
 

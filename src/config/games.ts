@@ -16,6 +16,13 @@ export interface Game {
 // Import Cloudflare Images utility
 import { getCloudflareImageUrl } from "@/lib/cloudflareImages";
 
+// Helper to get image with fallback
+function getGameImage(imageId: string, fallbackPath: string): string {
+  const cloudflareUrl = getCloudflareImageUrl(imageId, 'public');
+  // If Cloudflare URL is empty (not configured), use local fallback
+  return cloudflareUrl || fallbackPath;
+}
+
 // Games configuration
 // Only 4 games are supported: Whiteout Survival, KingShot, PUBG, Fortnite
 // Images are stored on Cloudflare Images
@@ -37,9 +44,9 @@ export const GAMES: Game[] = [
     descriptionAr: "حسابات Whiteout Survival",
     category: "wos_accounts",
     // Replace with your Cloudflare image ID for whiteout-survival logo
-    image: getCloudflareImageUrl("WHITEOUT_SURVIVAL_LOGO_ID", "public"),
+    image: getGameImage("WHITEOUT_SURVIVAL_LOGO_ID", "/images/games/whiteout-survival.jpg"),
     // Replace with your Cloudflare image ID for wos background
-    backgroundImage: getCloudflareImageUrl("WOS_BG_ID", "public"), // Snow/winter theme background
+    backgroundImage: getCloudflareImageUrl("WOS_BG_ID", "public") || "/images/games/backgrounds/wos-bg.jpg", // Snow/winter theme background
   },
   {
     id: "kingshot",
@@ -49,9 +56,9 @@ export const GAMES: Game[] = [
     descriptionAr: "حسابات وتصنيفات عالية",
     category: "kingshot_accounts",
     // Replace with your Cloudflare image ID for kingshot logo
-    image: getCloudflareImageUrl("KINGSHOT_LOGO_ID", "public"),
+    image: getGameImage("KINGSHOT_LOGO_ID", "/images/games/kingshot.jpg"),
     // Replace with your Cloudflare image ID for kingshot background
-    backgroundImage: getCloudflareImageUrl("KINGSHOT_BG_ID", "public"), // Action/shooting theme background
+    backgroundImage: getCloudflareImageUrl("KINGSHOT_BG_ID", "public") || "/images/games/backgrounds/kingshot-bg.jpg", // Action/shooting theme background
   },
   {
     id: "pubg",
@@ -61,9 +68,9 @@ export const GAMES: Game[] = [
     descriptionAr: "حسابات ببجي موبايل المميزة",
     category: "pubg_accounts",
     // Replace with your Cloudflare image ID for PUBG logo
-    image: getCloudflareImageUrl("PUBG_LOGO_ID", "public"),
+    image: getGameImage("PUBG_LOGO_ID", "/images/games/PUBG.jpg"),
     // Replace with your Cloudflare image ID for pubg background
-    backgroundImage: getCloudflareImageUrl("PUBG_BG_ID", "public"), // Battle royale/military theme background
+    backgroundImage: getCloudflareImageUrl("PUBG_BG_ID", "public") || "/images/games/backgrounds/pubg-bg.jpg", // Battle royale/military theme background
   },
   {
     id: "fortnite",
@@ -73,9 +80,9 @@ export const GAMES: Game[] = [
     descriptionAr: "شراء وبيع حسابات فورتنايت",
     category: "fortnite_accounts",
     // Replace with your Cloudflare image ID for fortnite logo
-    image: getCloudflareImageUrl("FORTNITE_LOGO_ID", "public"),
+    image: getGameImage("FORTNITE_LOGO_ID", "/images/games/fortnite.jpg"),
     // Replace with your Cloudflare image ID for fortnite background
-    backgroundImage: getCloudflareImageUrl("FORTNITE_BG_ID", "public"), // Colorful/cartoon theme background
+    backgroundImage: getCloudflareImageUrl("FORTNITE_BG_ID", "public") || "/images/games/backgrounds/fortnite-bg.jpg", // Colorful/cartoon theme background
   },
 ];
 

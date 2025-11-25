@@ -20,10 +20,41 @@
 
 ## الخطوة 2: الحصول على Account Hash
 
-1. في **Cloudflare Dashboard** → **Images** → **Overview**
-2. ابحث عن Delivery URL example
-3. سيكون مثل: `https://imagedelivery.net/{YOUR_HASH}/...`
-4. انسخ `{YOUR_HASH}` (هذا هو Account Hash)
+### الطريقة الأسهل:
+
+1. **سجل الدخول إلى Cloudflare Dashboard**
+   - اذهب إلى: https://dash.cloudflare.com
+
+2. **اذهب إلى Images**
+   - من القائمة الجانبية، اضغط على **Images**
+   - أو: https://dash.cloudflare.com/images
+
+3. **افتح Overview**
+   - في صفحة Images، اضغط على **Overview**
+
+4. **ابحث عن Delivery URL Example**
+   - ستجد مثال URL مثل:
+     ```
+     https://imagedelivery.net/abc123def456xyz789/your-image-id/public
+     ```
+   - أو:
+     ```
+     https://imagedelivery.net/{account-hash}/{image-id}/{variant}
+     ```
+
+5. **انسخ Account Hash**
+   - الـ hash هو الجزء بين `imagedelivery.net/` و `/your-image-id`
+   - في المثال: `abc123def456xyz789`
+   - هذا هو الـ **Account Hash** الذي تحتاجه
+
+### طريقة بديلة (من صورة مرفوعة):
+
+1. اذهب إلى **Images** → **Images List**
+2. اضغط على أي صورة مرفوعة
+3. انظر إلى **Delivery URL**
+4. انسخ الجزء `{hash}` من URL
+
+**ملاحظة:** الـ hash ثابت لكل حساب Cloudflare ولا يتغير.
 
 ## الخطوة 3: إضافة Environment Variable
 
