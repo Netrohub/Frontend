@@ -7,6 +7,7 @@ interface GameCardProps {
   description?: string;
   descriptionAr?: string;
   image: string;
+  backgroundImage?: string; // Background image for the card
   label?: string;
   language?: 'ar' | 'en';
   to?: string; // Optional custom route (for sell pages)
@@ -18,7 +19,8 @@ export function GameCard({
   nameAr, 
   description,
   descriptionAr,
-  image, 
+  image,
+  backgroundImage,
   label, 
   language = 'en',
   to 
@@ -36,25 +38,46 @@ export function GameCard({
                  transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/60 
                  hover:shadow-[0_24px_50px_rgba(56,189,248,0.25)] hover:bg-white/10"
     >
-      {/* Game Image Section */}
-      <div className="aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-slate-950/60 via-slate-900/40 to-slate-950/60 
-                      flex items-center justify-center relative">
+      {/* Game Image Section with Background */}
+      <div className="aspect-[4/5] w-full overflow-hidden relative">
+        {/* Background Image */}
+        {backgroundImage ? (
+          <>
+            <img
+              src={backgroundImage}
+              alt={`${name} background`}
+              className="absolute inset-0 w-full h-full object-cover 
+                         group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+            />
+            {/* Dark overlay for better contrast */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-slate-900/70 to-slate-950/80 
+                          group-hover:from-slate-950/70 group-hover:via-slate-900/60 group-hover:to-slate-950/70 
+                          transition-all duration-300" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-slate-900/40 to-slate-950/60" />
+        )}
+        
         {/* Gradient overlay on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(195,80%,50%,0.2)] to-transparent 
                         opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
-        <img
-          src={image}
-          alt={name}
-          className="h-20 w-20 rounded-2xl object-cover drop-shadow-lg 
-                     group-hover:scale-110 transition-transform duration-300"
-          loading="lazy"
-        />
+        {/* Game Logo - Centered */}
+        <div className="relative z-10 flex items-center justify-center h-full">
+          <img
+            src={image}
+            alt={name}
+            className="h-20 w-20 rounded-2xl object-cover drop-shadow-2xl 
+                       group-hover:scale-110 transition-transform duration-300"
+            loading="lazy"
+          />
+        </div>
 
         {label && (
           <span
             className="absolute top-2 right-2 bg-[hsl(195,80%,50%)] text-white text-[10px] px-2 py-[3px]
-                       rounded-md font-medium shadow-lg z-10"
+                       rounded-md font-medium shadow-lg z-20"
           >
             {label}
           </span>

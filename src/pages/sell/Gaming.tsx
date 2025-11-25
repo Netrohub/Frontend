@@ -62,6 +62,7 @@ const Gaming = () => {
                 description={game.description}
                 descriptionAr={game.descriptionAr}
                 image={game.image}
+                backgroundImage={game.backgroundImage}
                 language={language}
                 to={sellPath}
               />

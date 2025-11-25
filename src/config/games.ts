@@ -9,6 +9,7 @@ export interface Game {
   descriptionAr?: string; // Arabic description
   category: string; // Backend category (e.g., "wos_accounts")
   image: string; // Game logo/image URL (imported asset or public path)
+  backgroundImage?: string; // Background image URL for the card (optional)
 }
 
 // Games configuration
@@ -25,6 +26,7 @@ export const GAMES: Game[] = [
     descriptionAr: "حسابات Whiteout Survival",
     category: "wos_accounts",
     image: "/images/games/whiteout-survival.jpg",
+    backgroundImage: "/images/games/backgrounds/wos-bg.jpg", // Snow/winter theme background
   },
   {
     id: "kingshot",
@@ -34,6 +36,7 @@ export const GAMES: Game[] = [
     descriptionAr: "حسابات وتصنيفات عالية",
     category: "kingshot_accounts",
     image: "/images/games/kingshot.jpg",
+    backgroundImage: "/images/games/backgrounds/kingshot-bg.jpg", // Action/shooting theme background
   },
   {
     id: "pubg",
@@ -43,6 +46,7 @@ export const GAMES: Game[] = [
     descriptionAr: "حسابات ببجي موبايل المميزة",
     category: "pubg_accounts",
     image: "/images/games/pubg.jpg",
+    backgroundImage: "/images/games/backgrounds/pubg-bg.jpg", // Battle royale/military theme background
   },
   {
     id: "fortnite",
@@ -52,6 +56,7 @@ export const GAMES: Game[] = [
     descriptionAr: "شراء وبيع حسابات فورتنايت",
     category: "fortnite_accounts",
     image: "/images/games/fortnite.jpg",
+    backgroundImage: "/images/games/backgrounds/fortnite-bg.jpg", // Colorful/cartoon theme background
   },
 ];
 
