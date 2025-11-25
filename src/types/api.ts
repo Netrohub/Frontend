@@ -161,6 +161,8 @@ export interface Dispute {
   status: 'open' | 'under_review' | 'resolved' | 'closed';
   resolution_notes?: string;
   resolved_at?: string;
+  discord_thread_id?: string | null;
+  discord_channel_id?: string | null;
   created_at: string;
   updated_at: string;
   order?: Order;

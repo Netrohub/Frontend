@@ -319,10 +319,24 @@ const Disputes = () => {
                       {getStatusBadge(dispute.status)}
                     </div>
                     <p className="text-white/80 mb-4 line-clamp-2">{dispute.description}</p>
-                    <div className="flex items-center justify-between text-sm text-white/60">
+                    <div className="flex items-center justify-between text-sm text-white/60 mb-2">
                       <span>{dispute.party === 'buyer' ? t('disputes.party.buyer') : t('disputes.party.seller')}</span>
                       <span>{dispute.created_at ? new Date(dispute.created_at).toLocaleDateString('ar-SA') : ''}</span>
                     </div>
+                    {dispute.discord_thread_id && dispute.discord_channel_id && (
+                      <div className="mt-3 pt-3 border-t border-white/10">
+                        <a
+                          href={`https://discord.com/channels/${dispute.discord_channel_id}/${dispute.discord_thread_id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-2 text-sm text-[hsl(195,80%,70%)] hover:text-[hsl(195,80%,80%)] transition-colors"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          {t('disputes.openDiscordThread')}
+                        </a>
+                      </div>
+                    )}
                   </Card>
                 </Link>
               ))}

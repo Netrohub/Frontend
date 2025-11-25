@@ -1120,6 +1120,7 @@ const translations: Record<Language, Record<string, string>> = {
 'disputes.connectDiscord': 'ربط Discord',
 'disputes.createSuccess': 'تم إنشاء النزاع بنجاح',
 'disputes.createError': 'فشل إنشاء النزاع',
+'disputes.openDiscordThread': 'فتح محادثة Discord',
 'disputes.processing': 'جاري المعالجة...',
 'disputes.submit': 'إرسال النزاع',
 
@@ -2977,6 +2978,7 @@ const translations: Record<Language, Record<string, string>> = {
 'disputes.connectDiscord': 'Connect Discord',
 'disputes.createSuccess': 'Dispute created successfully',
 'disputes.createError': 'Failed to create dispute',
+'disputes.openDiscordThread': 'Open Discord Thread',
 'disputes.processing': 'Processing...',
 'disputes.submit': 'Submit Dispute',
 'disputes.reasonPlaceholder': 'Example: Account not working',
