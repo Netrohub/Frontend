@@ -6,16 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload, Plus, X, ShieldAlert, ArrowRight, Users, Zap, MapPin, GraduationCap, PawPrint, Crown, Swords, Loader2, ZoomIn } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import stoveLv1 from "@/assets/stove_lv_1.png";
-import stoveLv2 from "@/assets/stove_lv_2.png";
-import stoveLv3 from "@/assets/stove_lv_3.png";
-import stoveLv4 from "@/assets/stove_lv_4.png";
-import stoveLv5 from "@/assets/stove_lv_5.png";
-import stoveLv6 from "@/assets/stove_lv_6.png";
-import stoveLv7 from "@/assets/stove_lv_7.png";
-import stoveLv8 from "@/assets/stove_lv_8.png";
-import stoveLv9 from "@/assets/stove_lv_9.png";
-import stoveLv10 from "@/assets/stove_lv_10.png";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
@@ -26,6 +17,20 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { formatCompactNumber } from "@/utils/numberFormat";
+
+// Stove level images from Cloudflare Images
+const stoveImages = {
+  1: getStaticImageUrl('STOVE_LV_1', 'public'),
+  2: getStaticImageUrl('STOVE_LV_2', 'public'),
+  3: getStaticImageUrl('STOVE_LV_3', 'public'),
+  4: getStaticImageUrl('STOVE_LV_4', 'public'),
+  5: getStaticImageUrl('STOVE_LV_5', 'public'),
+  6: getStaticImageUrl('STOVE_LV_6', 'public'),
+  7: getStaticImageUrl('STOVE_LV_7', 'public'),
+  8: getStaticImageUrl('STOVE_LV_8', 'public'),
+  9: getStaticImageUrl('STOVE_LV_9', 'public'),
+  10: getStaticImageUrl('STOVE_LV_10', 'public'),
+};
 
 const SellWOS = () => {
   const navigate = useNavigate();
@@ -521,7 +526,7 @@ const SellWOS = () => {
                     <SelectContent>
                       <SelectItem value="FC1">
                         <div className="flex items-center gap-2">
-                          <img src={stoveLv1} alt="FC1" className="w-8 h-8" />
+                          <img src={stoveImages[1]} alt="FC1" className="w-8 h-8" />
                           <span>FC1</span>
                         </div>
                       </SelectItem>

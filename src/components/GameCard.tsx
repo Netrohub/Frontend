@@ -51,13 +51,8 @@ export function GameCard({
               loading="eager"
               onError={(e) => {
                 // Fallback to gradient if image fails to load
-                console.error('Failed to load background image:', backgroundImage);
-                console.error('Attempted URL:', window.location.origin + backgroundImage);
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
-              }}
-              onLoad={() => {
-                console.log('Background image loaded successfully:', backgroundImage);
               }}
             />
             {/* Very minimal overlay - only 5% for subtle darkening */}

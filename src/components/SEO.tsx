@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 interface SEOProps {
   title?: string;
@@ -16,13 +17,17 @@ interface SEOProps {
 export function SEO({
   title = "NXOLand - تداول آمن وموثوق للحسابات",
   description = "منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان",
-  image = "/nxoland-new-logo.png",
+  image,
   url = "",
   type = "website",
   noIndex = false,
 }: SEOProps) {
   const fullUrl = url ? `https://nxoland.com${url}` : "https://nxoland.com";
-  const fullImage = image.startsWith("http") ? image : `https://nxoland.com${image}`;
+  // Use Cloudflare Images logo by default, or provided image URL
+  const defaultImage = getStaticImageUrl('LOGO', 'public');
+  const fullImage = image 
+    ? (image.startsWith("http") ? image : `https://nxoland.com${image}`)
+    : defaultImage;
 
   return (
     <Helmet>

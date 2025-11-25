@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getDiscordInviteUrl, isDiscordCtaEnabled } from "@/config/appConfig";
 import { MessageCircle } from "lucide-react";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 const Home = () => {
   const { user } = useAuth();
@@ -305,7 +306,7 @@ const Home = () => {
             {/* Company Info */}
             <div className="flex flex-col items-center md:items-start gap-3">
               <img 
-                src="/nxoland-new-logo.png" 
+                src={getStaticImageUrl('LOGO', 'public')} 
                 alt="NXOLand Logo" 
                 width="64"
                 height="64"
@@ -315,9 +316,7 @@ const Home = () => {
                 decoding="async"
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
-                  if (img.src.includes('new')) {
-                    img.src = '/nxoland-official-logo.png';
-                  }
+                  img.src = getStaticImageUrl('LOGO_OFFICIAL', 'public');
                 }}
               />
               <p className="text-white/70 text-sm">

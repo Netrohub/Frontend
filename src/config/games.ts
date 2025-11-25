@@ -1,5 +1,6 @@
-// Game images are stored in frontend/public/images/games/
-// Images can be referenced directly as: /images/games/filename.jpg
+// Game images are stored on Cloudflare Images
+// URL format: https://imagedelivery.net/{account_hash}/{image_id}/{variant}
+// Variants: public (full size), medium (800x800), thumbnail (300x300)
 
 export interface Game {
   id: string; // URL slug (e.g., "wos", "fortnite")
@@ -8,15 +9,25 @@ export interface Game {
   description?: string; // English description
   descriptionAr?: string; // Arabic description
   category: string; // Backend category (e.g., "wos_accounts")
-  image: string; // Game logo/image URL (imported asset or public path)
-  backgroundImage?: string; // Background image URL for the card (optional)
+  image: string; // Game logo/image URL (Cloudflare Images URL)
+  backgroundImage?: string; // Background image URL for the card (Cloudflare Images URL)
 }
+
+// Import Cloudflare Images utility
+import { getCloudflareImageUrl } from "@/lib/cloudflareImages";
 
 // Games configuration
 // Only 4 games are supported: Whiteout Survival, KingShot, PUBG, Fortnite
-// Game logo images should be in frontend/public/images/games/ folder
-// Recommended image size: 800x600px or similar aspect ratio
-// Supported formats: JPG, PNG, WebP
+// Images are stored on Cloudflare Images
+// 
+// To update images:
+// 1. Upload images to Cloudflare Images (Dashboard → Images → Upload)
+// 2. Copy the image ID from the uploaded image
+// 3. Replace the image IDs below with your Cloudflare image IDs
+//
+// Image IDs format: Replace these with your actual Cloudflare image IDs
+// Example: "abc123def456" (from https://imagedelivery.net/{hash}/abc123def456/public)
+
 export const GAMES: Game[] = [
   {
     id: "wos",
@@ -25,8 +36,10 @@ export const GAMES: Game[] = [
     description: "Buy and sell Whiteout Survival accounts",
     descriptionAr: "حسابات Whiteout Survival",
     category: "wos_accounts",
-    image: "/images/games/whiteout-survival.jpg",
-    backgroundImage: "/images/games/backgrounds/wos-bg.jpg", // Snow/winter theme background
+    // Replace with your Cloudflare image ID for whiteout-survival logo
+    image: getCloudflareImageUrl("WHITEOUT_SURVIVAL_LOGO_ID", "public"),
+    // Replace with your Cloudflare image ID for wos background
+    backgroundImage: getCloudflareImageUrl("WOS_BG_ID", "public"), // Snow/winter theme background
   },
   {
     id: "kingshot",
@@ -35,8 +48,10 @@ export const GAMES: Game[] = [
     description: "Premium accounts and high rankings",
     descriptionAr: "حسابات وتصنيفات عالية",
     category: "kingshot_accounts",
-    image: "/images/games/kingshot.jpg",
-    backgroundImage: "/images/games/backgrounds/kingshot-bg.jpg", // Action/shooting theme background
+    // Replace with your Cloudflare image ID for kingshot logo
+    image: getCloudflareImageUrl("KINGSHOT_LOGO_ID", "public"),
+    // Replace with your Cloudflare image ID for kingshot background
+    backgroundImage: getCloudflareImageUrl("KINGSHOT_BG_ID", "public"), // Action/shooting theme background
   },
   {
     id: "pubg",
@@ -45,8 +60,10 @@ export const GAMES: Game[] = [
     description: "Premium PUBG Mobile accounts",
     descriptionAr: "حسابات ببجي موبايل المميزة",
     category: "pubg_accounts",
-    image: "/images/games/PUBG.jpg", // Note: File is PUBG.jpg (uppercase)
-    backgroundImage: "/images/games/backgrounds/pubg-bg.jpg", // Battle royale/military theme background
+    // Replace with your Cloudflare image ID for PUBG logo
+    image: getCloudflareImageUrl("PUBG_LOGO_ID", "public"),
+    // Replace with your Cloudflare image ID for pubg background
+    backgroundImage: getCloudflareImageUrl("PUBG_BG_ID", "public"), // Battle royale/military theme background
   },
   {
     id: "fortnite",
@@ -55,8 +72,10 @@ export const GAMES: Game[] = [
     description: "Buy and sell Fortnite accounts",
     descriptionAr: "شراء وبيع حسابات فورتنايت",
     category: "fortnite_accounts",
-    image: "/images/games/fortnite.jpg",
-    backgroundImage: "/images/games/backgrounds/fortnite-bg.jpg", // Colorful/cartoon theme background
+    // Replace with your Cloudflare image ID for fortnite logo
+    image: getCloudflareImageUrl("FORTNITE_LOGO_ID", "public"),
+    // Replace with your Cloudflare image ID for fortnite background
+    backgroundImage: getCloudflareImageUrl("FORTNITE_BG_ID", "public"), // Colorful/cartoon theme background
   },
 ];
 

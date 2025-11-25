@@ -7,6 +7,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -214,7 +215,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
         aria-label={t('nav.homeAriaLabel')}
       >
         <img 
-          src="/nxoland-new-logo.png" 
+          src={getStaticImageUrl('LOGO', 'public')} 
           alt="NXOLand - Secure Game Account Trading Platform" 
           width="64"
           height="64"
@@ -223,11 +224,9 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
           loading="eager"
           fetchPriority="high"
           onError={(e) => {
-            // Fallback to old logo if new logo fails to load
+            // Fallback to official logo if main logo fails to load
             const img = e.target as HTMLImageElement;
-            if (img.src.includes('new')) {
-              img.src = '/nxoland-official-logo.png';
-            }
+            img.src = getStaticImageUrl('LOGO_OFFICIAL', 'public');
           }}
         />
       </Link>

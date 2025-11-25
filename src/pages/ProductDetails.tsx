@@ -4,16 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
-import stoveLv1 from "@/assets/stove_lv_1.png";
-import stoveLv2 from "@/assets/stove_lv_2.png";
-import stoveLv3 from "@/assets/stove_lv_3.png";
-import stoveLv4 from "@/assets/stove_lv_4.png";
-import stoveLv5 from "@/assets/stove_lv_5.png";
-import stoveLv6 from "@/assets/stove_lv_6.png";
-import stoveLv7 from "@/assets/stove_lv_7.png";
-import stoveLv8 from "@/assets/stove_lv_8.png";
-import stoveLv9 from "@/assets/stove_lv_9.png";
-import stoveLv10 from "@/assets/stove_lv_10.png";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -46,6 +37,24 @@ const ProductDetails = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
+
+  // Stove level images from Cloudflare Images
+  const stoveImages: Record<string, string> = {
+    'FC1': getStaticImageUrl('STOVE_LV_1', 'public'),
+    'FC2': getStaticImageUrl('STOVE_LV_2', 'public'),
+    'FC3': getStaticImageUrl('STOVE_LV_3', 'public'),
+    'FC4': getStaticImageUrl('STOVE_LV_4', 'public'),
+    'FC5': getStaticImageUrl('STOVE_LV_5', 'public'),
+    'FC6': getStaticImageUrl('STOVE_LV_6', 'public'),
+    'FC7': getStaticImageUrl('STOVE_LV_7', 'public'),
+    'FC8': getStaticImageUrl('STOVE_LV_8', 'public'),
+    'FC9': getStaticImageUrl('STOVE_LV_9', 'public'),
+    'FC10': getStaticImageUrl('STOVE_LV_10', 'public'),
+  };
+
+  const getStoveImage = (level: string): string => {
+    return stoveImages[level] || stoveImages['FC1'];
+  };
 
   const handleBuy = async () => {
     if (!user) {
@@ -89,22 +98,6 @@ const ProductDetails = () => {
     ));
   }, []);
 
-  // Helper to get stove level image
-  const getStoveImage = (level: string) => {
-    const stoveImages: Record<string, string> = {
-      'FC1': stoveLv1,
-      'FC2': stoveLv2,
-      'FC3': stoveLv3,
-      'FC4': stoveLv4,
-      'FC5': stoveLv5,
-      'FC6': stoveLv6,
-      'FC7': stoveLv7,
-      'FC8': stoveLv8,
-      'FC9': stoveLv9,
-      'FC10': stoveLv10,
-    };
-    return stoveImages[level] || stoveLv1;
-  };
 
   // Parse description to extract account details
   const numericDetailKeys = useMemo(
