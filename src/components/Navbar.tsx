@@ -31,29 +31,54 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="relative z-20 flex items-center justify-between px-6 py-4 md:px-12 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
-      <div className="flex items-center gap-4 order-2">
-        {showDesktopLinks && (
-          <NavigationMenu className="hidden md:block">
-            <NavigationMenuList className="gap-3">
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link 
-                    to="/"
-                    className={cn(
-                      "inline-flex h-12 min-h-[48px] w-max items-center justify-center rounded-md px-4 py-3 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                      isActive("/") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
-                    )}
-                  >
-                    {t('nav.home')}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+    <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 md:px-8 lg:px-12 py-3 md:py-4 border-b border-white/10 backdrop-blur-md bg-[hsl(200,70%,15%,0.5)]">
+      {/* Logo - Left Side */}
+      <Link 
+        to="/" 
+        className="flex items-center hover:scale-105 transition-transform duration-300 flex-shrink-0"
+        aria-label={t('nav.homeAriaLabel')}
+      >
+        <img 
+          src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
+          alt="NXOLand - Secure Game Account Trading Platform" 
+          width="64"
+          height="64"
+          className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-20 lg:w-20"
+          style={{ objectFit: 'contain', aspectRatio: '1/1' }}
+          loading="eager"
+          fetchPriority="high"
+          onError={(e) => {
+            // Fallback to local logo if Cloudflare image fails
+            const img = e.target as HTMLImageElement;
+            if (img.src.includes('imagedelivery.net')) {
+              img.src = '/nxoland-official-logo.png';
+            }
+          }}
+        />
+      </Link>
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="h-12 min-h-[48px] bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300">
-                  {t('nav.marketplace')}
-                </NavigationMenuTrigger>
+      {/* Navigation Links - Center */}
+      {showDesktopLinks && (
+        <NavigationMenu className="hidden lg:block flex-1 justify-center mx-4">
+          <NavigationMenuList className="gap-1 lg:gap-2">
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link 
+                  to="/"
+                  className={cn(
+                    "inline-flex h-10 min-h-[40px] w-max items-center justify-center rounded-lg px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                    isActive("/") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
+                  )}
+                >
+                  {t('nav.home')}
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="h-10 min-h-[40px] bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300 text-sm px-3 lg:px-4">
+                {t('nav.marketplace')}
+              </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%,0.95)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl z-50">
                     <li>
@@ -97,10 +122,10 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger className="h-12 min-h-[48px] bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300">
-                  {t('nav.community')}
-                </NavigationMenuTrigger>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger className="h-10 min-h-[40px] bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300 text-sm px-3 lg:px-4">
+                {t('nav.community')}
+              </NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <ul className="grid w-[220px] gap-2 p-3 bg-[hsl(200,70%,15%,0.95)] border border-[hsl(195,80%,70%,0.2)] shadow-[0_10px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl z-50">
                     <li>
@@ -142,96 +167,75 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
 
               {isAuthenticated && (
                 <>
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link 
-                        to="/wallet"
-                        className={cn(
-                          "inline-flex h-12 min-h-[48px] w-max items-center justify-center rounded-md px-4 py-3 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                          isActive("/wallet") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
-                        )}
-                      >
-                        {t('nav.wallet')}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link 
+                  to="/wallet"
+                  className={cn(
+                    "inline-flex h-10 min-h-[40px] w-max items-center justify-center rounded-lg px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                    isActive("/wallet") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
+                  )}
+                >
+                  {t('nav.wallet')}
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link 
-                    to="/kyc"
-                    className={cn(
-                      "inline-flex h-12 min-h-[48px] w-max items-center justify-center rounded-md px-4 py-3 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                      isActive("/kyc") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
-                    )}
-                  >
-                    {t('nav.kyc')}
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link 
+                  to="/kyc"
+                  className={cn(
+                    "inline-flex h-10 min-h-[40px] w-max items-center justify-center rounded-lg px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                    isActive("/kyc") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
+                  )}
+                >
+                  {t('nav.kyc')}
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
 
-                  <NavigationMenuItem>
-                    <NavigationMenuLink asChild>
-                      <Link 
-                        to="/profile"
-                        className={cn(
-                          "inline-flex h-12 min-h-[48px] w-max items-center justify-center rounded-md px-4 py-3 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                          isActive("/profile") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
-                        )}
-                      >
-                        {t('nav.profile')}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link 
+                  to="/profile"
+                  className={cn(
+                    "inline-flex h-10 min-h-[40px] w-max items-center justify-center rounded-lg px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                    isActive("/profile") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
+                  )}
+                >
+                  {t('nav.profile')}
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
                 </>
               )}
-            </NavigationMenuList>
-          </NavigationMenu>
-        )}
-        <div className="flex items-center gap-3">
-          {isAuthenticated && <NotificationBell />}
+          </NavigationMenuList>
+        </NavigationMenu>
+      )}
+
+      {/* Actions - Right Side */}
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        {isAuthenticated && <NotificationBell />}
+        <div className="hidden sm:flex items-center gap-2">
           <LanguageSwitcher />
           <GlobalSearch />
-          {!isAuthenticated && (
-            <Button 
-              asChild 
-              variant="outline" 
-              size="sm"
-              className="hidden md:flex border-[hsl(195,80%,70%,0.5)] text-[hsl(195,80%,70%)] hover:bg-[hsl(195,80%,70%)] hover:text-white hover:border-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)] transition-all duration-300"
-            >
-              <Link to="/auth">
-                <LogIn className="h-4 w-4 mr-2" />
-                {t('nav.login')}
-              </Link>
-            </Button>
-          )}
-          <MobileNav />
         </div>
+        {!isAuthenticated && (
+          <Button 
+            asChild 
+            variant="outline" 
+            size="sm"
+            className="hidden md:flex border-[hsl(195,80%,70%,0.5)] text-[hsl(195,80%,70%)] hover:bg-[hsl(195,80%,70%)] hover:text-white hover:border-[hsl(195,80%,70%)] hover:shadow-[0_0_20px_rgba(148,209,240,0.3)] transition-all duration-300"
+          >
+            <Link to="/auth">
+              <LogIn className="h-4 w-4 mr-2" />
+              {t('nav.login')}
+            </Link>
+          </Button>
+        )}
+        <MobileNav />
       </div>
-      
-      <Link 
-        to="/" 
-        className="flex items-center hover:scale-110 transition-transform duration-300 order-1 cursor-pointer"
-        aria-label={t('nav.homeAriaLabel')}
-      >
-        <img 
-          src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
-          alt="NXOLand - Secure Game Account Trading Platform" 
-          width="64"
-          height="64"
-          className="h-16 md:h-20 w-16 md:w-20"
-          style={{ objectFit: 'contain', aspectRatio: '1/1' }}
-          loading="eager"
-          fetchPriority="high"
-          onError={(e) => {
-            // Fallback to local logo if Cloudflare image fails
-            const img = e.target as HTMLImageElement;
-            if (img.src.includes('imagedelivery.net')) {
-              img.src = '/nxoland-official-logo.png';
-            }
-          }}
-        />
-      </Link>
     </nav>
   );
 };
