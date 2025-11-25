@@ -48,17 +48,22 @@ export function GameCard({
               alt={`${name} background`}
               className="absolute inset-0 w-full h-full object-cover 
                          group-hover:scale-110 transition-transform duration-500 z-0"
-              loading="lazy"
+              loading="eager"
               onError={(e) => {
                 // Fallback to gradient if image fails to load
                 console.error('Failed to load background image:', backgroundImage);
+                console.error('Attempted URL:', window.location.origin + backgroundImage);
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
               }}
+              onLoad={() => {
+                console.log('Background image loaded successfully:', backgroundImage);
+              }}
             />
-            {/* No overlay - background images should be fully visible */}
-            {/* Optional: Add a very subtle shadow behind logo for contrast if needed */}
-            <div className="absolute inset-0 pointer-events-none" />
+            {/* Very minimal overlay - only 5% for subtle darkening */}
+            <div className="absolute inset-0 bg-black/5 
+                          group-hover:bg-black/0 
+                          transition-all duration-300 z-[1]" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-slate-900/40 to-slate-950/60" />
@@ -79,6 +84,12 @@ export function GameCard({
               className="h-20 w-20 rounded-2xl object-cover drop-shadow-2xl 
                          group-hover:scale-110 transition-transform duration-300 relative z-10"
               loading="lazy"
+              onError={(e) => {
+                console.error('Failed to load game icon:', image);
+                const target = e.target as HTMLImageElement;
+                // Keep image visible but show error state
+                target.style.opacity = '0.5';
+              }}
             />
           </div>
         </div>
