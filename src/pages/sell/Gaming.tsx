@@ -48,7 +48,7 @@ const Gaming = () => {
           <p className="text-xl text-white/60">{t('sell.gaming.description')}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 max-w-6xl mx-auto">
           {gamingGames.map((game) => {
             // New route structure: /sell/:gameId
             const sellPath = `/sell/${game.id}`;

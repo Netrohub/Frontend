@@ -33,8 +33,8 @@ const MarketplaceGames = () => {
             </p>
           </div>
 
-          {/* Games Grid - Responsive grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          {/* Games Grid - Responsive grid - 2 columns on mobile for smaller cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 max-w-6xl mx-auto">
             {GAMES.map((game) => {
               return (
                 <GameCard

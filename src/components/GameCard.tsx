@@ -33,13 +33,13 @@ export function GameCard({
   return (
     <Link
       to={linkTo}
-      className="group relative flex flex-col items-stretch overflow-hidden rounded-2xl border border-white/10 
-                 bg-white/5/80 backdrop-blur-sm shadow-[0_18px_40px_rgba(0,0,0,0.35)] 
+      className="group relative flex flex-col items-stretch overflow-hidden rounded-xl sm:rounded-2xl border border-white/10 
+                 bg-white/5/80 backdrop-blur-sm shadow-[0_8px_20px_rgba(0,0,0,0.25)] sm:shadow-[0_18px_40px_rgba(0,0,0,0.35)] 
                  transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/60 
-                 hover:shadow-[0_24px_50px_rgba(56,189,248,0.25)] hover:bg-white/10"
+                 hover:shadow-[0_12px_30px_rgba(56,189,248,0.2)] sm:hover:shadow-[0_24px_50px_rgba(56,189,248,0.25)] hover:bg-white/10"
     >
-      {/* Game Image Section with Background */}
-      <div className="aspect-[4/5] w-full overflow-hidden relative">
+      {/* Game Image Section with Background - Smaller on mobile */}
+      <div className="aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden relative">
         {/* Background Image */}
         {backgroundImage ? (
           <>
@@ -76,7 +76,7 @@ export function GameCard({
             <img
               src={image}
               alt={name}
-              className="h-20 w-20 rounded-2xl object-cover drop-shadow-2xl 
+              className="h-12 w-12 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-xl sm:rounded-2xl object-cover drop-shadow-2xl 
                          group-hover:scale-110 transition-transform duration-300 relative z-10"
               loading="lazy"
               onError={(e) => {
@@ -129,20 +129,20 @@ export function GameCard({
         )}
       </div>
 
-      {/* Content Section */}
-      <div className={`px-4 pb-4 pt-3 flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
-        <span className="text-sm font-semibold text-white group-hover:text-cyan-100 transition-colors">
+      {/* Content Section - Smaller padding on mobile */}
+      <div className={`px-2 sm:px-3 md:px-4 pb-2 sm:pb-3 md:pb-4 pt-2 sm:pt-3 flex flex-col gap-0.5 sm:gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+        <span className="text-xs sm:text-sm font-semibold text-white group-hover:text-cyan-100 transition-colors">
           {displayName}
         </span>
         {displayDescription && (
-          <span className="text-xs text-white/60 line-clamp-2 group-hover:text-white/70 transition-colors">
+          <span className="text-[10px] sm:text-xs text-white/60 line-clamp-2 group-hover:text-white/70 transition-colors">
             {displayDescription}
           </span>
         )}
-        <span className={`mt-2 text-xs font-medium text-cyan-300 group-hover:text-cyan-200 transition-colors 
+        <span className={`mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium text-cyan-300 group-hover:text-cyan-200 transition-colors 
                           flex items-center gap-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
           {language === 'ar' ? 'عرض الحسابات' : 'View Accounts'}
-          <span className={isRTL ? 'rotate-180' : ''}>→</span>
+          <span className={`text-[10px] sm:text-xs ${isRTL ? 'rotate-180' : ''}`}>→</span>
         </span>
       </div>
     </Link>
