@@ -45,7 +45,7 @@ export const GAMES: Game[] = [
     description: "Premium PUBG Mobile accounts",
     descriptionAr: "حسابات ببجي موبايل المميزة",
     category: "pubg_accounts",
-    image: "/images/games/pubg.jpg",
+    image: "/images/games/PUBG.jpg", // Note: File is PUBG.jpg (uppercase)
     backgroundImage: "/images/games/backgrounds/pubg-bg.jpg", // Battle royale/military theme background
   },
   {
