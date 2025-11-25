@@ -25,21 +25,16 @@ export function getCloudflareImageUrl(
   imageId: string,
   variant: 'public' | 'medium' | 'thumbnail' = 'public'
 ): string {
+  // If no account hash, return empty immediately (no Cloudflare Images configured)
   if (!CLOUDFLARE_ACCOUNT_HASH) {
-    // Only warn once to avoid console spam
-    if (!hasWarnedAboutHash) {
-      console.warn('VITE_CF_IMAGES_ACCOUNT_HASH is not set. Please set it in Cloudflare Pages → Settings → Environment Variables. Images may not load correctly.');
-      hasWarnedAboutHash = true;
-    }
-    // Return empty string if hash is not set
     return '';
   }
   
-  if (!imageId || imageId.includes('_ID') || imageId.includes('PLACEHOLDER')) {
-    // Don't warn for placeholder IDs, they're expected during development
-    if (imageId && !imageId.includes('_ID') && !imageId.includes('PLACEHOLDER')) {
-      console.warn('Invalid Image ID for Cloudflare Images:', imageId);
-    }
+  // If imageId is a placeholder or invalid, return empty (will use fallback)
+  if (!imageId || 
+      imageId.includes('_ID') || 
+      imageId.includes('PLACEHOLDER') ||
+      imageId.length < 10) { // Cloudflare image IDs are usually longer
     return '';
   }
 

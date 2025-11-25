@@ -17,10 +17,18 @@ export interface Game {
 import { getCloudflareImageUrl } from "@/lib/cloudflareImages";
 
 // Helper to get image with fallback
+// Uses local images by default until Cloudflare Images is properly configured
 function getGameImage(imageId: string, fallbackPath: string): string {
+  // Check if Cloudflare is configured and imageId is valid
   const cloudflareUrl = getCloudflareImageUrl(imageId, 'public');
-  // If Cloudflare URL is empty (not configured), use local fallback
-  return cloudflareUrl || fallbackPath;
+  
+  // Only use Cloudflare URL if it's valid (not empty and not a placeholder)
+  if (cloudflareUrl && !imageId.includes('_ID') && !imageId.includes('PLACEHOLDER')) {
+    return cloudflareUrl;
+  }
+  
+  // Use local fallback immediately (faster, no timeout)
+  return fallbackPath;
 }
 
 // Games configuration
@@ -46,7 +54,7 @@ export const GAMES: Game[] = [
     // Replace with your Cloudflare image ID for whiteout-survival logo
     image: getGameImage("WHITEOUT_SURVIVAL_LOGO_ID", "/images/games/whiteout-survival.jpg"),
     // Replace with your Cloudflare image ID for wos background
-    backgroundImage: getCloudflareImageUrl("WOS_BG_ID", "public") || "/images/games/backgrounds/wos-bg.jpg", // Snow/winter theme background
+    backgroundImage: getGameImage("WOS_BG_ID", "/images/games/backgrounds/wos-bg.jpg"), // Snow/winter theme background
   },
   {
     id: "kingshot",
@@ -58,7 +66,7 @@ export const GAMES: Game[] = [
     // Replace with your Cloudflare image ID for kingshot logo
     image: getGameImage("KINGSHOT_LOGO_ID", "/images/games/kingshot.jpg"),
     // Replace with your Cloudflare image ID for kingshot background
-    backgroundImage: getCloudflareImageUrl("KINGSHOT_BG_ID", "public") || "/images/games/backgrounds/kingshot-bg.jpg", // Action/shooting theme background
+    backgroundImage: getGameImage("KINGSHOT_BG_ID", "/images/games/backgrounds/kingshot-bg.jpg"), // Action/shooting theme background
   },
   {
     id: "pubg",
@@ -70,7 +78,7 @@ export const GAMES: Game[] = [
     // Replace with your Cloudflare image ID for PUBG logo
     image: getGameImage("PUBG_LOGO_ID", "/images/games/PUBG.jpg"),
     // Replace with your Cloudflare image ID for pubg background
-    backgroundImage: getCloudflareImageUrl("PUBG_BG_ID", "public") || "/images/games/backgrounds/pubg-bg.jpg", // Battle royale/military theme background
+    backgroundImage: getGameImage("PUBG_BG_ID", "/images/games/backgrounds/pubg-bg.jpg"), // Battle royale/military theme background
   },
   {
     id: "fortnite",
@@ -82,7 +90,7 @@ export const GAMES: Game[] = [
     // Replace with your Cloudflare image ID for fortnite logo
     image: getGameImage("FORTNITE_LOGO_ID", "/images/games/fortnite.jpg"),
     // Replace with your Cloudflare image ID for fortnite background
-    backgroundImage: getCloudflareImageUrl("FORTNITE_BG_ID", "public") || "/images/games/backgrounds/fortnite-bg.jpg", // Colorful/cartoon theme background
+    backgroundImage: getGameImage("FORTNITE_BG_ID", "/images/games/backgrounds/fortnite-bg.jpg"), // Colorful/cartoon theme background
   },
 ];
 

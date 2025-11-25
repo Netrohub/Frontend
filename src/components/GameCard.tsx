@@ -48,7 +48,7 @@ export function GameCard({
               alt={`${name} background`}
               className="absolute inset-0 w-full h-full object-cover 
                          group-hover:scale-110 transition-transform duration-500 z-0"
-              loading="eager"
+              loading="lazy"
               onError={(e) => {
                 // Fallback to gradient if image fails to load
                 const target = e.target as HTMLImageElement;
