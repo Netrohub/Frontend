@@ -4,41 +4,77 @@ interface GameCardProps {
   id: string;
   name: string;
   nameAr?: string;
+  description?: string;
+  descriptionAr?: string;
   image: string;
   label?: string;
   language?: 'ar' | 'en';
+  to?: string; // Optional custom route (for sell pages)
 }
 
-export function GameCard({ id, name, nameAr, image, label, language = 'en' }: GameCardProps) {
+export function GameCard({ 
+  id, 
+  name, 
+  nameAr, 
+  description,
+  descriptionAr,
+  image, 
+  label, 
+  language = 'en',
+  to 
+}: GameCardProps) {
   const displayName = language === 'ar' && nameAr ? nameAr : name;
+  const displayDescription = language === 'ar' && descriptionAr ? descriptionAr : (description || '');
+  const linkTo = to || `/marketplace/${id}`;
+  const isRTL = language === 'ar';
 
   return (
     <Link
-      to={`/marketplace/${id}`}
-      className="group relative w-full max-w-[160px] rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-3
-                 hover:border-[hsl(195,80%,70%,0.5)] hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] transition-all duration-300 hover:scale-105"
+      to={linkTo}
+      className="group relative flex flex-col items-stretch overflow-hidden rounded-2xl border border-white/10 
+                 bg-white/5/80 backdrop-blur-sm shadow-[0_18px_40px_rgba(0,0,0,0.35)] 
+                 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-300/60 
+                 hover:shadow-[0_24px_50px_rgba(56,189,248,0.25)] hover:bg-white/10"
     >
-      <div className="relative">
+      {/* Game Image Section */}
+      <div className="aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-slate-950/60 via-slate-900/40 to-slate-950/60 
+                      flex items-center justify-center relative">
+        {/* Gradient overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(195,80%,50%,0.2)] to-transparent 
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
         <img
           src={image}
           alt={name}
-          className="w-24 h-24 mx-auto rounded-xl object-cover"
+          className="h-20 w-20 rounded-2xl object-cover drop-shadow-lg 
+                     group-hover:scale-110 transition-transform duration-300"
           loading="lazy"
         />
 
         {label && (
           <span
-            className="absolute -top-1 -right-1 bg-[hsl(195,80%,50%)] text-white text-[10px] px-2 py-[3px]
-                       rounded-md font-medium shadow-sm"
+            className="absolute top-2 right-2 bg-[hsl(195,80%,50%)] text-white text-[10px] px-2 py-[3px]
+                       rounded-md font-medium shadow-lg z-10"
           >
             {label}
           </span>
         )}
       </div>
 
-      <div className="mt-3 text-center">
-        <span className="block text-sm font-semibold tracking-wide text-white">
+      {/* Content Section */}
+      <div className={`px-4 pb-4 pt-3 flex flex-col gap-1 ${isRTL ? 'text-right' : 'text-left'}`}>
+        <span className="text-sm font-semibold text-white group-hover:text-cyan-100 transition-colors">
           {displayName}
+        </span>
+        {displayDescription && (
+          <span className="text-xs text-white/60 line-clamp-2 group-hover:text-white/70 transition-colors">
+            {displayDescription}
+          </span>
+        )}
+        <span className={`mt-2 text-xs font-medium text-cyan-300 group-hover:text-cyan-200 transition-colors 
+                          flex items-center gap-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          {language === 'ar' ? 'عرض الحسابات' : 'View Accounts'}
+          <span className={isRTL ? 'rotate-180' : ''}>→</span>
         </span>
       </div>
     </Link>

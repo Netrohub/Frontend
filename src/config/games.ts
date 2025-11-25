@@ -5,6 +5,8 @@ export interface Game {
   id: string; // URL slug (e.g., "wos", "fortnite")
   name: string; // Display name
   nameAr: string; // Arabic name
+  description?: string; // English description
+  descriptionAr?: string; // Arabic description
   category: string; // Backend category (e.g., "wos_accounts")
   image: string; // Game logo/image URL (imported asset or public path)
 }
@@ -19,6 +21,8 @@ export const GAMES: Game[] = [
     id: "wos",
     name: "Whiteout Survival",
     nameAr: "النجاة في الصقيع",
+    description: "Buy and sell Whiteout Survival accounts",
+    descriptionAr: "حسابات Whiteout Survival",
     category: "wos_accounts",
     image: "/images/games/whiteout-survival.jpg",
   },
@@ -26,6 +30,8 @@ export const GAMES: Game[] = [
     id: "kingshot",
     name: "KingShot",
     nameAr: "كينج شوت",
+    description: "Premium accounts and high rankings",
+    descriptionAr: "حسابات وتصنيفات عالية",
     category: "kingshot_accounts",
     image: "/images/games/kingshot.jpg",
   },
@@ -33,6 +39,8 @@ export const GAMES: Game[] = [
     id: "pubg",
     name: "PUBG Mobile",
     nameAr: "ببجي موبايل",
+    description: "Premium PUBG Mobile accounts",
+    descriptionAr: "حسابات ببجي موبايل المميزة",
     category: "pubg_accounts",
     image: "/images/games/pubg.jpg",
   },
@@ -40,6 +48,8 @@ export const GAMES: Game[] = [
     id: "fortnite",
     name: "Fortnite",
     nameAr: "فورتنايت",
+    description: "Buy and sell Fortnite accounts",
+    descriptionAr: "شراء وبيع حسابات فورتنايت",
     category: "fortnite_accounts",
     image: "/images/games/fortnite.jpg",
   },

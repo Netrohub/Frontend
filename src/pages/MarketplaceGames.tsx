@@ -33,8 +33,8 @@ const MarketplaceGames = () => {
             </p>
           </div>
 
-          {/* Games Grid - Vertical grid on mobile, grid on desktop */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+          {/* Games Grid - Responsive grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {GAMES.map((game) => {
               return (
                 <GameCard
@@ -42,6 +42,8 @@ const MarketplaceGames = () => {
                   id={game.id}
                   name={game.name}
                   nameAr={game.nameAr}
+                  description={game.description}
+                  descriptionAr={game.descriptionAr}
                   image={game.image}
                   language={language}
                 />

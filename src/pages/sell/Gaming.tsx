@@ -48,31 +48,23 @@ const Gaming = () => {
           <p className="text-xl text-white/60">{t('sell.gaming.description')}</p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {gamingGames.map((game) => {
             // New route structure: /sell/:gameId
             const sellPath = `/sell/${game.id}`;
             
             return (
-              <div key={game.id} className="flex flex-col items-center">
-                <Link to={sellPath} className="block no-underline">
-                  <div className="group relative w-full max-w-[160px] rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-3 hover:border-[hsl(195,80%,70%,0.5)] hover:shadow-[0_0_30px_rgba(56,189,248,0.3)] transition-all duration-300 hover:scale-105">
-                    <div className="relative">
-                      <img
-                        src={game.image}
-                        alt={game.name}
-                        className="w-24 h-24 mx-auto rounded-xl object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="mt-3 text-center">
-                      <span className="block text-sm font-semibold tracking-wide text-white">
-                        {language === 'ar' && game.nameAr ? game.nameAr : game.name}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </div>
+              <GameCard
+                key={game.id}
+                id={game.id}
+                name={game.name}
+                nameAr={game.nameAr}
+                description={game.description}
+                descriptionAr={game.descriptionAr}
+                image={game.image}
+                language={language}
+                to={sellPath}
+              />
             );
           })}
         </div>
