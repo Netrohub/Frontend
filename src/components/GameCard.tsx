@@ -47,13 +47,19 @@ export function GameCard({
               src={backgroundImage}
               alt={`${name} background`}
               className="absolute inset-0 w-full h-full object-cover 
-                         group-hover:scale-110 transition-transform duration-500"
+                         group-hover:scale-110 transition-transform duration-500 z-0"
               loading="lazy"
+              onError={(e) => {
+                // Fallback to gradient if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
             />
-            {/* Dark overlay for better contrast */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-950/80 via-slate-900/70 to-slate-950/80 
-                          group-hover:from-slate-950/70 group-hover:via-slate-900/60 group-hover:to-slate-950/70 
-                          transition-all duration-300" />
+            {/* Lighter overlay for transparency - allows background image to show through */}
+            {/* Reduced opacity: 40% -> 30% -> 40% for better visibility */}
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-950/40 via-slate-900/30 to-slate-950/40 
+                          group-hover:from-slate-950/30 group-hover:via-slate-900/20 group-hover:to-slate-950/30 
+                          transition-all duration-300 z-[1]" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-slate-900/40 to-slate-950/60" />
