@@ -51,15 +51,14 @@ export function GameCard({
               loading="lazy"
               onError={(e) => {
                 // Fallback to gradient if image fails to load
+                console.error('Failed to load background image:', backgroundImage);
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
               }}
             />
-            {/* Lighter overlay for transparency - allows background image to show through */}
-            {/* Reduced opacity: 40% -> 30% -> 40% for better visibility */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-950/40 via-slate-900/30 to-slate-950/40 
-                          group-hover:from-slate-950/30 group-hover:via-slate-900/20 group-hover:to-slate-950/30 
-                          transition-all duration-300 z-[1]" />
+            {/* No overlay - background images should be fully visible */}
+            {/* Optional: Add a very subtle shadow behind logo for contrast if needed */}
+            <div className="absolute inset-0 pointer-events-none" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-slate-900/40 to-slate-950/60" />
@@ -69,15 +68,19 @@ export function GameCard({
         <div className="absolute inset-0 bg-gradient-to-t from-[hsl(195,80%,50%,0.2)] to-transparent 
                         opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
-        {/* Game Logo - Centered */}
+        {/* Game Logo - Centered with shadow for visibility */}
         <div className="relative z-10 flex items-center justify-center h-full">
-          <img
-            src={image}
-            alt={name}
-            className="h-20 w-20 rounded-2xl object-cover drop-shadow-2xl 
-                       group-hover:scale-110 transition-transform duration-300"
-            loading="lazy"
-          />
+          <div className="relative">
+            {/* Subtle shadow behind logo for better visibility on any background */}
+            <div className="absolute inset-0 bg-black/30 rounded-2xl blur-md -z-10" />
+            <img
+              src={image}
+              alt={name}
+              className="h-20 w-20 rounded-2xl object-cover drop-shadow-2xl 
+                         group-hover:scale-110 transition-transform duration-300 relative z-10"
+              loading="lazy"
+            />
+          </div>
         </div>
 
         {label && (
