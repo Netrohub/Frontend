@@ -357,6 +357,14 @@ const translations: Record<Language, Record<string, string>> = {
 'sell.wos.thirdBillAlt': 'ثالث فاتورة',
 'sell.wos.lastBillAlt': 'آخر فاتورة',
 
+// Sell KingShot
+'sell.kingshot.pageTitle': 'إضافة حساب كينج شوت للبيع',
+'sell.kingshot.pageSubtitle': 'أضف تفاصيل الحساب وابدأ البيع',
+'sell.kingshot.kycRequired': 'التحقق من الهوية (KYC) مطلوب',
+'sell.kingshot.kycDescription1': 'يجب إكمال عملية التحقق من الهوية قبل أن تتمكن من عرض حسابات للبيع على المنصة.',
+'sell.kingshot.kycDescription2': 'هذا الإجراء إلزامي لضمان أمان وموثوقية جميع البائعين على المنصة.',
+'sell.kingshot.startVerification': 'ابدأ التحقق الآن',
+
     
 // Common
 'common.loading': 'جارٍ التحميل...',
@@ -2207,6 +2215,14 @@ const translations: Record<Language, Record<string, string>> = {
 'sell.wos.secondBillAlt': 'Second Receipt',
 'sell.wos.thirdBillAlt': 'Third Receipt',
 'sell.wos.lastBillAlt': 'Latest Receipt',
+
+// Sell KingShot
+'sell.kingshot.pageTitle': 'Add KingShot Account for Sale',
+'sell.kingshot.pageSubtitle': 'Add account details and start selling',
+'sell.kingshot.kycRequired': 'Identity Verification (KYC) Required',
+'sell.kingshot.kycDescription1': 'You must complete identity verification before you can list accounts for sale on the platform.',
+'sell.kingshot.kycDescription2': 'This is mandatory to ensure the security and reliability of all sellers on the platform.',
+'sell.kingshot.startVerification': 'Start Verification Now',
 
 
 // Common

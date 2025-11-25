@@ -54,14 +54,34 @@ const SellWOS = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] to-[hsl(195,60%,25%)] px-4 py-12">
         <Card className="max-w-xl w-full p-6 bg-white/5 border-white/10 backdrop-blur-sm space-y-5">
-          <h1 className="text-2xl font-black text-white">{t('sell.wos.kycRequired')}</h1>
-          <p className="text-white/70">{t('sell.wos.kycDescription1')}</p>
-          <p className="text-white/70">{t('sell.wos.kycDescription2')}</p>
+          <h1 className="text-2xl font-black text-white">
+            {currentGameId === 'kingshot' 
+              ? t('sell.kingshot.kycRequired')
+              : t('sell.wos.kycRequired')
+            }
+          </h1>
+          <p className="text-white/70">
+            {currentGameId === 'kingshot' 
+              ? t('sell.kingshot.kycDescription1')
+              : t('sell.wos.kycDescription1')
+            }
+          </p>
+          <p className="text-white/70">
+            {currentGameId === 'kingshot' 
+              ? t('sell.kingshot.kycDescription2')
+              : t('sell.wos.kycDescription2')
+            }
+          </p>
           <Button
             asChild
             className="w-full justify-center gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white"
           >
-            <Link to="/kyc">{t('sell.wos.startVerification')}</Link>
+            <Link to="/kyc">
+              {currentGameId === 'kingshot' 
+                ? t('sell.kingshot.startVerification')
+                : t('sell.wos.startVerification')
+              }
+            </Link>
           </Button>
         </Card>
       </div>
@@ -461,13 +481,13 @@ const SellWOS = () => {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-black text-white mb-2">
             {currentGameId === 'kingshot' 
-              ? (language === 'ar' ? 'بيع حساب كينج شوت' : 'Sell KingShot Account')
+              ? t('sell.kingshot.pageTitle')
               : t('sell.wos.pageTitle')
             }
           </h1>
           <p className="text-white/60">
             {currentGameId === 'kingshot'
-              ? (language === 'ar' ? 'أضف حساب كينج شوت للبيع' : 'Add your KingShot account for sale')
+              ? t('sell.kingshot.pageSubtitle')
               : t('sell.wos.pageSubtitle')
             }
           </p>
