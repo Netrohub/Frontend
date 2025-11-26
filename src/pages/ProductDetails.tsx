@@ -52,7 +52,19 @@ const ProductDetails = () => {
     'FC10': getStaticImageUrl('STOVE_LV_10', 'public'),
   };
 
-  const getStoveImage = (level: string): string => {
+  // Town Center level images for Kingshot (using provided URLs)
+  const townCenterImages: Record<string, string> = {
+    'FC1': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_1.png',
+    'FC2': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_2.png',
+    'FC3': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_3.png',
+    'FC4': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_4.png',
+    'FC5': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_5.png',
+  };
+
+  const getStoveImage = (level: string, isKingshot: boolean = false): string => {
+    if (isKingshot && townCenterImages[level]) {
+      return townCenterImages[level];
+    }
     return stoveImages[level] || stoveImages['FC1'];
   };
 
@@ -109,6 +121,15 @@ const ProductDetails = () => {
       'قوة الخبير',
       'قوة البطل الإجمالية',
       'قوة الحيوانات',
+      // English keys for Kingshot
+      'Personal Power',
+      'Troops',
+      'Hero Power',
+      'Mystic Trial',
+      'Expert Power',
+      'Hero\'s Total Power',
+      'Pet Power',
+      'Town Center',
     ]),
     []
   );
@@ -120,7 +141,13 @@ const ProductDetails = () => {
     lines.forEach(line => {
       const [key, value] = line.split(':').map(s => s.trim());
       if (key && value) {
-        details[key] = numericDetailKeys.has(key) ? formatCompactNumber(value) : value;
+        // Map English keys to Arabic keys for consistency
+        const mappedKey = key === 'Personal Power' ? 'القوة الشخصية' :
+                         key === 'Town Center' ? 'حجرة الاحتراق' :
+                         key === 'Mystic Trial' ? 'الجزيرة' :
+                         key;
+        const shouldFormat = numericDetailKeys.has(key) || numericDetailKeys.has(mappedKey);
+        details[mappedKey] = shouldFormat ? formatCompactNumber(value) : value;
       }
     });
     
@@ -345,9 +372,9 @@ const ProductDetails = () => {
                 
                 {accountDetails['حجرة الاحتراق'] && (
                   <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
-                    <div className="text-xs text-[hsl(280,70%,70%)] mb-1">{t('product.stoveLevel')}</div>
+                    <div className="text-xs text-[hsl(280,70%,70%)] mb-1">{isKingshot ? 'Town Center' : t('product.stoveLevel')}</div>
                     <div className="flex items-center gap-2">
-                      <img src={getStoveImage(accountDetails['حجرة الاحتراق'])} alt={accountDetails['حجرة الاحتراق']} className="w-8 h-8" />
+                      <img src={getStoveImage(accountDetails['حجرة الاحتراق'], isKingshot)} alt={accountDetails['حجرة الاحتراق']} className="w-8 h-8" />
                       <span className="font-bold text-white text-lg">{accountDetails['حجرة الاحتراق']}</span>
                     </div>
                   </div>
@@ -374,7 +401,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.2)] to-[hsl(195,80%,30%,0.15)] rounded-lg border-2 border-[hsl(195,80%,70%,0.4)] shadow-[0_0_20px_rgba(56,189,248,0.2)]">
                     <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold flex items-center gap-1">
                       <Zap className="h-3 w-3" />
-                      {t('product.personalPower')}
+                      {isKingshot ? 'Personal Power' : t('product.personalPower')}
                     </div>
                     <div className="font-black text-[hsl(195,80%,70%)] text-xl">{accountDetails['القوة الشخصية']}</div>
                   </div>
@@ -394,7 +421,7 @@ const ProductDetails = () => {
                   <div className="p-3 bg-gradient-to-br from-[hsl(220,70%,50%,0.15)] to-[hsl(220,70%,30%,0.1)] rounded-lg border border-[hsl(220,70%,70%,0.2)]">
                     <div className="text-xs text-[hsl(220,70%,70%)] mb-1 flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
-                      {t('product.island')}
+                      {isKingshot ? 'Mystic Trial' : t('product.island')}
                     </div>
                     <div className="font-bold text-white text-lg">{accountDetails['الجزيرة']}</div>
                   </div>

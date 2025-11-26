@@ -33,6 +33,15 @@ const stoveImages = {
   10: getStaticImageUrl('STOVE_LV_10', 'public'),
 };
 
+// Town Center level images for Kingshot (using provided URLs)
+const townCenterImages = {
+  1: 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_1.png',
+  2: 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_2.png',
+  3: 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_3.png',
+  4: 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_4.png',
+  5: 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_5.png',
+};
+
 const SellWOS = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -396,12 +405,18 @@ const SellWOS = () => {
       const yesNo = (value: string) => value === 'yes' ? t('sell.wos.yes') : t('sell.wos.no');
       const descriptionParts = [
         t('sell.wos.descriptionServer', { server }),
-        t('sell.wos.descriptionFurnace', { level: stoveLevel }),
+        currentGameId === 'kingshot' 
+          ? `Town Center: ${stoveLevel}`
+          : t('sell.wos.descriptionFurnace', { level: stoveLevel }),
         helios.length > 0 ? t('sell.wos.descriptionHelios', { helios: helios.join(', ') }) : t('sell.wos.descriptionHeliosNone'),
         t('sell.wos.descriptionTroops', { troops: formattedTroops }),
-        t('sell.wos.descriptionTotalPower', { power: formattedTotalPower }),
+        currentGameId === 'kingshot'
+          ? `Personal Power: ${formattedTotalPower}`
+          : t('sell.wos.descriptionTotalPower', { power: formattedTotalPower }),
         t('sell.wos.descriptionHeroPower', { power: formattedHeroPower }),
-        t('sell.wos.descriptionIsland', { island: formattedIsland }),
+        currentGameId === 'kingshot'
+          ? `Mystic Trial: ${formattedIsland}`
+          : t('sell.wos.descriptionIsland', { island: formattedIsland }),
         t('sell.wos.descriptionExpertPower', { power: formattedExpertPower }),
         t('sell.wos.descriptionHeroTotalPower', { power: formattedHeroTotalPower }),
         t('sell.wos.descriptionPetPower', { power: formattedPetPower }),
@@ -560,72 +575,113 @@ const SellWOS = () => {
                 <h3 className="text-lg font-bold text-white">{t('sell.wos.accountDetails')}</h3>
                 
                 <div>
-                  <Label className="text-white mb-2 block">{t('sell.wos.furnaceLevel')}</Label>
+                  <Label className="text-white mb-2 block">
+                    {currentGameId === 'kingshot' ? 'Town Center *' : t('sell.wos.furnaceLevel')}
+                  </Label>
                   <Select value={stoveLevel} onValueChange={setStoveLevel} required>
                     <SelectTrigger className="bg-white/5 border-white/10 text-white">
-                      <SelectValue placeholder={t('sell.wos.selectFurnaceLevel')} />
+                      <SelectValue placeholder={currentGameId === 'kingshot' ? 'Select Town Center' : t('sell.wos.selectFurnaceLevel')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="FC1">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[1]} alt="FC1" className="w-8 h-8" />
-                          <span>FC1</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC2">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[2]} alt="FC2" className="w-8 h-8" />
-                          <span>FC2</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC3">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[3]} alt="FC3" className="w-8 h-8" />
-                          <span>FC3</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC4">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[4]} alt="FC4" className="w-8 h-8" />
-                          <span>FC4</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC5">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[5]} alt="FC5" className="w-8 h-8" />
-                          <span>FC5</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC6">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[6]} alt="FC6" className="w-8 h-8" />
-                          <span>FC6</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC7">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[7]} alt="FC7" className="w-8 h-8" />
-                          <span>FC7</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC8">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[8]} alt="FC8" className="w-8 h-8" />
-                          <span>FC8</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC9">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[9]} alt="FC9" className="w-8 h-8" />
-                          <span>FC9</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="FC10">
-                        <div className="flex items-center gap-2">
-                          <img src={stoveImages[10]} alt="FC10" className="w-8 h-8" />
-                          <span>FC10</span>
-                        </div>
-                      </SelectItem>
+                      {currentGameId === 'kingshot' ? (
+                        // Kingshot: Only 5 levels with Town Center icons
+                        <>
+                          <SelectItem value="FC1">
+                            <div className="flex items-center gap-2">
+                              <img src={townCenterImages[1]} alt="FC1" className="w-8 h-8" />
+                              <span>FC1</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC2">
+                            <div className="flex items-center gap-2">
+                              <img src={townCenterImages[2]} alt="FC2" className="w-8 h-8" />
+                              <span>FC2</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC3">
+                            <div className="flex items-center gap-2">
+                              <img src={townCenterImages[3]} alt="FC3" className="w-8 h-8" />
+                              <span>FC3</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC4">
+                            <div className="flex items-center gap-2">
+                              <img src={townCenterImages[4]} alt="FC4" className="w-8 h-8" />
+                              <span>FC4</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC5">
+                            <div className="flex items-center gap-2">
+                              <img src={townCenterImages[5]} alt="FC5" className="w-8 h-8" />
+                              <span>FC5</span>
+                            </div>
+                          </SelectItem>
+                        </>
+                      ) : (
+                        // WOS: All 10 levels
+                        <>
+                          <SelectItem value="FC1">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[1]} alt="FC1" className="w-8 h-8" />
+                              <span>FC1</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC2">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[2]} alt="FC2" className="w-8 h-8" />
+                              <span>FC2</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC3">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[3]} alt="FC3" className="w-8 h-8" />
+                              <span>FC3</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC4">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[4]} alt="FC4" className="w-8 h-8" />
+                              <span>FC4</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC5">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[5]} alt="FC5" className="w-8 h-8" />
+                              <span>FC5</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC6">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[6]} alt="FC6" className="w-8 h-8" />
+                              <span>FC6</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC7">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[7]} alt="FC7" className="w-8 h-8" />
+                              <span>FC7</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC8">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[8]} alt="FC8" className="w-8 h-8" />
+                              <span>FC8</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC9">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[9]} alt="FC9" className="w-8 h-8" />
+                              <span>FC9</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="FC10">
+                            <div className="flex items-center gap-2">
+                              <img src={stoveImages[10]} alt="FC10" className="w-8 h-8" />
+                              <span>FC10</span>
+                            </div>
+                          </SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -697,13 +753,13 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <Zap className="h-4 w-4 text-[hsl(40,90%,55%)]" />
-                      {t('sell.wos.totalPower')}
+                      {currentGameId === 'kingshot' ? 'Personal Power *' : t('sell.wos.totalPower')}
                     </Label>
                     <Input 
                       type="text"
                       value={totalPower}
                       onChange={(e) => handleNumericInput(e.target.value, setTotalPower, { allowSuffix: true })}
-                      placeholder={t('sell.wos.totalPowerPlaceholder')}
+                      placeholder={currentGameId === 'kingshot' ? 'Example: 50M or 50,000,000' : t('sell.wos.totalPowerPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title={t('sell.wos.numericInputHint')}
@@ -733,13 +789,13 @@ const SellWOS = () => {
                   <div>
                     <Label className="text-white mb-2 block flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-[hsl(220,70%,70%)]" />
-                      {t('sell.wos.island')}
+                      {currentGameId === 'kingshot' ? 'Mystic Trial *' : t('sell.wos.island')}
                     </Label>
                     <Input 
                       type="text"
                       value={island}
                       onChange={(e) => handleNumericInput(e.target.value, setIsland, { allowSuffix: true })}
-                      placeholder={t('sell.wos.islandPlaceholder')}
+                      placeholder={currentGameId === 'kingshot' ? 'Example: 7 or 1K' : t('sell.wos.islandPlaceholder')}
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       pattern="^[0-9٠-٩,.\s]*[KMB]?$"
                       title={t('sell.wos.numericInputHint')}

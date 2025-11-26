@@ -76,6 +76,7 @@ export function GameCard({
             <img
               src={image}
               alt={name}
+
               className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 rounded-xl sm:rounded-2xl object-contain sm:object-cover drop-shadow-2xl 
                          group-hover:scale-110 transition-transform duration-300 relative z-10"
               loading="eager"
