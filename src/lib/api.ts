@@ -641,8 +641,13 @@ export const adminApi = {
   updateListingStatus: (id: number, status: 'active' | 'inactive' | 'sold') =>
     api.put<{ message: string; listing: any }>(`/admin/listings/${id}/status`, { status }),
   
-  deleteListing: (id: number) =>
-    api.delete<{ message: string }>(`/admin/listings/${id}`),
+  deleteListing: (id: number, deleteOrders: boolean = false) => {
+    // For DELETE requests, we need to send data as query params or use a different approach
+    // Laravel accepts JSON in DELETE body, but axios/fetch might not always support it
+    // Using query params is more reliable
+    const url = `/admin/listings/${id}${deleteOrders ? '?delete_orders=true' : ''}`;
+    return api.delete<{ message: string; orders_deleted: number; orders_remaining: number }>(url);
+  },
   
   // Orders
   orders: (params?: { page?: number; search?: string }) => {
