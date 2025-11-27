@@ -71,7 +71,7 @@ export function getImageVariant(baseUrl: string, variant: 'public' | 'medium' | 
  */
 export const STATIC_IMAGE_IDS = {
   // Logo
-  LOGO: 'NXOLAND_LOGO_ID', // Replace with actual Cloudflare image ID
+  LOGO: '0d47a52e-6e68-4317-8a68-9efc80165700', // Replace with actual Cloudflare image ID
   LOGO_OFFICIAL: 'NXOLAND_OFFICIAL_LOGO_ID', // Replace with actual Cloudflare image ID
   
   // Stove levels (Whiteout Survival)
