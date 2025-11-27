@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2, ChevronLeft, ChevronRight, Clock, Smartphone, Lock } from "lucide-react";
 import { getStaticImageUrl } from "@/lib/cloudflareImages";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -335,6 +335,34 @@ const ProductDetails = () => {
 
               <div className="flex items-baseline gap-2 mb-6">
                 <span className="text-5xl font-black text-[hsl(195,80%,70%)]">{formatCurrency(listing.price)}</span>
+              </div>
+
+              {/* Product Features / Deliverables */}
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-3">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    {t('product.features.instantDelivery')}
+                  </Badge>
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Smartphone className="h-4 w-4" />
+                    {t('product.features.digitalAccess')}
+                  </Badge>
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    {t('product.features.escrowProtection')}
+                  </Badge>
+                  <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    {t('product.features.securePayment')}
+                  </Badge>
+                  {listing.user?.is_verified && (
+                    <Badge className="bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)] px-3 py-1.5 flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      {t('product.features.verifiedAccount')}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
 
