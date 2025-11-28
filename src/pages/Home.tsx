@@ -98,13 +98,9 @@ const Home = () => {
                               className="text-[hsl(195,100%,70%)]"
                               style={{
                                 textShadow: `
-                                  0 0 10px rgba(56, 189, 248, 0.8),
-                                  0 0 20px rgba(56, 189, 248, 0.6),
-                                  0 0 30px rgba(56, 189, 248, 0.4),
-                                  0 0 40px rgba(56, 189, 248, 0.3),
-                                  0 0 50px rgba(56, 189, 248, 0.2)
+                                  0 0 8px rgba(56, 189, 248, 0.5),
+                                  0 0 16px rgba(56, 189, 248, 0.3)
                                 `,
-                                filter: 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.9))',
                               }}
                             >
                               NXOLand
