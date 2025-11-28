@@ -1984,7 +1984,7 @@ const translations: Record<Language, Record<string, string>> = {
 
 
 // Home
-'home.hero.title': 'NXOLand — Your Trusted Platform for Digital Gaming Products',
+'home.hero.title': 'NXOLand Your Trusted Platform for Digital Gaming Products',
 'home.hero.subtitle': 'Buy and sell digital gaming products easily, safely, and instantly with our smart escrow system.',
 'home.hero.browseAccounts': 'Browse Products',
 'home.hero.learnMore': 'Learn More',

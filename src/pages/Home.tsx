@@ -83,7 +83,40 @@ const Home = () => {
           {/* Main Heading */}
           <div className="space-y-6 max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-tight text-white drop-shadow-[0_0_30px_rgba(148,209,240,0.5)]">
-              {t('home.hero.title')}
+              {(() => {
+                const title = t('home.hero.title');
+                // Split by "NXOLand" to style it separately
+                const parts = title.split('NXOLand');
+                if (parts.length > 1) {
+                  return (
+                    <>
+                      {parts.map((part, index) => (
+                        <span key={index}>
+                          {part}
+                          {index < parts.length - 1 && (
+                            <span 
+                              className="text-[hsl(195,100%,70%)]"
+                              style={{
+                                textShadow: `
+                                  0 0 10px rgba(56, 189, 248, 0.8),
+                                  0 0 20px rgba(56, 189, 248, 0.6),
+                                  0 0 30px rgba(56, 189, 248, 0.4),
+                                  0 0 40px rgba(56, 189, 248, 0.3),
+                                  0 0 50px rgba(56, 189, 248, 0.2)
+                                `,
+                                filter: 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.9))',
+                              }}
+                            >
+                              NXOLand
+                            </span>
+                          )}
+                        </span>
+                      ))}
+                    </>
+                  );
+                }
+                return title;
+              })()}
             </h1>
             <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
               {t('home.hero.subtitle')}
