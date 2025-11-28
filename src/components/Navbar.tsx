@@ -123,18 +123,18 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
               </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link 
-                  to="/auctions"
-                  className={cn(
-                    "inline-flex h-10 min-h-[40px] w-max items-center justify-center rounded-lg px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
-                    isActive("/auctions") || location.pathname.startsWith("/auction/") ? "bg-[hsl(195,80%,70%,0.2)] text-[hsl(195,80%,70%)] shadow-[0_0_20px_rgba(148,209,240,0.3)]" : "text-white/90"
-                  )}
-                >
-                  <Gavel className="w-4 h-4 mr-2" />
-                  {t('nav.auctions') || 'Auctions'}
-                </Link>
-              </NavigationMenuLink>
+              <a 
+                href="https://bid.nxoland.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={cn(
+                  "inline-flex h-10 min-h-[40px] w-max items-center justify-center rounded-lg px-3 lg:px-4 py-2 text-sm font-medium transition-all duration-300 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] focus:bg-[hsl(195,80%,70%,0.1)] focus:outline-none disabled:pointer-events-none disabled:opacity-50",
+                  "text-white/90"
+                )}
+              >
+                <Gavel className="w-4 h-4 mr-2" />
+                {t('nav.auctions') || 'Auctions'}
+              </a>
             </NavigationMenuItem>
 
             <NavigationMenuItem>
