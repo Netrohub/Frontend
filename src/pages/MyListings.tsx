@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, Eye, Shield, Loader2, CheckCircle2, XCircle, Calendar } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Shield, Loader2, CheckCircle2, XCircle, Calendar, Gavel } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { useAuth } from "@/contexts/AuthContext";
@@ -143,12 +143,21 @@ const MyListings = () => {
             <h1 className="text-3xl md:text-4xl font-black text-white mb-2">{t('myListings.title')}</h1>
             <p className="text-white/60">{t('myListings.subtitle')}</p>
           </div>
-          <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
-            <Link to="/sell/gaming">
-              <Plus className="h-5 w-5" />
-              {t('myListings.addAccount')}
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            {/* Temporarily hidden until bid portal is ready */}
+            {/* <Button asChild variant="outline" className="gap-2 border-[hsl(195,80%,70%,0.3)] text-[hsl(195,80%,70%)] hover:bg-[hsl(195,80%,70%,0.1)]">
+              <a href="https://bid.nxoland.com/submit" target="_blank" rel="noopener noreferrer">
+                <Gavel className="h-5 w-5" />
+                Submit for Auction
+              </a>
+            </Button> */}
+            <Button asChild className="gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white border-0">
+              <Link to="/sell/gaming">
+                <Plus className="h-5 w-5" />
+                {t('myListings.addAccount')}
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -233,6 +242,11 @@ const MyListings = () => {
                           <h3 className="text-xl font-bold text-white mb-2">{listing.title}</h3>
                           <div className="flex items-center gap-3 flex-wrap">
                             {getStatusBadge(listing.status)}
+                            {listing.category === 'wos_accounts' && (
+                              <Badge className="bg-[hsl(195,80%,50%)]/20 text-[hsl(195,80%,70%)] border-[hsl(195,80%,50%)]/30">
+                                WOS Account
+                              </Badge>
+                            )}
                             <div className="flex items-center gap-1 text-sm text-white/60">
                               <Calendar className="h-3.5 w-3.5" />
                               <span>{formatDate(listing.created_at)}</span>
@@ -251,6 +265,20 @@ const MyListings = () => {
 
                       {/* Actions */}
                       <div className="flex gap-2 pt-2 flex-wrap">
+                        {/* Temporarily hidden until bid portal is ready */}
+                        {/* {listing.status === "active" && listing.category === "wos_accounts" && (
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            asChild
+                            className="gap-2 bg-[hsl(195,80%,50%)]/20 hover:bg-[hsl(195,80%,50%)]/30 text-[hsl(195,80%,70%)] border-[hsl(195,80%,50%)]/30"
+                          >
+                            <a href={`https://bid.nxoland.com/submit?listing=${listing.id}`} target="_blank" rel="noopener noreferrer">
+                              <Gavel className="h-4 w-4" />
+                              Submit for Auction
+                            </a>
+                          </Button>
+                        )} */}
                         {listing.status === "active" && (
                           <Button 
                             size="sm" 

@@ -122,7 +122,8 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
 
-            <NavigationMenuItem>
+            {/* Temporarily hidden until bid portal is ready */}
+            {/* <NavigationMenuItem>
               <a 
                 href="https://bid.nxoland.com"
                 target="_blank"
@@ -135,7 +136,7 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
                 <Gavel className="w-4 h-4 mr-2" />
                 {t('nav.auctions') || 'Auctions'}
               </a>
-            </NavigationMenuItem>
+            </NavigationMenuItem> */}
 
             <NavigationMenuItem>
               <NavigationMenuTrigger className="h-10 min-h-[40px] bg-transparent text-white/90 hover:bg-[hsl(195,80%,70%,0.1)] hover:text-[hsl(195,80%,70%)] data-[state=open]:bg-[hsl(195,80%,70%,0.2)] data-[state=open]:text-[hsl(195,80%,70%)] transition-all duration-300 text-sm px-3 lg:px-4">

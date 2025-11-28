@@ -175,7 +175,8 @@ const AppContent = () => {
                 <Route path="/marketplace/games" element={<MarketplaceGames />} />
                 <Route path="/marketplace/:gameId" element={<MarketplaceGameCategory />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
-                <Route path="/auctions" element={
+                {/* Temporarily hidden until bid portal is ready */}
+                {/* <Route path="/auctions" element={
                   <Suspense fallback={<LoadingFallback />}>
                     <Auctions />
                   </Suspense>
@@ -184,7 +185,7 @@ const AppContent = () => {
                   <Suspense fallback={<LoadingFallback />}>
                     <AuctionDetail />
                   </Suspense>
-                } />
+                } /> */}
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/discord/callback" element={<Auth />} />
                 <Route path="/members" element={

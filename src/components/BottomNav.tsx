@@ -13,7 +13,8 @@ export const BottomNav = () => {
   const navItems = [
     { path: "/", label: t('nav.home'), icon: Home, protected: false },
     { path: "/marketplace", label: t('nav.marketplace'), icon: ShoppingBag, protected: false },
-    { path: "https://bid.nxoland.com", label: t('nav.auctions') || 'Auctions', icon: Gavel, protected: false, external: true },
+    // Temporarily hidden until bid portal is ready
+    // { path: "https://bid.nxoland.com", label: t('nav.auctions') || 'Auctions', icon: Gavel, protected: false, external: true },
     { path: "/wallet", label: t('nav.wallet'), icon: Wallet, protected: true },
     { path: "/notifications", label: t('nav.notifications'), icon: Bell, protected: true },
     { path: "/profile", label: t('nav.myAccount'), icon: User, protected: true },
