@@ -48,6 +48,8 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const PaymentCallback = lazy(() => import("./pages/PaymentCallback"));
+const Auctions = lazy(() => import("./pages/Auctions"));
+const AuctionDetail = lazy(() => import("./pages/AuctionDetail"));
 
 // Protected routes - lazy loaded
 const Order = lazy(() => import("./pages/Order"));
@@ -88,6 +90,7 @@ const AdminKyc = lazy(() => import("./pages/admin/KYC"));
 const Kyc = lazy(() => import("./pages/KYC"));
 const AdminLegalContent = lazy(() => import("./pages/admin/LegalContent"));
 const AdminWithdrawals = lazy(() => import("./pages/admin/Withdrawals"));
+const AdminAuctions = lazy(() => import("./pages/admin/Auctions"));
 
 // Loading component
 const LoadingFallback = () => (
@@ -172,6 +175,16 @@ const AppContent = () => {
                 <Route path="/marketplace/games" element={<MarketplaceGames />} />
                 <Route path="/marketplace/:gameId" element={<MarketplaceGameCategory />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/auctions" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <Auctions />
+                  </Suspense>
+                } />
+                <Route path="/auction/:id" element={
+                  <Suspense fallback={<LoadingFallback />}>
+                    <AuctionDetail />
+                  </Suspense>
+                } />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/discord/callback" element={<Auth />} />
                 <Route path="/members" element={
@@ -547,6 +560,14 @@ const AppContent = () => {
                   element={
                     <Suspense fallback={<LoadingFallback />}>
                       <AdminLegalContent />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="auctions"
+                  element={
+                    <Suspense fallback={<LoadingFallback />}>
+                      <AdminAuctions />
                     </Suspense>
                   }
                 />

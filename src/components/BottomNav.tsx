@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, ShoppingBag, Wallet, Bell, User, LogIn } from "lucide-react";
+import { Home, ShoppingBag, Wallet, Bell, User, LogIn, Gavel } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,12 +13,18 @@ export const BottomNav = () => {
   const navItems = [
     { path: "/", label: t('nav.home'), icon: Home, protected: false },
     { path: "/marketplace", label: t('nav.marketplace'), icon: ShoppingBag, protected: false },
+    { path: "/auctions", label: t('nav.auctions') || 'Auctions', icon: Gavel, protected: false },
     { path: "/wallet", label: t('nav.wallet'), icon: Wallet, protected: true },
     { path: "/notifications", label: t('nav.notifications'), icon: Bell, protected: true },
     { path: "/profile", label: t('nav.myAccount'), icon: User, protected: true },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/auctions") {
+      return location.pathname === "/auctions" || location.pathname.startsWith("/auction/");
+    }
+    return location.pathname === path;
+  };
   
   const visibleItems = isAuthenticated 
     ? navItems 

@@ -85,6 +85,7 @@ const translations: Record<Language, Record<string, string>> = {
 // Navbar
 'nav.home': 'الرئيسية',
 'nav.marketplace': 'المتجر',
+'nav.auctions': 'المزادات',
 'nav.sell': 'اعرض منتجك الرقمي للبيع',
 'nav.orders': 'الطلبات',
 'nav.wallet': 'رصيدي',
@@ -169,6 +170,13 @@ const translations: Record<Language, Record<string, string>> = {
 'landing.discord.joinButton': 'انضم إلى Discord',
 
 'home.footer.rights': '© جميع الحقوق محفوظة لـ NXOLand',
+
+// Auctions
+'auctions.title': 'المزادات المميزة',
+'auctions.subtitle': 'شارك في المزادات على حسابات Whiteout Survival المكتملة. فقط أفضل الحسابات تصل هنا.',
+'auctions.badge': 'حسابات مكتملة فقط',
+'auctions.noAuctions': 'لا توجد مزادات حية',
+'auctions.checkBack': 'ارجع قريباً للحسابات المميزة المكتملة!',
 'home.footer.terms': 'الشروط والأحكام',
 'home.footer.privacy': 'سياسة الخصوصية',
 'home.footer.refund': 'سياسة الاسترجاع',
@@ -1949,6 +1957,7 @@ const translations: Record<Language, Record<string, string>> = {
 // Navbar
 'nav.home': 'Home',
 'nav.marketplace': 'Marketplace',
+'nav.auctions': 'Auctions',
 'nav.sell': 'Sell Digital Product',
 'nav.orders': 'My Orders',
 'nav.wallet': 'Wallet',
@@ -2032,6 +2041,13 @@ const translations: Record<Language, Record<string, string>> = {
 'landing.discord.joinButton': 'Join Discord',
 
 'home.footer.rights': '© All rights reserved to NXOLand',
+
+// Auctions
+'auctions.title': 'Premium Auctions',
+'auctions.subtitle': 'Bid on exclusive maxed-out Whiteout Survival accounts. Only the finest accounts make it here.',
+'auctions.badge': 'Maxed Accounts Only',
+'auctions.noAuctions': 'No Live Auctions',
+'auctions.checkBack': 'Check back soon for premium maxed accounts!',
 'home.footer.terms': 'Terms & Conditions',
 'home.footer.privacy': 'Privacy Policy',
 'home.footer.refund': 'Refund Policy',

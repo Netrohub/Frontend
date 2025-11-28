@@ -788,3 +788,47 @@ export const siteSettingsApi = {
     api.put<any>(`/admin/site-settings/${key}`, data),
 };
 
+// Auctions API
+export const auctionsApi = {
+  list: (params?: { status?: string; page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.status) query.append('status', params.status);
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<{ data: any[]; meta: any }>(`/auctions?${query.toString()}`);
+  },
+  
+  get: (id: number) =>
+    api.get<any>(`/auctions/${id}`),
+  
+  create: (listingId: number) =>
+    api.post<any>('/auctions', { listing_id: listingId }),
+  
+  getBids: (id: number, params?: { page?: number }) => {
+    const query = new URLSearchParams();
+    if (params?.page) query.append('page', params.page.toString());
+    return api.get<{ data: any[]; meta: any }>(`/auctions/${id}/bids?${query.toString()}`);
+  },
+  
+  placeBid: (id: number, amount: number, depositAmount: number) =>
+    api.post<{ bid: any; auction: any }>(`/auctions/${id}/bid`, {
+      amount,
+      deposit_amount: depositAmount,
+    }),
+  
+  // Admin methods
+  approve: (id: number, data: { 
+    starting_bid: number; 
+    starts_at?: string; 
+    ends_at: string; 
+    admin_notes?: string; 
+    is_maxed_account?: boolean;
+  }) =>
+    api.post<any>(`/admin/auctions/${id}/approve`, data),
+  
+  endAuction: (id: number) =>
+    api.post<any>(`/admin/auctions/${id}/end`),
+  
+  refundDeposits: (id: number) =>
+    api.post<any>(`/admin/auctions/${id}/refund-deposits`),
+};
+
