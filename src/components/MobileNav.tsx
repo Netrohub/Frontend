@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export const MobileNav = () => {
   const [open, setOpen] = useState(false);
@@ -96,6 +97,18 @@ export const MobileNav = () => {
               );
             })}
         </nav>
+
+        <Separator className="my-6 bg-white/10" />
+
+        {/* Language Switcher in Mobile Menu */}
+        <div className="mb-4">
+          <div className="px-4 py-2 text-sm font-medium text-white/80 mb-2">
+            {t('nav.language') || 'Language'}
+          </div>
+          <div className="px-4">
+            <LanguageSwitcher />
+          </div>
+        </div>
 
         <Separator className="my-6 bg-white/10" />
 

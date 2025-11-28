@@ -217,8 +217,10 @@ export const Navbar = ({ showDesktopLinks = true }: NavbarProps) => {
       {/* Actions - Right Side */}
       <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {isAuthenticated && <NotificationBell />}
+        {/* Language Switcher - Visible on all screen sizes */}
+        <LanguageSwitcher />
+        {/* Global Search - Hidden on mobile */}
         <div className="hidden sm:flex items-center gap-2">
-          <LanguageSwitcher />
           <GlobalSearch />
         </div>
         {!isAuthenticated && (
