@@ -20,7 +20,7 @@ const AdminAuctions = () => {
   const [selectedAuction, setSelectedAuction] = useState<any>(null);
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("pending_approval");
   const queryClient = useQueryClient();
 
   // Approval form state
@@ -45,8 +45,8 @@ const AdminAuctions = () => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
-      auction.listing?.title?.toLowerCase().includes(search) ||
-      auction.listing?.description?.toLowerCase().includes(search) ||
+      auction.title?.toLowerCase().includes(search) ||
+      auction.description?.toLowerCase().includes(search) ||
       auction.user?.username?.toLowerCase().includes(search) ||
       auction.user?.name?.toLowerCase().includes(search)
     );
@@ -91,7 +91,7 @@ const AdminAuctions = () => {
 
   const handleApproveClick = (auction: any) => {
     setSelectedAuction(auction);
-    setStartingBid(auction.listing?.price?.toString() || "");
+    setStartingBid(auction.price?.toString() || "");
     setIsApproveDialogOpen(true);
   };
 
@@ -183,11 +183,11 @@ const AdminAuctions = () => {
             <Card key={auction.id} className="p-6 bg-white/5 border-white/10 hover:border-[hsl(195,80%,70%,0.3)] transition-all">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Image */}
-                {auction.listing?.images?.[0] && (
+                {auction.images?.[0] && (
                   <div className="w-full md:w-32 h-32 rounded-lg overflow-hidden flex-shrink-0">
                     <img
-                      src={auction.listing.images[0]}
-                      alt={auction.listing.title}
+                      src={auction.images[0]}
+                      alt={auction.title}
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -207,10 +207,10 @@ const AdminAuctions = () => {
                         )}
                       </div>
                       <h3 className="text-xl font-bold text-white mb-1">
-                        {auction.listing?.title}
+                        {auction.title}
                       </h3>
                       <p className="text-white/60 text-sm line-clamp-2">
-                        {auction.listing?.description}
+                        {auction.description}
                       </p>
                     </div>
                   </div>
@@ -324,11 +324,11 @@ const AdminAuctions = () => {
             <form onSubmit={handleApprove} className="space-y-4">
               {/* Listing Info */}
               <div className="glass rounded-lg p-4 space-y-2">
-                <h4 className="font-semibold text-white">Listing Information</h4>
+                <h4 className="font-semibold text-white">Auction Information</h4>
                 <div className="text-sm text-white/80">
-                  <div><strong>Title:</strong> {selectedAuction.listing?.title}</div>
-                  <div><strong>Category:</strong> {selectedAuction.listing?.category}</div>
-                  <div><strong>Original Price:</strong> ${selectedAuction.listing?.price?.toLocaleString()}</div>
+                  <div><strong>Title:</strong> {selectedAuction.title}</div>
+                  <div><strong>Category:</strong> {selectedAuction.category}</div>
+                  <div><strong>Original Price:</strong> ${selectedAuction.price?.toLocaleString()}</div>
                   <div><strong>Seller:</strong> {selectedAuction.user?.username || selectedAuction.user?.name}</div>
                 </div>
               </div>
