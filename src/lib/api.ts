@@ -830,5 +830,30 @@ export const auctionsApi = {
   
   refundDeposits: (id: number) =>
     api.post<any>(`/admin/auctions/${id}/refund-deposits`),
+  
+  update: (id: number, data: {
+    title?: string;
+    description?: string;
+    starting_bid?: number;
+    current_bid?: number;
+    starts_at?: string;
+    ends_at?: string;
+    admin_notes?: string;
+    is_maxed_account?: boolean;
+    status?: string;
+  }) =>
+    api.put<any>(`/admin/auctions/${id}`, data),
+  
+  reject: (id: number, rejection_reason?: string) =>
+    api.post<any>(`/admin/auctions/${id}/reject`, { rejection_reason }),
+  
+  pause: (id: number, pause_reason?: string) =>
+    api.post<any>(`/admin/auctions/${id}/pause`, { pause_reason }),
+  
+  resume: (id: number) =>
+    api.post<any>(`/admin/auctions/${id}/resume`),
+  
+  stop: (id: number, stop_reason?: string) =>
+    api.post<any>(`/admin/auctions/${id}/stop`, { stop_reason }),
 };
 
