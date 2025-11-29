@@ -30,12 +30,21 @@ const AdminAuctions = () => {
   const [adminNotes, setAdminNotes] = useState("");
   const [isMaxedAccount, setIsMaxedAccount] = useState(false);
 
-  const { data: auctionsResponse, isLoading } = useQuery({
+  const { data: auctionsResponse, isLoading, error } = useQuery({
     queryKey: ['admin-auctions', searchTerm, statusFilter],
     queryFn: () => auctionsApi.list({ 
       status: statusFilter !== 'all' ? statusFilter : undefined 
     }),
     staleTime: 2 * 60 * 1000,
+  });
+
+  // Debug logging
+  console.log('Admin Auctions Debug:', {
+    statusFilter,
+    auctionsResponse,
+    error,
+    data: auctionsResponse?.data,
+    meta: auctionsResponse?.meta,
   });
 
   const auctions = auctionsResponse?.data || [];
@@ -175,7 +184,15 @@ const AdminAuctions = () => {
       ) : filteredAuctions.length === 0 ? (
         <Card className="p-12 text-center bg-white/5 border-white/10">
           <Gavel className="w-16 h-16 text-white/20 mx-auto mb-4" />
-          <p className="text-white/60">No auctions found</p>
+          <p className="text-white/60 mb-2">No auctions found</p>
+          <p className="text-white/40 text-sm">
+            Status filter: <strong>{statusFilter}</strong> | 
+            Total in response: <strong>{auctions.length}</strong> | 
+            Search term: <strong>{searchTerm || 'none'}</strong>
+          </p>
+          {error && (
+            <p className="text-red-400 text-sm mt-2">Error: {error.message}</p>
+          )}
         </Card>
       ) : (
         <div className="grid gap-4">
