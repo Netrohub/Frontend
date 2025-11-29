@@ -29,13 +29,13 @@ const SellGame = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[hsl(200,70%,15%)] to-[hsl(195,60%,25%)] px-4 py-12">
         <Card className="max-w-xl w-full p-6 bg-white/5 border-white/10 backdrop-blur-sm space-y-5">
-          <h1 className="text-2xl font-black text-white">Game Not Found</h1>
-          <p className="text-white/70">The game you're looking for doesn't exist.</p>
+          <h1 className="text-2xl font-black text-white">{t('sell.game.notFound')}</h1>
+          <p className="text-white/70">{t('sell.game.notFoundDescription')}</p>
           <Button
             onClick={() => navigate('/sell/gaming')}
             className="w-full justify-center gap-2 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white"
           >
-            Back to Games
+            {t('sell.game.backToGames')}
           </Button>
         </Card>
       </div>

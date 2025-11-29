@@ -293,6 +293,19 @@ const translations: Record<Language, Record<string, string>> = {
 'listing.termsAcceptanceRequired': 'يجب الموافقة على الشروط والأحكام وسياسة الخصوصية للمتابعة.',
 'listing.secondBillImage': 'صورة ثاني فاتورة شراء *',
 'listing.thirdBillImage': 'صورة ثالث فاتورة شراء *',
+'listing.title': 'العنوان',
+'listing.titlePlaceholder': 'أدخل عنوانًا واضحًا لإعلانك',
+'listing.description': 'الوصف',
+'listing.descriptionPlaceholder': 'اكتب وصفًا تفصيليًا للمنتج الرقمي...',
+'listing.descriptionRequired': 'الوصف مطلوب',
+'listing.price': 'السعر',
+'listing.images': 'الصور',
+'listing.credentialsSecurityNote': 'سيتم تشفير بيانات الاعتماد الخاصة بك ومشاركتها مع المشتري فقط بعد الدفع.',
+'listing.accountEmail': 'البريد الإلكتروني للحساب',
+'listing.accountEmailPlaceholder': 'أدخل البريد الإلكتروني المرتبط بالحساب',
+'listing.accountPassword': 'كلمة مرور الحساب',
+'listing.accountPasswordPlaceholder': 'أدخل كلمة مرور الحساب',
+'listing.publish': 'نشر الإعلان',
 
 // Sell WOS
 'sell.wos.pageTitle': 'إضافة منتج Whiteout Survival الرقمي للبيع',
@@ -372,6 +385,11 @@ const translations: Record<Language, Record<string, string>> = {
 'sell.kingshot.kycDescription1': 'يجب إكمال عملية التحقق من الهوية قبل أن تتمكن من عرض منتجات رقمية للبيع على المنصة.',
 'sell.kingshot.kycDescription2': 'هذا الإجراء إلزامي لضمان أمان وموثوقية جميع البائعين على المنصة.',
 'sell.kingshot.startVerification': 'ابدأ التحقق الآن',
+
+// Sell Game (Generic)
+'sell.game.notFound': 'اللعبة غير موجودة',
+'sell.game.notFoundDescription': 'اللعبة التي تبحث عنها غير موجودة.',
+'sell.game.backToGames': 'العودة إلى الألعاب',
 
     
 // Common
@@ -2166,6 +2184,19 @@ const translations: Record<Language, Record<string, string>> = {
 'listing.termsAcceptanceRequired': 'You must agree to the Terms, Conditions, and Privacy Policy to continue.',
 'listing.secondBillImage': 'Second Purchase Receipt *',
 'listing.thirdBillImage': 'Third Purchase Receipt *',
+'listing.title': 'Title',
+'listing.titlePlaceholder': 'Enter a clear title for your listing',
+'listing.description': 'Description',
+'listing.descriptionPlaceholder': 'Describe your account in detail...',
+'listing.descriptionRequired': 'Description is required',
+'listing.price': 'Price',
+'listing.images': 'Images',
+'listing.credentialsSecurityNote': 'Your credentials will be encrypted and only shared with the buyer after payment.',
+'listing.accountEmail': 'Account Email',
+'listing.accountEmailPlaceholder': 'Enter the email associated with the account',
+'listing.accountPassword': 'Account Password',
+'listing.accountPasswordPlaceholder': 'Enter the account password',
+'listing.publish': 'Publish Listing',
 
 // Sell WOS
 'sell.wos.pageTitle': 'Add Whiteout Survival Digital Product for Sale',
@@ -2245,6 +2276,11 @@ const translations: Record<Language, Record<string, string>> = {
 'sell.kingshot.kycDescription1': 'You must complete identity verification before you can list digital products for sale on the platform.',
 'sell.kingshot.kycDescription2': 'This is mandatory to ensure the security and reliability of all sellers on the platform.',
 'sell.kingshot.startVerification': 'Start Verification Now',
+
+// Sell Game (Generic)
+'sell.game.notFound': 'Game Not Found',
+'sell.game.notFoundDescription': "The game you're looking for doesn't exist.",
+'sell.game.backToGames': 'Back to Games',
 
 
 // Common
