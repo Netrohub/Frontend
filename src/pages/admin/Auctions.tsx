@@ -21,6 +21,11 @@ const AdminAuctions = () => {
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("pending_approval");
+  
+  // Debug: Log status filter changes
+  useEffect(() => {
+    console.log('Status filter changed:', statusFilter);
+  }, [statusFilter]);
   const queryClient = useQueryClient();
 
   // Approval form state
@@ -32,9 +37,16 @@ const AdminAuctions = () => {
 
   const { data: auctionsResponse, isLoading, error } = useQuery({
     queryKey: ['admin-auctions', searchTerm, statusFilter],
-    queryFn: () => auctionsApi.list({ 
-      status: statusFilter !== 'all' ? statusFilter : undefined 
-    }),
+    queryFn: async () => {
+      const params: { status?: string } = {};
+      if (statusFilter && statusFilter !== 'all') {
+        params.status = statusFilter;
+      }
+      console.log('Fetching auctions with params:', params);
+      const result = await auctionsApi.list(params);
+      console.log('Auctions API response:', result);
+      return result;
+    },
     staleTime: 2 * 60 * 1000,
   });
 
@@ -163,7 +175,10 @@ const AdminAuctions = () => {
           </div>
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => {
+              console.log('Status filter changed from', statusFilter, 'to', e.target.value);
+              setStatusFilter(e.target.value);
+            }}
             className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
           >
             <option value="all">All Status</option>
