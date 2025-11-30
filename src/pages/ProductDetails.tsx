@@ -134,6 +134,11 @@ const ProductDetails = () => {
     []
   );
 
+  // Determine if this is a Kingshot listing based on category
+  const isKingshot = useMemo(() => {
+    return listing?.category === 'kingshot_accounts';
+  }, [listing?.category]);
+
   const parseAccountDetails = (description: string) => {
     const lines = description.split('\n');
     const details: Record<string, string> = {};
