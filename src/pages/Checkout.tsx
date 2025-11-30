@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight, Zap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
+import { HyperPayWidget } from "@/components/HyperPayWidget";
 import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +31,12 @@ const Checkout = () => {
   });
 
   const [processing, setProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay'>('paylink');
+  const [hyperPayCheckout, setHyperPayCheckout] = useState<{
+    checkoutId: string;
+    widgetScriptUrl: string;
+    integrity?: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -62,33 +69,77 @@ const Checkout = () => {
       return;
     }
 
-    setProcessing(true);
+    if (paymentMethod === 'hyperpay') {
+      // Prepare HyperPay checkout
+      setProcessing(true);
+      try {
+        const response = await paymentsApi.prepareHyperPayCheckout({ order_id: orderId });
+        setHyperPayCheckout({
+          checkoutId: response.checkoutId,
+          widgetScriptUrl: response.widgetScriptUrl,
+          integrity: response.integrity,
+        });
+      } catch (error) {
+        const apiError = error as Error & ApiError;
+        toast.error(apiError.message || t('checkout.paymentLinkError'));
+      } finally {
+        setProcessing(false);
+      }
+    } else {
+      // Paylink payment
+      setProcessing(true);
+      try {
+        const response = await paymentsApi.create({ order_id: orderId });
+        const paymentUrl = response.paymentUrl || response.redirect_url;
+        if (paymentUrl) {
+          // Redirect to Paylink payment page
+          window.location.href = paymentUrl;
+        } else {
+          toast.error(t('checkout.paymentLinkError'));
+        }
+      } catch (error) {
+        const apiError = error as Error & ApiError;
+        
+        // Handle "payment already exists" case - redirect to existing payment URL
+        if (apiError.data && (apiError.data as any).paymentUrl && apiError.status === 400) {
+          const existingPaymentUrl = (apiError.data as any).paymentUrl;
+          if (existingPaymentUrl) {
+            // Payment already initiated - redirect to existing payment link
+            toast.info(t('checkout.paymentAlreadyInitiated') || 'Redirecting to payment page...');
+            window.location.href = existingPaymentUrl;
+            return; // Don't set processing to false, we're redirecting
+          }
+        }
+        
+        toast.error(apiError.message || t('checkout.paymentLinkError'));
+      } finally {
+        setProcessing(false);
+      }
+    }
+  };
+
+  const handleHyperPayComplete = async (resourcePath: string) => {
+    if (!orderId) return;
+
     try {
-      const response = await paymentsApi.create({ order_id: orderId });
-      const paymentUrl = response.paymentUrl || response.redirect_url;
-      if (paymentUrl) {
-        // Redirect to Paylink payment page
-        window.location.href = paymentUrl;
+      const response = await paymentsApi.getHyperPayStatus({
+        resourcePath,
+        order_id: orderId,
+      });
+
+      if (response.status === 'success') {
+        toast.success(t('checkout.paymentSuccess') || 'Payment successful!');
+        navigate(`/order/${orderId}?payment=success`);
+      } else if (response.status === 'pending') {
+        toast.info(t('checkout.paymentPending') || 'Payment is being processed...');
+        navigate(`/order/${orderId}?payment=pending`);
       } else {
-        toast.error(t('checkout.paymentLinkError'));
+        toast.error(t('checkout.paymentFailed') || 'Payment failed');
+        navigate(`/order/${orderId}?payment=failed`);
       }
     } catch (error) {
       const apiError = error as Error & ApiError;
-      
-      // Handle "payment already exists" case - redirect to existing payment URL
-      if (apiError.data && (apiError.data as any).paymentUrl && apiError.status === 400) {
-        const existingPaymentUrl = (apiError.data as any).paymentUrl;
-        if (existingPaymentUrl) {
-          // Payment already initiated - redirect to existing payment link
-          toast.info(t('checkout.paymentAlreadyInitiated') || 'Redirecting to payment page...');
-          window.location.href = existingPaymentUrl;
-          return; // Don't set processing to false, we're redirecting
-        }
-      }
-      
-      toast.error(apiError.message || t('checkout.paymentLinkError'));
-    } finally {
-      setProcessing(false);
+      toast.error(apiError.message || 'Failed to verify payment status');
     }
   };
 
@@ -198,10 +249,19 @@ const Checkout = () => {
               </div>
 
               <div className="space-y-4">
-                <Card className="p-4 bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)] cursor-pointer">
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${
+                    paymentMethod === 'paylink'
+                      ? 'bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)]'
+                      : 'bg-white/5 border border-white/10 hover:border-white/20'
+                  }`}
+                  onClick={() => setPaymentMethod('paylink')}
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
-                      <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
+                      {paymentMethod === 'paylink' && (
+                        <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
+                      )}
                     </div>
                     <span className="font-bold text-white">{t('checkout.paylinkPayment') || 'Paylink Payment'}</span>
                     <div className="mr-auto px-3 py-1 bg-[hsl(195,80%,50%)] rounded-full text-xs font-bold text-white">
@@ -209,7 +269,46 @@ const Checkout = () => {
                     </div>
                   </div>
                 </Card>
+                
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${
+                    paymentMethod === 'hyperpay'
+                      ? 'bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)]'
+                      : 'bg-white/5 border border-white/10 hover:border-white/20'
+                  }`}
+                  onClick={() => {
+                    setPaymentMethod('hyperpay');
+                    setHyperPayCheckout(null);
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
+                      {paymentMethod === 'hyperpay' && (
+                        <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
+                      )}
+                    </div>
+                    <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay (COPYandPAY)'}</span>
+                    <div className="mr-auto px-3 py-1 bg-blue-500/50 rounded-full text-xs font-bold text-white">
+                      {t('checkout.secure') || 'Secure'}
+                    </div>
+                  </div>
+                </Card>
               </div>
+
+              {/* HyperPay Widget */}
+              {paymentMethod === 'hyperpay' && hyperPayCheckout && (
+                <div className="mt-6">
+                  <HyperPayWidget
+                    checkoutId={hyperPayCheckout.checkoutId}
+                    widgetScriptUrl={hyperPayCheckout.widgetScriptUrl}
+                    integrity={hyperPayCheckout.integrity}
+                    shopperResultUrl={`${window.location.origin}/payments/hyperpay/callback?order_id=${orderId}`}
+                    brands="VISA MASTER AMEX"
+                    onPaymentComplete={handleHyperPayComplete}
+                    onError={(error) => toast.error(error)}
+                  />
+                </div>
+              )}
             </Card>
 
             {/* Protection Notice */}
@@ -282,24 +381,30 @@ const Checkout = () => {
                 </div>
               )}
 
-              <Button 
-                onClick={handlePayment}
-                disabled={processing || order.status !== 'payment_intent'}
-                size="lg" 
-                className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
-              >
-                {processing ? (
-                  <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    {t('common.processing')}
-                  </>
-                ) : (
-                  <>
-                    <Shield className="h-5 w-5" />
-                    {t('checkout.confirmPayment')}
-                  </>
-                )}
-              </Button>
+              {paymentMethod === 'hyperpay' && hyperPayCheckout ? (
+                <div className="text-center text-white/60 text-sm">
+                  <p>{t('checkout.useFormAbove') || 'Please use the payment form above to complete your payment.'}</p>
+                </div>
+              ) : (
+                <Button 
+                  onClick={handlePayment}
+                  disabled={processing || order.status !== 'payment_intent'}
+                  size="lg" 
+                  className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+                >
+                  {processing ? (
+                    <>
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      {t('common.processing')}
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="h-5 w-5" />
+                      {t('checkout.confirmPayment')}
+                    </>
+                  )}
+                </Button>
+              )}
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs text-white/60">

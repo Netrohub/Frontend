@@ -450,6 +450,10 @@ export const ordersApi = {
 export const paymentsApi = {
   create: (data: { order_id: number }) =>
     api.post<PaymentCreateResponse>('/payments/create', data),
+  prepareHyperPayCheckout: (data: { order_id: number }) =>
+    api.post<{ payment: any; checkoutId: string; widgetScriptUrl: string; integrity?: string }>('/payments/hyperpay/prepare', data),
+  getHyperPayStatus: (data: { resourcePath: string; order_id: number }) =>
+    api.post<{ status: string; resultCode?: string; resultDescription?: string; response: any }>('/payments/hyperpay/status', data),
 };
 
 // Disputes API
