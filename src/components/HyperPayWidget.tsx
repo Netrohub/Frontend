@@ -47,9 +47,10 @@ export const HyperPayWidget = ({
     script.src = widgetScriptUrl;
     script.async = true;
     
+    // PCI DSS v4.0 compliance: Add integrity and crossorigin for Subresource Integrity (SRI)
     if (integrity) {
       script.integrity = integrity;
-      script.crossOrigin = "anonymous";
+      script.crossOrigin = "anonymous"; // Required when using integrity
     }
 
     script.onload = () => {
