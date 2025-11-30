@@ -453,7 +453,7 @@ export const paymentsApi = {
   prepareHyperPayCheckout: (data: { order_id: number }) =>
     api.post<{ payment: any; checkoutId: string; widgetScriptUrl: string; integrity?: string }>('/payments/hyperpay/prepare', data),
   getHyperPayStatus: (data: { resourcePath: string; order_id: number }) =>
-    api.post<{ status: string; resultCode?: string; resultDescription?: string; response: any }>('/payments/hyperpay/status', data),
+    api.post<{ status: string; resultCode?: string; resultDescription?: string; isMadaCard?: boolean; response: any }>('/payments/hyperpay/status', data),
 };
 
 // Disputes API

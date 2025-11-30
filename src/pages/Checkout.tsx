@@ -134,7 +134,12 @@ const Checkout = () => {
         toast.info(t('checkout.paymentPending') || 'Payment is being processed...');
         navigate(`/order/${orderId}?payment=pending`);
       } else {
-        toast.error(t('checkout.paymentFailed') || 'Payment failed');
+        // Check if MADA card error
+        if (response.isMadaCard && response.resultDescription) {
+          toast.error(response.resultDescription);
+        } else {
+          toast.error(response.resultDescription || t('checkout.paymentFailed') || 'Payment failed');
+        }
         navigate(`/order/${orderId}?payment=failed`);
       }
     } catch (error) {
@@ -303,7 +308,8 @@ const Checkout = () => {
                     widgetScriptUrl={hyperPayCheckout.widgetScriptUrl}
                     integrity={hyperPayCheckout.integrity}
                     shopperResultUrl={`${window.location.origin}/payments/hyperpay/callback?order_id=${orderId}`}
-                    brands="VISA MASTER AMEX"
+                    brands="MADA VISA MASTER AMEX"
+                    showMadaFirst={true}
                     onPaymentComplete={handleHyperPayComplete}
                     onError={(error) => toast.error(error)}
                   />

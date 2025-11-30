@@ -8,6 +8,7 @@ interface HyperPayWidgetProps {
   integrity?: string;
   shopperResultUrl: string;
   brands?: string;
+  showMadaFirst?: boolean;
   onPaymentComplete?: (resourcePath: string) => void;
   onError?: (error: string) => void;
 }
@@ -25,7 +26,8 @@ export const HyperPayWidget = ({
   widgetScriptUrl,
   integrity,
   shopperResultUrl,
-  brands = "VISA MASTER AMEX",
+  brands = "MADA VISA MASTER AMEX",
+  showMadaFirst = true,
   onPaymentComplete,
   onError,
 }: HyperPayWidgetProps) => {
