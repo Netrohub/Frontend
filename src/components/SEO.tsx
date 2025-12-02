@@ -1,10 +1,8 @@
 import { Helmet } from "react-helmet-async";
-import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 interface SEOProps {
   title?: string;
   description?: string;
-  image?: string;
   url?: string;
   type?: string;
   noIndex?: boolean;
@@ -17,17 +15,15 @@ interface SEOProps {
 export function SEO({
   title = "NXOLand - تداول آمن وموثوق للحسابات",
   description = "منصة NXOLand لتداول الحسابات بأمان مع نظام الضمان",
-  image,
   url = "",
   type = "website",
   noIndex = false,
 }: SEOProps) {
   const fullUrl = url ? `https://nxoland.com${url}` : "https://nxoland.com";
-  // Use Cloudflare Images logo by default, or provided image URL
-  const defaultImage = getStaticImageUrl('LOGO', 'public');
-  const fullImage = image 
-    ? (image.startsWith("http") ? image : `https://nxoland.com${image}`)
-    : defaultImage;
+  // SEO uses only the golden "N" logo - nxoland-new-logo.png
+  // This ensures consistent branding across all social media and search engine previews
+  const seoLogoUrl = "https://nxoland.com/nxoland-new-logo.png";
+  const fullImage = seoLogoUrl; // Always use the same logo for SEO
 
   return (
     <Helmet>
