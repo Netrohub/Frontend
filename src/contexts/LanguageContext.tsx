@@ -1622,6 +1622,16 @@ const translations: Record<Language, Record<string, string>> = {
 'privacy.emptyState': 'لا توجد سياسة خصوصية متاحة حاليًا',
 'privacy.lastUpdated': 'آخر تحديث:',
 
+// Cookie Consent
+'cookieConsent.title': 'نستخدم ملفات تعريف الارتباط',
+'cookieConsent.description': 'نستخدم ملفات تعريف الارتباط لتحسين تجربتك على موقعنا. من خلال المتابعة، أنت توافق على استخدامنا لملفات تعريف الارتباط. ',
+'cookieConsent.privacyPolicy': 'اقرأ المزيد في سياسة الخصوصية',
+'cookieConsent.googleAnalytics': 'نستخدم Google Analytics لجمع معلومات حول كيفية استخدامك لموقعنا.',
+'cookieConsent.acceptAll': 'قبول الكل',
+'cookieConsent.reject': 'رفض',
+'cookieConsent.accept': 'قبول',
+'cookieConsent.settings': 'الإعدادات',
+
 // Terms
 'terms.title': 'الشروط والأحكام',
 'terms.emptyState': 'لا توجد شروط وأحكام متاحة حاليًا',
@@ -3518,6 +3528,16 @@ const translations: Record<Language, Record<string, string>> = {
 'privacy.title': 'Privacy Policy',
 'privacy.emptyState': 'No privacy policy available',
 'privacy.lastUpdated': 'Last updated:',
+
+// Cookie Consent
+'cookieConsent.title': 'We Use Cookies',
+'cookieConsent.description': 'We use cookies to enhance your experience on our website. By continuing, you agree to our use of cookies. ',
+'cookieConsent.privacyPolicy': 'Learn more in our Privacy Policy',
+'cookieConsent.googleAnalytics': 'We use Google Analytics to collect information about how you use our website.',
+'cookieConsent.acceptAll': 'Accept All',
+'cookieConsent.reject': 'Reject',
+'cookieConsent.accept': 'Accept',
+'cookieConsent.settings': 'Settings',
 
 // Terms
 'terms.title': 'Terms & Conditions',

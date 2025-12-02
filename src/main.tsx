@@ -1,6 +1,8 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import { isEnvConfigured } from "./config/env";
+// Import GTM utility to set up consent-based initialization
+import "@/utils/gtm";
 
 // Import CSS normally - Vite will handle it during build
 // For production, CSS is extracted and can be deferred via HTML
@@ -100,8 +102,8 @@ try {
       rootElement.appendChild(container);
     }
   } else {
-    // GTM is already loaded via index.html for Google Search Console verification
-    // initGTM() is skipped to avoid duplicate loading and reduce main-thread tasks
+    // GTM utility is imported above and will handle consent-based initialization
+    // GTM will only load after user accepts cookies
 
     const rootElement = document.getElementById("root");
     if (!rootElement) {

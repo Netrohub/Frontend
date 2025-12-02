@@ -15,6 +15,8 @@ import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
 import { GlobalSearch } from "@/components/GlobalSearch";
 import { QuickNav } from "@/components/QuickNav";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { publicApi } from "@/lib/api";
 import Maintenance from "./pages/Maintenance";
 // Plasmic codegen imports
@@ -160,6 +162,7 @@ const AppContent = () => {
     <MaintenanceCheck>
       <SkipLink />
       <NotificationBanner />
+      <CookieConsentBanner />
       {/* <GlobalSearch /> */}
       <QuickNav />
       <main id="main-content" tabIndex={-1}>
@@ -614,10 +617,11 @@ const App = () => {
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
           <LanguageProvider>
-            <AuthProvider>
-              <TooltipProvider>
-                {toastsReady && (
-                  <Suspense fallback={null}>
+            <CookieConsentProvider>
+              <AuthProvider>
+                <TooltipProvider>
+                  {toastsReady && (
+                    <Suspense fallback={null}>
                     <Toaster />
                     <Sonner />
                   </Suspense>
@@ -626,7 +630,8 @@ const App = () => {
                   <AppContent />
                 </BrowserRouter>
               </TooltipProvider>
-            </AuthProvider>
+              </AuthProvider>
+            </CookieConsentProvider>
           </LanguageProvider>
         </QueryClientProvider>
       </HelmetProvider>

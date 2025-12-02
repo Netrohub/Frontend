@@ -1,33 +1,54 @@
 /**
  * Google Tag Manager initialization
+ * Now requires user consent before loading
  */
 import { getGTMId } from '@/config/env';
 
+let gtmInitialized = false;
+
 /**
- * Google Tag Manager initialization
- * Note: GTM is now initialized directly in index.html for Google Search Console verification.
- * This function is kept for backwards compatibility but will skip if GTM is already initialized.
+ * Initialize Google Tag Manager
+ * Only loads if user has consented to cookies
  */
 export function initGTM() {
-  // Skip if GTM is already initialized (from index.html)
-  if (window.dataLayer && window.dataLayer.length > 0) {
+  // Skip if GTM is already initialized
+  if (gtmInitialized) {
     return;
   }
-  
-  // Fallback: Initialize via JavaScript if not already in HTML
-  // This is a safety net, but GTM should already be loaded from index.html
-  const gtmId = getGTMId();
-  if (!gtmId) {
-    if (import.meta.env.DEV) {
-      console.warn('GTM_ID not configured. Google Tag Manager will not be initialized.');
+
+  // Check if user has consented to cookies
+  const consentData = localStorage.getItem('cookie_consent_status');
+  if (!consentData) {
+    // No consent yet, wait for user decision
+    return;
+  }
+
+  try {
+    const consent = JSON.parse(consentData);
+    const expiryDate = new Date(consent.expiry);
+    
+    // Check if consent is valid and accepted
+    if (expiryDate <= new Date() || consent.status !== 'accepted') {
+      return;
     }
+  } catch {
+    // Invalid consent data
     return;
   }
+
+  // User has consented, initialize GTM
+  const gtmId = getGTMId() || 'GTM-THXQ6Q9V';
   
-  // Initialize dataLayer
+  // Initialize dataLayer if not already done
   window.dataLayer = window.dataLayer || [];
   
-  // GTM script
+  // Check if GTM script is already loaded
+  if (document.querySelector('script[src*="googletagmanager.com/gtm.js"]')) {
+    gtmInitialized = true;
+    return;
+  }
+  
+  // Load GTM script
   (function(w: Window & { dataLayer?: unknown[] }, d: Document, s: string, l: string, i: string) {
     w[l] = w[l] || [];
     (w[l] as unknown[]).push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
@@ -52,6 +73,26 @@ export function initGTM() {
     iframe.style.visibility = 'hidden';
     noscript.appendChild(iframe);
     document.body.insertBefore(noscript, document.body.firstChild);
+  }
+  
+  gtmInitialized = true;
+}
+
+/**
+ * Listen for cookie consent events
+ */
+if (typeof window !== 'undefined') {
+  window.addEventListener('cookieConsentAccepted', () => {
+    initGTM();
+  });
+  
+  // Also try to initialize on page load if consent already exists
+  if (document.readyState === 'complete') {
+    initGTM();
+  } else {
+    window.addEventListener('load', () => {
+      initGTM();
+    });
   }
 }
 

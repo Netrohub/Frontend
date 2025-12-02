@@ -20,39 +20,15 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     
-    <!-- Google Tag Manager - Required for Google Search Console verification -->
+    <!-- Google Tag Manager - Will be loaded after user consent -->
     <!-- GTM Container ID: GTM-THXQ6Q9V (configured via VITE_GTM_ID environment variable) -->
-    <!-- Deferred loading to reduce render blocking and long main-thread tasks -->
+    <!-- GTM initialization is now handled by cookie consent system -->
     <script>
-      // Defer GTM loading until after page is fully interactive to avoid blocking
-      // Use requestIdleCallback for better performance, fallback to setTimeout
-      (function() {
-        function loadGTM() {
-          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-THXQ6Q9V');
-        }
-        
-        // Wait for page to be fully loaded and interactive
-        if (document.readyState === 'complete') {
-          // Use requestIdleCallback to load during idle time (better for performance)
-          if ('requestIdleCallback' in window) {
-            requestIdleCallback(loadGTM, { timeout: 2000 });
-          } else {
-            setTimeout(loadGTM, 2000);
-          }
-        } else {
-          window.addEventListener('load', function() {
-            if ('requestIdleCallback' in window) {
-              requestIdleCallback(loadGTM, { timeout: 2000 });
-            } else {
-              setTimeout(loadGTM, 2000);
-            }
-          });
-        }
-      })();
+      // Initialize dataLayer early (before consent)
+      window.dataLayer = window.dataLayer || [];
+      
+      // GTM will be loaded after user accepts cookies
+      // See frontend/src/utils/gtm.ts for consent-based initialization
     </script>
     <!-- End Google Tag Manager -->
     
