@@ -3,6 +3,11 @@
  * Now requires user consent before loading
  */
 import { getGTMId } from '@/config/env';
+import { 
+  initializeGA4, 
+  configureGA4ForUser as configGA4User,
+  clearGA4UserId 
+} from './ga4-config';
 
 let gtmInitialized = false;
 
@@ -76,6 +81,36 @@ export function initGTM() {
   }
   
   gtmInitialized = true;
+  
+  // Configure GA4 with privacy-compliant settings after GTM loads
+  // Wait a bit for GTM to fully initialize
+  setTimeout(() => {
+    initializeGA4();
+  }, 100);
+}
+
+/**
+ * Configure GA4 when user logs in
+ * Sets user ID and user properties for tracking (non-PII)
+ */
+export function configureGA4ForUser(userId: number, userRole: 'user' | 'admin', isSeller?: boolean) {
+  // Wait for dataLayer to be ready
+  if (!window.dataLayer) {
+    setTimeout(() => configureGA4ForUser(userId, userRole, isSeller), 100);
+    return;
+  }
+  
+  configGA4User(userId, {
+    user_role: userRole,
+    is_seller: isSeller ? 'true' : 'false',
+  });
+}
+
+/**
+ * Clear GA4 user data when user logs out
+ */
+export function clearGA4UserData() {
+  clearGA4UserId();
 }
 
 /**
