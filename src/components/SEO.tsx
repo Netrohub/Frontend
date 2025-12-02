@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 interface SEOProps {
   title?: string;
@@ -11,6 +12,7 @@ interface SEOProps {
 /**
  * SEO Component for dynamic meta tags
  * Provides Open Graph and Twitter Card support
+ * Uses Cloudflare Images for logo (same as main site) with fallback
  */
 export function SEO({
   title = "NXOLand - تداول آمن وموثوق للحسابات",
@@ -20,10 +22,15 @@ export function SEO({
   noIndex = false,
 }: SEOProps) {
   const fullUrl = url ? `https://nxoland.com${url}` : "https://nxoland.com";
-  // SEO uses only the golden "N" logo - nxoland-new-logo.png
-  // This ensures consistent branding across all social media and search engine previews
-  const seoLogoUrl = "https://nxoland.com/nxoland-new-logo.png";
-  const fullImage = seoLogoUrl; // Always use the same logo for SEO
+  
+  // Get logo URL using Cloudflare Images (same pattern as Navbar/Home page)
+  // For SEO meta tags, we need absolute URLs, so ensure it's a full URL
+  const cloudflareLogoUrl = getStaticImageUrl('LOGO', 'public');
+  const seoLogoUrl = cloudflareLogoUrl 
+    ? cloudflareLogoUrl // Cloudflare Images URL is already absolute
+    : "https://nxoland.com/nxoland-new-logo.png"; // Fallback to local logo with absolute URL
+  
+  const fullImage = seoLogoUrl;
 
   return (
     <Helmet>
