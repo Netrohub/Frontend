@@ -543,7 +543,7 @@ export function listingToGA4Item(listing: {
     item_id: String(listing.id),
     item_name: listing.title,
     price: listing.price,
-    currency: listing.currency || 'SAR',
+    currency: listing.currency || 'USD',
     quantity: 1,
   };
   
