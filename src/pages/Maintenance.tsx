@@ -1,6 +1,7 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Loader2, Wrench, MessageCircle } from "lucide-react";
 import { DiscordIcon } from "@/components/icons/DiscordIcon";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 const Maintenance = () => {
   const { t, language } = useLanguage();
@@ -25,6 +26,24 @@ const Maintenance = () => {
 
       {/* Main content */}
       <div className="relative z-10 max-w-2xl mx-auto px-4 text-center">
+        {/* Logo */}
+        <div className="mb-6 flex justify-center">
+          <img 
+            src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
+            alt="NXOLand Logo" 
+            width="80"
+            height="80"
+            className="h-16 w-16 sm:h-20 sm:w-20"
+            style={{ objectFit: 'contain', aspectRatio: '1/1' }}
+            loading="lazy"
+            onError={(e) => {
+              const img = e.target as HTMLImageElement;
+              if (img.src.includes('imagedelivery.net')) {
+                img.src = '/nxoland-official-logo.png';
+              }
+            }}
+          />
+        </div>
         {/* Icon */}
         <div className="mb-8 flex justify-center">
           <div className="relative">

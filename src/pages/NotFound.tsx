@@ -5,6 +5,7 @@ import { Home, Search, ArrowRight, AlertCircle } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 const NotFound = () => {
   const location = useLocation();
@@ -52,6 +53,24 @@ const NotFound = () => {
         {/* Main content */}
         <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
           <div className="max-w-2xl mx-auto text-center">
+            {/* Logo */}
+            <div className="mb-6 flex justify-center">
+              <img 
+                src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
+                alt="NXOLand Logo" 
+                width="80"
+                height="80"
+                className="h-16 w-16 sm:h-20 sm:w-20"
+                style={{ objectFit: 'contain', aspectRatio: '1/1' }}
+                loading="lazy"
+                onError={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  if (img.src.includes('imagedelivery.net')) {
+                    img.src = '/nxoland-official-logo.png';
+                  }
+                }}
+              />
+            </div>
             {/* Icon */}
             <div className="mb-8 flex justify-center">
               <div className="relative">

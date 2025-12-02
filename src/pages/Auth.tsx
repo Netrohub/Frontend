@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Lock, User as UserIcon, ArrowRight, Snowflake, MessageCircle } from "lucide-react";
+import { Mail, Lock, User as UserIcon, ArrowRight, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SEO } from "@/components/SEO";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
 import { sanitizeString, isValidEmail, isValidPassword } from "@/lib/utils/validation";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 import { VALIDATION_RULES, ANIMATION_CONFIG } from "@/config/constants";
 import type { ApiError } from "@/types/api";
 import { Turnstile } from "@/components/Turnstile";
@@ -281,11 +282,24 @@ const Auth = () => {
         <div className="relative z-10 w-full max-w-md px-4">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity">
-              <Snowflake className="h-12 w-12 text-[hsl(195,80%,70%)]" />
-              <span className="text-3xl font-black text-white">
-                NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-              </span>
+            <Link to="/" className="inline-flex flex-col items-center gap-3 mb-4 hover:opacity-80 transition-opacity">
+              <img 
+                src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
+                alt="NXOLand Logo" 
+                width="80"
+                height="80"
+                className="h-16 w-16 sm:h-20 sm:w-20"
+                style={{ objectFit: 'contain', aspectRatio: '1/1' }}
+                loading="eager"
+                fetchPriority="high"
+                onError={(e) => {
+                  // Fallback to local logo if Cloudflare image fails
+                  const img = e.target as HTMLImageElement;
+                  if (img.src.includes('imagedelivery.net')) {
+                    img.src = '/nxoland-official-logo.png';
+                  }
+                }}
+              />
             </Link>
             <p className="text-white/60">{t('auth.tagline')}</p>
           </div>

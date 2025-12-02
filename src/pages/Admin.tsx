@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Snowflake, Users, AlertTriangle, ShieldCheck, DollarSign, Package, ShoppingCart, TrendingUp, Loader2 } from "lucide-react";
+import { Users, AlertTriangle, ShieldCheck, DollarSign, Package, ShoppingCart, TrendingUp, Loader2 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { AdminNavbar } from "@/components/AdminNavbar";
 import { adminApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
 
 const Admin = () => {
   const { t, language } = useLanguage();
@@ -45,10 +46,23 @@ const Admin = () => {
       {/* Top Navigation */}
       <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-[hsl(200,70%,15%,0.95)] backdrop-blur-sm border-b border-white/10">
         <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Snowflake className="h-8 w-8 text-[hsl(195,80%,70%)]" />
-          <span className="text-xl md:text-2xl font-black text-white">
-            NXO<span className="text-[hsl(40,90%,55%)]">Land</span>
-          </span>
+          <img 
+            src={getStaticImageUrl('LOGO', 'public') || '/nxoland-new-logo.png'} 
+            alt="NXOLand Logo" 
+            width="40"
+            height="40"
+            className="h-8 w-8"
+            style={{ objectFit: 'contain', aspectRatio: '1/1' }}
+            loading="eager"
+            fetchPriority="high"
+            onError={(e) => {
+              // Fallback to local logo if Cloudflare image fails
+              const img = e.target as HTMLImageElement;
+              if (img.src.includes('imagedelivery.net')) {
+                img.src = '/nxoland-official-logo.png';
+              }
+            }}
+          />
         </Link>
         <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
           لوحة الإدارة
