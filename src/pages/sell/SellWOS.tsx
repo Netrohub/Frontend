@@ -18,19 +18,29 @@ import { toast } from "sonner";
 import type { ApiError } from "@/types/api";
 import { formatCompactNumber } from "@/utils/numberFormat";
 import { getGameById } from "@/config/games";
+import stoveLv1 from "@/assets/stove_lv_1.png";
+import stoveLv2 from "@/assets/stove_lv_2.png";
+import stoveLv3 from "@/assets/stove_lv_3.png";
+import stoveLv4 from "@/assets/stove_lv_4.png";
+import stoveLv5 from "@/assets/stove_lv_5.png";
+import stoveLv6 from "@/assets/stove_lv_6.png";
+import stoveLv7 from "@/assets/stove_lv_7.png";
+import stoveLv8 from "@/assets/stove_lv_8.png";
+import stoveLv9 from "@/assets/stove_lv_9.png";
+import stoveLv10 from "@/assets/stove_lv_10.png";
 
-// Stove level images from Cloudflare Images with fallback URLs
+// Stove level images for WOS (Whiteout Survival) - Cloudflare Images with local asset fallback
 const stoveImages = {
-  1: getStaticImageUrl('STOVE_LV_1', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_1.png',
-  2: getStaticImageUrl('STOVE_LV_2', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_2.png',
-  3: getStaticImageUrl('STOVE_LV_3', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_3.png',
-  4: getStaticImageUrl('STOVE_LV_4', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_4.png',
-  5: getStaticImageUrl('STOVE_LV_5', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_5.png',
-  6: getStaticImageUrl('STOVE_LV_6', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_6.png',
-  7: getStaticImageUrl('STOVE_LV_7', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_7.png',
-  8: getStaticImageUrl('STOVE_LV_8', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_8.png',
-  9: getStaticImageUrl('STOVE_LV_9', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_9.png',
-  10: getStaticImageUrl('STOVE_LV_10', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_10.png',
+  1: getStaticImageUrl('STOVE_LV_1', 'public') || stoveLv1,
+  2: getStaticImageUrl('STOVE_LV_2', 'public') || stoveLv2,
+  3: getStaticImageUrl('STOVE_LV_3', 'public') || stoveLv3,
+  4: getStaticImageUrl('STOVE_LV_4', 'public') || stoveLv4,
+  5: getStaticImageUrl('STOVE_LV_5', 'public') || stoveLv5,
+  6: getStaticImageUrl('STOVE_LV_6', 'public') || stoveLv6,
+  7: getStaticImageUrl('STOVE_LV_7', 'public') || stoveLv7,
+  8: getStaticImageUrl('STOVE_LV_8', 'public') || stoveLv8,
+  9: getStaticImageUrl('STOVE_LV_9', 'public') || stoveLv9,
+  10: getStaticImageUrl('STOVE_LV_10', 'public') || stoveLv10,
 };
 
 // Town Center level images for Kingshot (using provided URLs)
