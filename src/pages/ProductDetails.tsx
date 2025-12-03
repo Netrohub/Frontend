@@ -38,18 +38,18 @@ const ProductDetails = () => {
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
-  // Stove level images from Cloudflare Images
+  // Stove level images from Cloudflare Images with fallback URLs
   const stoveImages: Record<string, string> = {
-    'FC1': getStaticImageUrl('STOVE_LV_1', 'public'),
-    'FC2': getStaticImageUrl('STOVE_LV_2', 'public'),
-    'FC3': getStaticImageUrl('STOVE_LV_3', 'public'),
-    'FC4': getStaticImageUrl('STOVE_LV_4', 'public'),
-    'FC5': getStaticImageUrl('STOVE_LV_5', 'public'),
-    'FC6': getStaticImageUrl('STOVE_LV_6', 'public'),
-    'FC7': getStaticImageUrl('STOVE_LV_7', 'public'),
-    'FC8': getStaticImageUrl('STOVE_LV_8', 'public'),
-    'FC9': getStaticImageUrl('STOVE_LV_9', 'public'),
-    'FC10': getStaticImageUrl('STOVE_LV_10', 'public'),
+    'FC1': getStaticImageUrl('STOVE_LV_1', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_1.png',
+    'FC2': getStaticImageUrl('STOVE_LV_2', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_2.png',
+    'FC3': getStaticImageUrl('STOVE_LV_3', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_3.png',
+    'FC4': getStaticImageUrl('STOVE_LV_4', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_4.png',
+    'FC5': getStaticImageUrl('STOVE_LV_5', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_5.png',
+    'FC6': getStaticImageUrl('STOVE_LV_6', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_6.png',
+    'FC7': getStaticImageUrl('STOVE_LV_7', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_7.png',
+    'FC8': getStaticImageUrl('STOVE_LV_8', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_8.png',
+    'FC9': getStaticImageUrl('STOVE_LV_9', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_9.png',
+    'FC10': getStaticImageUrl('STOVE_LV_10', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_10.png',
   };
 
   // Town Center level images for Kingshot (using provided URLs)

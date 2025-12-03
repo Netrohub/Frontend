@@ -19,18 +19,18 @@ import type { ApiError } from "@/types/api";
 import { formatCompactNumber } from "@/utils/numberFormat";
 import { getGameById } from "@/config/games";
 
-// Stove level images from Cloudflare Images
+// Stove level images from Cloudflare Images with fallback URLs
 const stoveImages = {
-  1: getStaticImageUrl('STOVE_LV_1', 'public'),
-  2: getStaticImageUrl('STOVE_LV_2', 'public'),
-  3: getStaticImageUrl('STOVE_LV_3', 'public'),
-  4: getStaticImageUrl('STOVE_LV_4', 'public'),
-  5: getStaticImageUrl('STOVE_LV_5', 'public'),
-  6: getStaticImageUrl('STOVE_LV_6', 'public'),
-  7: getStaticImageUrl('STOVE_LV_7', 'public'),
-  8: getStaticImageUrl('STOVE_LV_8', 'public'),
-  9: getStaticImageUrl('STOVE_LV_9', 'public'),
-  10: getStaticImageUrl('STOVE_LV_10', 'public'),
+  1: getStaticImageUrl('STOVE_LV_1', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_1.png',
+  2: getStaticImageUrl('STOVE_LV_2', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_2.png',
+  3: getStaticImageUrl('STOVE_LV_3', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_3.png',
+  4: getStaticImageUrl('STOVE_LV_4', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_4.png',
+  5: getStaticImageUrl('STOVE_LV_5', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_5.png',
+  6: getStaticImageUrl('STOVE_LV_6', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_6.png',
+  7: getStaticImageUrl('STOVE_LV_7', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_7.png',
+  8: getStaticImageUrl('STOVE_LV_8', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_8.png',
+  9: getStaticImageUrl('STOVE_LV_9', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_9.png',
+  10: getStaticImageUrl('STOVE_LV_10', 'public') || 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_10.png',
 };
 
 // Town Center level images for Kingshot (using provided URLs)
