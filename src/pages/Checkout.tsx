@@ -73,7 +73,14 @@ const Checkout = () => {
       // Prepare HyperPay checkout
       setProcessing(true);
       try {
-        const response = await paymentsApi.prepareHyperPayCheckout({ order_id: orderId });
+        // Collect browser data for 3D Secure
+        const { collectBrowserData } = await import('@/utils/browserData');
+        const browserData = collectBrowserData();
+        
+        const response = await paymentsApi.prepareHyperPayCheckout({ 
+          order_id: orderId,
+          browserData,
+        });
         setHyperPayCheckout({
           checkoutId: response.checkoutId,
           widgetScriptUrl: response.widgetScriptUrl,
