@@ -399,7 +399,15 @@ export const imagesApi = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(errorData.message || 'Failed to upload images');
+        const errorMessage = errorData.message || errorData.error || response.statusText || 'Failed to upload images';
+        const errorCode = errorData.error_code || null;
+        
+        // Create more descriptive error
+        const error = new Error(errorMessage);
+        (error as any).status = response.status;
+        (error as any).errorCode = errorCode;
+        (error as any).errorData = errorData;
+        throw error;
       }
 
       const data = await response.json();

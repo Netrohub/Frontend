@@ -473,7 +473,21 @@ const SellWOS = () => {
       });
     } catch (error) {
       console.error('Failed to upload images:', error);
-      toast.error(t('listing.uploadFailed'));
+      
+      // Show more specific error message
+      let errorMessage = t('listing.uploadFailed');
+      if (error instanceof Error) {
+        const apiError = error as any;
+        if (apiError.errorCode === 'CLOUDFLARE_CONFIG_MISSING') {
+          errorMessage = 'Image service configuration error. Please contact support.';
+        } else if (apiError.errorCode === 'UPLOAD_FAILED') {
+          errorMessage = 'All images failed to upload. Please check file sizes and try again.';
+        } else if (apiError.message && apiError.message !== 'Failed to upload images') {
+          errorMessage = apiError.message;
+        }
+      }
+      
+      toast.error(errorMessage);
     }
   };
 
