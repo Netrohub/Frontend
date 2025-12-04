@@ -43,6 +43,12 @@ export const HyperPayWidget = ({
       return;
     }
 
+    // Load MADA scripts first (required for MADA compliance)
+    const madaScript = document.createElement("script");
+    madaScript.src = "http://hyperpay-2024.quickconnect.to/d/f/597670674613449940";
+    madaScript.async = true;
+    
+    // Load the main HyperPay widget script
     const script = document.createElement("script");
     script.src = widgetScriptUrl;
     script.async = true;
@@ -53,28 +59,57 @@ export const HyperPayWidget = ({
       script.crossOrigin = "anonymous"; // Required when using integrity
     }
 
-    script.onload = () => {
-      scriptLoaded.current = true;
-      setLoading(false);
+    // Load MADA script first, then main widget script
+    madaScript.onload = () => {
+      // After MADA script loads, load the main widget script
+      script.onload = () => {
+        scriptLoaded.current = true;
+        setLoading(false);
+        
+        // Note: HyperPay mentioned adding a 3D Secure redirection script after paymentWidgets.js
+        // but the exact script URL was not provided in the email. The widget should work
+        // with the current setup. If 3DS redirection issues occur, contact HyperPay for
+        // the specific script URL to add here.
+      };
+
+      script.onerror = () => {
+        setError("Failed to load payment widget");
+        setLoading(false);
+        onError?.("Failed to load payment widget");
+      };
+
+      document.head.appendChild(script);
     };
 
-    script.onerror = () => {
-      setError("Failed to load payment widget");
-      setLoading(false);
-      onError?.("Failed to load payment widget");
+    madaScript.onerror = () => {
+      // If MADA script fails, still try to load main widget
+      script.onload = () => {
+        scriptLoaded.current = true;
+        setLoading(false);
+      };
+      script.onerror = () => {
+        setError("Failed to load payment widget");
+        setLoading(false);
+        onError?.("Failed to load payment widget");
+      };
+      document.head.appendChild(script);
     };
 
-    document.head.appendChild(script);
+    document.head.appendChild(madaScript);
 
     return () => {
-      // Cleanup: remove script if component unmounts
-      const existingScript = document.querySelector(`script[src="${widgetScriptUrl}"]`);
-      if (existingScript) {
-        existingScript.remove();
-        scriptLoaded.current = false;
+      // Cleanup: remove scripts if component unmounts
+      const existingWidgetScript = document.querySelector(`script[src="${widgetScriptUrl}"]`);
+      if (existingWidgetScript) {
+        existingWidgetScript.remove();
       }
+      const existingMadaScript = document.querySelector(`script[src="http://hyperpay-2024.quickconnect.to/d/f/597670674613449940"]`);
+      if (existingMadaScript) {
+        existingMadaScript.remove();
+      }
+      scriptLoaded.current = false;
     };
-  }, [widgetScriptUrl, integrity, onError]);
+  }, [widgetScriptUrl, integrity, onError, checkoutId]);
 
   // Handle form submission
   useEffect(() => {
