@@ -47,27 +47,40 @@ export const PayPalButtons = ({
     const environment = import.meta.env.VITE_PAYPAL_ENVIRONMENT || 'sandbox';
     
     if (!clientId) {
-      const errorMsg = 'PayPal client ID not configured';
+      const errorMsg = 'PayPal client ID not configured. Please set VITE_PAYPAL_CLIENT_ID in your .env file.';
+      console.error('PayPal Error:', errorMsg);
       setError(errorMsg);
       setLoading(false);
       onError?.(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
+    // Use sandbox URL for sandbox environment, production for live
+    const sdkUrl = environment === 'live' 
+      ? 'https://www.paypal.com/sdk/js'
+      : 'https://www.sandbox.paypal.com/sdk/js';
+
     // Load PayPal SDK script
     const script = document.createElement("script");
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=${currency}`;
+    script.src = `${sdkUrl}?client-id=${clientId}&currency=${currency}`;
     script.async = true;
     script.setAttribute('data-sdk-integration-source', 'button-factory');
+    
+    console.log('Loading PayPal SDK:', { sdkUrl, clientId: clientId.substring(0, 10) + '...', environment });
 
     script.onload = () => {
+      console.log('PayPal SDK loaded successfully');
       scriptLoaded.current = true;
       setLoading(false);
       
-      // Render PayPal buttons after SDK loads
-      if (window.paypal && buttonsContainerRef.current && !buttonsRendered.current) {
-        try {
-          window.paypal.Buttons({
+      // Small delay to ensure SDK is fully initialized
+      setTimeout(() => {
+        // Render PayPal buttons after SDK loads
+        if (window.paypal && buttonsContainerRef.current && !buttonsRendered.current) {
+          console.log('Rendering PayPal buttons...', { orderId, amount, currency });
+          try {
+            window.paypal.Buttons({
             style: {
               layout: 'vertical',
               color: 'blue',
@@ -75,17 +88,20 @@ export const PayPalButtons = ({
               label: 'paypal',
             },
             createOrder: async (data: any, actions: any) => {
+              console.log('PayPal createOrder called', { orderId });
               try {
                 // Call backend to create PayPal order
                 const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
+                console.log('PayPal order created:', response);
                 
                 if (!response.paypalOrderId) {
-                  throw new Error('Failed to create PayPal order');
+                  throw new Error('Failed to create PayPal order: No order ID returned');
                 }
                 
                 // Return the PayPal order ID
                 return response.paypalOrderId;
               } catch (err: any) {
+                console.error('PayPal createOrder error:', err);
                 const errorMsg = err.message || 'Failed to create order';
                 toast.error(errorMsg);
                 onError?.(errorMsg);
@@ -123,21 +139,32 @@ export const PayPalButtons = ({
             },
           }).render(buttonsContainerRef.current);
           
+          console.log('PayPal buttons rendered successfully');
           buttonsRendered.current = true;
+        } else {
+          console.warn('PayPal buttons not rendered:', {
+            hasPayPal: !!window.paypal,
+            hasContainer: !!buttonsContainerRef.current,
+            alreadyRendered: buttonsRendered.current
+          });
+        }
         } catch (err: any) {
+          console.error('PayPal render error:', err);
           const errorMsg = err.message || 'Failed to render PayPal buttons';
           setError(errorMsg);
           setLoading(false);
           onError?.(errorMsg);
         }
-      }
+      }, 100); // Small delay to ensure SDK is ready
     };
 
-    script.onerror = () => {
-      const errorMsg = 'Failed to load PayPal SDK';
+    script.onerror = (err) => {
+      console.error('PayPal SDK load error:', err);
+      const errorMsg = `Failed to load PayPal SDK. Please check your internet connection and try again.`;
       setError(errorMsg);
       setLoading(false);
       onError?.(errorMsg);
+      toast.error(errorMsg);
     };
 
     document.body.appendChild(script);
@@ -171,7 +198,12 @@ export const PayPalButtons = ({
 
   return (
     <div className="w-full">
-      <div ref={buttonsContainerRef} className="paypal-buttons-container" />
+      <div ref={buttonsContainerRef} className="paypal-buttons-container" style={{ minHeight: '50px' }} />
+      {buttonsRendered.current && (
+        <p className="text-xs text-white/60 mt-2 text-center">
+          Click the PayPal button above to complete your payment
+        </p>
+      )}
     </div>
   );
 };
