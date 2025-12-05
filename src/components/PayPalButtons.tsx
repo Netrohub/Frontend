@@ -58,11 +58,13 @@ export const PayPalButtons = ({
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cardFieldsEligible, setCardFieldsEligible] = useState<boolean | null>(null);
   const scriptLoaded = useRef(false);
   const cardFieldsContainerRef = useRef<HTMLDivElement>(null);
   const paypalButtonsContainerRef = useRef<HTMLDivElement>(null);
   const cardFieldsRef = useRef<any>(null);
   const paypalButtonsRef = useRef<any>(null);
+  const paypalOrderIdRef = useRef<string | null>(null); // Store PayPal order ID from createOrder
 
   useEffect(() => {
     // Load PayPal JavaScript SDK
@@ -91,8 +93,10 @@ export const PayPalButtons = ({
 
     console.log('Loading PayPal SDK for Expanded Checkout:', { sdkUrl, environment });
 
+    // Load SDK with buttons first, then check for card-fields eligibility
+    // We'll try to load card-fields, but handle gracefully if not eligible
     const script = document.createElement("script");
-    script.src = `${sdkUrl}?client-id=${clientId}&currency=${currency}&components=card-fields,buttons`;
+    script.src = `${sdkUrl}?client-id=${clientId}&currency=${currency}&components=buttons,card-fields`;
     script.async = true;
     script.setAttribute('data-sdk-integration-source', 'button-factory');
     
@@ -103,7 +107,7 @@ export const PayPalButtons = ({
       
       // Small delay to ensure SDK is fully initialized
       setTimeout(() => {
-        initializePayPalComponents();
+        checkEligibilityAndInitialize();
       }, 100);
     };
 
@@ -125,7 +129,32 @@ export const PayPalButtons = ({
     };
   }, [orderId, currency, onPaymentSuccess, onError]);
 
-  const initializePayPalComponents = () => {
+  const checkEligibilityAndInitialize = () => {
+    if (!window.paypal) {
+      console.error('PayPal SDK not available');
+      setError('PayPal SDK not loaded');
+      return;
+    }
+
+    // Check if CardFields API is available
+    // If not available, card payments are not eligible for this account
+    const hasCardFieldsAPI = typeof window.paypal.CardFields === 'function';
+    
+    if (!hasCardFieldsAPI) {
+      console.warn('PayPal Card Fields API not available - card payments not eligible');
+      setCardFieldsEligible(false);
+      // Still initialize PayPal buttons
+      initializePayPalComponents(false);
+      return;
+    }
+
+    // CardFields API is available, try to initialize
+    // If initialization fails with eligibility error, we'll catch it
+    setCardFieldsEligible(true);
+    initializePayPalComponents(true);
+  };
+
+  const initializePayPalComponents = (cardFieldsAvailable: boolean) => {
     if (!window.paypal) {
       console.error('PayPal SDK not available');
       setError('PayPal SDK not loaded');
@@ -139,16 +168,22 @@ export const PayPalButtons = ({
         const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
         console.log('PayPal order created:', response);
         
+        let paypalOrderId: string;
+        
         if (response.error_code === 'PAYMENT_ALREADY_EXISTS' && response.paypalOrderId) {
           console.log('Using existing PayPal order:', response.paypalOrderId);
-          return response.paypalOrderId;
-        }
-        
-        if (!response.paypalOrderId) {
+          paypalOrderId = response.paypalOrderId;
+        } else if (response.paypalOrderId) {
+          paypalOrderId = response.paypalOrderId;
+        } else {
           throw new Error('Failed to create PayPal order: No order ID returned');
         }
         
-        return response.paypalOrderId;
+        // Store PayPal order ID for use in onApprove
+        paypalOrderIdRef.current = paypalOrderId;
+        console.log('Stored PayPal order ID:', paypalOrderId);
+        
+        return paypalOrderId;
       } catch (err: any) {
         console.error('PayPal createOrder error:', err);
         const errorMsg = err.message || 'Failed to create order';
@@ -159,14 +194,34 @@ export const PayPalButtons = ({
     };
 
     // Shared onApprove function
-    const onApprove = async (data: { orderId: string }) => {
-      console.log('PayPal onApprove called', { orderId, paypalOrderId: data.orderId });
+    // PayPal SDK may pass orderId in different formats depending on payment method
+    // For Expanded Checkout, the orderId in data should be the PayPal order ID returned from createOrder
+    const onApprove = async (data: any) => {
+      // Extract PayPal order ID - try multiple possible fields
+      // Also use stored order ID from createOrder as fallback
+      const paypalOrderId = data.orderId || data.orderID || data.id || data.token || paypalOrderIdRef.current;
+      
+      console.log('PayPal onApprove called', { 
+        internalOrderId: orderId, 
+        paypalOrderId,
+        storedPaypalOrderId: paypalOrderIdRef.current,
+        fullData: data 
+      });
+      
+      if (!paypalOrderId) {
+        const errorMsg = 'PayPal order ID not found. Please try again.';
+        console.error('PayPal onApprove error:', errorMsg, { data, stored: paypalOrderIdRef.current });
+        toast.error(errorMsg);
+        onError?.(errorMsg);
+        return;
+      }
+      
       try {
         setProcessing(true);
         
         const response = await paymentsApi.capturePayPalOrder({
           order_id: orderId,
-          paypal_order_id: data.orderId,
+          paypal_order_id: paypalOrderId,
         });
         
         console.log('PayPal capture response:', response);
@@ -200,14 +255,14 @@ export const PayPalButtons = ({
       onError?.(errorMsg);
     };
 
-    // Initialize Card Fields (hosted card fields)
+    // Initialize Card Fields (hosted card fields) - only if eligible
     // CardFields API for Expanded Checkout with 3D Secure support
-    if (window.paypal.CardFields && cardFieldsContainerRef.current) {
+    if (cardFieldsAvailable && window.paypal.CardFields && cardFieldsContainerRef.current) {
       try {
         console.log('Initializing PayPal Card Fields...');
         cardFieldsRef.current = window.paypal.CardFields({
           createOrder,
-          onApprove: async (data: { orderId: string; liabilityShift?: string }) => {
+          onApprove: async (data: any) => {
             console.log('Card Fields onApprove:', data);
             // Check liability shift for 3D Secure
             if (data.liabilityShift === 'NO') {
@@ -215,7 +270,15 @@ export const PayPalButtons = ({
             }
             await onApprove(data);
           },
-          onError: handleError,
+          onError: (err: any) => {
+            // If card fields error is about eligibility, just hide them
+            if (err?.message?.includes('not eligible') || err?.message?.includes('card payments')) {
+              console.warn('Card fields not eligible, hiding card fields component');
+              setCardFieldsEligible(false);
+              return;
+            }
+            handleError(err);
+          },
           style: {
             // Customize card fields styling to match your theme
             '.input': {
@@ -231,8 +294,16 @@ export const PayPalButtons = ({
         console.log('PayPal Card Fields rendered successfully');
       } catch (err: any) {
         console.error('PayPal Card Fields render error:', err);
-        toast.error('Failed to render card fields');
+        // If error is about eligibility, just mark as not eligible
+        if (err?.message?.includes('not eligible') || err?.message?.includes('card payments')) {
+          console.warn('Card fields not eligible for this account');
+          setCardFieldsEligible(false);
+        } else {
+          toast.error('Failed to render card fields');
+        }
       }
+    } else if (!cardFieldsAvailable) {
+      console.log('Card Fields not available - skipping card fields initialization');
     }
 
     // Initialize PayPal Buttons
@@ -296,22 +367,27 @@ export const PayPalButtons = ({
         <div ref={paypalButtonsContainerRef} className="paypal-buttons-container" style={{ minHeight: '50px' }} />
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/20"></div>
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-[#0a0a0a] px-2 text-white/60">Or</span>
-        </div>
-      </div>
+      {/* Only show card fields if eligible */}
+      {cardFieldsEligible !== false && (
+        <>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/20"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-[#0a0a0a] px-2 text-white/60">Or</span>
+            </div>
+          </div>
 
-      {/* Hosted Card Fields */}
-      <div>
-        <p className="text-sm text-white/60 mb-2">Pay with Card</p>
-        <Card className="p-4 bg-white/5 border-white/10">
-          <div ref={cardFieldsContainerRef} className="paypal-card-fields" style={{ minHeight: '200px' }} />
-        </Card>
-      </div>
+          {/* Hosted Card Fields */}
+          <div>
+            <p className="text-sm text-white/60 mb-2">Pay with Card</p>
+            <Card className="p-4 bg-white/5 border-white/10">
+              <div ref={cardFieldsContainerRef} className="paypal-card-fields" style={{ minHeight: '200px' }} />
+            </Card>
+          </div>
+        </>
+      )}
     </div>
   );
 };
