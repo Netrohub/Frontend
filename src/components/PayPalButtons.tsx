@@ -12,14 +12,37 @@ interface PayPalButtonsProps {
   onError?: (error: string) => void;
 }
 
+// PayPal SDK v6 types
 declare global {
   interface Window {
     paypal?: {
-      Buttons: (config: any) => {
-        render: (selector: string) => void;
-      };
+      createInstance: (config: {
+        clientToken: string;
+        components: string[];
+        pageType?: string;
+      }) => Promise<PayPalSDKInstance>;
     };
   }
+}
+
+interface PayPalSDKInstance {
+  findEligibleMethods: (options: { currencyCode: string }) => Promise<PayPalEligibleMethods>;
+  createPayPalOneTimePaymentSession: (options: PayPalPaymentSessionOptions) => PayPalPaymentSession;
+}
+
+interface PayPalEligibleMethods {
+  isEligible: (method: string) => boolean;
+  getDetails: (method: string) => any;
+}
+
+interface PayPalPaymentSession {
+  start: (presentationMode: { presentationMode: string }, createOrderPromise: Promise<{ orderId: string }>) => Promise<void>;
+}
+
+interface PayPalPaymentSessionOptions {
+  onApprove: (data: { orderId: string }) => Promise<void>;
+  onCancel?: (data: any) => void;
+  onError?: (error: any) => void;
 }
 
 export const PayPalButtons = ({
@@ -30,137 +53,76 @@ export const PayPalButtons = ({
   onError,
 }: PayPalButtonsProps) => {
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clientToken, setClientToken] = useState<string | null>(null);
+  const [sdkInstance, setSdkInstance] = useState<PayPalSDKInstance | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const paymentSessionRef = useRef<PayPalPaymentSession | null>(null);
   const scriptLoaded = useRef(false);
-  const buttonsContainerRef = useRef<HTMLDivElement>(null);
-  const buttonsRendered = useRef(false);
 
+  // Load PayPal SDK v6
   useEffect(() => {
-    // Load PayPal SDK script
     if (scriptLoaded.current) {
-      setLoading(false);
       return;
     }
 
-    // Get PayPal client ID from environment or config
-    const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID || '';
     const environment = import.meta.env.VITE_PAYPAL_ENVIRONMENT || 'sandbox';
-    
-    if (!clientId) {
-      const errorMsg = 'PayPal client ID not configured. Please set VITE_PAYPAL_CLIENT_ID in your .env file.';
-      console.error('PayPal Error:', errorMsg);
-      setError(errorMsg);
-      setLoading(false);
-      onError?.(errorMsg);
-      toast.error(errorMsg);
-      return;
-    }
+    const sdkUrl = environment === 'live'
+      ? 'https://www.paypal.com/web-sdk/v6/core'
+      : 'https://www.sandbox.paypal.com/web-sdk/v6/core';
 
-    // Use sandbox URL for sandbox environment, production for live
-    const sdkUrl = environment === 'live' 
-      ? 'https://www.paypal.com/sdk/js'
-      : 'https://www.sandbox.paypal.com/sdk/js';
+    console.log('Loading PayPal SDK v6:', { sdkUrl, environment });
 
-    // Load PayPal SDK script
     const script = document.createElement("script");
-    script.src = `${sdkUrl}?client-id=${clientId}&currency=${currency}`;
+    script.src = sdkUrl;
     script.async = true;
-    script.setAttribute('data-sdk-integration-source', 'button-factory');
     
-    console.log('Loading PayPal SDK:', { sdkUrl, clientId: clientId.substring(0, 10) + '...', environment });
-
-    script.onload = () => {
-      console.log('PayPal SDK loaded successfully');
+    script.onload = async () => {
+      console.log('PayPal SDK v6 loaded successfully');
       scriptLoaded.current = true;
-      setLoading(false);
       
-      // Small delay to ensure SDK is fully initialized
-      setTimeout(() => {
-        // Render PayPal buttons after SDK loads
-        if (window.paypal && buttonsContainerRef.current && !buttonsRendered.current) {
-          console.log('Rendering PayPal buttons...', { orderId, amount, currency });
+      // Get client token from backend
+      try {
+        const response = await paymentsApi.getPayPalClientToken();
+        const token = response.clientToken;
+        console.log('PayPal client token obtained');
+        setClientToken(token);
+        
+        // Initialize SDK instance
+        if (window.paypal) {
           try {
-            window.paypal.Buttons({
-              style: {
-                layout: 'vertical',
-                color: 'blue',
-                shape: 'rect',
-                label: 'paypal',
-              },
-              createOrder: async (data: any, actions: any) => {
-                console.log('PayPal createOrder called', { orderId });
-                try {
-                  // Call backend to create PayPal order
-                  const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
-                  console.log('PayPal order created:', response);
-                  
-                  if (!response.paypalOrderId) {
-                    throw new Error('Failed to create PayPal order: No order ID returned');
-                  }
-                  
-                  // Return the PayPal order ID
-                  return response.paypalOrderId;
-                } catch (err: any) {
-                  console.error('PayPal createOrder error:', err);
-                  const errorMsg = err.message || 'Failed to create order';
-                  toast.error(errorMsg);
-                  onError?.(errorMsg);
-                  throw err;
-                }
-              },
-              onApprove: async (data: any, actions: any) => {
-                try {
-                  // Call backend to capture the payment
-                  const response = await paymentsApi.capturePayPalOrder({
-                    order_id: orderId,
-                    paypal_order_id: data.orderID,
-                  });
-                  
-                  if (response.status === 'success') {
-                    toast.success('Payment successful!');
-                    onPaymentSuccess?.();
-                  } else {
-                    throw new Error(response.response?.message || 'Payment capture failed');
-                  }
-                } catch (err: any) {
-                  const errorMsg = err.message || 'Failed to capture payment';
-                  toast.error(errorMsg);
-                  onError?.(errorMsg);
-                }
-              },
-              onError: (err: any) => {
-                const errorMsg = err.message || 'An error occurred with PayPal';
-                setError(errorMsg);
-                toast.error(errorMsg);
-                onError?.(errorMsg);
-              },
-              onCancel: (data: any) => {
-                toast.info('Payment cancelled');
-              },
-            }).render(buttonsContainerRef.current);
+            const instance = await window.paypal.createInstance({
+              clientToken: token,
+              components: ["paypal-payments"],
+              pageType: "checkout",
+            });
             
-            console.log('PayPal buttons rendered successfully');
-            buttonsRendered.current = true;
+            console.log('PayPal SDK instance created');
+            setSdkInstance(instance);
+            setLoading(false);
           } catch (err: any) {
-            console.error('PayPal render error:', err);
-            const errorMsg = err.message || 'Failed to render PayPal buttons';
+            console.error('PayPal SDK initialization error:', err);
+            const errorMsg = err.message || 'Failed to initialize PayPal SDK';
             setError(errorMsg);
             setLoading(false);
             onError?.(errorMsg);
+            toast.error(errorMsg);
           }
-        } else {
-          console.warn('PayPal buttons not rendered:', {
-            hasPayPal: !!window.paypal,
-            hasContainer: !!buttonsContainerRef.current,
-            alreadyRendered: buttonsRendered.current
-          });
         }
-      }, 100); // Small delay to ensure SDK is ready
+      } catch (err: any) {
+        console.error('Failed to get PayPal client token:', err);
+        const errorMsg = err.message || 'Failed to get PayPal client token';
+        setError(errorMsg);
+        setLoading(false);
+        onError?.(errorMsg);
+        toast.error(errorMsg);
+      }
     };
 
     script.onerror = (err) => {
-      console.error('PayPal SDK load error:', err);
-      const errorMsg = `Failed to load PayPal SDK. Please check your internet connection and try again.`;
+      console.error('PayPal SDK v6 load error:', err);
+      const errorMsg = 'Failed to load PayPal SDK. Please check your internet connection and try again.';
       setError(errorMsg);
       setLoading(false);
       onError?.(errorMsg);
@@ -170,12 +132,136 @@ export const PayPalButtons = ({
     document.body.appendChild(script);
 
     return () => {
-      // Cleanup: remove script if component unmounts
       if (script.parentNode) {
         script.parentNode.removeChild(script);
       }
     };
-  }, [orderId, currency, onPaymentSuccess, onError]);
+  }, []);
+
+  // Set up PayPal button when SDK is ready
+  useEffect(() => {
+    if (!sdkInstance || !buttonRef.current || paymentSessionRef.current) {
+      return;
+    }
+
+    const setupPayPalButton = async () => {
+      try {
+        // Check eligibility
+        const paymentMethods = await sdkInstance.findEligibleMethods({
+          currencyCode: currency,
+        });
+
+        if (!paymentMethods.isEligible("paypal")) {
+          const errorMsg = 'PayPal is not available for this transaction';
+          console.warn('PayPal not eligible:', { currency });
+          setError(errorMsg);
+          onError?.(errorMsg);
+          return;
+        }
+
+        // Create payment session
+        const paymentSession = sdkInstance.createPayPalOneTimePaymentSession({
+          onApprove: async (data) => {
+            console.log('PayPal payment approved:', data);
+            try {
+              setProcessing(true);
+              
+              const response = await paymentsApi.capturePayPalOrder({
+                order_id: orderId,
+                paypal_order_id: data.orderId,
+              });
+              
+              console.log('PayPal capture response:', response);
+              
+              if (response.status === 'success') {
+                toast.success('Payment successful!');
+                onPaymentSuccess?.();
+              } else if (response.status === 'pending') {
+                toast.info('Payment is being processed...');
+                onPaymentSuccess?.();
+              } else {
+                const errorMsg = response.response?.message || response.message || 'Payment capture failed';
+                throw new Error(errorMsg);
+              }
+            } catch (err: any) {
+              console.error('PayPal capture error:', err);
+              const errorMsg = err.message || 'Failed to capture payment. Please contact support if payment was deducted.';
+              toast.error(errorMsg);
+              onError?.(errorMsg);
+            } finally {
+              setProcessing(false);
+            }
+          },
+          onCancel: (data) => {
+            console.log('PayPal payment cancelled:', data);
+            toast.info('Payment cancelled');
+          },
+          onError: (error) => {
+            console.error('PayPal payment error:', error);
+            const errorMsg = error.message || 'An error occurred with PayPal';
+            toast.error(errorMsg);
+            onError?.(errorMsg);
+          },
+        });
+
+        paymentSessionRef.current = paymentSession;
+
+        // Set up button click handler
+        buttonRef.current.addEventListener('click', async () => {
+          try {
+            console.log('PayPal button clicked, creating order...');
+            
+            // Create order promise
+            const createOrderPromise = (async () => {
+              try {
+                const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
+                console.log('PayPal order created:', response);
+                
+                if (response.error_code === 'PAYMENT_ALREADY_EXISTS' && response.paypalOrderId) {
+                  console.log('Using existing PayPal order:', response.paypalOrderId);
+                  return { orderId: response.paypalOrderId };
+                }
+                
+                if (!response.paypalOrderId) {
+                  throw new Error('Failed to create PayPal order: No order ID returned');
+                }
+                
+                // v6 requires returning { orderId: "..." } object
+                return { orderId: response.paypalOrderId };
+              } catch (err: any) {
+                console.error('PayPal createOrder error:', err);
+                const errorMsg = err.message || 'Failed to create order';
+                toast.error(errorMsg);
+                onError?.(errorMsg);
+                throw err;
+              }
+            })();
+
+            // Start payment flow with auto presentation mode
+            await paymentSession.start(
+              { presentationMode: "auto" },
+              createOrderPromise
+            );
+          } catch (err: any) {
+            console.error('PayPal payment start error:', err);
+            const errorMsg = err.message || 'Failed to start payment';
+            toast.error(errorMsg);
+            onError?.(errorMsg);
+          }
+        });
+
+        console.log('PayPal button set up successfully');
+      } catch (err: any) {
+        console.error('PayPal button setup error:', err);
+        const errorMsg = err.message || 'Failed to set up PayPal button';
+        setError(errorMsg);
+        onError?.(errorMsg);
+        toast.error(errorMsg);
+      }
+    };
+
+    setupPayPalButton();
+  }, [sdkInstance, orderId, currency, onPaymentSuccess, onError]);
 
   if (error) {
     return (
@@ -198,13 +284,26 @@ export const PayPalButtons = ({
 
   return (
     <div className="w-full">
-      <div ref={buttonsContainerRef} className="paypal-buttons-container" style={{ minHeight: '50px' }} />
-      {buttonsRendered.current && (
+      {processing && (
+        <Card className="p-4 bg-white/5 border-white/10 mb-4">
+          <div className="flex items-center justify-center gap-3">
+            <Loader2 className="h-4 w-4 animate-spin text-white/60" />
+            <span className="text-white/80 text-sm">Processing payment...</span>
+          </div>
+        </Card>
+      )}
+      <button
+        ref={buttonRef}
+        className="w-full px-6 py-3 bg-[#0070ba] hover:bg-[#005ea6] text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={processing || !sdkInstance}
+      >
+        {processing ? 'Processing...' : 'Pay with PayPal'}
+      </button>
+      {sdkInstance && !loading && !processing && (
         <p className="text-xs text-white/60 mt-2 text-center">
-          Click the PayPal button above to complete your payment
+          Click the button above to complete your payment
         </p>
       )}
     </div>
   );
 };
-

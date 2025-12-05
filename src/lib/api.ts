@@ -462,6 +462,8 @@ export const paymentsApi = {
     api.post<{ payment: any; checkoutId: string; widgetScriptUrl: string; integrity?: string }>('/payments/hyperpay/prepare', data),
   getHyperPayStatus: (data: { resourcePath: string; order_id: number }) =>
     api.post<{ status: string; resultCode?: string; resultDescription?: string; isMadaCard?: boolean; response: any }>('/payments/hyperpay/status', data),
+  getPayPalClientToken: () =>
+    api.get<{ clientToken: string }>('/payments/paypal/client-token'),
   createPayPalOrder: (data: { order_id: number }) =>
     api.post<{ payment: any; paypalOrderId: string; approvalUrl: string; status?: string }>('/payments/paypal/create', data),
   capturePayPalOrder: (data: { order_id: number; paypal_order_id: string }) =>
