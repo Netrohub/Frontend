@@ -31,7 +31,7 @@ const Checkout = () => {
   });
 
   const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay'>('paylink');
+  const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay' | 'paypal'>('paylink');
   const [hyperPayCheckout, setHyperPayCheckout] = useState<{
     checkoutId: string;
     widgetScriptUrl: string;
@@ -86,6 +86,23 @@ const Checkout = () => {
           widgetScriptUrl: response.widgetScriptUrl,
           integrity: response.integrity,
         });
+      } catch (error) {
+        const apiError = error as Error & ApiError;
+        toast.error(apiError.message || t('checkout.paymentLinkError'));
+      } finally {
+        setProcessing(false);
+      }
+    } else if (paymentMethod === 'paypal') {
+      // Create PayPal order
+      setProcessing(true);
+      try {
+        const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
+        if (response.approvalUrl) {
+          // Redirect to PayPal approval page
+          window.location.href = response.approvalUrl;
+        } else {
+          toast.error(t('checkout.paymentLinkError'));
+        }
       } catch (error) {
         const apiError = error as Error & ApiError;
         toast.error(apiError.message || t('checkout.paymentLinkError'));
@@ -302,6 +319,30 @@ const Checkout = () => {
                     <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay (COPYandPAY)'}</span>
                     <div className="mr-auto px-3 py-1 bg-blue-500/50 rounded-full text-xs font-bold text-white">
                       {t('checkout.secure') || 'Secure'}
+                    </div>
+                  </div>
+                </Card>
+                
+                <Card 
+                  className={`p-4 cursor-pointer transition-all ${
+                    paymentMethod === 'paypal'
+                      ? 'bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)]'
+                      : 'bg-white/5 border border-white/10 hover:border-white/20'
+                  }`}
+                  onClick={() => {
+                    setPaymentMethod('paypal');
+                    setHyperPayCheckout(null);
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
+                      {paymentMethod === 'paypal' && (
+                        <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
+                      )}
+                    </div>
+                    <span className="font-bold text-white">{t('checkout.paypalPayment') || 'PayPal'}</span>
+                    <div className="mr-auto px-3 py-1 bg-[hsl(195,80%,50%)] rounded-full text-xs font-bold text-white">
+                      {t('checkout.popular') || 'Popular'}
                     </div>
                   </div>
                 </Card>
