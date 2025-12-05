@@ -81,79 +81,79 @@ export const PayPalButtons = ({
           console.log('Rendering PayPal buttons...', { orderId, amount, currency });
           try {
             window.paypal.Buttons({
-            style: {
-              layout: 'vertical',
-              color: 'blue',
-              shape: 'rect',
-              label: 'paypal',
-            },
-            createOrder: async (data: any, actions: any) => {
-              console.log('PayPal createOrder called', { orderId });
-              try {
-                // Call backend to create PayPal order
-                const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
-                console.log('PayPal order created:', response);
-                
-                if (!response.paypalOrderId) {
-                  throw new Error('Failed to create PayPal order: No order ID returned');
+              style: {
+                layout: 'vertical',
+                color: 'blue',
+                shape: 'rect',
+                label: 'paypal',
+              },
+              createOrder: async (data: any, actions: any) => {
+                console.log('PayPal createOrder called', { orderId });
+                try {
+                  // Call backend to create PayPal order
+                  const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
+                  console.log('PayPal order created:', response);
+                  
+                  if (!response.paypalOrderId) {
+                    throw new Error('Failed to create PayPal order: No order ID returned');
+                  }
+                  
+                  // Return the PayPal order ID
+                  return response.paypalOrderId;
+                } catch (err: any) {
+                  console.error('PayPal createOrder error:', err);
+                  const errorMsg = err.message || 'Failed to create order';
+                  toast.error(errorMsg);
+                  onError?.(errorMsg);
+                  throw err;
                 }
-                
-                // Return the PayPal order ID
-                return response.paypalOrderId;
-              } catch (err: any) {
-                console.error('PayPal createOrder error:', err);
-                const errorMsg = err.message || 'Failed to create order';
+              },
+              onApprove: async (data: any, actions: any) => {
+                try {
+                  // Call backend to capture the payment
+                  const response = await paymentsApi.capturePayPalOrder({
+                    order_id: orderId,
+                    paypal_order_id: data.orderID,
+                  });
+                  
+                  if (response.status === 'success') {
+                    toast.success('Payment successful!');
+                    onPaymentSuccess?.();
+                  } else {
+                    throw new Error(response.response?.message || 'Payment capture failed');
+                  }
+                } catch (err: any) {
+                  const errorMsg = err.message || 'Failed to capture payment';
+                  toast.error(errorMsg);
+                  onError?.(errorMsg);
+                }
+              },
+              onError: (err: any) => {
+                const errorMsg = err.message || 'An error occurred with PayPal';
+                setError(errorMsg);
                 toast.error(errorMsg);
                 onError?.(errorMsg);
-                throw err;
-              }
-            },
-            onApprove: async (data: any, actions: any) => {
-              try {
-                // Call backend to capture the payment
-                const response = await paymentsApi.capturePayPalOrder({
-                  order_id: orderId,
-                  paypal_order_id: data.orderID,
-                });
-                
-                if (response.status === 'success') {
-                  toast.success('Payment successful!');
-                  onPaymentSuccess?.();
-                } else {
-                  throw new Error(response.response?.message || 'Payment capture failed');
-                }
-              } catch (err: any) {
-                const errorMsg = err.message || 'Failed to capture payment';
-                toast.error(errorMsg);
-                onError?.(errorMsg);
-              }
-            },
-            onError: (err: any) => {
-              const errorMsg = err.message || 'An error occurred with PayPal';
-              setError(errorMsg);
-              toast.error(errorMsg);
-              onError?.(errorMsg);
-            },
-            onCancel: (data: any) => {
-              toast.info('Payment cancelled');
-            },
-          }).render(buttonsContainerRef.current);
-          
-          console.log('PayPal buttons rendered successfully');
-          buttonsRendered.current = true;
+              },
+              onCancel: (data: any) => {
+                toast.info('Payment cancelled');
+              },
+            }).render(buttonsContainerRef.current);
+            
+            console.log('PayPal buttons rendered successfully');
+            buttonsRendered.current = true;
+          } catch (err: any) {
+            console.error('PayPal render error:', err);
+            const errorMsg = err.message || 'Failed to render PayPal buttons';
+            setError(errorMsg);
+            setLoading(false);
+            onError?.(errorMsg);
+          }
         } else {
           console.warn('PayPal buttons not rendered:', {
             hasPayPal: !!window.paypal,
             hasContainer: !!buttonsContainerRef.current,
             alreadyRendered: buttonsRendered.current
           });
-        }
-        } catch (err: any) {
-          console.error('PayPal render error:', err);
-          const errorMsg = err.message || 'Failed to render PayPal buttons';
-          setError(errorMsg);
-          setLoading(false);
-          onError?.(errorMsg);
         }
       }, 100); // Small delay to ensure SDK is ready
     };
