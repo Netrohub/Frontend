@@ -9,6 +9,7 @@ import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight, Zap } from "luci
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
 import { HyperPayWidget } from "@/components/HyperPayWidget";
+import { PayPalButtons } from "@/components/PayPalButtons";
 import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -93,22 +94,9 @@ const Checkout = () => {
         setProcessing(false);
       }
     } else if (paymentMethod === 'paypal') {
-      // Create PayPal order
-      setProcessing(true);
-      try {
-        const response = await paymentsApi.createPayPalOrder({ order_id: orderId });
-        if (response.approvalUrl) {
-          // Redirect to PayPal approval page
-          window.location.href = response.approvalUrl;
-        } else {
-          toast.error(t('checkout.paymentLinkError'));
-        }
-      } catch (error) {
-        const apiError = error as Error & ApiError;
-        toast.error(apiError.message || t('checkout.paymentLinkError'));
-      } finally {
-        setProcessing(false);
-      }
+      // PayPal buttons handle payment flow automatically
+      // No need to do anything here - PayPalButtons component handles it
+      return;
     } else {
       // Paylink payment
       setProcessing(true);
@@ -363,6 +351,22 @@ const Checkout = () => {
                   />
                 </div>
               )}
+
+              {/* PayPal Buttons */}
+              {paymentMethod === 'paypal' && orderId && (
+                <div className="mt-6">
+                  <PayPalButtons
+                    orderId={orderId}
+                    amount={order?.amount || 0}
+                    currency="USD"
+                    onPaymentSuccess={() => {
+                      toast.success(t('checkout.paymentSuccess') || 'Payment successful!');
+                      navigate(`/order/${orderId}?payment=success`);
+                    }}
+                    onError={(error) => toast.error(error)}
+                  />
+                </div>
+              )}
             </Card>
 
             {/* Protection Notice */}
@@ -438,6 +442,10 @@ const Checkout = () => {
               {paymentMethod === 'hyperpay' && hyperPayCheckout ? (
                 <div className="text-center text-white/60 text-sm">
                   <p>{t('checkout.useFormAbove') || 'Please use the payment form above to complete your payment.'}</p>
+                </div>
+              ) : paymentMethod === 'paypal' ? (
+                <div className="text-center text-white/60 text-sm">
+                  <p>{t('checkout.usePayPalButtons') || 'Please use the PayPal buttons above to complete your payment.'}</p>
                 </div>
               ) : (
                 <Button 
