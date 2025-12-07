@@ -9,7 +9,6 @@ import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight, Zap } from "luci
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
 import { HyperPayWidget } from "@/components/HyperPayWidget";
-import { PayPalButtons } from "@/components/PayPalButtons";
 import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,7 +31,7 @@ const Checkout = () => {
   });
 
   const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay' | 'paypal'>('paylink');
+  const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay'>('paylink');
   const [hyperPayCheckout, setHyperPayCheckout] = useState<{
     checkoutId: string;
     widgetScriptUrl: string;
@@ -93,10 +92,6 @@ const Checkout = () => {
       } finally {
         setProcessing(false);
       }
-    } else if (paymentMethod === 'paypal') {
-      // PayPal buttons handle payment flow automatically
-      // No need to do anything here - PayPalButtons component handles it
-      return;
     } else {
       // Paylink payment
       setProcessing(true);
@@ -311,29 +306,6 @@ const Checkout = () => {
                   </div>
                 </Card>
                 
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${
-                    paymentMethod === 'paypal'
-                      ? 'bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)]'
-                      : 'bg-white/5 border border-white/10 hover:border-white/20'
-                  }`}
-                  onClick={() => {
-                    setPaymentMethod('paypal');
-                    setHyperPayCheckout(null);
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
-                      {paymentMethod === 'paypal' && (
-                        <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
-                      )}
-                    </div>
-                    <span className="font-bold text-white">{t('checkout.paypalPayment') || 'PayPal'}</span>
-                    <div className="mr-auto px-3 py-1 bg-[hsl(195,80%,50%)] rounded-full text-xs font-bold text-white">
-                      {t('checkout.popular') || 'Popular'}
-                    </div>
-                  </div>
-                </Card>
               </div>
 
               {/* HyperPay Widget */}
@@ -352,21 +324,6 @@ const Checkout = () => {
                 </div>
               )}
 
-              {/* PayPal Buttons */}
-              {paymentMethod === 'paypal' && orderId && (
-                <div className="mt-6">
-                  <PayPalButtons
-                    orderId={orderId}
-                    amount={order?.amount || 0}
-                    currency="USD"
-                    onPaymentSuccess={() => {
-                      toast.success(t('checkout.paymentSuccess') || 'Payment successful!');
-                      navigate(`/order/${orderId}?payment=success`);
-                    }}
-                    onError={(error) => toast.error(error)}
-                  />
-                </div>
-              )}
             </Card>
 
             {/* Protection Notice */}
@@ -442,10 +399,6 @@ const Checkout = () => {
               {paymentMethod === 'hyperpay' && hyperPayCheckout ? (
                 <div className="text-center text-white/60 text-sm">
                   <p>{t('checkout.useFormAbove') || 'Please use the payment form above to complete your payment.'}</p>
-                </div>
-              ) : paymentMethod === 'paypal' ? (
-                <div className="text-center text-white/60 text-sm">
-                  <p>{t('checkout.usePayPalButtons') || 'Please use the PayPal buttons above to complete your payment.'}</p>
                 </div>
               ) : (
                 <Button 
