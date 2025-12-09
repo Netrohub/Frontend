@@ -5,6 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { Search, Filter, Star, Shield, Loader2, MapPin, ArrowLeft } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { BottomNav } from "@/components/BottomNav";
@@ -37,6 +39,7 @@ const MarketplaceGameCategory = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [priceFilter, setPriceFilter] = useState<string>("all");
+  const [priceSort, setPriceSort] = useState<string>("none"); // "none" | "high-to-low" | "low-to-high"
 
   // Get game info
   const game = gameId ? getGameById(gameId) : null;
@@ -64,15 +67,24 @@ const MarketplaceGameCategory = () => {
 
   const listings: Listing[] = data?.data || [];
   
-  // Memoize filtered listings
+  // Memoize filtered and sorted listings
   const filteredListings = useMemo(() => {
-    return listings.filter((listing) => {
+    let filtered = listings.filter((listing) => {
       if (priceFilter === "low" && listing.price >= PRICE_THRESHOLDS.LOW_MAX) return false;
       if (priceFilter === "mid" && (listing.price < PRICE_THRESHOLDS.MID_MIN || listing.price > PRICE_THRESHOLDS.MID_MAX)) return false;
       if (priceFilter === "high" && listing.price <= PRICE_THRESHOLDS.HIGH_MIN) return false;
       return true;
     });
-  }, [listings, priceFilter]);
+
+    // Apply price sorting
+    if (priceSort === "high-to-low") {
+      filtered = [...filtered].sort((a, b) => b.price - a.price);
+    } else if (priceSort === "low-to-high") {
+      filtered = [...filtered].sort((a, b) => a.price - b.price);
+    }
+
+    return filtered;
+  }, [listings, priceFilter, priceSort]);
 
   // If game not found
   if (gameId && !game) {
@@ -154,10 +166,37 @@ const MarketplaceGameCategory = () => {
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Price Sort Filter */}
+            <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
+              <RadioGroup value={priceSort} onValueChange={setPriceSort} className="space-y-3">
+                <Label className="text-white font-semibold text-base mb-3 block">
+                  {t('marketplace.sortByPrice')}
+                </Label>
+                <div className="flex items-center space-x-3 space-x-reverse">
+                  <RadioGroupItem value="high-to-low" id="high-to-low" className="border-white/30" />
+                  <Label 
+                    htmlFor="high-to-low" 
+                    className="text-white cursor-pointer text-sm font-normal"
+                  >
+                    {t('marketplace.highToLow')}
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-3 space-x-reverse">
+                  <RadioGroupItem value="low-to-high" id="low-to-high" className="border-white/30" />
+                  <Label 
+                    htmlFor="low-to-high" 
+                    className="text-white cursor-pointer text-sm font-normal"
+                  >
+                    {t('marketplace.lowToHigh')}
+                  </Label>
+                </div>
+              </RadioGroup>
+            </Card>
             
             {/* Results Count */}
             {!isLoading && !error && listings.length > 0 && (
-              <p className="text-white/60 text-sm">
+              <p className="text-white/60 text-sm mt-4">
                 {t('marketplace.showing')} {filteredListings.length} {t('marketplace.outOf')} {listings.length} {t('marketplace.accounts')}
               </p>
             )}
