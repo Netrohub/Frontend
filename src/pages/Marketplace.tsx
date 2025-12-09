@@ -52,6 +52,9 @@ const Marketplace = () => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['listings', { search, category: category !== 'all' ? category : undefined }],
     queryFn: () => listingsApi.getAll({ search: search || undefined, category: category !== 'all' ? category : undefined }),
+    staleTime: 2 * 60 * 1000, // 2 minutes - matches backend cache time
+    refetchInterval: 2 * 60 * 1000, // Auto-refresh every 2 minutes for real-time updates
+    refetchOnWindowFocus: true, // Refresh when user returns to tab
   });
 
   const listings: Listing[] = data?.data || [];
