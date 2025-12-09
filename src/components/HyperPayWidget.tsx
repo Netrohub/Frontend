@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
+import "./HyperPayWidget.css";
 
 interface HyperPayWidgetProps {
   checkoutId: string;
@@ -18,6 +20,19 @@ declare global {
     OPPWA?: {
       checkout: (checkoutId: string, callback: (result: any) => void) => void;
     };
+    wpwlOptions?: {
+      locale?: string;
+      style?: string;
+      onError?: (error: any) => void;
+      onReady?: (containers: any[]) => void;
+      requireCvv?: boolean;
+      allowEmptyCvv?: boolean;
+      showLabels?: boolean;
+      showPlaceholders?: boolean;
+      labels?: Record<string, string>;
+      errorMessages?: Record<string, string>;
+      [key: string]: any;
+    };
   }
 }
 
@@ -31,6 +46,7 @@ export const HyperPayWidget = ({
   onPaymentComplete,
   onError,
 }: HyperPayWidgetProps) => {
+  const { language } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const scriptLoaded = useRef(false);
@@ -41,6 +57,89 @@ export const HyperPayWidget = ({
     if (scriptLoaded.current) {
       setLoading(false);
       return;
+    }
+
+    // ⚠️ CRITICAL: wpwlOptions MUST be set BEFORE the script loads!
+    // COPYandPAY reads wpwlOptions when the script initializes
+    // If set after, the widget will render basic HTML instead of styled widget
+    if (typeof window !== 'undefined') {
+      // Use current language from context
+      const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+      
+      window.wpwlOptions = {
+            // Set locale for Arabic/English support
+            locale: locale,
+            
+            // Style: "card" shows card-style form, "plain" removes styling
+            style: "card",
+            
+            // Customize placeholder styles in iframe (for card number and CVV)
+            iframeStyles: {
+              'card-number-placeholder': {
+                'color': '#9ca3af', // gray-400
+                'font-size': '16px',
+                'font-family': 'system-ui, -apple-system, sans-serif'
+              },
+              'cvv-placeholder': {
+                'color': '#9ca3af', // gray-400
+                'font-size': '16px',
+                'font-family': 'system-ui, -apple-system, sans-serif'
+              }
+            },
+            
+            // Show labels and placeholders
+            showLabels: true,
+            showPlaceholders: true,
+            
+            // Require CVV (security best practice)
+            requireCvv: true,
+            allowEmptyCvv: false,
+            
+            // Custom labels (can be translated)
+            labels: {
+              cardHolder: language === 'ar' ? 'اسم حامل البطاقة' : 'Card holder',
+              cardNumber: language === 'ar' ? 'رقم البطاقة' : 'Card Number',
+              cvv: language === 'ar' ? 'رمز الأمان' : 'CVV',
+              expiryDate: language === 'ar' ? 'تاريخ الانتهاء' : 'Expiry Date',
+              submit: language === 'ar' ? 'ادفع الآن' : 'Pay now',
+            },
+            
+            // Custom error messages
+            errorMessages: {
+              cardHolderError: language === 'ar' ? 'اسم حامل البطاقة غير صالح' : 'Invalid card holder',
+              cardNumberError: language === 'ar' ? 'رقم البطاقة غير صالح' : 'Invalid card number or brand',
+              cvvError: language === 'ar' ? 'رمز الأمان غير صالح' : 'Invalid CVV',
+              expiryMonthError: language === 'ar' ? 'تاريخ الانتهاء غير صالح' : 'Invalid expiry date',
+              expiryYearError: language === 'ar' ? 'تاريخ الانتهاء غير صالح' : 'Invalid expiry date',
+            },
+            
+            // Error handling callback
+            onError: function(error: any) {
+              console.error('HyperPay widget error:', error);
+              
+              if (error.name === 'InvalidCheckoutIdError') {
+                onError?.('Payment session expired. Please try again.');
+              } else if (error.name === 'WidgetError') {
+                onError?.(`Payment widget error: ${error.brand} - ${error.event}`);
+              } else if (error.name === 'PciIframeSubmitError') {
+                onError?.('Payment form submission error. Please check your card details.');
+              } else {
+                onError?.(error.message || 'An error occurred during payment');
+              }
+            },
+            
+            // Widget ready callback
+            onReady: function(containers: any[]) {
+              console.log('HyperPay widget ready', containers);
+              // Log available payment methods
+              containers.forEach((container) => {
+                console.log(`Container: ${container.containerKey}, Methods: ${container.ccMethods?.join(', ')}`);
+              });
+            },
+            
+        // Disable number formatting for Arabic (RTL languages not supported by formatter)
+        numberFormatting: language !== 'ar',
+      };
     }
 
     // Load MADA scripts first (required for MADA compliance)
@@ -66,30 +165,15 @@ export const HyperPayWidget = ({
         scriptLoaded.current = true;
         setLoading(false);
         
-        // Initialize HyperPay COPYandPAY widget
-        // The widget will automatically show payment methods (MADA, VISA, MASTER) based on data-brands attribute
-        // MADA will be shown first as per Saudi Payments requirements
-        if (window.OPPWA && formRef.current) {
-          try {
-            window.OPPWA.checkout(checkoutId, (result: any) => {
-              if (result.result && result.result.code) {
-                // Payment completed - redirect to result URL
-                const resourcePath = result.resourcePath || '';
-                if (resourcePath) {
-                  onPaymentComplete?.(resourcePath);
-                } else {
-                  onError?.('Payment completed but no resource path returned');
-                }
-              } else {
-                onError?.('Payment failed: ' + (result.result?.description || 'Unknown error'));
-              }
-            });
-          } catch (err) {
-            console.error('HyperPay widget initialization error:', err);
-            setError('Failed to initialize payment widget');
-            onError?.('Failed to initialize payment widget');
-          }
-        }
+        // Widget should automatically initialize when script loads
+        // The form with class="paymentWidgets" and data-brands will be processed
+        // wpwlOptions was already set above, so widget will use those options
+        
+        console.log('HyperPay widget script loaded', {
+          checkoutId,
+          formExists: !!formRef.current,
+          wpwlOptionsSet: !!window.wpwlOptions,
+        });
         
         // Note: HyperPay mentioned adding a 3D Secure redirection script after paymentWidgets.js
         // The exact script URL should be provided by HyperPay support. For now, the widget should work
@@ -133,7 +217,7 @@ export const HyperPayWidget = ({
       }
       scriptLoaded.current = false;
     };
-  }, [widgetScriptUrl, integrity, onError, checkoutId]);
+  }, [widgetScriptUrl, integrity, onError, checkoutId, language]);
 
   // Handle form submission
   useEffect(() => {
@@ -177,17 +261,25 @@ export const HyperPayWidget = ({
     );
   }
 
+  // Build the correct action URL for COPYandPAY form
+  // Format: https://eu-test.oppwa.com/v1/checkouts/{checkoutId}/payment
+  const baseUrl = widgetScriptUrl.split('/v1/')[0]; // Extract base URL from script URL
+  const paymentActionUrl = `${baseUrl}/v1/checkouts/${checkoutId}/payment`;
+
   return (
     <Card className="p-6">
       <div className="space-y-4">
         <h3 className="text-lg font-semibold text-white mb-4">Select Payment Method</h3>
         <form
           ref={formRef}
-          action={shopperResultUrl}
+          action={paymentActionUrl}
           className="paymentWidgets"
           data-brands={brands}
           id={`hyperpay-form-${checkoutId}`}
-        />
+        >
+          {/* Hidden field for shopperResultUrl - widget will use this for redirect */}
+          <input type="hidden" name="shopperResultUrl" value={shopperResultUrl} />
+        </form>
         <p className="text-sm text-white/60 mt-4">
           Secure payment powered by HyperPay. MADA, Visa, and Mastercard accepted.
         </p>

@@ -1,0 +1,136 @@
+/* HyperPay COPYandPAY Widget Custom Styles */
+
+/* Container - Match our card styling */
+.wpwl-container {
+  @apply w-full;
+  margin: 0;
+  padding: 0;
+}
+
+/* Form styling - Match our design system */
+.wpwl-form {
+  @apply bg-transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Groups - Spacing between form fields */
+.wpwl-group {
+  @apply mb-4;
+}
+
+.wpwl-group-submit {
+  @apply mt-6;
+}
+
+/* Labels - Match our text styling */
+.wpwl-label {
+  @apply text-white text-sm font-medium mb-2 block;
+  color: hsl(var(--foreground));
+}
+
+/* Input wrappers - Full width */
+.wpwl-wrapper {
+  @apply w-full;
+}
+
+/* Input controls - Match our input styling */
+.wpwl-control {
+  @apply w-full px-4 py-3 rounded-lg border;
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.wpwl-control:focus {
+  @apply outline-none ring-2;
+  border-color: hsl(var(--primary));
+  ring-color: hsl(var(--primary));
+  ring-opacity: 0.3;
+}
+
+.wpwl-control:hover {
+  border-color: hsl(var(--primary));
+}
+
+/* Brand select dropdown */
+.wpwl-control-brand {
+  @apply cursor-pointer;
+}
+
+/* Submit button - Match our button styling */
+.wpwl-button {
+  @apply w-full px-6 py-3 rounded-lg font-semibold text-white transition-all;
+  background-color: hsl(var(--primary));
+  border: none;
+}
+
+.wpwl-button:hover {
+  background-color: hsl(var(--primary) / 0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+}
+
+.wpwl-button:active {
+  transform: translateY(0);
+}
+
+.wpwl-button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+  transform: none;
+}
+
+/* Error states */
+.wpwl-has-error {
+  @apply border-red-500;
+  border-color: hsl(var(--destructive));
+}
+
+.wpwl-hint {
+  @apply text-sm mt-1;
+  color: hsl(var(--destructive));
+}
+
+/* Brand icons */
+.wpwl-brand {
+  @apply flex items-center justify-center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .wpwl-control {
+    @apply text-base; /* Prevent zoom on iOS */
+  }
+  
+  .wpwl-group {
+    @apply mb-3;
+  }
+}
+
+/* Dark mode support (if using dark theme) */
+.dark .wpwl-control {
+  background-color: hsl(var(--card));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.dark .wpwl-label {
+  color: hsl(var(--foreground));
+}
+
+/* RTL support for Arabic */
+[dir="rtl"] .wpwl-group {
+  direction: rtl;
+}
+
+[dir="rtl"] .wpwl-label {
+  text-align: right;
+}
+
+/* Loading state */
+.wpwl-form[data-loading="true"] {
+  @apply opacity-50 pointer-events-none;
+}
+
