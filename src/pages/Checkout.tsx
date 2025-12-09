@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight, Zap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
-import { HyperPayWidget } from "@/components/HyperPayWidget";
 import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,11 +31,6 @@ const Checkout = () => {
 
   const [processing, setProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay'>('paylink');
-  const [hyperPayCheckout, setHyperPayCheckout] = useState<{
-    checkoutId: string;
-    widgetScriptUrl: string;
-    integrity?: string;
-  } | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -70,28 +64,9 @@ const Checkout = () => {
     }
 
     if (paymentMethod === 'hyperpay') {
-      // Prepare HyperPay checkout
-      setProcessing(true);
-      try {
-        // Collect browser data for 3D Secure
-        const { collectBrowserData } = await import('@/utils/browserData');
-        const browserData = collectBrowserData();
-        
-        const response = await paymentsApi.prepareHyperPayCheckout({ 
-          order_id: orderId,
-          browserData,
-        });
-        setHyperPayCheckout({
-          checkoutId: response.checkoutId,
-          widgetScriptUrl: response.widgetScriptUrl,
-          integrity: response.integrity,
-        });
-      } catch (error) {
-        const apiError = error as Error & ApiError;
-        toast.error(apiError.message || t('checkout.paymentLinkError'));
-      } finally {
-        setProcessing(false);
-      }
+      // Redirect to dedicated HyperPay payment page
+      navigate(`/payments/hyperpay?order_id=${orderId}`, { replace: true });
+      return;
     } else {
       // Paylink payment
       setProcessing(true);
@@ -290,7 +265,6 @@ const Checkout = () => {
                   }`}
                   onClick={() => {
                     setPaymentMethod('hyperpay');
-                    setHyperPayCheckout(null);
                   }}
                 >
                   <div className="flex items-center gap-3">
@@ -308,21 +282,6 @@ const Checkout = () => {
                 
               </div>
 
-              {/* HyperPay Widget */}
-              {paymentMethod === 'hyperpay' && hyperPayCheckout && (
-                <div className="mt-6">
-                  <HyperPayWidget
-                    checkoutId={hyperPayCheckout.checkoutId}
-                    widgetScriptUrl={hyperPayCheckout.widgetScriptUrl}
-                    integrity={hyperPayCheckout.integrity}
-                    shopperResultUrl={`${window.location.origin}/payments/hyperpay/callback?order_id=${orderId}`}
-                    brands="MADA VISA MASTER AMEX"
-                    showMadaFirst={true}
-                    onPaymentComplete={handleHyperPayComplete}
-                    onError={(error) => toast.error(error)}
-                  />
-                </div>
-              )}
 
             </Card>
 
@@ -396,11 +355,6 @@ const Checkout = () => {
                 </div>
               )}
 
-              {paymentMethod === 'hyperpay' && hyperPayCheckout ? (
-                <div className="text-center text-white/60 text-sm">
-                  <p>{t('checkout.useFormAbove') || 'Please use the payment form above to complete your payment.'}</p>
-                </div>
-              ) : (
                 <Button 
                   onClick={handlePayment}
                   disabled={processing || order.status !== 'payment_intent'}
@@ -419,7 +373,6 @@ const Checkout = () => {
                     </>
                   )}
                 </Button>
-              )}
 
               <div className="mt-4 space-y-2">
                 <div className="flex items-center gap-2 text-xs text-white/60">

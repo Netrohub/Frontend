@@ -1,0 +1,23 @@
+/* HyperPay Payment Page Styles */
+
+/* Ensure form container is visible */
+.paymentWidgets {
+  width: 100%;
+  min-height: 400px;
+}
+
+/* Widget form styling */
+.paymentWidgets .wpwl-form {
+  display: block;
+  width: 100%;
+}
+
+/* Loading state */
+.paymentWidgets:empty::before {
+  content: "Loading payment form...";
+  display: block;
+  text-align: center;
+  padding: 2rem;
+  color: hsl(var(--muted-foreground));
+}
+
