@@ -739,6 +739,19 @@ const translations: Record<Language, Record<string, string>> = {
 'checkout.paymentFailed': 'فشل الدفع',
 'checkout.confirmPayment': 'تأكيد الدفع',
 'checkout.paymentAlreadyInitiated': 'تم بدء عملية الدفع مسبقاً. جارٍ التوجيه إلى صفحة الدفع...',
+'hyperpayPayment.paymentFailed': 'فشل الدفع',
+'hyperpayPayment.viewOrder': 'عرض الطلب',
+'hyperpayPayment.viewAllOrders': 'عرض جميع الطلبات',
+'hyperpayPayment.paymentSuccess': 'تم الدفع بنجاح!',
+'hyperpayPayment.paymentPending': 'جاري معالجة الدفع...',
+'hyperpayPayment.invalidOrder': 'رقم الطلب غير صالح.',
+'hyperpayPayment.invalidCallback': 'استدعاء الدفع غير صالح.',
+'hyperpayPayment.verifying': 'جاري التحقق من الدفع...',
+'hyperpayPayment.failedToVerify': 'فشل التحقق من حالة الدفع.',
+'hyperpayPayment.title': 'أكمل الدفع',
+'hyperpayPayment.description': 'دفع آمن مدعوم من HyperPay',
+'hyperpayPayment.paymentStatus': 'حالة الدفع',
+'hyperpayPayment.paymentStatusDescription': 'حالة معالجة الدفع',
 
 
 // Orders
