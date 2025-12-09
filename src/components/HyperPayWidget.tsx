@@ -282,13 +282,16 @@ export const HyperPayWidget = ({
         
         <form
           ref={formRef}
-          action={paymentActionUrl}
           className="paymentWidgets"
           data-brands={brands}
+          data-checkout-id={checkoutId}
           id={`hyperpay-form-${checkoutId}`}
           style={{ minHeight: '400px' }}
         >
-          <input type="hidden" name="shopperResultUrl" value={shopperResultUrl} />
+          {/* NOTE: For COPYandPAY widget:
+              - Use data-checkout-id attribute (not action attribute)
+              - shopperResultUrl is set during checkout creation and widget uses it automatically
+              - Widget will handle form submission to the correct payment endpoint */}
         </form>
         
         <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
