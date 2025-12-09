@@ -19,7 +19,7 @@ const HyperPayCallback = () => {
   const resourcePath = searchParams.get("resourcePath");
   const checkoutId = searchParams.get("id");
 
-  const [status, setStatus] = useState<"loading" | "success" | "error" | "pending">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
   const [countdown, setCountdown] = useState(5);
 
@@ -55,10 +55,6 @@ const HyperPayCallback = () => {
           setStatus("success");
           setMessage(t("hyperpayPayment.paymentSuccess") || "Payment successful!");
           toast.success(t("hyperpayPayment.paymentSuccess") || "Payment successful!");
-        } else if (response.status === "pending") {
-          setStatus("pending");
-          setMessage(t("hyperpayPayment.paymentPending") || "Payment is being processed...");
-          toast.info(t("hyperpayPayment.paymentPending") || "Payment is being processed...");
         } else {
           setStatus("error");
           if (response.isMadaCard && response.resultDescription) {
@@ -103,12 +99,6 @@ const HyperPayCallback = () => {
       }, 5000);
 
       return () => clearTimeout(timer);
-    } else if (status === "pending" && orderId) {
-      const timer = setTimeout(() => {
-        navigate(`/order/${orderId}?payment=pending`, { replace: true });
-      }, 5000);
-
-      return () => clearTimeout(timer);
     }
   }, [status, orderId, navigate]);
 
@@ -118,8 +108,6 @@ const HyperPayCallback = () => {
         return <CheckCircle2 className="h-16 w-16 text-success animate-in fade-in zoom-in duration-500" />;
       case "error":
         return <XCircle className="h-16 w-16 text-destructive animate-in fade-in zoom-in duration-500" />;
-      case "pending":
-        return <AlertTriangle className="h-16 w-16 text-warning animate-in fade-in zoom-in duration-500" />;
       default:
         return <Loader2 className="h-16 w-16 text-primary animate-spin" />;
     }
@@ -166,8 +154,6 @@ const HyperPayCallback = () => {
                       ? t("hyperpayPayment.paymentSuccess") || "Payment Successful!"
                       : status === "error"
                       ? t("hyperpayPayment.paymentFailed") || "Payment Failed"
-                      : status === "pending"
-                      ? t("hyperpayPayment.paymentPending") || "Payment Pending"
                       : t("hyperpayPayment.verifying") || "Verifying Payment..."}
                   </h1>
                   <p className="text-lg text-muted-foreground">{message}</p>
