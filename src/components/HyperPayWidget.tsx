@@ -47,240 +47,234 @@ export const HyperPayWidget = ({
   onError,
 }: HyperPayWidgetProps) => {
   const { language } = useLanguage();
-  const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const scriptLoadedRef = useRef(false);
+  const widgetInitialized = useRef(false);
 
   // Build the correct action URL for COPYandPAY form
   const baseUrl = widgetScriptUrl.split('/v1/')[0];
   const paymentActionUrl = `${baseUrl}/v1/checkouts/${checkoutId}/payment`;
 
   useEffect(() => {
-    // Skip if already loaded
-    if (scriptLoadedRef.current) {
+    // Prevent multiple initializations
+    if (widgetInitialized.current) {
       return;
     }
 
-    // ⚠️ CRITICAL: wpwlOptions MUST be set BEFORE the script loads!
-    // COPYandPAY reads wpwlOptions when the script initializes
-    // The form MUST be in the DOM when the script loads
-    if (typeof window !== 'undefined') {
-      const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+    // Set wpwlOptions BEFORE script loads
+    const locale = language === 'ar' ? 'ar-SA' : 'en-US';
+    
+    window.wpwlOptions = {
+      locale: locale,
+      style: "card",
       
-      window.wpwlOptions = {
-        // Set locale for Arabic/English support
-        locale: locale,
-        
-        // Style: "card" shows card-style form, "plain" removes styling
-        style: "card",
-        
-        // Customize placeholder styles in iframe (for card number and CVV)
-        iframeStyles: {
-          'card-number-placeholder': {
-            'color': '#9ca3af',
-            'font-size': '16px',
-            'font-family': 'system-ui, -apple-system, sans-serif'
-          },
-          'cvv-placeholder': {
-            'color': '#9ca3af',
-            'font-size': '16px',
-            'font-family': 'system-ui, -apple-system, sans-serif'
-          }
+      // Custom styling for iframe inputs
+      iframeStyles: {
+        'card-number-placeholder': {
+          'color': 'hsl(var(--muted-foreground))',
+          'font-size': '16px',
+          'font-family': 'var(--font-sans)',
         },
-        
-        // Show labels and placeholders
-        showLabels: true,
-        showPlaceholders: true,
-        
-        // Require CVV (security best practice)
-        requireCvv: true,
-        allowEmptyCvv: false,
-        
-        // Custom labels (can be translated)
-        labels: {
-          cardHolder: language === 'ar' ? 'اسم حامل البطاقة' : 'Card holder',
-          cardNumber: language === 'ar' ? 'رقم البطاقة' : 'Card Number',
-          cvv: language === 'ar' ? 'رمز الأمان' : 'CVV',
-          expiryDate: language === 'ar' ? 'تاريخ الانتهاء' : 'Expiry Date',
-          submit: language === 'ar' ? 'ادفع الآن' : 'Pay now',
+        'cvv-placeholder': {
+          'color': 'hsl(var(--muted-foreground))',
+          'font-size': '16px',
+          'font-family': 'var(--font-sans)',
         },
-        
-        // Custom error messages
-        errorMessages: {
-          cardHolderError: language === 'ar' ? 'اسم حامل البطاقة غير صالح' : 'Invalid card holder',
-          cardNumberError: language === 'ar' ? 'رقم البطاقة غير صالح' : 'Invalid card number or brand',
-          cvvError: language === 'ar' ? 'رمز الأمان غير صالح' : 'Invalid CVV',
-          expiryMonthError: language === 'ar' ? 'تاريخ الانتهاء غير صالح' : 'Invalid expiry date',
-          expiryYearError: language === 'ar' ? 'تاريخ الانتهاء غير صالح' : 'Invalid expiry date',
-        },
-        
-        // Error handling callback
-        onError: function(error: any) {
-          console.error('HyperPay widget error:', error);
-          
-          if (error.name === 'InvalidCheckoutIdError') {
-            onError?.('Payment session expired. Please try again.');
-          } else if (error.name === 'WidgetError') {
-            onError?.(`Payment widget error: ${error.brand} - ${error.event}`);
-          } else if (error.name === 'PciIframeSubmitError') {
-            onError?.('Payment form submission error. Please check your card details.');
-          } else {
-            onError?.(error.message || 'An error occurred during payment');
-          }
-        },
-        
-        // Widget ready callback
-        onReady: function(containers: any[]) {
-          console.log('HyperPay widget ready', containers);
-          setScriptLoaded(true);
-          containers.forEach((container) => {
-            console.log(`Container: ${container.containerKey}, Methods: ${container.ccMethods?.join(', ')}`);
-          });
-        },
-        
-        // Disable number formatting for Arabic (RTL languages not supported by formatter)
-        numberFormatting: language !== 'ar',
-      };
-    }
+      },
+      
+      showLabels: true,
+      showPlaceholders: true,
+      requireCvv: true,
+      allowEmptyCvv: false,
+      
+      labels: {
+        cardHolder: language === 'ar' ? 'اسم حامل البطاقة' : 'Card holder',
+        cardNumber: language === 'ar' ? 'رقم البطاقة' : 'Card Number',
+        cvv: language === 'ar' ? 'رمز الأمان' : 'CVV',
+        expiryDate: language === 'ar' ? 'تاريخ الانتهاء' : 'Expiry Date',
+        submit: language === 'ar' ? 'ادفع الآن' : 'Pay now',
+      },
+      
+      errorMessages: {
+        cardHolderError: language === 'ar' ? 'اسم حامل البطاقة غير صالح' : 'Invalid card holder',
+        cardNumberError: language === 'ar' ? 'رقم البطاقة غير صالح' : 'Invalid card number',
+        cvvError: language === 'ar' ? 'رمز الأمان غير صالح' : 'Invalid CVV',
+        expiryMonthError: language === 'ar' ? 'تاريخ الانتهاء غير صالح' : 'Invalid expiry date',
+        expiryYearError: language === 'ar' ? 'تاريخ الانتهاء غير صالح' : 'Invalid expiry date',
+      },
+      
+      onError: function(error: any) {
+        console.error('HyperPay widget error:', error);
+        const errorMsg = error.message || error.description || 'Payment error occurred';
+        setError(errorMsg);
+        onError?.(errorMsg);
+      },
+      
+      onReady: function(containers: any[]) {
+        console.log('HyperPay widget ready', containers);
+        setIsInitialized(true);
+        widgetInitialized.current = true;
+      },
+      
+      numberFormatting: language !== 'ar',
+    };
 
-    // Wait for form to be in DOM before loading script
-    // COPYandPAY widget needs the form element to exist when script initializes
-    const checkFormAndLoadScript = () => {
-      if (!formRef.current) {
-        // Form not ready yet, try again
-        setTimeout(checkFormAndLoadScript, 50);
+    // Function to load scripts and initialize widget
+    const initializeWidget = () => {
+      // Check if scripts already exist
+      const existingWidgetScript = document.querySelector(`script[src="${widgetScriptUrl}"]`);
+      const existingMadaScript = document.querySelector('script[src*="hyperpay-2024.quickconnect.to"]');
+      
+      if (existingWidgetScript && existingMadaScript) {
+        // Scripts already loaded, try to initialize widget
+        setTimeout(() => {
+          if (window.OPPWA && formRef.current) {
+            try {
+              window.OPPWA.checkout(checkoutId, (result: any) => {
+                if (result.result && result.result.code) {
+                  const resourcePath = result.resourcePath || '';
+                  if (resourcePath) {
+                    onPaymentComplete?.(resourcePath);
+                  } else {
+                    onError?.('Payment completed but no resource path returned');
+                  }
+                } else {
+                  onError?.('Payment failed: ' + (result.result?.description || 'Unknown error'));
+                }
+              });
+            } catch (err) {
+              console.error('Widget initialization error:', err);
+            }
+          }
+        }, 100);
         return;
       }
 
-      // Form is in DOM, now load scripts
-      // Load MADA scripts first (required for MADA compliance)
+      // Load MADA script first
       const madaScript = document.createElement("script");
       madaScript.src = "http://hyperpay-2024.quickconnect.to/d/f/597670674613449940";
-      madaScript.async = false; // Load synchronously to ensure order
+      madaScript.async = true;
       
-      // Load the main HyperPay widget script
-      const script = document.createElement("script");
-      script.src = widgetScriptUrl;
-      script.async = false; // Load synchronously to ensure initialization happens after form exists
+      // Load main widget script
+      const widgetScript = document.createElement("script");
+      widgetScript.src = widgetScriptUrl;
+      widgetScript.async = true;
       
-      // PCI DSS v4.0 compliance: Add integrity and crossorigin for Subresource Integrity (SRI)
       if (integrity) {
-        script.integrity = integrity;
-        script.crossOrigin = "anonymous";
+        widgetScript.integrity = integrity;
+        widgetScript.crossOrigin = "anonymous";
       }
 
-      // Load MADA script first, then main widget script
+      // Load MADA script first
       madaScript.onload = () => {
-        // After MADA script loads, load the main widget script
-        script.onload = () => {
-          scriptLoadedRef.current = true;
-          console.log('HyperPay widget script loaded', {
-            checkoutId,
-            formExists: !!formRef.current,
-            wpwlOptionsSet: !!window.wpwlOptions,
-          });
+        // Then load widget script
+        widgetScript.onload = () => {
+          console.log('HyperPay scripts loaded successfully');
           
-          // Widget should automatically initialize when script loads
-          // The form with class="paymentWidgets" and data-brands will be processed
-          // wpwlOptions was already set above, so widget will use those options
+          // Widget should auto-initialize, but we can also manually trigger if needed
+          setTimeout(() => {
+            if (window.OPPWA && formRef.current && !isInitialized) {
+              try {
+                window.OPPWA.checkout(checkoutId, (result: any) => {
+                  if (result.result && result.result.code) {
+                    const resourcePath = result.resourcePath || '';
+                    if (resourcePath) {
+                      onPaymentComplete?.(resourcePath);
+                    }
+                  } else {
+                    onError?.('Payment failed: ' + (result.result?.description || 'Unknown error'));
+                  }
+                });
+              } catch (err) {
+                console.error('Manual widget initialization error:', err);
+              }
+            }
+          }, 500);
         };
 
-        script.onerror = () => {
-          setError("Failed to load payment widget");
-          onError?.("Failed to load payment widget");
+        widgetScript.onerror = () => {
+          setError("Failed to load payment widget script");
+          onError?.("Failed to load payment widget script");
         };
 
-        document.head.appendChild(script);
+        document.head.appendChild(widgetScript);
       };
 
       madaScript.onerror = () => {
-        // If MADA script fails, still try to load main widget
-        script.onload = () => {
-          scriptLoadedRef.current = true;
+        // Still try to load widget even if MADA script fails
+        widgetScript.onload = () => {
+          console.log('HyperPay widget script loaded (MADA script failed)');
         };
-        script.onerror = () => {
+        widgetScript.onerror = () => {
           setError("Failed to load payment widget");
           onError?.("Failed to load payment widget");
         };
-        document.head.appendChild(script);
+        document.head.appendChild(widgetScript);
       };
 
       document.head.appendChild(madaScript);
     };
 
-    // Start checking for form
-    checkFormAndLoadScript();
-
-    return () => {
-      // Cleanup: remove scripts if component unmounts
-      const existingWidgetScript = document.querySelector(`script[src="${widgetScriptUrl}"]`);
-      if (existingWidgetScript) {
-        existingWidgetScript.remove();
+    // Wait for form to be in DOM, then initialize
+    const checkForm = setInterval(() => {
+      if (formRef.current) {
+        clearInterval(checkForm);
+        initializeWidget();
       }
-      const existingMadaScript = document.querySelector(`script[src="http://hyperpay-2024.quickconnect.to/d/f/597670674613449940"]`);
-      if (existingMadaScript) {
-        existingMadaScript.remove();
-      }
-      scriptLoadedRef.current = false;
-    };
-  }, [widgetScriptUrl, integrity, onError, checkoutId, language]);
+    }, 50);
 
-  // Handle form submission - widget handles this automatically
-  useEffect(() => {
-    if (!formRef.current) return;
-
-    const form = formRef.current;
-    
-    const handleSubmit = (e: Event) => {
-      // The HyperPay widget will handle the form submission
-      // and redirect to shopperResultUrl with resourcePath parameter
-      // We just need to let it proceed
-    };
-
-    form.addEventListener("submit", handleSubmit);
-
+    // Cleanup
     return () => {
-      form.removeEventListener("submit", handleSubmit);
+      clearInterval(checkForm);
+      widgetInitialized.current = false;
     };
-  }, [shopperResultUrl]);
+  }, [checkoutId, widgetScriptUrl, integrity, shopperResultUrl, language, onPaymentComplete, onError, isInitialized]);
 
   if (error) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 bg-card border-destructive">
         <div className="text-center text-destructive">
-          <p>{error}</p>
+          <p className="font-semibold">Payment Error</p>
+          <p className="text-sm mt-2">{error}</p>
         </div>
       </Card>
     );
   }
 
-  // Render form immediately - widget script will transform it when it loads
   return (
-    <Card className="p-6">
+    <Card className="p-6 bg-card border-border shadow-lg">
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-white mb-4">Select Payment Method</h3>
-        {!scriptLoaded && (
-          <div className="flex items-center justify-center py-4">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span className="ml-2 text-white/60">Loading payment form...</span>
-          </div>
-        )}
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-foreground">Payment Details</h3>
+          {!isInitialized && (
+            <div className="flex items-center text-muted-foreground text-sm">
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <span>Loading...</span>
+            </div>
+          )}
+        </div>
+        
         <form
           ref={formRef}
           action={paymentActionUrl}
           className="paymentWidgets"
           data-brands={brands}
           id={`hyperpay-form-${checkoutId}`}
+          style={{ minHeight: '400px' }}
         >
-          {/* Hidden field for shopperResultUrl - widget will use this for redirect */}
           <input type="hidden" name="shopperResultUrl" value={shopperResultUrl} />
         </form>
-        <p className="text-sm text-white/60 mt-4">
-          Secure payment powered by HyperPay. MADA, Visa, and Mastercard accepted.
-        </p>
+        
+        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-border">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+            <span>Secure payment powered by HyperPay</span>
+          </div>
+        </div>
       </div>
     </Card>
   );
 };
-
