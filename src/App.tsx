@@ -40,6 +40,7 @@ import NotFound from "./pages/NotFound";
 // Protected routes - critical pages loaded immediately
 import Checkout from "./pages/Checkout";
 import HyperPayPayment from "./pages/HyperPayPayment";
+const HyperPayCallback = lazy(() => import("./pages/HyperPayCallback"));
 
 // Public routes - lazy loaded (below the fold or less critical)
 const Members = lazy(() => import("./pages/Members"));
@@ -260,6 +261,16 @@ const AppContent = () => {
                 element={
                   <ProtectedRoute>
                     <HyperPayPayment />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/payments/hyperpay/callback"
+                element={
+                  <ProtectedRoute>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <HyperPayCallback />
+                    </Suspense>
                   </ProtectedRoute>
                 }
               />
