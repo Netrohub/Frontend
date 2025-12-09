@@ -169,12 +169,12 @@ const MarketplaceGameCategory = () => {
 
             {/* Price Sort Filter */}
             <Card className="p-4 bg-white/5 border-white/10 backdrop-blur-sm">
-              <RadioGroup value={priceSort} onValueChange={setPriceSort} className="space-y-3">
-                <Label className="text-white font-semibold text-base mb-3 block">
-                  {t('marketplace.sortByPrice')}
-                </Label>
+              <Label className="text-white font-semibold text-base mb-3 block">
+                {t('marketplace.sortByPrice')}
+              </Label>
+              <RadioGroup value={priceSort === "none" ? undefined : priceSort} onValueChange={setPriceSort} className="space-y-3">
                 <div className="flex items-center space-x-3 space-x-reverse">
-                  <RadioGroupItem value="high-to-low" id="high-to-low" className="border-white/30" />
+                  <RadioGroupItem value="high-to-low" id="high-to-low" className="border-white/30 data-[state=checked]:border-[hsl(195,80%,70%)]" />
                   <Label 
                     htmlFor="high-to-low" 
                     className="text-white cursor-pointer text-sm font-normal"
@@ -183,7 +183,7 @@ const MarketplaceGameCategory = () => {
                   </Label>
                 </div>
                 <div className="flex items-center space-x-3 space-x-reverse">
-                  <RadioGroupItem value="low-to-high" id="low-to-high" className="border-white/30" />
+                  <RadioGroupItem value="low-to-high" id="low-to-high" className="border-white/30 data-[state=checked]:border-[hsl(195,80%,70%)]" />
                   <Label 
                     htmlFor="low-to-high" 
                     className="text-white cursor-pointer text-sm font-normal"
@@ -282,7 +282,7 @@ const MarketplaceGameCategory = () => {
                         </span>
                       </div>
 
-                      {account.user?.average_rating > 0 && (
+                      {account.user?.average_rating && account.user.average_rating > 0 && (
                         <div className="flex items-center gap-1 text-[hsl(40,90%,55%)]">
                           <Star className="h-4 w-4 fill-current" />
                           <span className="font-medium">{account.user.average_rating.toFixed(1)}</span>

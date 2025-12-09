@@ -33,6 +33,7 @@ export interface User {
   discord_avatar?: string | null;
   discord_connected_at?: string | null;
   is_seller?: boolean;
+  average_rating?: number;
 }
 
 export interface Wallet {
