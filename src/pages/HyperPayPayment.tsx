@@ -112,6 +112,31 @@ const HyperPayPayment = () => {
       locale: locale,
       style: "card",
       
+      // Display billing address fields so shopper can edit them
+      billingAddress: {},
+      mandatoryBillingFields: {
+        country: true,
+        state: true,
+        city: true,
+        postcode: true,
+        street1: true,
+        street2: false, // Optional field
+      },
+      
+      // Mask CVV for security
+      maskCvv: true,
+      
+      // Brand detection configuration
+      brandDetection: true,
+      brandDetectionType: "binlist", // Use internal BIN list for precise detection
+      brandDetectionPriority: ["MADA", "VISA", "MASTER", "AMEX"], // Priority order for detected brands
+      
+      // Callback to disable non-detected brands (only show detected brands)
+      onDetectBrand: function (detectedBrands: string[]) {
+        console.log("HyperPay: Detected brands", detectedBrands);
+        // Only allow detected brands - widget will handle disabling others automatically
+      },
+      
       iframeStyles: {
         "card-number-placeholder": {
           color: "hsl(var(--muted-foreground))",
