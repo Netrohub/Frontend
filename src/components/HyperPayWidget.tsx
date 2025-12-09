@@ -151,9 +151,9 @@ export const HyperPayWidget = ({
         return;
       }
 
-      // Load MADA script first
+      // Load MADA script first (use HTTPS to avoid mixed content errors)
       const madaScript = document.createElement("script");
-      madaScript.src = "http://hyperpay-2024.quickconnect.to/d/f/597670674613449940";
+      madaScript.src = "https://hyperpay-2024.quickconnect.to/d/f/597670674613449940";
       madaScript.async = true;
       
       // Load main widget script
