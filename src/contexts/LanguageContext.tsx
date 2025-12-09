@@ -730,7 +730,7 @@ const translations: Record<Language, Record<string, string>> = {
 'checkout.orderDisputed': 'الطلب في نزاع',
 'checkout.fullRefund': 'استرداد كامل خلال 12 ساعة',
 'checkout.paylinkPayment': 'دفع Paylink',
-'checkout.hyperpayPayment': 'HyperPay (COPYandPAY)',
+'checkout.hyperpayPayment': 'HyperPay',
 'checkout.secure': 'آمن',
 'checkout.popular': 'شائع',
 'checkout.useFormAbove': 'يرجى استخدام نموذج الدفع أعلاه لإتمام عملية الدفع.',

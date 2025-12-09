@@ -299,7 +299,7 @@ const Checkout = () => {
                         <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
                       )}
                     </div>
-                    <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay (COPYandPAY)'}</span>
+                    <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay'}</span>
                     <div className="mr-auto px-3 py-1 bg-blue-500/50 rounded-full text-xs font-bold text-white">
                       {t('checkout.secure') || 'Secure'}
                     </div>
