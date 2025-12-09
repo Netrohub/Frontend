@@ -274,32 +274,46 @@ const HyperPayPayment = () => {
   const shopperResultUrl = `${window.location.origin}/payments/hyperpay/callback?order_id=${orderId}`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)] py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen relative overflow-hidden hyperpay-payment-page">
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsl(200,85%,45%,0.1),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(195,80%,70%,0.08),transparent_50%)]" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-8">
           <Button
             variant="ghost"
             onClick={() => navigate(-1)}
-            className="mb-4 text-white/80 hover:text-white"
+            className="mb-6 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            {language === "ar" ? "رجوع" : "Back"}
           </Button>
-          <h1 className="text-3xl font-bold text-white mb-2">Complete Your Payment</h1>
-          <p className="text-white/60">Secure payment powered by HyperPay</p>
+          <div className="space-y-2">
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-2 tracking-tight">
+              {language === "ar" ? "أكمل الدفع" : "Complete Your Payment"}
+            </h1>
+            <p className="text-white/70 text-lg">
+              {language === "ar" ? "دفع آمن مدعوم من HyperPay" : "Secure payment powered by HyperPay"}
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Payment Form - Takes 2 columns on large screens */}
           <div className="lg:col-span-2">
-            <Card className="p-6 bg-card border-border shadow-xl">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-foreground">Payment Details</h2>
+            <Card className="p-8 bg-white/95 dark:bg-[hsl(220,30%,12%)]/95 backdrop-blur-sm border-white/20 shadow-2xl hover:shadow-[0_20px_60px_-15px_hsl(200,85%,45%,0.3)] transition-all duration-500">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-black text-foreground">
+                  {language === "ar" ? "تفاصيل الدفع" : "Payment Details"}
+                </h2>
                 {!isInitialized && (
-                  <div className="flex items-center text-muted-foreground text-sm">
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    <span>Loading...</span>
+                  <div className="flex items-center text-muted-foreground text-sm animate-pulse">
+                    <Loader2 className="h-5 w-5 animate-spin mr-2 text-primary" />
+                    <span>{language === "ar" ? "جاري التحميل..." : "Loading..."}</span>
                   </div>
                 )}
               </div>
@@ -315,10 +329,14 @@ const HyperPayPayment = () => {
                 <input type="hidden" name="shopperResultUrl" value={shopperResultUrl} />
               </form>
 
-              <div className="flex items-center gap-2 mt-6 pt-6 border-t border-border">
-                <Lock className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border/50">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <Lock className="h-5 w-5 text-primary" />
+                </div>
                 <span className="text-sm text-muted-foreground">
-                  Your payment is secured with 256-bit SSL encryption
+                  {language === "ar" 
+                    ? "دفعك محمي بتشفير SSL 256 بت" 
+                    : "Your payment is secured with 256-bit SSL encryption"}
                 </span>
               </div>
             </Card>
@@ -326,51 +344,71 @@ const HyperPayPayment = () => {
 
           {/* Security Info - Takes 1 column */}
           <div className="lg:col-span-1">
-            <Card className="p-6 bg-card border-border shadow-xl h-fit">
+            <Card className="p-6 bg-white/95 dark:bg-[hsl(220,30%,12%)]/95 backdrop-blur-sm border-white/20 shadow-2xl h-fit sticky top-8">
               <div className="space-y-6">
-                <div>
-                  <Shield className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Secure Payment</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your payment information is encrypted and secure. We never store your card details.
+                <div className="text-center">
+                  <div className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 mb-4">
+                    <Shield className="h-10 w-10 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-black text-foreground mb-3">
+                    {language === "ar" ? "دفع آمن" : "Secure Payment"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {language === "ar"
+                      ? "معلومات الدفع الخاصة بك مشفرة وآمنة. نحن لا نخزن تفاصيل بطاقتك أبداً."
+                      : "Your payment information is encrypted and secure. We never store your card details."}
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-primary/5 to-transparent hover:from-primary/10 transition-all duration-300">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg shadow-primary/30">
+                      <div className="w-2.5 h-2.5 rounded-full bg-white" />
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">SSL Encrypted</p>
-                      <p className="text-xs text-muted-foreground">256-bit encryption</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">PCI Compliant</p>
-                      <p className="text-xs text-muted-foreground">Level 1 certified</p>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground mb-1">
+                        {language === "ar" ? "مشفّر SSL" : "SSL Encrypted"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {language === "ar" ? "تشفير 256 بت" : "256-bit encryption"}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-accent/5 to-transparent hover:from-accent/10 transition-all duration-300">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-success flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg shadow-accent/30">
+                      <div className="w-2.5 h-2.5 rounded-full bg-white" />
                     </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">3D Secure</p>
-                      <p className="text-xs text-muted-foreground">Additional verification</p>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground mb-1">
+                        {language === "ar" ? "متوافق مع PCI" : "PCI Compliant"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {language === "ar" ? "معتمد من المستوى 1" : "Level 1 certified"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4 p-4 rounded-xl bg-gradient-to-r from-success/5 to-transparent hover:from-success/10 transition-all duration-300">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-success to-primary flex items-center justify-center flex-shrink-0 mt-0.5 shadow-lg shadow-success/30">
+                      <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground mb-1">
+                        {language === "ar" ? "3D Secure" : "3D Secure"}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {language === "ar" ? "التحقق الإضافي" : "Additional verification"}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground text-center">
-                    Accepted payment methods: MADA, Visa, Mastercard
+                <div className="pt-6 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground text-center font-medium">
+                    {language === "ar"
+                      ? "طرق الدفع المقبولة: مدى، فيزا، ماستركارد"
+                      : "Accepted payment methods: MADA, Visa, Mastercard"}
                   </p>
                 </div>
               </div>

@@ -1,9 +1,29 @@
 /* HyperPay Payment Page Styles */
 
+.hyperpay-payment-page {
+  background: linear-gradient(to bottom, hsl(200, 70%, 15%), hsl(195, 60%, 25%), hsl(200, 70%, 15%));
+  position: relative;
+}
+
+.hyperpay-payment-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, hsl(200, 85%, 45%, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, hsl(195, 80%, 70%, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
 /* Ensure form container is visible */
 .paymentWidgets {
   width: 100%;
   min-height: 400px;
+  position: relative;
 }
 
 /* Widget form styling */
@@ -12,12 +32,29 @@
   width: 100%;
 }
 
-/* Loading state */
+/* Loading state with better styling */
 .paymentWidgets:empty::before {
   content: "Loading payment form...";
   display: block;
   text-align: center;
-  padding: 2rem;
+  padding: 3rem 2rem;
   color: hsl(var(--muted-foreground));
+  font-size: 1rem;
+  font-weight: 500;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Smooth transitions for all elements */
+.hyperpay-payment-page * {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
 }
 

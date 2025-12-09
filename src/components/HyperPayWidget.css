@@ -44,12 +44,13 @@
 
 /* Input controls - Beautiful inputs matching your design */
 .wpwl-control {
-  @apply w-full px-4 py-3 rounded-lg border transition-all;
+  @apply w-full px-4 py-3 rounded-lg border transition-all duration-300;
   background-color: hsl(var(--card));
   border-color: hsl(var(--border));
   color: hsl(var(--foreground));
   font-size: 16px;
-  min-height: 44px;
+  min-height: 48px;
+  box-shadow: 0 1px 2px 0 hsl(var(--border) / 0.1);
 }
 
 .wpwl-control:focus {
@@ -57,11 +58,15 @@
   border-color: hsl(var(--primary));
   ring-color: hsl(var(--primary));
   ring-opacity: 0.3;
-  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+  box-shadow: 
+    0 0 0 3px hsl(var(--primary) / 0.1),
+    0 4px 6px -1px hsl(var(--primary) / 0.1);
+  transform: translateY(-1px);
 }
 
 .wpwl-control:hover {
   border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 2px 4px -1px hsl(var(--primary) / 0.1);
 }
 
 .wpwl-control::placeholder {
@@ -79,25 +84,49 @@
   padding-right: 40px;
 }
 
-/* Submit button - Beautiful primary button */
+/* Submit button - Beautiful primary button with Arctic Blue theme */
 .wpwl-button {
-  @apply w-full px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200;
-  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.9) 100%);
+  @apply w-full px-6 py-4 rounded-lg font-black text-white transition-all duration-300;
+  background: linear-gradient(135deg, hsl(200, 85%, 45%) 0%, hsl(195, 80%, 50%) 100%);
   border: none;
-  min-height: 48px;
+  min-height: 52px;
   font-size: 16px;
-  box-shadow: 0 4px 6px -1px hsl(var(--primary) / 0.3);
+  letter-spacing: 0.5px;
+  box-shadow: 
+    0 4px 6px -1px hsl(200, 85%, 45% / 0.3),
+    0 0 20px -5px hsl(200, 85%, 45% / 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.wpwl-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
 .wpwl-button:hover {
-  background: linear-gradient(135deg, hsl(var(--primary) / 0.9) 0%, hsl(var(--primary) / 0.8) 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px -2px hsl(var(--primary) / 0.4);
+  background: linear-gradient(135deg, hsl(200, 85%, 50%) 0%, hsl(195, 80%, 55%) 100%);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 16px -2px hsl(200, 85%, 45% / 0.4),
+    0 0 30px -5px hsl(200, 85%, 45% / 0.3);
+}
+
+.wpwl-button:hover::before {
+  left: 100%;
 }
 
 .wpwl-button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px -1px hsl(var(--primary) / 0.3);
+  box-shadow: 
+    0 2px 4px -1px hsl(200, 85%, 45% / 0.3),
+    0 0 15px -5px hsl(200, 85%, 45% / 0.2);
 }
 
 .wpwl-button:disabled {
