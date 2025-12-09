@@ -198,15 +198,14 @@ const HyperPayPayment = () => {
           scriptsLoaded.current = true;
           
           // Widget should auto-initialize, but ensure form action is set
+          // NOTE: shopperResultUrl is already set during checkout creation and should NOT be added to the form
+          // The COPYandPAY widget uses the shopperResultUrl from the checkout, not from the form
           if (formRef.current) {
             formRef.current.action = paymentActionUrl;
-            const hiddenInput = formRef.current.querySelector('input[name="shopperResultUrl"]');
-            if (!hiddenInput) {
-              const input = document.createElement("input");
-              input.type = "hidden";
-              input.name = "shopperResultUrl";
-              input.value = shopperResultUrl;
-              formRef.current.appendChild(input);
+            // Remove any shopperResultUrl input if it exists (widget handles this automatically)
+            const existingShopperResultUrl = formRef.current.querySelector('input[name="shopperResultUrl"]');
+            if (existingShopperResultUrl) {
+              existingShopperResultUrl.remove();
             }
           }
         };
@@ -326,7 +325,8 @@ const HyperPayPayment = () => {
                 id={`hyperpay-form-${checkoutData.checkoutId}`}
                 style={{ minHeight: "450px" }}
               >
-                <input type="hidden" name="shopperResultUrl" value={shopperResultUrl} />
+                {/* NOTE: shopperResultUrl is set during checkout creation, NOT in the form */}
+                {/* The COPYandPAY widget uses the shopperResultUrl from the checkout automatically */}
               </form>
 
               <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border/50">
