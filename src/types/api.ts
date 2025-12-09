@@ -137,6 +137,7 @@ export interface Payment {
   amount: number;
   currency: string;
   captured_at?: string;
+  failure_reason?: string;
   tap_response?: any;
   webhook_payload?: any;
   created_at: string;

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Shield, Clock, CheckCircle2, AlertTriangle, Copy, Eye, EyeOff, Loader2, Calendar } from "lucide-react";
+import { Shield, Clock, CheckCircle2, AlertTriangle, Copy, Eye, EyeOff, Loader2, Calendar, XCircle } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { ordersApi, listingsApi } from "@/lib/api";
@@ -244,6 +244,24 @@ const Order = () => {
             <p>{formatDate(order.created_at)}</p>
           </div>
         </div>
+
+        {/* Payment Failure Alert - Show if payment failed */}
+        {order.status === 'payment_intent' && order.payment?.status === 'failed' && (
+          <Card className="p-6 mb-6 bg-red-500/10 border-red-500/30 backdrop-blur-sm">
+            <div className="flex items-start gap-4">
+              <div className="p-2 rounded-full bg-red-500/20 border border-red-500/30">
+                <XCircle className="h-6 w-6 text-red-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-red-400 text-lg mb-2">{t('order.paymentFailed') || 'Payment Failed'}</h3>
+                {order.payment?.failure_reason && (
+                  <p className="text-white/80 text-sm mb-3">{order.payment.failure_reason}</p>
+                )}
+                <p className="text-white/60 text-xs">{t('order.paymentFailedDescription') || 'Your payment could not be processed. Please try again or use a different payment method.'}</p>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Timer Card - Only show if in escrow */}
         {order.status === 'escrow_hold' && order.escrow_release_at && (
