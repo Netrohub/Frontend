@@ -134,3 +134,122 @@
   @apply opacity-50 pointer-events-none;
 }
 
+/* Custom HyperPay COPYandPAY Layout Styles */
+.cnpBillingCheckoutWrapper {
+  position: relative;
+}
+
+.cnpBillingCheckoutHeader {
+  width: 100%;
+  border-bottom: 1px solid #c0c0c0;
+  margin-bottom: 10px;
+}
+
+.cnpBillingCheckoutLeft {
+  width: 240px;
+  margin-left: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #c0c0c0;
+  display: inline-block;
+  vertical-align: top;
+  padding: 10px;
+}
+
+.cnpBillingCheckoutRight {
+  width: 50%;
+  margin-left: 5px;
+  border: 1px solid #c0c0c0;
+  display: inline-block;
+  vertical-align: top;
+  padding: 10px;
+}
+
+.cnpBillingCheckoutOrange {
+  font-size: 110%;
+  color: rgb(255, 60, 22);
+  font-weight: bold;
+}
+
+/* Widget wrapper and label widths */
+div.wpwl-wrapper,
+div.wpwl-label,
+div.wpwl-sup-wrapper {
+  width: 100%;
+}
+
+/* Expiry and brand group layout */
+div.wpwl-group-expiry,
+div.wpwl-group-brand {
+  width: 30%;
+  float: left;
+}
+
+/* CVV group layout */
+div.wpwl-group-cvv {
+  width: 68%;
+  float: left;
+  margin-left: 2%;
+}
+
+/* Clear floats for specific groups */
+div.wpwl-group-cardHolder,
+div.wpwl-sup-wrapper-street1,
+div.wpwl-group-expiry {
+  clear: both;
+}
+
+div.wpwl-sup-wrapper-street1 {
+  padding-top: 1px;
+}
+
+/* Brand wrapper */
+div.wpwl-wrapper-brand {
+  width: auto;
+}
+
+/* Billing address fields layout */
+div.wpwl-sup-wrapper-state,
+div.wpwl-sup-wrapper-city {
+  width: 32%;
+  float: left;
+  margin-right: 2%;
+}
+
+div.wpwl-sup-wrapper-postcode {
+  width: 32%;
+  float: left;
+}
+
+div.wpwl-sup-wrapper-country {
+  width: 66%;
+}
+
+/* Hide brand wrapper and labels */
+div.wpwl-wrapper-brand,
+div.wpwl-label-brand,
+div.wpwl-brand {
+  display: none;
+}
+
+/* Card number and brand layout */
+div.wpwl-group-cardNumber {
+  width: 60%;
+  float: left;
+  font-size: 20px;
+}
+
+div.wpwl-group-brand {
+  width: 35%;
+  float: left;
+  margin-top: 28px;
+}
+
+/* Brand card icons */
+div.wpwl-brand-card {
+  width: 65px;
+}
+
+div.wpwl-brand-custom {
+  margin: 0px 5px;
+}
+
