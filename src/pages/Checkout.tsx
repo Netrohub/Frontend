@@ -57,7 +57,8 @@ const Checkout = () => {
     }
 
     // CRITICAL: Prevent buyer from purchasing own listing
-    if (order?.listing?.seller_id === user?.id) {
+    // Use order.seller_id (from Order) or order.listing.user_id (from Listing)
+    if ((order?.seller_id === user?.id) || (order?.listing?.user_id === user?.id)) {
       toast.error(t('checkout.cannotBuyOwn'));
       navigate(`/product/${order.listing.id}`, { replace: true });
       return;
@@ -142,19 +143,25 @@ const Checkout = () => {
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     const baseCount = Math.floor(ANIMATION_CONFIG.SNOW_PARTICLES_COUNT * 0.6);
     const particleCount = isMobile ? Math.floor(baseCount * 0.5) : baseCount;
-    return [...Array(particleCount)].map((_, i) => (
-      <div
-        key={i}
-        className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
-        style={{
-          left: `${Math.random() * 100}%`,
-          top: `-${Math.random() * 20}%`,
-          animationDelay: `${Math.random() * ANIMATION_CONFIG.SNOW_ANIMATION_DELAY}s`,
-          animationDuration: `${ANIMATION_CONFIG.SNOW_ANIMATION_DURATION}s`,
-          willChange: 'transform, opacity',
-        }}
-      />
-    ));
+    return [...Array(particleCount)].map((_, i) => {
+      const duration = ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN + 
+        Math.random() * (ANIMATION_CONFIG.SNOW_FALL_DURATION_MAX - ANIMATION_CONFIG.SNOW_FALL_DURATION_MIN);
+      const delay = Math.random() * ANIMATION_CONFIG.SNOW_DELAY_MAX;
+      
+      return (
+        <div
+          key={i}
+          className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `-${Math.random() * 20}%`,
+            animationDelay: `${delay}s`,
+            animationDuration: `${duration}s`,
+            willChange: 'transform, opacity',
+          }}
+        />
+      );
+    });
   }, []);
 
   if (!user) {
