@@ -222,11 +222,20 @@ const HyperPayPayment = () => {
           console.log("HyperPay scripts loaded");
           scriptsLoaded.current = true;
           
-          // Widget should auto-initialize, but ensure form action is set
-          // NOTE: shopperResultUrl is already set during checkout creation and should NOT be added to the form
-          // The COPYandPAY widget uses the shopperResultUrl from the checkout, not from the form
+          // Widget should auto-initialize
+          // NOTE: For COPYandPAY widget:
+          // - Use data-checkout-id attribute (not action attribute) to prevent widget from using form action as shopperResultUrl
+          // - shopperResultUrl is set during checkout creation and widget uses it automatically
+          // - Widget will handle form submission internally
           if (formRef.current) {
-            formRef.current.action = paymentActionUrl;
+            // Ensure data-checkout-id is set (widget uses this to find the checkout)
+            if (!formRef.current.getAttribute('data-checkout-id')) {
+              formRef.current.setAttribute('data-checkout-id', checkoutData.checkoutId);
+            }
+            // Remove action attribute if it exists (widget handles submission internally)
+            if (formRef.current.action) {
+              formRef.current.removeAttribute('action');
+            }
             // Remove any shopperResultUrl input if it exists (widget handles this automatically)
             const existingShopperResultUrl = formRef.current.querySelector('input[name="shopperResultUrl"]');
             if (existingShopperResultUrl) {
@@ -344,14 +353,16 @@ const HyperPayPayment = () => {
 
               <form
                 ref={formRef}
-                action={paymentActionUrl}
                 className="paymentWidgets"
                 data-brands="MADA VISA MASTER AMEX"
+                data-checkout-id={checkoutData.checkoutId}
                 id={`hyperpay-form-${checkoutData.checkoutId}`}
                 style={{ minHeight: "450px" }}
               >
-                {/* NOTE: shopperResultUrl is set during checkout creation, NOT in the form */}
-                {/* The COPYandPAY widget uses the shopperResultUrl from the checkout automatically */}
+                {/* NOTE: For COPYandPAY widget:
+                    - Use data-checkout-id attribute (not action attribute)
+                    - shopperResultUrl is set during checkout creation and widget uses it automatically
+                    - Widget will handle form submission to the correct payment endpoint */}
               </form>
 
               <div className="flex items-center gap-3 mt-8 pt-6 border-t border-border/50">
