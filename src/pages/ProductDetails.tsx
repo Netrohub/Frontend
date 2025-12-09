@@ -1,0 +1,857 @@
+import { useState, useMemo, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Shield, Star, MapPin, ArrowRight, CheckCircle2, Users, Check, X, Zap, GraduationCap, PawPrint, Crown, Swords, Loader2, ChevronLeft, ChevronRight, Clock, Smartphone, Lock } from "lucide-react";
+import { getStaticImageUrl } from "@/lib/cloudflareImages";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
+import { listingsApi, ordersApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
+import type { ApiError } from "@/types/api";
+import { SEO } from "@/components/SEO";
+import { formatCurrency } from "@/utils/currency";
+import { formatCompactNumber } from "@/utils/numberFormat";
+import stoveLv1 from "@/assets/stove_lv_1.png";
+import stoveLv2 from "@/assets/stove_lv_2.png";
+import stoveLv3 from "@/assets/stove_lv_3.png";
+import stoveLv4 from "@/assets/stove_lv_4.png";
+import stoveLv5 from "@/assets/stove_lv_5.png";
+import stoveLv6 from "@/assets/stove_lv_6.png";
+import stoveLv7 from "@/assets/stove_lv_7.png";
+import stoveLv8 from "@/assets/stove_lv_8.png";
+import stoveLv9 from "@/assets/stove_lv_9.png";
+import stoveLv10 from "@/assets/stove_lv_10.png";
+
+const ProductDetails = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { t, tAr, language } = useLanguage();
+  const isAuthenticated = !!user;
+  const listingId = id ? parseInt(id) : 0;
+
+  const { data: listing, isLoading, error } = useQuery({
+    queryKey: ['listing', listingId],
+    queryFn: () => listingsApi.getById(listingId),
+    enabled: !!listingId,
+  });
+
+  const [isCreatingOrder, setIsCreatingOrder] = useState(false);
+  const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  // Stove level images for WOS (Whiteout Survival) - Cloudflare Images with local asset fallback
+  const stoveImages: Record<string, string> = {
+    'FC1': getStaticImageUrl('STOVE_LV_1', 'public') || stoveLv1,
+    'FC2': getStaticImageUrl('STOVE_LV_2', 'public') || stoveLv2,
+    'FC3': getStaticImageUrl('STOVE_LV_3', 'public') || stoveLv3,
+    'FC4': getStaticImageUrl('STOVE_LV_4', 'public') || stoveLv4,
+    'FC5': getStaticImageUrl('STOVE_LV_5', 'public') || stoveLv5,
+    'FC6': getStaticImageUrl('STOVE_LV_6', 'public') || stoveLv6,
+    'FC7': getStaticImageUrl('STOVE_LV_7', 'public') || stoveLv7,
+    'FC8': getStaticImageUrl('STOVE_LV_8', 'public') || stoveLv8,
+    'FC9': getStaticImageUrl('STOVE_LV_9', 'public') || stoveLv9,
+    'FC10': getStaticImageUrl('STOVE_LV_10', 'public') || stoveLv10,
+  };
+
+  // Town Center level images for Kingshot (using provided URLs)
+  const townCenterImages: Record<string, string> = {
+    'FC1': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_1.png',
+    'FC2': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_2.png',
+    'FC3': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_3.png',
+    'FC4': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_4.png',
+    'FC5': 'https://got-global-avatar.akamaized.net/img/icon/stove_lv_5.png',
+  };
+
+  const getStoveImage = (level: string, isKingshot: boolean = false): string => {
+    if (isKingshot && townCenterImages[level]) {
+      return townCenterImages[level];
+    }
+    return stoveImages[level] || stoveImages['FC1'];
+  };
+
+  const handleBuy = async () => {
+    if (!user) {
+      toast.error(t('product.loginRequired'));
+      navigate("/auth");
+      return;
+    }
+
+    if (isCreatingOrder) {
+      return; // Prevent duplicate requests
+    }
+
+    setIsCreatingOrder(true);
+    try {
+      const order = await ordersApi.create({ listing_id: listingId });
+      navigate(`/checkout?order_id=${order.id}`);
+    } catch (error) {
+      const apiError = error as Error & ApiError;
+      toast.error(apiError.message || t('product.createOrderError'));
+    } finally {
+      setIsCreatingOrder(false);
+    }
+  };
+
+  // Optimize snow particles: reduce on mobile, add will-change for better performance
+  const snowParticles = useMemo(() => {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const particleCount = isMobile ? 15 : 30;
+    return [...Array(particleCount)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute w-1 h-1 bg-white/40 rounded-full animate-fall"
+        style={{
+          left: `${Math.random() * 100}%`,
+          top: `-${Math.random() * 20}%`,
+          animationDuration: `${10 + Math.random() * 20}s`,
+          animationDelay: `${Math.random() * 5}s`,
+          willChange: 'transform, opacity',
+        }}
+      />
+    ));
+  }, []);
+
+
+  // Parse description to extract account details
+  const numericDetailKeys = useMemo(
+    () => new Set([
+      'القوة الشخصية',
+      'عدد الجنود',
+      'قوة البطل',
+      'الجزيرة',
+      'قوة الخبير',
+      'قوة البطل الإجمالية',
+      'قوة الحيوانات',
+      // English keys for Kingshot
+      'Personal Power',
+      'Troops',
+      'Hero Power',
+      'Mystic Trial',
+      'Expert Power',
+      'Hero\'s Total Power',
+      'Pet Power',
+      'Town Center',
+    ]),
+    []
+  );
+
+  // Determine if this is a Kingshot listing based on category
+  const isKingshot = useMemo(() => {
+    return listing?.category === 'kingshot_accounts';
+  }, [listing?.category]);
+
+  const parseAccountDetails = (description: string) => {
+    const lines = description.split('\n');
+    const details: Record<string, string> = {};
+    
+    lines.forEach(line => {
+      const [key, value] = line.split(':').map(s => s.trim());
+      if (key && value) {
+        // Map English keys to Arabic keys for consistency
+        const mappedKey = key === 'Personal Power' ? 'القوة الشخصية' :
+                         key === 'Town Center' ? 'حجرة الاحتراق' :
+                         key === 'Mystic Trial' ? 'الجزيرة' :
+                         key;
+        const shouldFormat = numericDetailKeys.has(key) || numericDetailKeys.has(mappedKey);
+        details[mappedKey] = shouldFormat ? formatCompactNumber(value) : value;
+      }
+    });
+    
+    return details;
+  };
+
+  if (isLoading) {
+    return (
+      <>
+        <SEO title={t('common.loading')} />
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar />
+          <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 flex justify-center items-center min-h-[60vh]" role="status" aria-live="polite">
+            <Loader2 className="h-8 w-8 animate-spin text-white/60" aria-hidden="true" />
+            <span className="sr-only">{t('product.loadingDetails')}</span>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error || !listing) {
+    return (
+      <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+        <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" />
+        <Navbar />
+        <div className="relative z-10 container mx-auto px-4 md:px-6 py-8 text-center">
+          <p className="text-red-400 mb-4">{t('common.errorLoading')}</p>
+          <Link to="/marketplace">
+            <Button>{t('product.backToMarket')}</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const images = listing.images || [];
+  const isOwner = user?.id === listing.user_id;
+  const accountDetails = parseAccountDetails(listing.description || '');
+  const notSpecifiedLabel = t('common.notSpecified');
+
+  const isLinked = (value?: string) => {
+    // Check both Arabic and English "yes" values
+    return value === 'نعم' || value?.toLowerCase() === 'yes';
+  };
+
+  return (
+    <>
+      <SEO 
+        title={`${listing.title} - NXOLand`}
+        description={listing.description || `${tAr('product.buy')} ${listing.title} ${tAr('common.from')} ${listing.category}`}
+        url={`/product/${listing.id}`}
+      />
+    <div className="min-h-screen relative overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(200,70%,15%)] via-[hsl(195,60%,25%)] to-[hsl(200,70%,15%)]" aria-hidden="true" />
+      
+      {/* Skip link for keyboard navigation */}
+      <a 
+        href="#product-content" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[hsl(195,80%,50%)] focus:text-white focus:rounded-md focus:shadow-lg"
+      >
+        {t('product.skipToProduct')}
+      </a>
+      
+      {/* Snow particles */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        {snowParticles}
+      </div>
+
+      {/* Navigation */}
+      <Navbar />
+
+      {/* Main Content */}
+      <div id="product-content" className="relative z-10 container mx-auto px-4 md:px-6 py-8 pb-24 md:pb-8">
+        <Link to="/marketplace" className="inline-flex items-center gap-2 text-white/60 hover:text-[hsl(195,80%,70%)] mb-6 transition-colors">
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          {t('product.backToMarket')}
+        </Link>
+
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left Column - Images */}
+          <div className="space-y-4">
+            <Card 
+              className={`overflow-hidden bg-white/5 border-white/10 backdrop-blur-sm ${
+                listing.status === 'sold' 
+                  ? 'opacity-60 cursor-not-allowed' 
+                  : 'cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all'
+              }`}
+              onClick={() => {
+                if (listing.status !== 'sold' && images.length > 0) {
+                  setCurrentImageIndex(0);
+                  setEnlargedImage(images[0]);
+                }
+              }}
+            >
+              <div className="relative aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center">
+                {images.length > 0 ? (
+                  <>
+                    <img 
+                      src={images[0]} 
+                      alt={listing.title}
+                      width="800"
+                      height="450"
+                      loading="eager"
+                      className={`w-full h-full object-cover ${listing.status === 'sold' ? 'grayscale' : ''}`}
+                      style={{ aspectRatio: '16/9' }}
+                    />
+                    {listing.status === 'sold' && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <Badge className="bg-red-600 hover:bg-red-700 text-white font-bold text-xl px-6 py-3">
+                          🔒 {t('product.sold')}
+                        </Badge>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Shield className="h-32 w-32 text-white/20" aria-hidden="true" />
+                )}
+              </div>
+            </Card>
+            
+            {images.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {images.slice(1, 5).map((img, i) => (
+                  <Card 
+                    key={i} 
+                    className={`aspect-square bg-white/5 border-white/10 backdrop-blur-sm overflow-hidden ${
+                      listing.status === 'sold' 
+                        ? 'opacity-60 cursor-not-allowed' 
+                        : 'cursor-pointer hover:border-[hsl(195,80%,70%)] transition-all'
+                    }`}
+                    onClick={() => {
+                      if (listing.status !== 'sold') {
+                        const index = images.findIndex(image => image === img);
+                        setCurrentImageIndex(index);
+                        setEnlargedImage(img);
+                      }
+                    }}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${listing.title} - ${t('product.image')} ${i + 2}`}
+                      width="200"
+                      height="200"
+                      loading="lazy"
+                      className={`w-full h-full object-cover ${listing.status === 'sold' ? 'grayscale' : ''}`}
+                      style={{ aspectRatio: '1/1' }}
+                    />
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Details */}
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                  <Badge className={
+                    listing.status === 'active' 
+                      ? "bg-[hsl(195,80%,50%,0.2)] text-[hsl(195,80%,70%)] border-[hsl(195,80%,70%,0.3)]"
+                      : listing.status === 'sold'
+                      ? "bg-red-500/20 text-red-400 border-red-500/30"
+                      : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                  }>
+                  {listing.status === 'active' ? t('product.available') : listing.status === 'sold' ? t('product.sold') : t('product.unavailable')}
+                </Badge>
+                {listing.user?.is_verified && (
+                  <Badge className="bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)]">
+                    {t('product.premiumAccount')}
+                  </Badge>
+                )}
+                </div>
+              
+              <h1 className="text-4xl font-black text-white mb-4">{listing.title}</h1>
+              
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-center gap-2 text-white/60">
+                  <MapPin className="h-4 w-4" aria-hidden="true" />
+                  <span>{t('product.server')}: {accountDetails['السيرفر'] || notSpecifiedLabel}</span>
+                </div>
+              </div>
+
+              <div className="flex items-baseline gap-2 mb-6">
+                <span className="text-5xl font-black text-[hsl(195,80%,70%)]">{formatCurrency(listing.price)}</span>
+              </div>
+
+              {/* Product Features / Deliverables */}
+              <div className="mb-6">
+                <div className="flex flex-wrap gap-3">
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    {t('product.features.instantDelivery')}
+                  </Badge>
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Smartphone className="h-4 w-4" />
+                    {t('product.features.digitalAccess')}
+                  </Badge>
+                  <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    {t('product.features.escrowProtection')}
+                  </Badge>
+                  <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30 px-3 py-1.5 flex items-center gap-2">
+                    <Lock className="h-4 w-4" />
+                    {t('product.features.securePayment')}
+                  </Badge>
+                  {listing.user?.is_verified && (
+                    <Badge className="bg-[hsl(40,90%,55%,0.2)] text-[hsl(40,90%,55%)] border-[hsl(40,90%,55%,0.3)] px-3 py-1.5 flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      {t('product.features.verifiedAccount')}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </div>
+
+              {/* Seller Info */}
+              {listing.user && (
+              <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[hsl(195,80%,50%)] to-[hsl(200,70%,40%)] flex items-center justify-center">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-white flex items-center gap-2">
+                      {listing.user.name}
+                      {listing.user.is_verified && (
+                        <CheckCircle2 className="h-5 w-5 text-[hsl(195,80%,70%)] fill-[hsl(195,80%,70%)]" />
+                      )}
+                    </div>
+                    <div className="text-sm text-white/60">{listing.user.is_verified ? t('product.verifiedSeller') : t('product.seller')}</div>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Account Details */}
+            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
+              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
+                {t('product.details')}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.15)] to-[hsl(195,80%,30%,0.1)] rounded-lg border border-[hsl(195,80%,70%,0.2)]">
+                  <div className="text-xs text-[hsl(195,80%,70%)] mb-1">{t('product.server')}</div>
+                  <div className="font-bold text-white text-lg">{accountDetails['السيرفر'] || notSpecifiedLabel}</div>
+                </div>
+                
+                {accountDetails['حجرة الاحتراق'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(280,70%,70%)] mb-1">{isKingshot ? 'Town Center' : t('product.stoveLevel')}</div>
+                    <div className="flex items-center gap-2">
+                      <img src={getStoveImage(accountDetails['حجرة الاحتراق'], isKingshot)} alt={accountDetails['حجرة الاحتراق']} className="w-8 h-8" />
+                      <span className="font-bold text-white text-lg">{accountDetails['حجرة الاحتراق']}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {accountDetails['هيليوس'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(40,90%,70%)] mb-1">{t('product.helios')}</div>
+                    <div className="font-bold text-white">{accountDetails['هيليوس']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['عدد الجنود'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(160,60%,50%,0.15)] to-[hsl(160,60%,30%,0.1)] rounded-lg border border-[hsl(160,60%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(160,60%,70%)] mb-1 flex items-center gap-1">
+                      <Users className="h-3 w-3" />
+                      {t('product.troops')}
+                    </div>
+                    <div className="font-bold text-white">{accountDetails['عدد الجنود']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['القوة الشخصية'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(195,80%,50%,0.2)] to-[hsl(195,80%,30%,0.15)] rounded-lg border-2 border-[hsl(195,80%,70%,0.4)] shadow-[0_0_20px_rgba(56,189,248,0.2)]">
+                    <div className="text-xs text-[hsl(195,80%,70%)] mb-1 font-bold flex items-center gap-1">
+                      <Zap className="h-3 w-3" />
+                      {isKingshot ? 'Personal Power' : t('product.personalPower')}
+                    </div>
+                    <div className="font-black text-[hsl(195,80%,70%)] text-xl">{accountDetails['القوة الشخصية']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['قوة البطل'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(340,70%,50%,0.15)] to-[hsl(340,70%,30%,0.1)] rounded-lg border border-[hsl(340,70%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(340,70%,70%)] mb-1 flex items-center gap-1">
+                      <Swords className="h-3 w-3" />
+                      {t('product.heroPower')}
+                    </div>
+                    <div className="font-bold text-white">{accountDetails['قوة البطل']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['الجزيرة'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(220,70%,50%,0.15)] to-[hsl(220,70%,30%,0.1)] rounded-lg border border-[hsl(220,70%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(220,70%,70%)] mb-1 flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {isKingshot ? 'Mystic Trial' : t('product.island')}
+                    </div>
+                    <div className="font-bold text-white text-lg">{accountDetails['الجزيرة']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['قوة الخبير'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(120,60%,70%)] mb-1 flex items-center gap-1">
+                      <GraduationCap className="h-3 w-3" />
+                      {t('product.expertPower')}
+                    </div>
+                    <div className="font-bold text-white">{accountDetails['قوة الخبير']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['قوة البطل الإجمالية'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(40,90%,55%,0.15)] to-[hsl(40,90%,40%,0.1)] rounded-lg border border-[hsl(40,90%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(40,90%,70%)] mb-1 flex items-center gap-1">
+                      <Crown className="h-3 w-3" />
+                      {t('product.heroTotalPower')}
+                    </div>
+                    <div className="font-bold text-white">{accountDetails['قوة البطل الإجمالية']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['قوة الحيوانات'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(280,70%,50%,0.15)] to-[hsl(280,70%,30%,0.1)] rounded-lg border border-[hsl(280,70%,70%,0.2)]">
+                    <div className="text-xs text-[hsl(280,70%,70%)] mb-1 flex items-center gap-1">
+                      <PawPrint className="h-3 w-3" />
+                      {t('product.petPower')}
+                    </div>
+                    <div className="font-bold text-white">{accountDetails['قوة الحيوانات']}</div>
+                  </div>
+                )}
+                
+                {accountDetails['مع البريد الإلكتروني الأساسي'] && (
+                  <div className="p-3 bg-gradient-to-br from-[hsl(120,60%,50%,0.15)] to-[hsl(120,60%,30%,0.1)] rounded-lg border border-[hsl(120,60%,70%,0.2)] col-span-2">
+                    <div className="text-xs text-[hsl(120,60%,70%)] mb-1">{t('product.primaryEmailIncluded')}</div>
+                    <div className="flex items-center gap-2">
+                      {isLinked(accountDetails['مع البريد الإلكتروني الأساسي']) ? (
+                        <>
+                          <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                          <span className="font-bold text-[hsl(120,70%,50%)] text-lg">{t('product.yes')}</span>
+                        </>
+                      ) : (
+                        <>
+                          <X className="h-5 w-5 text-red-400" />
+                          <span className="font-bold text-red-400 text-lg">{t('product.no')}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+                  </div>
+                </Card>
+
+            {/* Account Bindings */}
+            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
+              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
+                {t('product.accountBindings')}
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.apple')}</div>
+                  <div className="flex items-center gap-2">
+                    {isLinked(accountDetails['مربوط في أبل']) ? (
+                      <>
+                        <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="h-5 w-5 text-red-400" />
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.google')}</div>
+                  <div className="flex items-center gap-2">
+                    {isLinked(accountDetails['مربوط في قوقل']) ? (
+                      <>
+                        <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="h-5 w-5 text-red-400" />
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.facebook')}</div>
+                  <div className="flex items-center gap-2">
+                    {isLinked(accountDetails['مربوط في فيسبوك']) ? (
+                      <>
+                        <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="h-5 w-5 text-red-400" />
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3 bg-white/5 rounded-lg border border-white/10">
+                  <div className="text-xs text-white/60 mb-2">{t('product.binding.gameCenter')}</div>
+                  <div className="flex items-center gap-2">
+                    {isLinked(accountDetails['مربوط في قيم سنتر']) ? (
+                      <>
+                        <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                        <span className="font-bold text-[hsl(120,70%,50%)]">{t('product.bindingLinked')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <X className="h-5 w-5 text-red-400" />
+                        <span className="font-bold text-red-400">{t('product.bindingNotLinked')}</span>
+                      </>
+              )}
+            </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Invoice Images Status */}
+            <Card className="p-5 bg-white/5 border-white/10 backdrop-blur-sm">
+              <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-[hsl(195,80%,70%)] to-[hsl(40,90%,55%)] rounded-full" />
+                {t('product.billImages')}
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-white/80 text-sm">{t('product.invoiceFirst')}</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">{t('product.invoiceAttached')}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-white/80 text-sm">{t('product.invoiceMultiple')}</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">{t('product.invoiceAttached')}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <span className="text-white/80 text-sm">{t('product.invoiceLast')}</span>
+                  <div className="flex items-center gap-2">
+                    <Check className="h-5 w-5 text-[hsl(120,70%,50%)]" />
+                    <span className="text-[hsl(120,70%,50%)] font-semibold text-sm">{t('product.invoiceAttached')}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-[hsl(195,80%,50%,0.1)] rounded-lg border border-[hsl(195,80%,50%,0.3)]">
+                <p className="text-xs text-white/70">
+                  {t('product.billImagesInfo')}
+                </p>
+              </div>
+            </Card>
+
+            {/* CTA */}
+            <div className="space-y-3">
+            {!isOwner && listing.status === 'active' && (
+                <>
+                  {isAuthenticated ? (
+              <Button 
+                onClick={handleBuy}
+                      disabled={isCreatingOrder}
+                      size="lg" 
+                      className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0 disabled:opacity-50"
+                    >
+                      {isCreatingOrder ? (
+                        <>
+                          <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                          {t('common.processing')}
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="h-5 w-5" aria-hidden="true" />
+                          {t('product.buyNowSecure')}
+                          <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button 
+                      asChild
+                      size="lg" 
+                      className="w-full gap-2 text-lg py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold shadow-[0_0_30px_rgba(56,189,248,0.4)] border-0"
+                    >
+                      <Link to="/auth">
+                        <Shield className="h-5 w-5" />
+                        {t('product.loginToBuy')}
+                        <ArrowRight className="h-5 w-5" />
+                      </Link>
+              </Button>
+                  )}
+                  
+                  <div className="flex items-center justify-center gap-2 text-sm text-white/60">
+                    <Shield className="h-4 w-4 text-[hsl(195,80%,70%)]" />
+                    <span>{t('product.escrowProtection')}</span>
+                  </div>
+                </>
+            )}
+
+            {isOwner && (
+              <div className="space-y-2">
+                <p className="text-white/60 text-center">{t('product.accountOwnerNotice')}</p>
+                <Link to={`/my-listings`}>
+                  <Button variant="outline" className="w-full">{t('product.manageMyListings')}</Button>
+                </Link>
+              </div>
+            )}
+
+            {listing.status === 'sold' && !isOwner && (
+              <div className="space-y-3">
+                <Badge className="w-full justify-center py-4 text-lg bg-red-500/20 text-red-400 border-red-500/30 font-bold">
+                  🔒 {t('product.sold')}
+                </Badge>
+                <p className="text-center text-white/60 text-sm">
+                  {t('product.soldMessage') || 'This product has been sold and is no longer available for purchase.'}
+                </p>
+              </div>
+            )}
+            {listing.status !== 'active' && listing.status !== 'sold' && !isOwner && (
+              <Badge className="w-full justify-center py-3 text-lg bg-gray-500/20 text-gray-400 border-gray-500/30">
+                {t('product.unavailable')}
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+
+      {/* Glow effects */}
+      <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[hsl(195,80%,50%,0.1)] rounded-full blur-[120px] animate-pulse pointer-events-none" aria-hidden="true" />
+      
+      {/* Image Enlarge Dialog with Swipe Support */}
+      <Dialog 
+        open={!!enlargedImage} 
+        onOpenChange={() => {
+          setEnlargedImage(null);
+          setCurrentImageIndex(0);
+        }}
+      >
+        <DialogContent className="max-w-4xl w-full bg-background/95 backdrop-blur-sm border-white/10 p-0 md:p-6">
+          {enlargedImage && images.length > 0 ? (
+            <div className="relative">
+              {/* Image Container with Swipe Support */}
+              <div
+                className="relative w-full"
+                onTouchStart={(e) => {
+                  touchStartX.current = e.touches[0].clientX;
+                }}
+                onTouchMove={(e) => {
+                  touchEndX.current = e.touches[0].clientX;
+                }}
+                onTouchEnd={() => {
+                  if (!touchStartX.current || !touchEndX.current) return;
+                  
+                  const distance = touchStartX.current - touchEndX.current;
+                  const minSwipeDistance = 50; // Minimum distance for swipe
+                  
+                  if (Math.abs(distance) > minSwipeDistance) {
+                    if (distance > 0 && currentImageIndex < images.length - 1) {
+                      // Swipe left - next image
+                      const nextIndex = currentImageIndex + 1;
+                      setCurrentImageIndex(nextIndex);
+                      setEnlargedImage(images[nextIndex]);
+                    } else if (distance < 0 && currentImageIndex > 0) {
+                      // Swipe right - previous image
+                      const prevIndex = currentImageIndex - 1;
+                      setCurrentImageIndex(prevIndex);
+                      setEnlargedImage(images[prevIndex]);
+                    }
+                  }
+                  
+                  touchStartX.current = null;
+                  touchEndX.current = null;
+                }}
+              >
+                <img 
+                  src={images[currentImageIndex]} 
+                  alt={`${listing.title} - ${t('product.image')} ${currentImageIndex + 1}`}
+                  className="w-full h-auto object-contain max-h-[85vh] rounded-lg"
+                  loading="eager"
+                />
+                
+                {/* Image Counter */}
+                {images.length > 1 && (
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-medium">
+                    {currentImageIndex + 1} / {images.length}
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Buttons - Desktop Only */}
+              {images.length > 1 && (
+                <>
+                  {/* Previous Button */}
+                  {currentImageIndex > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full h-12 w-12 hidden md:flex"
+                      onClick={() => {
+                        const prevIndex = currentImageIndex - 1;
+                        setCurrentImageIndex(prevIndex);
+                        setEnlargedImage(images[prevIndex]);
+                      }}
+                      aria-label={t('product.previousImage') || 'Previous image'}
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </Button>
+                  )}
+
+                  {/* Next Button */}
+                  {currentImageIndex < images.length - 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full h-12 w-12 hidden md:flex"
+                      onClick={() => {
+                        const nextIndex = currentImageIndex + 1;
+                        setCurrentImageIndex(nextIndex);
+                        setEnlargedImage(images[nextIndex]);
+                      }}
+                      aria-label={t('product.nextImage') || 'Next image'}
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </Button>
+                  )}
+
+                  {/* Mobile Swipe Indicator */}
+                  <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs">
+                    {t('product.swipeToNavigate') || 'Swipe to navigate'}
+                  </div>
+                </>
+              )}
+
+              {/* Thumbnail Strip - Desktop Only */}
+              {images.length > 1 && (
+                <div className="hidden md:flex gap-2 mt-4 overflow-x-auto pb-2 px-2">
+                  {images.map((img, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setCurrentImageIndex(index);
+                        setEnlargedImage(img);
+                      }}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                        index === currentImageIndex
+                          ? 'border-[hsl(195,80%,70%)] ring-2 ring-[hsl(195,80%,70%,0.3)]'
+                          : 'border-white/20 hover:border-white/40'
+                      }`}
+                      aria-label={`${t('product.image')} ${index + 1}`}
+                    >
+                      <img
+                        src={img}
+                        alt={`${t('product.thumbnail')} ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="aspect-video bg-gradient-to-br from-[hsl(195,80%,30%)] to-[hsl(200,70%,20%)] flex items-center justify-center rounded-lg">
+              <Shield className="h-64 w-64 text-white/20" aria-hidden="true" />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <BottomNav />
+    </div>
+    </>
+  );
+};
+
+export default ProductDetails;

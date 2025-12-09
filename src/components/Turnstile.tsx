@@ -1,0 +1,161 @@
+import { Turnstile as CloudflareTurnstile } from '@marsidev/react-turnstile';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+
+interface TurnstileProps {
+  onVerify: (token: string) => void;
+  onError?: () => void;
+  className?: string;
+}
+
+export const Turnstile = ({ onVerify, onError, className }: TurnstileProps) => {
+  const [isExpired, setIsExpired] = useState(false);
+  const [widgetKey, setWidgetKey] = useState(0);
+  const [isReady, setIsReady] = useState(false);
+  const [verificationTimeout, setVerificationTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Get site key from environment variable
+  const envVar = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  
+  // Workaround: Try to get from window object (for runtime injection if needed)
+  const [runtimeKey, setRuntimeKey] = useState<string | undefined>(
+    typeof window !== 'undefined' 
+      ? (window as any).__TURNSTILE_SITE_KEY__ 
+      : undefined
+  );
+  
+  // Check for runtime key after mount (only once)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && !runtimeKey) {
+      const key = (window as any).__TURNSTILE_SITE_KEY__;
+      if (key) {
+        setRuntimeKey(key);
+      } else {
+        // Single delayed check
+        const timeout = setTimeout(() => {
+          const delayedKey = (window as any).__TURNSTILE_SITE_KEY__;
+          if (delayedKey) {
+            setRuntimeKey(delayedKey);
+          }
+        }, 100);
+        return () => clearTimeout(timeout);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  // Memoize site key to prevent unnecessary recalculations
+  const siteKey = useMemo(() => {
+    return envVar || runtimeKey || '1x00000000000000000000AA';
+  }, [envVar, runtimeKey]);
+  
+  // Initialize widget only when we have a valid key
+  // Defer initialization to avoid blocking the main thread
+  useEffect(() => {
+    if (siteKey && siteKey !== '1x00000000000000000000AA') {
+      if (widgetKey === 0) {
+        setWidgetKey(1);
+      }
+      // Defer rendering to next frame to avoid blocking main thread
+      // This prevents performance violations from synchronous initialization
+      const readyTimeout = requestAnimationFrame(() => {
+        setTimeout(() => {
+          setIsReady(true);
+          // Set a timeout to detect if verification is stuck (30 seconds)
+          // If widget doesn't verify within 30s, reset it
+          const timeout = setTimeout(() => {
+            if (process.env.NODE_ENV !== 'production') {
+              console.warn('[Turnstile] Verification timeout - widget may be stuck. Resetting...');
+            }
+            setWidgetKey(prev => prev < 3 ? prev + 1 : prev);
+            setIsReady(false);
+            // Retry after a short delay
+            setTimeout(() => {
+              setIsReady(true);
+            }, 500);
+          }, 30000); // 30 second timeout
+          setVerificationTimeout(timeout);
+        }, 100); // Small delay to ensure DOM is ready
+      });
+      return () => {
+        cancelAnimationFrame(readyTimeout);
+        // Cleanup timeout on unmount or when dependencies change
+        setVerificationTimeout(prev => {
+          if (prev) {
+            clearTimeout(prev);
+          }
+          return null;
+        });
+      };
+    }
+  }, [siteKey, widgetKey]);
+  
+  // Memoize callbacks to prevent unnecessary re-renders
+  const handleVerify = useCallback((token: string) => {
+    setIsExpired(false);
+    // Clear any pending timeout
+    if (verificationTimeout) {
+      clearTimeout(verificationTimeout);
+      setVerificationTimeout(null);
+    }
+    onVerify(token);
+  }, [onVerify, verificationTimeout]);
+
+  const handleExpire = useCallback(() => {
+    setIsExpired(true);
+    onVerify(''); // Clear the token
+  }, [onVerify]);
+
+  const handleError = useCallback((error?: any) => {
+    // Log error details for debugging
+    const errorCode = error?.code || error?.error || error;
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[Turnstile] Widget error:', errorCode, error);
+    }
+    
+    // Error 300030 is a generic client execution error, often CSP-related
+    // Don't reset immediately - wait a bit to avoid rapid resets
+    if (errorCode === '300030' || errorCode === 300030) {
+      // CSP violation - don't reset, just log
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[Turnstile] Error 300030 detected - may be CSP related. Check CSP headers.');
+      }
+      // Still call onError to notify parent component
+      if (onError) {
+        onError();
+      }
+      return;
+    }
+    
+    // For other errors, reset widget but limit resets to prevent infinite loops
+    setWidgetKey(prev => prev < 3 ? prev + 1 : prev);
+    if (onError) {
+      onError();
+    }
+  }, [onError]);
+
+  // Don't render widget if we don't have a valid key or aren't ready
+  if (!siteKey || siteKey === '1x00000000000000000000AA' || !isReady) {
+    return null;
+  }
+
+  return (
+    <div className={className} key={widgetKey}>
+      <CloudflareTurnstile
+        siteKey={siteKey}
+        onSuccess={handleVerify}
+        onExpire={handleExpire}
+        onError={handleError}
+        options={{
+          theme: 'dark',
+          size: 'normal',
+        }}
+      />
+      {isExpired && (
+        <p className="text-sm text-red-400 mt-2">
+          التحقق انتهى. يرجى المحاولة مرة أخرى.
+        </p>
+      )}
+    </div>
+  );
+};
+

@@ -1,0 +1,341 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Arctic Blue Theme */
+    --background: 210 40% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    /* Primary: Ice Blue */
+    --primary: 200 85% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 200 90% 65%;
+
+    /* Secondary: Snow White with hint of blue */
+    --secondary: 210 30% 94%;
+    --secondary-foreground: 215 25% 20%;
+
+    /* Muted: Frost */
+    --muted: 210 30% 92%;
+    --muted-foreground: 215 15% 50%;
+
+    /* Accent: Arctic Teal */
+    --accent: 185 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success: Ice Green */
+    --success: 160 60% 45%;
+    --success-foreground: 0 0% 100%;
+
+    /* Destructive: Winter Red */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 25% 88%;
+    --input: 210 25% 88%;
+    --ring: 200 85% 45%;
+
+    --radius: 0.75rem;
+
+    /* Gaming Theme Colors */
+    --gaming-dark: 220 30% 12%;
+    --gaming-accent: 280 70% 55%;
+    --gaming-gold: 45 100% 55%;
+
+    /* Trust Theme Colors */
+    --trust-blue: 215 85% 45%;
+    --trust-green: 145 60% 45%;
+    
+    /* Navbar Colors */
+    --nav-background: 200 70% 15%;
+    --nav-highlight: 195 80% 70%;
+    --nav-accent: 40 90% 55%;
+    
+    /* Status Colors - Arctic Theme */
+    --status-success: 160 60% 50%;
+    --status-success-foreground: 0 0% 100%;
+    --status-warning: 40 90% 55%;
+    --status-warning-foreground: 220 30% 12%;
+    --status-error: 0 70% 60%;
+    --status-error-foreground: 0 0% 100%;
+    --status-info: 195 80% 70%;
+    --status-info-foreground: 220 30% 12%;
+    --status-pending: 40 90% 55%;
+    --status-pending-foreground: 220 30% 12%;
+    
+    /* Gradients */
+    --gradient-arctic: linear-gradient(135deg, hsl(200 85% 45%) 0%, hsl(200 90% 65%) 100%);
+    --gradient-ice: linear-gradient(180deg, hsl(210 40% 98%) 0%, hsl(200 30% 95%) 100%);
+    --gradient-gaming: linear-gradient(135deg, hsl(220 30% 12%) 0%, hsl(280 70% 25%) 100%);
+    --gradient-trust: linear-gradient(135deg, hsl(215 85% 45%) 0%, hsl(145 60% 45%) 100%);
+    
+    /* Shadows */
+    --shadow-arctic: 0 10px 40px -10px hsl(200 85% 45% / 0.3);
+    --shadow-glow: 0 0 30px hsl(200 90% 65% / 0.4);
+    --shadow-card: 0 4px 20px hsl(200 30% 30% / 0.08);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 210 40% 98%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 200 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 220 25% 18%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 185 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 160 60% 50%;
+    --success-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 200 85% 55%;
+    
+    --nav-background: 200 70% 20%;
+    --nav-highlight: 195 80% 75%;
+    --nav-accent: 40 90% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    /* Prevent horizontal scrolling */
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    @apply bg-background text-foreground font-arabic;
+    direction: rtl;
+    /* Prevent horizontal scrolling */
+    overflow-x: hidden;
+    max-width: 100vw;
+    /* iOS safe area insets */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+
+  /* Typography Scale - Standardized */
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  /* Focus states for all interactive elements */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-[hsl(195,80%,70%)] ring-offset-2 ring-offset-[hsl(200,70%,15%)];
+  }
+
+  /* Utility class for safe bottom padding (for bottom nav) */
+  .pb-safe-bottom {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 768px) {
+    .pb-safe-bottom {
+      padding-bottom: 2rem;
+    }
+  }
+}
+
+/* Terms, Privacy, and Refund content styling */
+.terms-content h1,
+.privacy-content h1,
+.refund-content h1 {
+  @apply text-3xl font-black text-white mb-6 mt-8 first:mt-0;
+}
+
+.terms-content h2,
+.privacy-content h2,
+.refund-content h2 {
+  @apply text-2xl font-bold text-white mb-4 mt-6;
+}
+
+.terms-content h3,
+.privacy-content h3,
+.refund-content h3 {
+  @apply text-xl font-bold text-[hsl(195,80%,70%)] mb-3 mt-4;
+}
+
+.terms-content p,
+.privacy-content p,
+.refund-content p {
+  @apply text-white/80 leading-relaxed mb-4;
+}
+
+.terms-content ul,
+.privacy-content ul,
+.refund-content ul {
+  @apply list-disc list-inside space-y-2 text-white/80 mb-4 mr-4;
+}
+
+.terms-content ol,
+.privacy-content ol,
+.refund-content ol {
+  @apply list-decimal list-inside space-y-2 text-white/80 mb-4 mr-4;
+}
+
+.terms-content li,
+.privacy-content li,
+.refund-content li {
+  @apply text-white/80;
+}
+
+.terms-content strong,
+.privacy-content strong,
+.refund-content strong {
+  @apply text-white font-bold;
+}
+
+.terms-content hr,
+.privacy-content hr,
+.refund-content hr {
+  @apply border-white/20 my-8;
+}
+
+/* Animation for snow falling effect - optimized for performance */
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+  will-change: transform, opacity;
+  /* Use GPU acceleration for better performance */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Beautiful Notification Toast Styles */
+@layer components {
+  .notification-toast {
+    animation: slideInFromTop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .notification-toast:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.4), 0 15px 15px -5px rgba(0, 0, 0, 0.3), 0 0 40px rgba(200, 85%, 55%, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Smooth slide-in animation for toasts */
+  @keyframes slideInFromTop {
+    0% {
+      transform: translateY(-100%) scale(0.95);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Toast icon container glow effect */
+  [data-sonner-toast] [data-icon] {
+    filter: drop-shadow(0 0 8px currentColor);
+    transition: all 0.3s ease;
+  }
+
+  [data-sonner-toast]:hover [data-icon] {
+    filter: drop-shadow(0 0 12px currentColor);
+    transform: scale(1.05);
+  }
+
+  /* Make toast container match website width */
+  [data-sonner-toaster] {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  @media (min-width: 768px) {
+    [data-sonner-toaster] {
+      padding: 0 1.5rem;
+    }
+  }
+}

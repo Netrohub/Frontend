@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>منصة تداول حسابات الألعاب - اشتر وبِع بأمان</title>
+    <meta name="description" content="منصة آمنة لشراء وبيع حسابات الألعاب الرقمية مع نظام ضمان متكامل" />
+    <meta name="author" content="NXOLand" />
+    
+    <!-- Preconnect to critical origins FIRST (before any scripts) -->
+    <!-- Critical: Backend API (300ms LCP savings) -->
+    <link rel="preconnect" href="https://backend-piz0.onrender.com" crossorigin>
+    <link rel="dns-prefetch" href="https://backend-piz0.onrender.com">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Favicon - IMPORTANT: Only declare ONE favicon to avoid conflicts with search engines -->
+    <!-- Do NOT add multiple favicon links. This is the single source of truth for the site favicon. -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    
+    <!-- Google Tag Manager - Will be loaded after user consent -->
+    <!-- GTM Container ID: GTM-THXQ6Q9V (configured via VITE_GTM_ID environment variable) -->
+    <!-- GTM initialization is now handled by cookie consent system -->
+    <script>
+      // Initialize dataLayer early (before consent)
+      window.dataLayer = window.dataLayer || [];
+      
+      // GTM will be loaded after user accepts cookies
+      // See frontend/src/utils/gtm.ts for consent-based initialization
+    </script>
+    <!-- End Google Tag Manager -->
+    
+    <!-- GTM DNS prefetch (non-critical, but helps when it loads) -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    
+    <!-- Load fonts asynchronously to prevent render blocking -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    </noscript>
+
+    <meta property="og:title" content="NXOLand - منصة تداول حسابات الألعاب" />
+    <meta property="og:description" content="منصة آمنة لشراء وبيع حسابات الألعاب الرقمية مع نظام ضمان متكامل" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://nxoland.com/nxoland-new-logo.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@NXOLand" />
+    <meta name="twitter:image" content="https://nxoland.com/nxoland-new-logo.png" />
+  </head>
+
+  <body>
+    <!-- Google Tag Manager (noscript) - Required for Google Search Console verification -->
+    <noscript>
+      <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-THXQ6Q9V"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

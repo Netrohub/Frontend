@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Note: Cloudflare Pages automatically injects "Content-signal: search=yes,ai-train=no" 
+# at line 29. This is a Cloudflare-specific extension and is not part of the standard 
+# robots.txt specification. Standard crawlers (Google, Bing, etc.) ignore unknown 
+# directives, so this does not affect SEO or functionality. Lighthouse will show this 
+# as a warning, but it is safe to ignore.
+
+# Disallow private/user-specific pages
+Disallow: /auth
+Disallow: /checkout
+Disallow: /orders
+Disallow: /order/
+Disallow: /profile
+Disallow: /edit-profile
+Disallow: /wallet
+Disallow: /my-listings
+Disallow: /disputes
+Disallow: /kyc
+Disallow: /notifications
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /admin
+
+# Sitemap (if available)
+# Sitemap: https://www.nxoland.com/sitemap.xml

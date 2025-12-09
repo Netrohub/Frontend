@@ -1,0 +1,138 @@
+import type { Config } from "tailwindcss";
+
+export default {
+  darkMode: ["class"],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  prefix: "",
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      fontFamily: {
+        arabic: ['Cairo', 'sans-serif'],
+      },
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      gaming: {
+        dark: "hsl(var(--gaming-dark))",
+        accent: "hsl(var(--gaming-accent))",
+        gold: "hsl(var(--gaming-gold))",
+      },
+      trust: {
+        blue: "hsl(var(--trust-blue))",
+        green: "hsl(var(--trust-green))",
+      },
+      nav: {
+        background: "hsl(var(--nav-background))",
+        highlight: "hsl(var(--nav-highlight))",
+        accent: "hsl(var(--nav-accent))",
+      },
+      status: {
+        success: "hsl(var(--status-success))",
+        "success-foreground": "hsl(var(--status-success-foreground))",
+        warning: "hsl(var(--status-warning))",
+        "warning-foreground": "hsl(var(--status-warning-foreground))",
+        error: "hsl(var(--status-error))",
+        "error-foreground": "hsl(var(--status-error-foreground))",
+        info: "hsl(var(--status-info))",
+        "info-foreground": "hsl(var(--status-info-foreground))",
+        pending: "hsl(var(--status-pending))",
+        "pending-foreground": "hsl(var(--status-pending-foreground))",
+      },
+    },
+      backgroundImage: {
+        'gradient-arctic': 'var(--gradient-arctic)',
+        'gradient-ice': 'var(--gradient-ice)',
+        'gradient-gaming': 'var(--gradient-gaming)',
+        'gradient-trust': 'var(--gradient-trust)',
+      },
+      boxShadow: {
+        'arctic': 'var(--shadow-arctic)',
+        'glow': 'var(--shadow-glow)',
+        'card': 'var(--shadow-card)',
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "glow": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.6" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "fall": {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(100vh)" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "float": "float 3s ease-in-out infinite",
+        "glow": "glow 2s ease-in-out infinite",
+        "shimmer": "shimmer 3s linear infinite",
+        "fall": "fall linear infinite",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+} satisfies Config;
