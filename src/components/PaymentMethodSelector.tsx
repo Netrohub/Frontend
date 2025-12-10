@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { CreditCard, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";

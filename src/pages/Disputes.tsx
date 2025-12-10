@@ -63,10 +63,11 @@ const Disputes = () => {
       const errorCode = error?.response?.data?.error;
       const errorMessage = error?.response?.data?.message || error?.message || t('disputes.createError');
       
-      // Check if it's a Discord requirement error (buyer or seller)
+      // Check if it's a Discord requirement error (initiator must have Discord)
       if (errorCode === 'discord_required_for_disputes' || 
           errorCode === 'discord_required_for_buyer' || 
-          errorCode === 'discord_required_for_seller') {
+          errorCode === 'discord_required_for_seller' ||
+          errorCode === 'discord_required_for_initiator') {
         // Show error toast with action button to connect Discord
         toast.error(errorMessage, {
           duration: 8000, // Longer duration for mobile users
