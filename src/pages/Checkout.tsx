@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, CreditCard, CheckCircle2, Loader2, ArrowRight, Zap } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SEO } from "@/components/SEO";
+import { PaymentMethodSelector, type PaymentMethod } from "@/components/PaymentMethodSelector";
 import { ordersApi, paymentsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,6 +31,7 @@ const Checkout = () => {
   });
 
   const [processing, setProcessing] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -55,6 +57,12 @@ const Checkout = () => {
       return;
     }
 
+    // Check if payment method is selected
+    if (!selectedPaymentMethod) {
+      toast.error(t('checkout.selectPaymentMethod') || 'Please select a payment method');
+      return;
+    }
+
     // CRITICAL: Prevent buyer from purchasing own listing
     // Use order.seller_id (from Order) or order.listing.user_id (from Listing)
     if ((order?.seller_id === user?.id) || (order?.listing?.user_id === user?.id)) {
@@ -63,8 +71,8 @@ const Checkout = () => {
       return;
     }
 
-    // Always use HyperPay - redirect to dedicated payment page
-    navigate(`/payments/hyperpay?order_id=${orderId}`, { replace: true });
+    // Redirect to HyperPay payment page with selected payment method
+    navigate(`/payments/hyperpay?order_id=${orderId}&payment_method=${selectedPaymentMethod}`, { replace: true });
   };
 
   const handleHyperPayComplete = async (resourcePath: string) => {
@@ -199,26 +207,12 @@ const Checkout = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Payment Method - HyperPay Only */}
+            {/* Payment Method Selection */}
             <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
-                  <CreditCard className="h-5 w-5 text-[hsl(195,80%,70%)]" />
-                </div>
-                <h2 className="text-2xl font-bold text-white">{t('checkout.paymentMethod')}</h2>
-              </div>
-
-              <div className="p-4 bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)] rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
-                  </div>
-                  <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay'}</span>
-                  <div className="mr-auto px-3 py-1 bg-blue-500/50 rounded-full text-xs font-bold text-white">
-                    {t('checkout.secure') || 'Secure'}
-                  </div>
-                </div>
-              </div>
+              <PaymentMethodSelector
+                selectedMethod={selectedPaymentMethod}
+                onSelect={setSelectedPaymentMethod}
+              />
             </Card>
 
             {/* Protection Notice */}

@@ -36,6 +36,7 @@ const HyperPayPayment = () => {
   const { user } = useAuth();
   const { t, language } = useLanguage();
   const orderId = searchParams.get("order_id");
+  const paymentMethod = searchParams.get("payment_method") as "MADA" | "VISA" | "MASTERCARD" | null;
   
   const [checkoutData, setCheckoutData] = useState<{
     checkoutId: string;
@@ -61,12 +62,20 @@ const HyperPayPayment = () => {
       return;
     }
 
+    // Validate payment method
+    if (!paymentMethod || !["MADA", "VISA", "MASTERCARD"].includes(paymentMethod)) {
+      toast.error("Please select a payment method");
+      navigate(`/checkout?order_id=${orderId}`, { replace: true });
+      return;
+    }
+
     // Fetch checkout data
     const fetchCheckout = async () => {
       try {
         setLoading(true);
         const response = await paymentsApi.prepareHyperPayCheckout({
           order_id: parseInt(orderId),
+          payment_method: paymentMethod,
           browserData: {
             acceptHeader: navigator.userAgent.includes("Chrome") 
               ? "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
@@ -97,7 +106,7 @@ const HyperPayPayment = () => {
     };
 
     fetchCheckout();
-  }, [orderId, user, navigate, t]);
+  }, [orderId, paymentMethod, user, navigate, t]);
 
   useEffect(() => {
     if (!checkoutData || scriptsLoaded.current) return;

@@ -458,7 +458,7 @@ export const ordersApi = {
 export const paymentsApi = {
   create: (data: { order_id: number }) =>
     api.post<PaymentCreateResponse>('/payments/create', data),
-  prepareHyperPayCheckout: (data: { order_id: number; browserData?: any }) =>
+  prepareHyperPayCheckout: (data: { order_id: number; payment_method?: 'MADA' | 'VISA' | 'MASTERCARD'; browserData?: any }) =>
     api.post<{ payment: any; checkoutId: string; widgetScriptUrl: string; integrity?: string }>('/payments/hyperpay/prepare', data),
   getHyperPayStatus: (data: { resourcePath: string; order_id: number }) =>
     api.post<{ status: string; resultCode?: string; resultDescription?: string; isMadaCard?: boolean; response: any }>('/payments/hyperpay/status', data),
