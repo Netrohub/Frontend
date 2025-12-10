@@ -405,140 +405,63 @@ const Auth = () => {
               </form>
             </TabsContent>
 
-            {/* Register Tab */}
+            {/* Register Tab - Discord Only */}
             <TabsContent value="register">
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-white">{t('auth.fullName')}</Label>
-                  <div className="relative">
-                    <UserIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
-                    <Input 
-                      id="name"
-                      type="text"
-                      placeholder={t('auth.fullName')}
-                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      value={registerData.name}
-                      onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                      aria-label={t('auth.fullName')}
-                      required
-                    />
+              <div className="space-y-6">
+                {/* Discord Required Notice */}
+                <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                  <div className="flex items-start gap-3">
+                    <MessageCircle className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <h3 className="text-sm font-semibold text-white">
+                        {t('auth.discordRequired') || 'Discord Connection Required'}
+                      </h3>
+                      <p className="text-xs text-white/70 leading-relaxed">
+                        {t('auth.discordRequiredDescription') || 'To ensure better dispute management and communication, all new accounts must be connected to Discord. This helps us provide better support and resolve issues quickly.'}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email-register" className="text-white">{t('auth.email')}</Label>
-                  <div className="relative">
-                    <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
-                    <Input 
-                      id="email-register"
-                      type="email"
-                      placeholder="example@email.com"
-                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      value={registerData.email}
-                      onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                      autoComplete="email"
-                      aria-label={t('auth.email')}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone" className="text-white">{t('auth.phone')}</Label>
-                  <Input 
-                    id="phone"
-                    type="tel"
-                    placeholder="05xxxxxxxx"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                    value={registerData.phone}
-                    onChange={(e) => setRegisterData({ ...registerData, phone: e.target.value })}
-                    autoComplete="tel"
-                    aria-label={t('auth.phone')}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password-register" className="text-white">{t('auth.password')}</Label>
-                  <div className="relative">
-                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
-                    <Input 
-                      id="password-register"
-                      type="password"
-                      placeholder="••••••••"
-                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                      autoComplete="new-password"
-                      autoCapitalize="off"
-                      autoCorrect="off"
-                      spellCheck="false"
-                      aria-label={t('auth.password')}
-                      required
-                      minLength={8}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="password-confirm" className="text-white">{t('auth.confirmPassword')}</Label>
-                  <div className="relative">
-                    <Lock className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" aria-hidden="true" />
-                    <Input 
-                      id="password-confirm"
-                      type="password"
-                      placeholder="••••••••"
-                      className="pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-                      value={registerData.password_confirmation}
-                      onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })}
-                      autoComplete="new-password"
-                      autoCapitalize="off"
-                      autoCorrect="off"
-                      spellCheck="false"
-                      aria-label={t('auth.confirmPassword')}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Turnstile 
-                  onVerify={setTurnstileToken}
-                  className="flex justify-center"
-                />
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-white/20" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white/5 px-2 text-white/60">{t('auth.orContinueWith')}</span>
-                  </div>
-                </div>
-
+                {/* Discord Registration Button */}
                 <Button
                   type="button"
                   onClick={() => authApi.discordLogin()}
-                  className="w-full gap-2 py-6 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold border-0"
+                  className="w-full gap-3 py-7 bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold border-0 text-lg shadow-lg hover:shadow-xl transition-all"
                 >
-                  <MessageCircle className="h-5 w-5" />
-                  {t('auth.registerWithDiscord')}
+                  <MessageCircle className="h-6 w-6" />
+                  {t('auth.registerWithDiscord') || 'Register with Discord'}
                 </Button>
 
-                <Button 
-                  type="submit"
-                  disabled={loading || !turnstileToken}
-                  className="w-full gap-2 py-6 bg-[hsl(195,80%,50%)] hover:bg-[hsl(195,80%,60%)] text-white font-bold border-0 disabled:opacity-50"
-                >
-                  {loading ? t('common.processing') : t('auth.register')}
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
+                {/* Benefits List */}
+                <div className="space-y-3 pt-4 border-t border-white/10">
+                  <div className="flex items-center gap-3 text-sm text-white/80">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-3 w-3 text-green-400" />
+                    </div>
+                    <span>{t('auth.discordBenefit1') || 'Quick dispute resolution via Discord'}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-white/80">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-3 w-3 text-green-400" />
+                    </div>
+                    <span>{t('auth.discordBenefit2') || 'Direct communication with support team'}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-white/80">
+                    <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-3 w-3 text-green-400" />
+                    </div>
+                    <span>{t('auth.discordBenefit3') || 'Instant notifications for orders and updates'}</span>
+                  </div>
+                </div>
 
-                <p className="text-center text-sm text-white/60">
+                <p className="text-center text-xs text-white/60 pt-4 border-t border-white/10">
                   {t('auth.termsAgreement')}{" "}
                   <Link to="/terms" className="text-[hsl(195,80%,70%)] hover:underline">{t('auth.terms')}</Link>
                   {" "}{t('common.and')}{" "}
                   <Link to="/privacy" className="text-[hsl(195,80%,70%)] hover:underline">{t('auth.privacy')}</Link>
                 </p>
-              </form>
+              </div>
             </TabsContent>
           </Tabs>
         </Card>

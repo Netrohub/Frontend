@@ -24,7 +24,7 @@ export const PaymentMethodSelector = ({
     id: PaymentMethod;
     name: string;
     nameAr: string;
-    icon: string;
+    logo: string;
     color: string;
     description: string;
     descriptionAr: string;
@@ -33,7 +33,7 @@ export const PaymentMethodSelector = ({
       id: "MADA",
       name: "MADA",
       nameAr: "مدى",
-      icon: "💳",
+      logo: "/images/payment-methods/mada-logo.png",
       color: "from-green-500/20 to-emerald-500/20 border-green-500/40",
       description: "Saudi Arabia's national payment network",
       descriptionAr: "شبكة الدفع الوطنية السعودية",
@@ -42,7 +42,7 @@ export const PaymentMethodSelector = ({
       id: "VISA",
       name: "Visa",
       nameAr: "فيزا",
-      icon: "💳",
+      logo: "/images/payment-methods/visa-logo.png",
       color: "from-blue-500/20 to-indigo-500/20 border-blue-500/40",
       description: "Accepted worldwide",
       descriptionAr: "مقبولة في جميع أنحاء العالم",
@@ -51,7 +51,7 @@ export const PaymentMethodSelector = ({
       id: "MASTERCARD",
       name: "Mastercard",
       nameAr: "ماستركارد",
-      icon: "💳",
+      logo: "/images/payment-methods/mastercard-logo.png",
       color: "from-red-500/20 to-orange-500/20 border-red-500/40",
       description: "Accepted worldwide",
       descriptionAr: "مقبولة في جميع أنحاء العالم",
@@ -87,15 +87,30 @@ export const PaymentMethodSelector = ({
               )}
             >
               <div className="flex items-center gap-4">
-                {/* Icon */}
+                {/* Logo */}
                 <div
                   className={cn(
-                    "w-16 h-16 rounded-xl flex items-center justify-center text-3xl",
-                    "bg-white/10 border border-white/20",
-                    isSelected && "bg-white/20 border-white/40"
+                    "w-20 h-16 rounded-xl flex items-center justify-center relative",
+                    "bg-white/10 border border-white/20 overflow-hidden",
+                    isSelected && "bg-white/20 border-white/40 shadow-lg"
                   )}
                 >
-                  {method.icon}
+                  <img
+                    src={method.logo}
+                    alt={isRTL ? method.nameAr : method.name}
+                    className="h-10 w-auto object-contain max-w-full"
+                    onError={(e) => {
+                      // Fallback: hide image and show text
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      if (!target.parentElement?.querySelector('.logo-fallback')) {
+                        const fallback = document.createElement('div');
+                        fallback.className = 'logo-fallback text-lg font-bold text-white';
+                        fallback.textContent = method.name.substring(0, 2);
+                        target.parentElement?.appendChild(fallback);
+                      }
+                    }}
+                  />
                 </div>
 
                 {/* Content */}
