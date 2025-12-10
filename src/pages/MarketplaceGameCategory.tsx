@@ -69,21 +69,34 @@ const MarketplaceGameCategory = () => {
   
   // Memoize filtered and sorted listings
   const filteredListings = useMemo(() => {
-    let filtered = listings.filter((listing) => {
-      if (priceFilter === "low" && listing.price >= PRICE_THRESHOLDS.LOW_MAX) return false;
-      if (priceFilter === "mid" && (listing.price < PRICE_THRESHOLDS.MID_MIN || listing.price > PRICE_THRESHOLDS.MID_MAX)) return false;
-      if (priceFilter === "high" && listing.price <= PRICE_THRESHOLDS.HIGH_MIN) return false;
-      return true;
+    // Separate active and sold listings
+    const activeListings: Listing[] = [];
+    const soldListings: Listing[] = [];
+    
+    listings.forEach((listing) => {
+      // Apply price filter
+      if (priceFilter === "low" && listing.price >= PRICE_THRESHOLDS.LOW_MAX) return;
+      if (priceFilter === "mid" && (listing.price < PRICE_THRESHOLDS.MID_MIN || listing.price > PRICE_THRESHOLDS.MID_MAX)) return;
+      if (priceFilter === "high" && listing.price <= PRICE_THRESHOLDS.HIGH_MIN) return;
+      
+      // Separate by status
+      if (listing.status === 'sold') {
+        soldListings.push(listing);
+      } else {
+        activeListings.push(listing);
+      }
     });
 
-    // Apply price sorting
+    // Apply price sorting only to active listings
     if (priceSort === "high-to-low") {
-      filtered = [...filtered].sort((a, b) => b.price - a.price);
+      activeListings.sort((a, b) => b.price - a.price);
     } else if (priceSort === "low-to-high") {
-      filtered = [...filtered].sort((a, b) => a.price - b.price);
+      activeListings.sort((a, b) => a.price - b.price);
     }
+    // If priceSort is "none", maintain default order from backend (active first, then sold, both by newest)
 
-    return filtered;
+    // Always return active listings first, then sold listings at the bottom
+    return [...activeListings, ...soldListings];
   }, [listings, priceFilter, priceSort]);
 
   // If game not found

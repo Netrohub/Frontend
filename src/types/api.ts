@@ -106,7 +106,6 @@ export interface Order {
   amount: number;
   status: 'payment_intent' | 'escrow_hold' | 'disputed' | 'completed' | 'cancelled';
   notes?: string;
-  tap_charge_id?: string;
   paid_at?: string;
   escrow_hold_at?: string;
   escrow_release_at?: string;
@@ -132,14 +131,14 @@ export interface OrderResponse {
 export interface Payment {
   id: number;
   order_id: number;
-  tap_charge_id: string;
-  tap_reference?: string;
+  user_id: number;
+  hyperpay_checkout_id?: string;
   status: 'initiated' | 'authorized' | 'captured' | 'failed' | 'cancelled';
   amount: number;
   currency: string;
   captured_at?: string;
   failure_reason?: string;
-  tap_response?: any;
+  hyperpay_response?: any;
   webhook_payload?: any;
   created_at: string;
   updated_at: string;

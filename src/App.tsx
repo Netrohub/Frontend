@@ -51,7 +51,6 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
-const PaymentCallback = lazy(() => import("./pages/PaymentCallback"));
 const Auctions = lazy(() => import("./pages/Auctions"));
 const AuctionDetail = lazy(() => import("./pages/AuctionDetail"));
 
@@ -292,16 +291,6 @@ const AppContent = () => {
                       <Order />
                     </ProtectedRoute>
                   </Suspense>
-                }
-              />
-              <Route
-                path="/orders/:id/payment/callback"
-                element={
-                  <ProtectedRoute>
-                    <Suspense fallback={<LoadingFallback />}>
-                      <PaymentCallback />
-                    </Suspense>
-                  </ProtectedRoute>
                 }
               />
               <Route

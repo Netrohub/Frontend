@@ -30,7 +30,6 @@ const Checkout = () => {
   });
 
   const [processing, setProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'paylink' | 'hyperpay'>('paylink');
 
   useEffect(() => {
     if (!user) {
@@ -64,41 +63,8 @@ const Checkout = () => {
       return;
     }
 
-    if (paymentMethod === 'hyperpay') {
-      // Redirect to dedicated HyperPay payment page
-      navigate(`/payments/hyperpay?order_id=${orderId}`, { replace: true });
-      return;
-    } else {
-      // Paylink payment
-      setProcessing(true);
-      try {
-        const response = await paymentsApi.create({ order_id: orderId });
-        const paymentUrl = response.paymentUrl || response.redirect_url;
-        if (paymentUrl) {
-          // Redirect to Paylink payment page
-          window.location.href = paymentUrl;
-        } else {
-          toast.error(t('checkout.paymentLinkError'));
-        }
-      } catch (error) {
-        const apiError = error as Error & ApiError;
-        
-        // Handle "payment already exists" case - redirect to existing payment URL
-        if (apiError.data && (apiError.data as any).paymentUrl && apiError.status === 400) {
-          const existingPaymentUrl = (apiError.data as any).paymentUrl;
-          if (existingPaymentUrl) {
-            // Payment already initiated - redirect to existing payment link
-            toast.info(t('checkout.paymentAlreadyInitiated') || 'Redirecting to payment page...');
-            window.location.href = existingPaymentUrl;
-            return; // Don't set processing to false, we're redirecting
-          }
-        }
-        
-        toast.error(apiError.message || t('checkout.paymentLinkError'));
-      } finally {
-        setProcessing(false);
-      }
-    }
+    // Always use HyperPay - redirect to dedicated payment page
+    navigate(`/payments/hyperpay?order_id=${orderId}`, { replace: true });
   };
 
   const handleHyperPayComplete = async (resourcePath: string) => {
@@ -233,7 +199,7 @@ const Checkout = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Payment Form */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Payment Method */}
+            {/* Payment Method - HyperPay Only */}
             <Card className="p-6 bg-white/5 border-white/10 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-lg bg-[hsl(195,80%,50%,0.15)] border border-[hsl(195,80%,70%,0.3)]">
@@ -242,54 +208,17 @@ const Checkout = () => {
                 <h2 className="text-2xl font-bold text-white">{t('checkout.paymentMethod')}</h2>
               </div>
 
-              <div className="space-y-4">
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${
-                    paymentMethod === 'paylink'
-                      ? 'bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)]'
-                      : 'bg-white/5 border border-white/10 hover:border-white/20'
-                  }`}
-                  onClick={() => setPaymentMethod('paylink')}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
-                      {paymentMethod === 'paylink' && (
-                        <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
-                      )}
-                    </div>
-                    <span className="font-bold text-white">{t('checkout.paylinkPayment') || 'Paylink Payment'}</span>
-                    <div className="mr-auto px-3 py-1 bg-[hsl(195,80%,50%)] rounded-full text-xs font-bold text-white">
-                      {t('checkout.recommended')}
-                    </div>
+              <div className="p-4 bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)] rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
                   </div>
-                </Card>
-                
-                <Card 
-                  className={`p-4 cursor-pointer transition-all ${
-                    paymentMethod === 'hyperpay'
-                      ? 'bg-[hsl(195,80%,50%,0.1)] border-2 border-[hsl(195,80%,70%)]'
-                      : 'bg-white/5 border border-white/10 hover:border-white/20'
-                  }`}
-                  onClick={() => {
-                    setPaymentMethod('hyperpay');
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full border-2 border-[hsl(195,80%,70%)] flex items-center justify-center">
-                      {paymentMethod === 'hyperpay' && (
-                        <div className="w-3 h-3 rounded-full bg-[hsl(195,80%,70%)]" />
-                      )}
-                    </div>
-                    <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay'}</span>
-                    <div className="mr-auto px-3 py-1 bg-blue-500/50 rounded-full text-xs font-bold text-white">
-                      {t('checkout.secure') || 'Secure'}
-                    </div>
+                  <span className="font-bold text-white">{t('checkout.hyperpayPayment') || 'HyperPay'}</span>
+                  <div className="mr-auto px-3 py-1 bg-blue-500/50 rounded-full text-xs font-bold text-white">
+                    {t('checkout.secure') || 'Secure'}
                   </div>
-                </Card>
-                
+                </div>
               </div>
-
-
             </Card>
 
             {/* Protection Notice */}
